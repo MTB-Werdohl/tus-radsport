@@ -4,7 +4,7 @@ title: "Saisonabschluss 2026"
 date: 2026-02-24
 ---
 
-In diesem Jahr findet unsere Saisonabschluss am **10.10.2026** statt.
+In diesem Jahr planen wir unseren Saisonabschluss am **10.10.2026**.
 
 **Beginn:** 12:00 Uhr, am Brüninghausplatz in Werdohl
 
