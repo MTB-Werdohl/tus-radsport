@@ -28,7 +28,7 @@ Von dort starten wir unsere After-Work-Runde in die umliegenden Trails.
 
 ## Die Ausfahrt
 
-Die Touren dauern in der Regel etwa 1 bis 1,5 Stunden.
+Die Touren dauern in der Regel etwa 2  Stunden.
 
 Gefahren wird im angemessenen Tempo der Gruppe.  
 Niemand wird zurückgelassen.
