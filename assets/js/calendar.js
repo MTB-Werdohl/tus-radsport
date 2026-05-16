@@ -262,6 +262,14 @@ eventClick: function(info) {
         ${info.event.start.toLocaleDateString('de-DE')}
       </p>
 
+      <p>
+        🕒
+        ${info.event.start.toLocaleTimeString('de-DE', {
+        hour: '2-digit',
+        minute: '2-digit'
+        })} Uhr
+      </p>
+
       ${info.event.extendedProps.location
         ? `<p>📍 ${info.event.extendedProps.location}</p>`
         : ''
