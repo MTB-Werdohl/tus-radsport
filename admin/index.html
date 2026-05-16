@@ -11,6 +11,22 @@
 
 <body>
 
+    <script>
+
+const password = "MTB2026";
+
+const userPassword = prompt("Passwort erforderlich");
+
+if (userPassword !== password) {
+
+  document.body.innerHTML = "<h1>Zugriff verweigert</h1>";
+
+  throw new Error("Falsches Passwort");
+
+}
+
+</script>
+
 <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
 
 </body>
