@@ -18,9 +18,30 @@ document.addEventListener('DOMContentLoaded', function () {
       right: 'dayGridMonth,listMonth'
     },
 
-    events: '/assets/data/events.json',
+events: '/assets/data/events.json',
+
+eventDidMount: function(info) {
+
+  if (info.event.extendedProps.isPast) {
+
+    info.el.style.opacity = '0.45';
+
+    info.el.style.filter = 'grayscale(100%)';
+
+    info.el.style.cursor = 'default';
+
+    info.el.style.textDecoration = 'line-through';
+
+  }
+
+},
 
 eventClick: function(info) {
+
+  if (info.event.extendedProps.isPast) {
+    info.jsEvent.preventDefault();
+    return;
+  }
 
   info.jsEvent.preventDefault();
 

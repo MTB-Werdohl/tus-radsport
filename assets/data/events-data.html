@@ -24,12 +24,18 @@ permalink: /assets/data/events.json
   {% assign color = "#ff8c00" %}
 {% endif %}
 
+{% assign now = site.time | date: "%s" %}
+{% assign eventtime = event.date | date: "%s" %}
+
 {
   "title": {{ event.title | jsonify }},
   "start": "{{ event.date | date_to_xmlschema }}",
   "url": "{{ event.url }}",
   "description": {{ event.description | jsonify }},
   "location": {{ event.location | jsonify }},
+  "image": {{ event.image | jsonify }},
+  "category": {{ event.category | jsonify }},
+  "isPast": {% if eventtime < now %}true{% else %}false{% endif %},
   "backgroundColor": "{{ color }}",
   "borderColor": "{{ color }}"
 }
