@@ -6,23 +6,26 @@ permalink: /assets/data/events.json
 [
 {% for event in site.events %}
 
-{% assign color = "#2e8b57" %}
+{% if event.type == "recurring" %}
 
-{% if event.category == "Training" %}
-  {% assign color = "#1e90ff" %}
-{% endif %}
+{
+  "title": {{ event.title | jsonify }},
+  "daysOfWeek": [{{ event.weekday }}],
+  "startTime": "{{ event.startTime }}",
+  "startRecur": "{{ event.startRecur }}",
+  "endRecur": "{{ event.endRecur }}",
 
-{% if event.category == "Rennen" %}
-  {% assign color = "#dc143c" %}
-{% endif %}
+  "extendedProps": {
+    "exclude": {{ event.exclude | jsonify }}
+  },
 
-{% if event.category == "Jugend" %}
-  {% assign color = "#f4b400" %}
-{% endif %}
+  "description": {{ event.description | jsonify }},
+  "location": {{ event.location | jsonify }},
+  "backgroundColor": "#2e8b57",
+  "borderColor": "#2e8b57"
+}
 
-{% if event.category == "Stammtisch" %}
-  {% assign color = "#ff8c00" %}
-{% endif %}
+{% else %}
 
 {% assign now = site.time | date: "%s" %}
 {% assign eventtime = event.date | date: "%s" %}
@@ -39,6 +42,9 @@ permalink: /assets/data/events.json
   "backgroundColor": "{{ color }}",
   "borderColor": "{{ color }}"
 }
+
+{% endif %}
+
 {% unless forloop.last %},{% endunless %}
 
 {% endfor %}
