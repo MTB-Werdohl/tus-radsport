@@ -176,23 +176,27 @@ if (info.event.start < now) {
 
 }
 
+eventDataTransform: function(eventData) {
+
   if (
-  info.event.extendedProps.exclude
-) {
+    eventData.extendedProps &&
+    eventData.extendedProps.exclude &&
+    eventData.start
+  ) {
 
-  const excludes = info.event.extendedProps.exclude;
+    const excludes = eventData.extendedProps.exclude;
 
-  const eventDate = info.event.startStr.split('T')[0];
+    const dateOnly = eventData.start.split('T')[0];
 
-  if (excludes.includes(eventDate)) {
-
-    info.el.style.display = 'none';
-
-    return;
+    if (excludes.includes(dateOnly)) {
+      return false;
+    }
 
   }
 
-} 
+  return eventData;
+
+},
 
 
   if (info.event.extendedProps.isInfoEvent) {
