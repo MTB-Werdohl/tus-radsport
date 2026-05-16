@@ -10,11 +10,9 @@ layout: default
     📅 {{ page.date | date: "%d.%m.%Y" }}
   </h1>
 
-  {% if page.time %}
   <p class="event-time">
-    {{ page.time }} Uhr
+    🕒 {{ page.date | date: "%H:%M" }} Uhr
   </p>
-  {% endif %}
 
   {% if page.location %}
   <p>
