@@ -24,62 +24,6 @@ layout: default
 
   </div>
 
-{% assign hasLinks = false %}
-
-{% if page.maps and page.maps != blank %}
-  {% assign hasLinks = true %}
-{% endif %}
-
-{% if page.komoot and page.komoot != blank %}
-  {% assign hasLinks = true %}
-{% endif %}
-
-{% if page.gpx and page.gpx != blank %}
-  {% assign hasLinks = true %}
-{% endif %}
-
-{% if page.whatsapp and page.whatsapp != blank %}
-  {% assign hasLinks = true %}
-{% endif %}
-
-{% if hasLinks %}
-
-<div class="event-links">
-
-  {% if page.maps and page.maps != blank %}
-  <a href="{{ page.maps }}"
-     target="_blank"
-     class="event-button">
-     📍 Treffpunkt
-  </a>
-  {% endif %}
-
-  {% if page.komoot and page.komoot != blank %}
-  <a href="{{ page.komoot }}"
-     target="_blank"
-     class="event-button">
-     🚵 Komoot
-  </a>
-  {% endif %}
-
-  {% if page.gpx and page.gpx != blank %}
-  <a href="{{ page.gpx }}"
-     target="_blank"
-     class="event-button">
-     ⬇ GPX Download
-  </a>
-  {% endif %}
-
-  {% if page.whatsapp and page.whatsapp != blank %}
-  <a href="{{ page.whatsapp }}"
-     target="_blank"
-     class="event-button whatsapp">
-     💬 WhatsApp Gruppe
-  </a>
-  {% endif %}
-
-</div>
-
 {% endif %}
 
   {% if page.image %}
