@@ -1,0 +1,13 @@
+#calendar {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.fc-toolbar-title {
+  font-size: 1.5rem;
+}
+
+.fc-event {
+  cursor: pointer;
+}
