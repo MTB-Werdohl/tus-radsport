@@ -1,0 +1,49 @@
+backend:
+  name: github
+  repo: Tobiw87/tus-radsport
+  branch: main
+
+media_folder: "assets/img/uploads"
+public_folder: "/assets/img/uploads"
+
+collections:
+
+  - name: "events"
+    label: "Veranstaltungen"
+    folder: "_events"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+
+    fields:
+
+      - { label: "Layout", name: "layout", widget: "hidden", default: "event" }
+
+      - { label: "Titel", name: "title", widget: "string" }
+
+      - { label: "Datum", name: "date", widget: "datetime" }
+
+      - { label: "Ort", name: "location", widget: "string" }
+
+      - label: "Kategorie"
+        name: "category"
+        widget: "select"
+        options:
+          - Tour
+          - Training
+          - Rennen
+          - Jugend
+          - Stammtisch
+
+      - { label: "Beschreibung", name: "description", widget: "text" }
+
+      - { label: "Bild", name: "image", widget: "image", required: false }
+
+      - { label: "Google Maps Link", name: "maps", widget: "string", required: false }
+
+      - { label: "Komoot Link", name: "komoot", widget: "string", required: false }
+
+      - { label: "WhatsApp Link", name: "whatsapp", widget: "string", required: false }
+
+      - { label: "GPX Datei", name: "gpx", widget: "file", required: false }
+
+      - { label: "Inhalt", name: "body", widget: "markdown" }
