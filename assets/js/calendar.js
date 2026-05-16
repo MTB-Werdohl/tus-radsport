@@ -167,11 +167,27 @@ if (
       listItem.style.display = 'none';
     }
 
-    return;
-
   }
 
 }
+
+setTimeout(() => {
+
+  document.querySelectorAll('.fc-list-day').forEach(dayGroup => {
+
+    const events = dayGroup.querySelectorAll('.fc-list-event');
+
+    const visibleEvents = Array.from(events).filter(event =>
+      event.style.display !== 'none'
+    );
+
+    if (visibleEvents.length === 0) {
+      dayGroup.style.display = 'none';
+    }
+
+  });
+
+}, 0);
 
 if (info.event.extendedProps.isInfoEvent) {
 
