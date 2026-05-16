@@ -139,7 +139,7 @@ eventDidMount: function(info) {
 
   if (info.event.start < now) {
 
-    info.el.style.filter = 'grayscale(80%)';
+    info.el.style.filter = 'grayscale(60%)';
 
     info.el.style.cursor = 'default';
 
