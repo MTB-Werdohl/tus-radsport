@@ -1,6 +1,5 @@
 ---
 layout: event
-title: "Tourentag des TuS Neuenrade"
 date: 2026-07-11 10:30:00 +0200
 location: "Waldstadion Neuenrade"
 category: "Rennen"
