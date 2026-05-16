@@ -127,6 +127,33 @@ eventSources: [
 }
 ],
 
+eventDataTransform: function(eventData) {
+
+  if (
+    eventData.extendedProps &&
+    eventData.extendedProps.exclude
+  ) {
+
+    const excludes = eventData.extendedProps.exclude;
+
+    const generatedDate = eventData.start;
+
+    if (generatedDate) {
+
+      const dateOnly = generatedDate.split('T')[0];
+
+      if (excludes.includes(dateOnly)) {
+        return false;
+      }
+
+    }
+
+  }
+
+  return eventData;
+
+},
+
 eventDidMount: function(info) {
 
   if (info.event.extendedProps.isPast) {
