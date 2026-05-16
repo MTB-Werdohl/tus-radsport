@@ -15,6 +15,10 @@ collections:
   event:
     output: true
 
+  events:
+    output: true
+    permalink: /events/:name/
+
 contact:
   name: "Tobias Withalm"
   phone_display: "0160 8226897"
