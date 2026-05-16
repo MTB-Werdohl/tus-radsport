@@ -5,6 +5,26 @@ permalink: /assets/data/events.json
 
 [
 {% for event in site.events %}
+
+{% assign color = "#2e8b57" %}
+
+{% if event.category == "Training" %}
+  {% assign color = "#1e90ff" %}
+{% endif %}
+
+{% if event.category == "Rennen" %}
+  {% assign color = "#dc143c" %}
+{% endif %}
+
+{% if event.category == "Jugend" %}
+  {% assign color = "#f4b400" %}
+{% endif %}
+
+{% if event.category == "Stammtisch" %}
+  {% assign color = "#ff8c00" %}
+{% endif %}
+{% for event in site.events %}
+
 {
   "title": {{ event.title | jsonify }},
   "start": "{{ event.date | date_to_xmlschema }}",
