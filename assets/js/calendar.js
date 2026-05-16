@@ -105,7 +105,9 @@ eventSources: [
 
         display: 'background',
 
-        interactive: false,
+        extendedProps: {
+        isInfoEvent: true
+        },
 
         backgroundColor: '#f1c40f',
 
@@ -136,6 +138,14 @@ eventDidMount: function(info) {
     info.el.style.cursor = 'default';
 
     info.el.style.textDecoration = 'line-through';
+
+  }
+
+  if (info.event.extendedProps.isInfoEvent) {
+
+    info.el.style.cursor = 'default';
+
+    info.el.style.pointerEvents = 'none';
 
   }
 
