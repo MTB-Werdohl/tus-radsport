@@ -18,7 +18,42 @@ document.addEventListener('DOMContentLoaded', function () {
       right: 'dayGridMonth,listMonth'
     },
 
-events: '/assets/data/events.json',
+eventSources: [
+  {
+    url: '/assets/data/events.json',
+    method: 'GET'
+  },
+
+  {
+    url: 'https://openholidaysapi.org/PublicHolidays',
+    method: 'GET',
+    extraParams: {
+      countryIsoCode: 'DE',
+      subdivisionCode: 'DE-NW',
+      languageIsoCode: 'DE',
+      validFrom: '2026-01-01',
+      validTo: '2026-12-31'
+    },
+
+    color: '#c0392b',
+    textColor: '#ffffff'
+  },
+
+  {
+    url: 'https://openholidaysapi.org/SchoolHolidays',
+    method: 'GET',
+    extraParams: {
+      countryIsoCode: 'DE',
+      subdivisionCode: 'DE-NW',
+      languageIsoCode: 'DE',
+      validFrom: '2026-01-01',
+      validTo: '2026-12-31'
+    },
+
+    color: '#f1c40f',
+    textColor: '#000000'
+  }
+],
 
 eventDidMount: function(info) {
 
