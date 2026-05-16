@@ -197,6 +197,25 @@ if (info.event.extendedProps.isInfoEvent) {
 
 }
 
+if (info.view.type === 'listMonth') {
+
+  const timeEl = info.el.querySelector('.fc-list-event-time');
+
+  if (timeEl) {
+
+    const formattedDate =
+      info.event.start.toLocaleDateString('de-DE', {
+        weekday: 'short',
+        day: '2-digit',
+        month: '2-digit'
+      });
+
+    timeEl.setAttribute('data-date', formattedDate);
+
+  }
+
+}
+
 },
 
 eventClick: function(info) {
