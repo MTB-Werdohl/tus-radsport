@@ -11,3 +11,24 @@
 .fc-event {
   cursor: pointer;
 }
+
+.event-page {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.event-meta {
+  margin-bottom: 1.5rem;
+  color: #666;
+}
+
+.event-image {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.event-content {
+  line-height: 1.7;
+}

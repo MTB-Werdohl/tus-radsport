@@ -1,0 +1,41 @@
+---
+layout: default
+---
+
+<div class="event-page">
+
+  <h1>{{ page.title }}</h1>
+
+  <div class="event-meta">
+
+    <p>
+      📅
+      {{ page.date | date: "%d.%m.%Y" }}
+      {% if page.time %}
+        • {{ page.time }}
+      {% endif %}
+    </p>
+
+    {% if page.location %}
+    <p>
+      📍 {{ page.location }}
+    </p>
+    {% endif %}
+
+    {% if page.category %}
+    <p>
+      🏷️ {{ page.category }}
+    </p>
+    {% endif %}
+
+  </div>
+
+  {% if page.image %}
+  <img class="event-image" src="{{ page.image }}" alt="{{ page.title }}">
+  {% endif %}
+
+  <div class="event-content">
+    {{ content }}
+  </div>
+
+</div>

@@ -5,6 +5,7 @@ location: Werdohl
 category: Tour
 description: Gemeinsame MTB Runde durch das Sauerland.
 image: /assets/img/events/feierabendtour.jpg
+layout: event
 ---
 
 Treffpunkt ist am Vereinsheim.
