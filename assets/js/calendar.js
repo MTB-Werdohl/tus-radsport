@@ -137,49 +137,6 @@ eventDataTransform: function(eventData) {
 
   if (
     eventData.extendedProps &&
-    eventData.extendedProps.exclude
-  ) {
-
-    const excludes = eventData.extendedProps.exclude;
-
-    const generatedDate = eventData.start;
-
-    if (generatedDate) {
-
-      const dateOnly = generatedDate.split('T')[0];
-
-      if (excludes.includes(dateOnly)) {
-        return false;
-      }
-
-    }
-
-  }
-
-  return eventData;
-
-},
-
-eventDidMount: function(info) {
-
-  const now = new Date();
-
-if (info.event.start < now) {
-
-  info.el.style.opacity = '0.45';
-
-  info.el.style.filter = 'grayscale(100%)';
-
-  info.el.style.cursor = 'default';
-
-  info.el.style.textDecoration = 'line-through';
-
-}
-
-eventDataTransform: function(eventData) {
-
-  if (
-    eventData.extendedProps &&
     eventData.extendedProps.exclude &&
     eventData.start
   ) {
@@ -198,6 +155,21 @@ eventDataTransform: function(eventData) {
 
 },
 
+eventDidMount: function(info) {
+
+  const now = new Date();
+
+  if (info.event.start < now) {
+
+    info.el.style.opacity = '0.45';
+
+    info.el.style.filter = 'grayscale(100%)';
+
+    info.el.style.cursor = 'default';
+
+    info.el.style.textDecoration = 'line-through';
+
+  }
 
   if (info.event.extendedProps.isInfoEvent) {
 
@@ -273,11 +245,10 @@ eventClick: function(info) {
       popup.remove();
     }
   });
+},
 
-}
+});
 
-  });
-
-  calendar.render();
+calendar.render();
 
 });
