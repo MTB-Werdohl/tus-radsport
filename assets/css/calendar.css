@@ -83,3 +83,33 @@
   text-decoration: none;
   border-radius: 8px;
 }
+
+.event-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  margin-bottom: 2rem;
+}
+
+.event-button {
+  display: inline-block;
+
+  padding: 0.8rem 1rem;
+
+  background: #2e8b57;
+  color: white;
+
+  border-radius: 10px;
+
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.event-button:hover {
+  opacity: 0.9;
+}
+
+.event-button.whatsapp {
+  background: #25D366;
+}
