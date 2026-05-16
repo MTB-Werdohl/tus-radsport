@@ -122,3 +122,18 @@
 .fc-col-header-cell {
   background: #fff5f5;
 }
+
+.fc-list-day-cushion {
+  background: rgba(255,255,255,0.9) !important;
+
+  color: #ed1c24 !important;
+
+  font-weight: 700;
+}
+
+.fc-list-day-text,
+.fc-list-day-side-text {
+  color: #ed1c24 !important;
+
+  text-decoration: none;
+}
