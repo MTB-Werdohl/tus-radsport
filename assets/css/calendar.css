@@ -165,3 +165,9 @@
 .event-meta p {
   color: #ffffff;
 }
+
+.event-time {
+  font-size: 1rem;
+  color: #ffffff;
+  margin-top: -0.5rem;
+}
