@@ -156,6 +156,24 @@ eventDataTransform: function(eventData) {
 
 eventDidMount: function(info) {
 
+  if (
+  info.event.extendedProps.exclude
+) {
+
+  const excludes = info.event.extendedProps.exclude;
+
+  const eventDate = info.event.startStr.split('T')[0];
+
+  if (excludes.includes(eventDate)) {
+
+    info.el.style.display = 'none';
+
+    return;
+
+  }
+
+}
+
   if (info.event.extendedProps.isPast) {
 
     info.el.style.opacity = '0.45';

@@ -10,7 +10,7 @@ permalink: /assets/data/events.json
 
 {
   "title": {{ event.title | jsonify }},
-  "daysOfWeek": [{{ event.weekday }}],
+  "daysOfWeek": {{ event.daysOfWeek | jsonify }},
   "startTime": "{{ event.startTime }}",
   "startRecur": "{{ event.startRecur }}",
   "endRecur": "{{ event.endRecur }}",

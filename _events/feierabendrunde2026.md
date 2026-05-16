@@ -5,11 +5,13 @@ type: recurring
 
 title: Feierabendrunde
 
-weekday: 2
+daysOfWeek:
+  - 2
+
 startTime: "18:00"
 
 startRecur: "2026-04-14"
-endRecur: "2026-10-10"
+endRecur: "2026-10-11"
 
 category: Tour
 location: Werdohl
