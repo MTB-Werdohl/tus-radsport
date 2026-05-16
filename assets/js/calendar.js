@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
 
-    initialView: 'dayGridMonth',
+    initialView: 'listMonth',
 
     locale: 'de',
 
