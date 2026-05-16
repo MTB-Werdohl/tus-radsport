@@ -139,7 +139,7 @@ eventDidMount: function(info) {
 
   if (info.event.start < now) {
 
-    info.el.style.filter = 'grayscale(60%)';
+    info.el.style.filter = 'grayscale(40%)';
 
     info.el.style.cursor = 'default';
 
@@ -272,10 +272,15 @@ eventClick: function(info) {
         : ''
       }
 
-      <a class="event-popup-button"
-         href="${info.event.url}">
-         Mehr Details
-      </a>
+    ${info.event.url
+      ? `
+        <a class="event-popup-button"
+          href="${info.event.url}">
+          Mehr Details
+       </a>
+      `
+     : ''
+    }
 
     </div>
   `;
