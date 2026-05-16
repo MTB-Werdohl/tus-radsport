@@ -138,13 +138,21 @@
   text-decoration: none;
 }
 
+.fc-list-event-time {
+
+  font-size: 0.8rem;
+
+  color: #cccccc;
+
+}
+
 .fc-list-event-time::before {
 
   content: attr(data-date);
 
   display: block;
 
-  font-size: 0.8rem;
+  font-size: 1rem;
 
   font-weight: 700;
 
