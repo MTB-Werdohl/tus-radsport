@@ -156,6 +156,20 @@ eventDataTransform: function(eventData) {
 
 eventDidMount: function(info) {
 
+  const now = new Date();
+
+if (info.event.start < now) {
+
+  info.el.style.opacity = '0.45';
+
+  info.el.style.filter = 'grayscale(100%)';
+
+  info.el.style.cursor = 'default';
+
+  info.el.style.textDecoration = 'line-through';
+
+}
+
   if (
   info.event.extendedProps.exclude
 ) {
@@ -172,19 +186,6 @@ eventDidMount: function(info) {
 
   }
 
-}
-
-  if (info.event.extendedProps.isPast) {
-
-    info.el.style.opacity = '0.45';
-
-    info.el.style.filter = 'grayscale(100%)';
-
-    info.el.style.cursor = 'default';
-
-    info.el.style.textDecoration = 'line-through';
-
-  }
 
   if (info.event.extendedProps.isInfoEvent) {
 
@@ -203,7 +204,9 @@ eventClick: function(info) {
     return;
   }
 
-  if (info.event.extendedProps.isPast) {
+  const now = new Date();
+
+  if (info.event.start < now) {
     info.jsEvent.preventDefault();
     return;
   }

@@ -3,7 +3,7 @@ layout: event
 
 type: recurring
 
-title: Feierabendrunde
+title: After-Work Tour
 
 daysOfWeek:
   - 2
