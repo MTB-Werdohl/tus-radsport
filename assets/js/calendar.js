@@ -139,15 +139,25 @@ eventDidMount: function(info) {
 
   if (info.event.start < now) {
 
-    info.el.style.opacity = '0.45';
-
-    info.el.style.filter = 'grayscale(100%)';
+    info.el.style.filter = 'grayscale(80%)';
 
     info.el.style.cursor = 'default';
 
     info.el.style.textDecoration = 'line-through';
 
+    const title = info.el.querySelector('.fc-list-event-title');
+
+    if (title) {
+      title.style.opacity = '0.5';
+    }
+
+    const time = info.el.querySelector('.fc-list-event-time');
+
+    if (time) {
+      time.style.opacity = '0.5';
   }
+
+}
 
 if (
   info.event.extendedProps.exclude
