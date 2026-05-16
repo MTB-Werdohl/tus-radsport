@@ -8,7 +8,7 @@ category: Rennen
 
 description: Gemeinsame MTB Runde durchs Ebbe.
 
-image: /assets/img/events/Pfingstrunde.jpg
+image: /assets/images/Pfingstrunde.png
 
 ---
 
