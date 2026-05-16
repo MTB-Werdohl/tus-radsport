@@ -133,28 +133,6 @@ eventSources: [
 }
 ],
 
-eventDataTransform: function(eventData) {
-
-  if (
-    eventData.extendedProps &&
-    eventData.extendedProps.exclude &&
-    eventData.start
-  ) {
-
-    const excludes = eventData.extendedProps.exclude;
-
-    const dateOnly = eventData.start.split('T')[0];
-
-    if (excludes.includes(dateOnly)) {
-      return false;
-    }
-
-  }
-
-  return eventData;
-
-},
-
 eventDidMount: function(info) {
 
   const now = new Date();
@@ -171,13 +149,31 @@ eventDidMount: function(info) {
 
   }
 
-  if (info.event.extendedProps.isInfoEvent) {
+if (
+  info.event.extendedProps.exclude
+) {
 
-    info.el.style.cursor = 'default';
+  const excludes = info.event.extendedProps.exclude;
 
-    info.el.style.pointerEvents = 'none';
+  const eventDate = info.event.startStr.split('T')[0];
+
+  if (excludes.includes(eventDate)) {
+
+    info.event.remove();
+
+    return;
 
   }
+
+}
+
+if (info.event.extendedProps.isInfoEvent) {
+
+  info.el.style.cursor = 'default';
+
+  info.el.style.pointerEvents = 'none';
+
+}
 
 },
 
