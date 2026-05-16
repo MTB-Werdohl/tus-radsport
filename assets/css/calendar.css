@@ -113,3 +113,12 @@
 .event-button.whatsapp {
   background: #25D366;
 }
+
+.fc-col-header-cell-cushion {
+  color: #ed1c24;
+  font-weight: 700;
+}
+
+.fc-col-header-cell {
+  background: #fff5f5;
+}
