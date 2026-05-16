@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>MTB Werdohl Event Generator</title>
+
+<style>
+
+body {
+  font-family: Arial, sans-serif;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: #f5f5f5;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+form {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+}
+
+label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+input,
+textarea,
+select {
+  width: 100%;
+  padding: 0.8rem;
+  margin-top: 0.4rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+textarea {
+  min-height: 150px;
+}
+
+button {
+  margin-top: 2rem;
+  padding: 1rem;
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  background: #2e8b57;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.info {
+  margin-top: 2rem;
+  background: #fff;
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+</style>
+
+</head>
+<body>
+
+<h1>🚵 MTB Werdohl Event Generator</h1>
+
+<form id="eventForm">
+
+  <label>Titel</label>
+  <input type="text" id="title" required>
+
+  <label>Datum & Uhrzeit</label>
+  <input type="datetime-local" id="date" required>
+
+  <label>Ort</label>
+  <input type="text" id="location">
+
+  <label>Kategorie</label>
+  <select id="category">
+    <option>Tour</option>
+    <option>Training</option>
+    <option>Rennen</option>
+    <option>Jugend</option>
+    <option>Stammtisch</option>
+  </select>
+
+  <label>Kurzbeschreibung</label>
+  <textarea id="description"></textarea>
+
+  <label>Bildpfad</label>
+  <input type="text" id="image" placeholder="/assets/img/events/bild.jpg">
+
+  <label>Google Maps Link</label>
+  <input type="text" id="maps">
+
+  <label>Komoot Link</label>
+  <input type="text" id="komoot">
+
+  <label>WhatsApp Gruppenlink</label>
+  <input type="text" id="whatsapp">
+
+  <label>GPX Pfad</label>
+  <input type="text" id="gpx" placeholder="/assets/gpx/tour.gpx">
+
+  <label>Detailbeschreibung</label>
+  <textarea id="body"></textarea>
+
+  <button type="submit">
+    Eventdatei herunterladen
+  </button>
+
+</form>
+
+<div class="info">
+
+  <h3>📁 Danach:</h3>
+
+  <ol>
+    <li>Datei herunterladen</li>
+    <li>In den Ordner <strong>_events</strong> legen</li>
+    <li>GitHub pushen</li>
+  </ol>
+
+</div>
+
+<script>
+
+document.getElementById('eventForm').addEventListener('submit', function(e) {
+
+  e.preventDefault();
+
+  const title = document.getElementById('title').value;
+  const date = document.getElementById('date').value;
+  const location = document.getElementById('location').value;
+  const category = document.getElementById('category').value;
+  const description = document.getElementById('description').value;
+  const image = document.getElementById('image').value;
+  const maps = document.getElementById('maps').value;
+  const komoot = document.getElementById('komoot').value;
+  const whatsapp = document.getElementById('whatsapp').value;
+  const gpx = document.getElementById('gpx').value;
+  const body = document.getElementById('body').value;
+
+  const eventDate = new Date(date);
+
+  const yyyy = eventDate.getFullYear();
+  const mm = String(eventDate.getMonth() + 1).padStart(2, '0');
+  const dd = String(eventDate.getDate()).padStart(2, '0');
+
+  const slug = title
+    .toLowerCase()
+    .replace(/ä/g, 'ae')
+    .replace(/ö/g, 'oe')
+    .replace(/ü/g, 'ue')
+    .replace(/ß/g, 'ss')
+    .replace(/[^a-z0-9]+/g, '-');
+
+  const filename = `${yyyy}-${mm}-${dd}-${slug}.md`;
+
+  const markdown = `---
+layout: event
+title: "${title}"
+date: ${yyyy}-${mm}-${dd} ${eventDate.toTimeString().slice(0,5)}:00 +0200
+location: "${location}"
+category: "${category}"
+description: "${description}"
+image: "${image}"
+maps: "${maps}"
+komoot: "${komoot}"
+whatsapp: "${whatsapp}"
+gpx: "${gpx}"
+---
+
+${body}
+`;
+
+  const blob = new Blob([markdown], { type: 'text/markdown' });
+
+  const link = document.createElement('a');
+
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+
+  link.click();
+
+});
+
+</script>
+
+</body>
+</html>
