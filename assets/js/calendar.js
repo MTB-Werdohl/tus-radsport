@@ -159,7 +159,13 @@ if (
 
   if (excludes.includes(eventDate)) {
 
-    info.event.remove();
+    info.el.style.display = 'none';
+
+    const listItem = info.el.closest('.fc-list-event');
+
+    if (listItem) {
+      listItem.style.display = 'none';
+    }
 
     return;
 
