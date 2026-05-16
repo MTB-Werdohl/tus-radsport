@@ -56,7 +56,9 @@ eventSources: [
 
         display: 'background',
 
-        interactive: false,
+      extendedProps: {
+       isInfoEvent: true
+      },
 
         backgroundColor: '#c0392b',
 
@@ -141,9 +143,9 @@ eventDidMount: function(info) {
 
 eventClick: function(info) {
 
-  if (info.event.extendedProps.interactive === false) {
-  info.jsEvent.preventDefault();
-  return;
+  if (info.event.extendedProps.isInfoEvent) {
+    info.jsEvent.preventDefault();
+    return;
   }
 
   if (info.event.extendedProps.isPast) {
