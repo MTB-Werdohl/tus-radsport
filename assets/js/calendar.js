@@ -186,6 +186,8 @@ if (info.event.start < now) {
 
   }
 
+} 
+
 
   if (info.event.extendedProps.isInfoEvent) {
 
