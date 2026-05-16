@@ -1,7 +1,7 @@
 ---
 layout: event
 title: Pfingstrunde
-date: 2026-05-26 12:00:00 +0200
+date: 2026-05-25 12:00:00 +0200
 
 location: Werdohl Brüninhausplatz vor dem alten WK
 category: Rennen
