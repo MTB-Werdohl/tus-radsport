@@ -14,6 +14,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     locale: 'de',
 
+    buttonText: {
+      today: 'Heute',
+      month: 'Monat',
+      list: 'Liste'
+    },
+
     height: 'auto',
 
     firstDay: 1,
