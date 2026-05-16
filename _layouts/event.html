@@ -22,15 +22,11 @@ layout: default
     </p>
     {% endif %}
 
-    {% if page.category %}
-    <p>
-      🏷️ {{ page.category }}
-    </p>
-    {% endif %}
-
   </div>
 
-  <div class="event-links">
+{% if page.maps or page.komoot or page.gpx or page.whatsapp %}
+
+<div class="event-links">
 
   {% if page.maps %}
   <a href="{{ page.maps }}"
@@ -66,8 +62,10 @@ layout: default
 
 </div>
 
+{% endif %}
+
   {% if page.image %}
-  <img class="event-image" src="{{ page.image }}" alt="{{ page.title }}">
+  <img class="event-image" src="{{ page.image }}">
   {% endif %}
 
   <div class="event-content">
