@@ -1,5 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+  const currentYear = new Date().getFullYear();
+
+  const validFrom = `${currentYear}-01-01`;
+
+  const validTo = `${currentYear + 1}-12-31`;
+
   const calendarEl = document.getElementById('calendar');
 
   const calendar = new FullCalendar.Calendar(calendarEl, {
@@ -24,35 +30,91 @@ eventSources: [
     method: 'GET'
   },
 
-  {
-    url: 'https://openholidaysapi.org/PublicHolidays',
-    method: 'GET',
-    extraParams: {
-      countryIsoCode: 'DE',
-      subdivisionCode: 'DE-NW',
-      languageIsoCode: 'DE',
-      validFrom: '2026-01-01',
-      validTo: '2026-12-31'
-    },
+{
+  events: async function(fetchInfo, successCallback, failureCallback) {
 
-    color: '#c0392b',
-    textColor: '#ffffff'
-  },
+    try {
 
-  {
-    url: 'https://openholidaysapi.org/SchoolHolidays',
-    method: 'GET',
-    extraParams: {
-      countryIsoCode: 'DE',
-      subdivisionCode: 'DE-NW',
-      languageIsoCode: 'DE',
-      validFrom: '2026-01-01',
-      validTo: '2026-12-31'
-    },
+      const response = await fetch(
+        'https://openholidaysapi.org/PublicHolidays' +
+        '?countryIsoCode=DE' +
+        '&subdivisionCode=DE-NW' +
+        '&languageIsoCode=DE' +
+        `&validFrom=${validFrom}` +
+        `&validTo=${validTo}`
+      );
 
-    color: '#f1c40f',
-    textColor: '#000000'
+      const data = await response.json();
+
+      const holidays = data.map(item => ({
+
+        title: item.name[0].text,
+
+        start: item.startDate,
+
+        allDay: true,
+
+        backgroundColor: '#c0392b',
+
+        borderColor: '#c0392b',
+
+        textColor: '#ffffff'
+
+      }));
+
+      successCallback(holidays);
+
+    } catch(error) {
+
+      failureCallback(error);
+
+    }
+
   }
+},
+
+{
+  events: async function(fetchInfo, successCallback, failureCallback) {
+
+    try {
+
+      const response = await fetch(
+        'https://openholidaysapi.org/SchoolHolidays' +
+        '?countryIsoCode=DE' +
+        '&subdivisionCode=DE-NW' +
+        '&languageIsoCode=DE' +
+        `&validFrom=${validFrom}` +
+        `&validTo=${validTo}`
+      );
+
+      const data = await response.json();
+
+      const holidays = data.map(item => ({
+
+        title: item.name[0].text,
+
+        start: item.startDate,
+
+        end: item.endDate,
+
+        display: 'background',
+
+        backgroundColor: '#f1c40f',
+
+        borderColor: '#f1c40f'
+
+      }));
+
+      successCallback(holidays);
+
+    } catch(error) {
+
+      failureCallback(error);
+
+    }
+
+  }
+}
 ],
 
 eventDidMount: function(info) {
