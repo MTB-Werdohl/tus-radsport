@@ -14,7 +14,7 @@ startRecur: "2026-04-14"
 endRecur: "2026-10-11"
 
 category: Tour
-location: Werdohl
+location: Werdohl Brüninhausplatz vor dem alten WK
 
 exclude:
   - 2026-05-26
@@ -25,5 +25,5 @@ exclude:
   - 2026-08-18
   - 2026-08-25
 
-description: Gemeinsame After-Work Runde
+description: Gemeinsame After-Work Runde in angemessenem Tempo für Jedermann
 ---
