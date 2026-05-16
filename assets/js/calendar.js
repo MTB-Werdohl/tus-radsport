@@ -52,7 +52,11 @@ eventSources: [
 
         start: item.startDate,
 
-        allDay: true,
+        end: item.endDate,
+
+        display: 'background',
+
+        interactive: false,
 
         backgroundColor: '#c0392b',
 
@@ -99,6 +103,8 @@ eventSources: [
 
         display: 'background',
 
+        interactive: false,
+
         backgroundColor: '#f1c40f',
 
         borderColor: '#f1c40f'
@@ -134,6 +140,11 @@ eventDidMount: function(info) {
 },
 
 eventClick: function(info) {
+
+  if (info.event.extendedProps.interactive === false) {
+  info.jsEvent.preventDefault();
+  return;
+  }
 
   if (info.event.extendedProps.isPast) {
     info.jsEvent.preventDefault();
