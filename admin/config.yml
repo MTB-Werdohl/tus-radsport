@@ -1,0 +1,71 @@
+backend:
+  name: github
+  repo: Tobiw87/tus-radsport
+  branch: main
+
+media_folder: "assets/images"
+public_folder: "/assets/images"
+
+collections:
+
+  - name: "events"
+    label: "Events"
+    folder: "_events"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+
+    fields:
+      - { label: "Titel", name: "title", widget: "string" }
+
+      - { label: "Datum", name: "date", widget: "datetime" }
+
+      - { label: "Ort", name: "location", widget: "string", required: false }
+
+      - { label: "Kategorie", name: "category", widget: "string", required: false }
+
+      - { label: "Beschreibung", name: "body", widget: "markdown", required: false }
+
+      - { label: "Bild", name: "image", widget: "image", required: false }
+
+      - { label: "Komoot Link", name: "komoot", widget: "string", required: false }
+
+      - { label: "GPX Datei", name: "gpx", widget: "file", required: false }
+
+      - label: "Recurring Event"
+        name: "type"
+        widget: "select"
+        required: false
+        options:
+          - { label: "Normal", value: "single" }
+          - { label: "Serie", value: "recurring" }
+
+      - label: "Wochentage"
+        name: "daysOfWeek"
+        widget: "list"
+        required: false
+
+      - { label: "Startzeit", name: "startTime", widget: "string", required: false }
+
+      - { label: "Start Serie", name: "startRecur", widget: "date", required: false }
+
+      - { label: "Ende Serie", name: "endRecur", widget: "date", required: false }
+
+      - label: "Ausnahmen"
+        name: "exclude"
+        widget: "list"
+        required: false
+
+  - name: "news"
+    label: "News"
+    folder: "_news"
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+
+    fields:
+      - { label: "Titel", name: "title", widget: "string" }
+
+      - { label: "Datum", name: "date", widget: "datetime" }
+
+      - { label: "Bild", name: "image", widget: "image", required: false }
+
+      - { label: "Inhalt", name: "body", widget: "markdown" }
