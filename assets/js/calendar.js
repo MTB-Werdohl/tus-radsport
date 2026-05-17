@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-  const supabaseUrl = 'https://eazizesytrnknbgrnggj.supabase.co/rest/v1/';
+  const supabaseUrl = 'https://eazizesytrnknbgrnggj.supabase.co';
   const supabaseKey = 'sb_publishable_Bz-kKI-XUf9Y1sM3hWIfAw_4l8fIPQr';
 
   const supabaseClient = supabase.createClient(
