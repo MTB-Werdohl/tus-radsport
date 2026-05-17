@@ -1,5 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+  const supabaseUrl = 'https://eazizesytrnknbgrnggj.supabase.co/rest/v1/';
+  const supabaseKey = 'sb_publishable_Bz-kKI-XUf9Y1sM3hWIfAw_4l8fIPQr';
+
+  const supabaseClient = supabase.createClient(
+    supabaseUrl,
+    supabaseKey
+  );
+
   const currentYear = new Date().getFullYear();
 
   const validFrom = `${currentYear}-01-01`;
@@ -31,10 +39,49 @@ document.addEventListener('DOMContentLoaded', function () {
     },
 
 eventSources: [
-  {
-    url: '/assets/data/events.json',
-    method: 'GET'
-  },
+{
+  events: async function(fetchInfo, successCallback, failureCallback) {
+
+    try {
+
+      const { data, error } = await supabaseClient
+        .from('Termine')
+        .select('*');
+
+      if (error) {
+        throw error;
+      }
+
+      const events = data.map(item => ({
+
+        title: item.title,
+
+        start: item.date,
+
+        description: item.description,
+
+        location: item.location,
+
+        url: item.url,
+
+        backgroundColor: '#2e8b57',
+
+        borderColor: '#2e8b57'
+
+      }));
+
+      successCallback(events);
+
+    } catch(error) {
+
+      console.error(error);
+
+      failureCallback(error);
+
+    }
+
+  }
+},
 
 {
   events: async function(fetchInfo, successCallback, failureCallback) {
