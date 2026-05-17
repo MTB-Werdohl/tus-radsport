@@ -1,57 +1,129 @@
-<!doctype html>
-<html lang="de">
+---
+layout: default
+permalink: /event.html
+---
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<div id="event"></div>
 
-  <title>Event</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-</head>
+<script>
 
-<body>
+const supabaseUrl = 'https://eazizesytrnknbgrnggj.supabase.co';
 
-  <div id="event"></div>
+const supabaseKey = 'sb_publishable_Bz-kKI-XUf9Y1sM3hWIfAw_4l8fIPQr';
 
-  <script>
+const supabaseClient = supabase.createClient(
+  supabaseUrl,
+  supabaseKey
+);
 
-    const supabaseUrl = 'https://eazizesytrnknbgrnggj.supabase.co';
-    const supabaseKey = 'sb_publishable_Bz-kKI-XUf9Y1sM3hWIfAw_4l8fIPQr';
+const params = new URLSearchParams(window.location.search);
 
-    const supabaseClient = supabase.createClient(
-      supabaseUrl,
-      supabaseKey
-    );
+const slug = params.get('slug');
 
-    const params = new URLSearchParams(window.location.search);
+async function loadEvent() {
 
-    const slug = params.get('slug');
+  const { data, error } = await supabaseClient
+    .from('Termine')
+    .select('*')
+    .eq('slug', slug)
+    .single();
 
-    async function loadEvent() {
+  if (error) {
+    console.error(error);
+    return;
+  }
 
-      const { data, error } = await supabaseClient
-        .from('Termine')
-        .select('*')
-        .eq('slug', slug)
-        .single();
+  const eventDate = new Date(data.date);
 
-      if (error) {
-        console.error(error);
-        return;
+  const formattedDate = eventDate.toLocaleDateString('de-DE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+
+  const formattedTime = eventDate.toLocaleTimeString('de-DE', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+  document.title = `${data.title} · MTB Werdohl`;
+
+  document.getElementById('event').innerHTML = `
+
+    <div class="event-page">
+
+      <div class="event-meta">
+
+        <h1>
+          📅 ${formattedDate}
+        </h1>
+
+        <p class="event-time">
+          🕒 ${formattedTime} Uhr
+        </p>
+
+        ${data.location
+          ? `
+            <p>
+              📍 ${data.location}
+            </p>
+          `
+          : ''
+        }
+
+      </div>
+
+      ${data.image
+        ? `
+          <img class="event-image"
+               src="${data.image}">
+        `
+        : ''
       }
 
-      document.getElementById('event').innerHTML = `
-        <h1>${data.title}</h1>
-        <p>${data.description || ''}</p>
-      `;
+      ${(data.komoot || data.gpx)
+        ? `
+          <div class="event-links">
 
-    }
+            ${data.komoot
+              ? `
+                <a href="${data.komoot}"
+                   target="_blank"
+                   class="event-button">
+                   🚵 Komoot
+                </a>
+              `
+              : ''
+            }
 
-    loadEvent();
+            ${data.gpx
+              ? `
+                <a href="${data.gpx}"
+                   target="_blank"
+                   class="event-button">
+                   ⬇ GPX Download
+                </a>
+              `
+              : ''
+            }
 
-  </script>
+          </div>
+        `
+        : ''
+      }
 
-</body>
+      <div class="event-content">
+        ${data.description || ''}
+      </div>
 
-</html>
+    </div>
+
+  `;
+
+}
+
+loadEvent();
+
+</script>
