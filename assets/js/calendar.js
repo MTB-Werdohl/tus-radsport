@@ -62,7 +62,7 @@ eventSources: [
 
         location: item.location,
 
-        url: item.url,
+        url: '/event.html?slug=' + item.slug,
 
         backgroundColor: '#2e8b57',
 

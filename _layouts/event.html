@@ -1,57 +1,57 @@
----
-layout: default
----
+<!doctype html>
+<html lang="de">
 
-<div class="event-page">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<div class="event-meta">
+  <title>Event</title>
 
-  <h1>
-    📅 {{ page.date | date: "%d.%m.%Y" }}
-  </h1>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
 
-  <p class="event-time">
-    🕒 {{ page.date | date: "%H:%M" }} Uhr
-  </p>
+<body>
 
-  {% if page.location %}
-  <p>
-    📍 {{ page.location }}
-  </p>
-  {% endif %}
+  <div id="event"></div>
 
-</div>
+  <script>
 
-  {% if page.image %}
-  <img class="event-image" src="{{ page.image }}">
-  {% endif %}
+    const supabaseUrl = 'https://eazizesytrnknbgrnggj.supabase.co';
+    const supabaseKey = 'sb_publishable_Bz-kKI-XUf9Y1sM3hWIfAw_4l8fIPQr';
 
-{% if page.komoot or page.gpx %}
+    const supabaseClient = supabase.createClient(
+      supabaseUrl,
+      supabaseKey
+    );
 
-<div class="event-links">
+    const params = new URLSearchParams(window.location.search);
 
-  {% if page.komoot and page.komoot != blank %}
-  <a href="{{ page.komoot }}"
-     target="_blank"
-     class="event-button">
-     🚵 Komoot
-  </a>
-  {% endif %}
+    const slug = params.get('slug');
 
-  {% if page.gpx and page.gpx != blank %}
-  <a href="{{ page.gpx }}"
-     target="_blank"
-     class="event-button">
-     ⬇ GPX Download
-  </a>
-  {% endif %}
+    async function loadEvent() {
 
-</div>
+      const { data, error } = await supabaseClient
+        .from('Termine')
+        .select('*')
+        .eq('slug', slug)
+        .single();
 
-{% endif %}
+      if (error) {
+        console.error(error);
+        return;
+      }
 
-  <div class="event-content">
-    {{ content }}
-  </div>
+      document.getElementById('event').innerHTML = `
+        <h1>${data.title}</h1>
+        <p>${data.description || ''}</p>
+      `;
 
-</div>
+    }
+
+    loadEvent();
+
+  </script>
+
+</body>
+
+</html>
