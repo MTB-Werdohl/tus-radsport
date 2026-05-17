@@ -54,11 +54,15 @@ async function loadEvent() {
 
     <div class="event-page">
 
-      <div class="event-meta">
+<div class="event-meta">
 
-        <h1>
-          📅 ${formattedDate}
-        </h1>
+  <h1 class="event-title">
+    ${data.title}
+  </h1>
+
+  <h2 class="event-date">
+    📅 ${formattedDate}
+  </h2>
 
         <p class="event-time">
           🕒 ${formattedTime} Uhr
@@ -115,7 +119,7 @@ async function loadEvent() {
       }
 
       <div class="event-content">
-        ${data.description || ''}
+        ${data.content || ''}
       </div>
 
     </div>
