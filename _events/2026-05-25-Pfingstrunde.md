@@ -1,15 +1,13 @@
 ---
 layout: event
-title: Pfingstrunde
+title: "Pfingstrunde"
 date: 2026-05-25 12:00:00 +0200
-
-location: Werdohl Brüninhausplatz vor dem alten WK
-category: Rennen
-
-description: Gemeinsame MTB Runde durchs Ebbe.
-
-image: /assets/images/Pfingstrunde.png
-
+location: "Werdohl Brüninhausplatz vor dem alten WK"
+category: "Rennen"
+description: "Gemeinsame MTB Runde durchs Ebbe."
+image: "/assets/images/Pfingstrunde.png"
+gpx: "/assets/gpx/Pfingstrunde.gpx"
+komoot: "https://www.komoot.com/de-de/tour/2959486182?share_token=aPCbwrUfldh8bzPOXh7AJy9OJHsmilheDe6wzT6hKiMqj21VGB&ref=wtd&t_s=referral&t_cid=route_share&t_ref_username=792280081480"
 ---
 
 In der Hoffnung auf schönes Pfingstwetter laden wir euch zu einer gemeinsamen Bikerunde durchs Ebbegebirge ein.
