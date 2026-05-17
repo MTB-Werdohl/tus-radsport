@@ -242,9 +242,14 @@ eventClick: function(info) {
     return;
   }
 
-  info.jsEvent.preventDefault();
+if (info.event.url) {
+  window.location.href = info.event.url;
+  return;
+}
 
-  const popup = document.createElement('div');
+info.jsEvent.preventDefault();
+
+const popup = document.createElement('div');
 
   popup.className = 'event-popup';
 
