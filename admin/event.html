@@ -263,7 +263,201 @@ toggleRecurring();
 
 async function saveEvent() {
 
-  alert('Save folgt jetzt 🙂');
+  const title =
+    document.getElementById('title').value;
+
+  const date =
+    document.getElementById('date').value;
+
+  const location =
+    document.getElementById('location').value;
+
+  const category =
+    document.getElementById('category').value;
+
+  const komoot =
+    document.getElementById('komoot').value;
+
+  const content =
+    document.getElementById('content').value;
+
+  const recurring =
+    document.getElementById('recurring').checked;
+
+  const startTime =
+    document.getElementById('startTime').value;
+
+  const startRecur =
+    document.getElementById('startRecur').value;
+
+  const endRecur =
+    document.getElementById('endRecur').value;
+
+  const daysOfWeek =
+    document.getElementById('daysOfWeek').value;
+
+  const exclude =
+    document.getElementById('exclude').value;
+
+  const imageFile =
+    document.getElementById('imageFile')
+      .files[0];
+
+  const gpxFile =
+    document.getElementById('gpxFile')
+      .files[0];
+
+  const slug =
+    title
+      .toLowerCase()
+      .replaceAll(' ', '-');
+
+  let parsedExclude = [];
+
+  try {
+
+    parsedExclude =
+      exclude && exclude.trim() !== ''
+        ? JSON.parse(exclude)
+        : [];
+
+  } catch {
+
+    alert('Exclude JSON ungültig');
+
+    return;
+
+  }
+
+  let image = null;
+  let gpx = null;
+
+  if (imageFile) {
+
+    const imageName =
+      Date.now() + '-' + imageFile.name;
+
+    const { error } =
+      await supabaseClient.storage
+        .from('MEDIA')
+        .upload(imageName, imageFile);
+
+    if (!error) {
+
+      image =
+        supabaseUrl +
+        '/storage/v1/object/public/MEDIA/' +
+        imageName;
+
+    }
+
+  }
+
+  if (gpxFile) {
+
+    const gpxName =
+      Date.now() + '-' + gpxFile.name;
+
+    const { error } =
+      await supabaseClient.storage
+        .from('MEDIA')
+        .upload(gpxName, gpxFile);
+
+    if (!error) {
+
+      gpx =
+        supabaseUrl +
+        '/storage/v1/object/public/MEDIA/' +
+        gpxName;
+
+    }
+
+  }
+
+  const payload = {
+
+    title,
+
+    date:
+      recurring
+        ? null
+        : date || null,
+
+    location,
+
+    category,
+
+    komoot,
+
+    content,
+
+    recurring,
+
+    startTime:
+      recurring
+        ? startTime
+        : null,
+
+    startRecur:
+      recurring
+        ? startRecur || null
+        : null,
+
+    endRecur:
+      recurring
+        ? endRecur || null
+        : null,
+
+    daysOfWeek:
+      recurring && daysOfWeek
+        ? [parseInt(daysOfWeek)]
+        : null,
+
+    exclude: parsedExclude,
+
+    slug
+
+  };
+
+  if (image) {
+    payload.image = image;
+  }
+
+  if (gpx) {
+    payload.gpx = gpx;
+  }
+
+  let error;
+
+  if (editId) {
+
+    ({ error } =
+      await supabaseClient
+        .from('Termine')
+        .update(payload)
+        .eq('id', editId));
+
+  } else {
+
+    ({ error } =
+      await supabaseClient
+        .from('Termine')
+        .insert([payload]));
+
+  }
+
+  if (error) {
+
+    console.error(error);
+
+    alert(error.message);
+
+    return;
+
+  }
+
+  window.location.href =
+    '/admin/';
 
 }
 
