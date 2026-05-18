@@ -73,6 +73,8 @@
          type="file"
          accept=".gpx">
 
+         </div>
+
 <div id="recurringFields"
      class="hidden">
 
@@ -332,6 +334,20 @@ async function saveEvent() {
   let image = null;
   let gpx = null;
 
+  if (editId) {
+
+  const { data } =
+    await supabaseClient
+      .from('Termine')
+      .select('image,gpx')
+      .eq('id', editId)
+      .single();
+
+  image = data?.image || null;
+  gpx = data?.gpx || null;
+
+}
+
   if (imageFile) {
 
     const imageName =
@@ -457,7 +473,7 @@ async function saveEvent() {
   }
 
   window.location.href =
-    '/admin/';
+    '/admin/termine.html';
 
 }
 
