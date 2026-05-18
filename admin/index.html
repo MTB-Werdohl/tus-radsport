@@ -462,6 +462,23 @@ async function saveEvent() {
       .toLowerCase()
       .replaceAll(' ', '-');
 
+let parsedExclude = [];
+
+try {
+
+  parsedExclude =
+    exclude && exclude.trim() !== ''
+      ? JSON.parse(exclude)
+      : [];
+
+} catch {
+
+  alert('Exclude JSON ungültig');
+
+  return;
+
+}
+
 const payload = {
 
   title,
