@@ -1,46 +1,97 @@
-<div class="admin-push">
+<!doctype html>
 
-  <h2>Push-Mitteilung senden</h2>
+<html lang="de">
 
-  <form id="push-form">
+<head>
 
-    <label for="push-title">
-      Titel
-    </label>
+  <meta charset="utf-8">
 
-    <input
-      type="text"
-      id="push-title"
-      required
-    >
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
 
-    <label for="push-body">
-      Nachricht
-    </label>
+  <title>
+    Push-Mitteilungen
+  </title>
 
-    <textarea
-      id="push-body"
-      rows="5"
-      required
-    ></textarea>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <label for="push-url">
-      Link (optional)
-    </label>
+  <script src="/assets/js/push/config.js"></script>
 
-    <input
-      type="text"
-      id="push-url"
-      placeholder="/news"
-    >
+  <link rel="stylesheet"
+        href="/assets/css/admin.css">
 
-    <button type="submit">
-      Push senden
-    </button>
+</head>
 
-  </form>
+<body>
 
-  <div id="push-status"></div>
+<div id="admin">
+
+  <div class="page-header">
+
+    <div>
+
+      <h1>
+        Push-Mitteilungen
+      </h1>
+
+      <p>
+        Nachrichten an alle Geräte senden
+      </p>
+
+    </div>
+
+    <a href="/admin/"
+       class="back-button">
+
+      ← Dashboard
+
+    </a>
+
+  </div>
+
+  <div class="admin-push">
+
+    <form id="push-form">
+
+      <label for="push-title">
+        Titel
+      </label>
+
+      <input
+        type="text"
+        id="push-title"
+        required
+      >
+
+      <label for="push-body">
+        Nachricht
+      </label>
+
+      <textarea
+        id="push-body"
+        rows="5"
+        required
+      ></textarea>
+
+      <label for="push-url">
+        Link (optional)
+      </label>
+
+      <input
+        type="text"
+        id="push-url"
+        placeholder="/news"
+      >
+
+      <button type="submit">
+        Push senden
+      </button>
+
+    </form>
+
+    <div id="push-status"></div>
+
+  </div>
 
 </div>
 
@@ -119,3 +170,7 @@ document
   });
 
 </script>
+
+</body>
+
+</html>
