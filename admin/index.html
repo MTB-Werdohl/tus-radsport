@@ -13,83 +13,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
-  <style>
-
-    body {
-      font-family: sans-serif;
-      background: #111;
-      color: white;
-      padding: 20px;
-      max-width: 900px;
-      margin: auto;
-    }
-
-    input,
-    textarea,
-    select,
-    button {
-      width: 100%;
-      margin-bottom: 15px;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      font-size: 16px;
-      box-sizing: border-box;
-    }
-
-    textarea {
-      min-height: 180px;
-    }
-
-    button {
-      background: #2e8b57;
-      color: white;
-      cursor: pointer;
-    }
-
-    h1,
-    h2,
-    h3 {
-      color: white;
-    }
-
-    .event-card {
-      background: #222;
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 15px;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .checkbox {
-      width: auto;
-      margin-right: 10px;
-    }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-    }
-
-    .delete-button {
-      background: #c0392b;
-    }
-
-  </style>
+  <link rel="stylesheet"
+      href="/assets/css/admin.css">
 
 </head>
 
@@ -116,6 +41,10 @@
      class="hidden">
 
   <h1>Adminbereich</h1>
+
+  <input id="search"
+        placeholder="Termine suchen..."
+         oninput="loadEvents()">
 
   <div id="events"></div>
 
@@ -296,43 +225,82 @@ async function loadEvents() {
     return;
   }
 
+  const search =
+  document.getElementById('search')
+    .value
+    .toLowerCase();
+
   const container =
     document.getElementById('events');
 
   container.innerHTML = '';
 
-  data.forEach(event => {
+  data
+  .filter(event => {
 
-    container.innerHTML += `
+    return (
 
-      <div class="event-card">
+      event.title
+        ?.toLowerCase()
+        .includes(search)
 
-        <h3>${event.title}</h3>
+      ||
 
-        <p>
-          ${event.location || ''}
-        </p>
+      event.location
+        ?.toLowerCase()
+        .includes(search)
 
-        <p>
-          ${event.date || ''}
-        </p>
+    );
 
-        <div class="actions">
+  })
+  .forEach(event => {
 
-          <button onclick="editEvent(${event.id})">
-            Bearbeiten
-          </button>
+container.innerHTML += `
 
-          <button class="delete-button"
-                  onclick="deleteEvent(${event.id})">
-            Löschen
-          </button>
+  <div class="event-card">
+
+    <div class="event-header">
+
+      <div>
+
+        <strong>
+          ${event.title}
+        </strong>
+
+        <div class="event-meta">
+
+          ${event.recurring
+            ? '🔁 Wiederkehrend'
+            : event.date || ''
+          }
+
+          ${event.location
+            ? ' · 📍 ' + event.location
+            : ''
+          }
 
         </div>
 
       </div>
 
-    `;
+      <div class="actions">
+
+        <button onclick="editEvent(${event.id})">
+          ✏
+        </button>
+
+        <button class="delete-button"
+                onclick="deleteEvent(${event.id})">
+          🗑
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+`;
 
   });
 

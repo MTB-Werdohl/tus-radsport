@@ -1,0 +1,91 @@
+body {
+  font-family: sans-serif;
+  background: #111;
+  color: white;
+  padding: 20px;
+  max-width: 900px;
+  margin: auto;
+}
+
+input,
+textarea,
+select,
+button {
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+textarea {
+  min-height: 180px;
+}
+
+button {
+  background: #2e8b57;
+  color: white;
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3 {
+  color: white;
+}
+
+.hidden {
+  display: none;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.checkbox {
+  width: auto;
+  margin-right: 10px;
+}
+
+#search {
+  margin-bottom: 20px;
+}
+
+.event-card {
+  background: #222;
+  padding: 12px 15px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.event-meta {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-top: 4px;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions button {
+  width: auto;
+  margin: 0;
+  padding: 8px 12px;
+}
+
+.delete-button {
+  background: #c0392b;
+}
