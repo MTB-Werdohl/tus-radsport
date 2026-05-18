@@ -1,0 +1,325 @@
+<!doctype html>
+
+<html lang="de">
+
+<head>
+
+  <meta charset="utf-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+
+  <title>
+    News verwalten
+  </title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <link rel="stylesheet"
+        href="/assets/css/admin.css">
+
+</head>
+
+<body>
+
+<div id="admin">
+
+  <div class="page-header">
+
+    <div>
+
+      <h1>
+        News
+      </h1>
+
+      <p>
+        Newsbeiträge verwalten
+      </p>
+
+    </div>
+
+    <a href="/admin/"
+       class="back-button">
+
+      ← Dashboard
+
+    </a>
+
+  </div>
+
+  <div class="admin-grid">
+
+    <div class="admin-form">
+
+      <h2>
+        News erstellen
+      </h2>
+
+      <form id="news-form">
+
+        <input type="hidden"
+               id="news-id">
+
+        <label>
+          Titel
+        </label>
+
+        <input type="text"
+               id="title"
+               required>
+
+        <label>
+          Slug
+        </label>
+
+        <input type="text"
+               id="slug"
+               required>
+
+        <label>
+          Kurztext
+        </label>
+
+        <textarea id="excerpt"
+                  rows="3"></textarea>
+
+        <label>
+          Inhalt
+        </label>
+
+        <textarea id="content"
+                  rows="12"
+                  required></textarea>
+
+        <label class="checkbox">
+
+          <input type="checkbox"
+                 id="published">
+
+          Veröffentlicht
+
+        </label>
+
+        <button type="submit">
+          Speichern
+        </button>
+
+      </form>
+
+    </div>
+
+    <div class="admin-list">
+
+      <h2>
+        Vorhandene News
+      </h2>
+
+      <div id="news-list"></div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+const supabaseUrl =
+  'https://eazizesytrnknbgrnggj.supabase.co';
+
+const supabaseKey =
+  'DEIN_SUPABASE_ANON_KEY';
+
+const supabaseClient =
+  window.supabase.createClient(
+    supabaseUrl,
+    supabaseKey
+  );
+
+async function loadNews() {
+
+  const { data, error } =
+    await supabaseClient
+      .from('News')
+      .select('*')
+      .order('created_at', {
+        ascending: false
+      });
+
+  if (error) {
+
+    console.error(error);
+
+    return;
+
+  }
+
+  renderNews(data);
+
+}
+
+function renderNews(items) {
+
+  const container =
+    document.getElementById('news-list');
+
+  container.innerHTML = '';
+
+  items.forEach(item => {
+
+    const div =
+      document.createElement('div');
+
+    div.className =
+      'admin-item';
+
+    div.innerHTML = `
+
+      <h3>${item.title}</h3>
+
+      <p>${item.slug}</p>
+
+      <div class="admin-actions">
+
+        <button onclick="editNews('${item.id}')">
+          Bearbeiten
+        </button>
+
+        <button onclick="deleteNews('${item.id}')">
+          Löschen
+        </button>
+
+      </div>
+
+    `;
+
+    container.appendChild(div);
+
+  });
+
+}
+
+document
+  .getElementById('news-form')
+  .addEventListener('submit', async event => {
+
+    event.preventDefault();
+
+    const id =
+      document.getElementById('news-id').value;
+
+    const payload = {
+
+      title:
+        document.getElementById('title').value,
+
+      slug:
+        document.getElementById('slug').value,
+
+      excerpt:
+        document.getElementById('excerpt').value,
+
+      content:
+        document.getElementById('content').value,
+
+      published:
+        document.getElementById('published').checked
+
+    };
+
+    let result;
+
+    if (id) {
+
+      result =
+        await supabaseClient
+          .from('News')
+          .update(payload)
+          .eq('id', id);
+
+    } else {
+
+      result =
+        await supabaseClient
+          .from('News')
+          .insert(payload);
+
+    }
+
+    if (result.error) {
+
+      console.error(result.error);
+
+      return;
+
+    }
+
+    document
+      .getElementById('news-form')
+      .reset();
+
+    document
+      .getElementById('news-id').value = '';
+
+    loadNews();
+
+  });
+
+async function editNews(id) {
+
+  const { data } =
+    await supabaseClient
+      .from('News')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+  if (!data) {
+    return;
+  }
+
+  document.getElementById('news-id').value =
+    data.id;
+
+  document.getElementById('title').value =
+    data.title;
+
+  document.getElementById('slug').value =
+    data.slug;
+
+  document.getElementById('excerpt').value =
+    data.excerpt || '';
+
+  document.getElementById('content').value =
+    data.content || '';
+
+  document.getElementById('published').checked =
+    data.published;
+
+}
+
+async function deleteNews(id) {
+
+  const confirmed =
+    confirm('News wirklich löschen?');
+
+  if (!confirmed) {
+    return;
+  }
+
+  await supabaseClient
+    .from('News')
+    .delete()
+    .eq('id', id);
+
+  loadNews();
+
+}
+
+loadNews();
+
+</script>
+
+</body>
+
+</html>
