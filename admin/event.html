@@ -141,7 +141,7 @@ const supabaseUrl =
   'https://eazizesytrnknbgrnggj.supabase.co';
 
 const supabaseKey =
-  'DEIN_KEY';
+  'sb_publishable_Bz-kKI-XUf9Y1sM3hWIfAw_4l8fIPQr';
 
 const supabaseClient =
   window.supabase.createClient(
@@ -199,6 +199,28 @@ async function loadEvent() {
 
   document.getElementById('content').value =
     data.content || '';
+
+  document.getElementById('recurring').checked =
+  data.recurring || false;
+
+document.getElementById('startTime').value =
+  data.startTime || '';
+
+document.getElementById('startRecur').value =
+  data.startRecur || '';
+
+document.getElementById('endRecur').value =
+  data.endRecur || '';
+
+document.getElementById('daysOfWeek').value =
+  data.daysOfWeek
+    ? data.daysOfWeek[0]
+    : '';
+
+document.getElementById('exclude').value =
+  data.exclude
+    ? JSON.stringify(data.exclude)
+    : '';
 
 }
 
