@@ -11,7 +11,7 @@ async function saveSubscription(subscription) {
         'Content-Type': 'application/json',
 
         'Authorization':
-          `Bearer ${supabaseKey}`
+          `Bearer ${pushsupabaseKey}`
 
       },
 
