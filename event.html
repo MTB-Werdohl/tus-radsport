@@ -151,9 +151,18 @@ async function loadEvent() {
         : ''
       }
 
-      <div class="event-content">
-        ${marked.parse(data.content || '')}
-      </div>
+<div class="event-content">
+  ${marked.parse(data.content || '')}
+</div>
+
+<div class="event-back">
+
+  <a href="/kalender/">
+    ← Zurück zur Kalenderübersicht
+  </a>
+
+</div>
+
 
     </div>
 
