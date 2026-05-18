@@ -46,13 +46,18 @@
         placeholder="Termine suchen..."
          oninput="loadEvents()">
 
-  <div id="events"></div>
+  <div class="admin-topbar">
 
-  <button onclick="newEvent()">
+  <input id="search"
+         placeholder="Termine suchen..."
+         oninput="loadEvents()">
+
+  <button class="new-button"
+          onclick="newEvent()">
     ➕ Neuer Termin
   </button>
 
-  </div>
+</div>
  
 <script>
 
@@ -198,7 +203,7 @@ container.innerHTML += `
 
       <div class="actions">
 
-        onclick="openEvent(${event.id})"
+        <button onclick="openEvent(${event.id})">
           ✏
         </button>
 

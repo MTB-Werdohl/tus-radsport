@@ -89,3 +89,18 @@ h3 {
 .delete-button {
   background: #c0392b;
 }
+
+.admin-topbar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.admin-topbar input {
+  margin: 0;
+}
+
+.new-button {
+  width: auto;
+  white-space: nowrap;
+}
