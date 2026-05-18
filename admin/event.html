@@ -27,15 +27,31 @@
 <input id="title"
        placeholder="Titel">
 
-<div class="row">
+<label>
 
-  <input id="date"
-         type="datetime-local">
+  <input id="recurring"
+         type="checkbox"
+         class="checkbox"
+         onchange="toggleRecurring()">
 
-  <input id="location"
-         placeholder="Ort">
+  Wiederkehrender Termin
+
+</label>
+
+<div id="singleFields">
+
+  <div class="row">
+
+    <input id="date"
+           type="datetime-local">
+
+    <input id="location"
+           placeholder="Ort">
+
+  </div>
 
 </div>
+
 
 <div class="row">
 
@@ -57,17 +73,8 @@
          type="file"
          accept=".gpx">
 
-</div>
-
-<label>
-
-  <input id="recurring"
-         type="checkbox"
-         class="checkbox">
-
-  Wiederkehrender Termin
-
-</label>
+<div id="recurringFields"
+     class="hidden">
 
 <div class="row">
 
@@ -125,8 +132,7 @@
 <textarea id="exclude"
           placeholder='["2026-05-26"]'></textarea>
 
-<textarea id="description"
-          placeholder="Kurzbeschreibung"></textarea>
+</div>
 
 <textarea id="content"
           placeholder="Inhalt"></textarea>
@@ -154,6 +160,38 @@ const params =
 
 const editId =
   params.get('id');
+
+function toggleRecurring() {
+
+  const recurring =
+    document.getElementById('recurring')
+      .checked;
+
+  const recurringFields =
+    document.getElementById('recurringFields');
+
+  const singleFields =
+    document.getElementById('singleFields');
+
+  if (recurring) {
+
+    recurringFields
+      .classList.remove('hidden');
+
+    singleFields
+      .classList.add('hidden');
+
+  } else {
+
+    recurringFields
+      .classList.add('hidden');
+
+    singleFields
+      .classList.remove('hidden');
+
+  }
+
+}
 
 async function loadEvent() {
 
@@ -194,9 +232,6 @@ async function loadEvent() {
   document.getElementById('komoot').value =
     data.komoot || '';
 
-  document.getElementById('description').value =
-    data.description || '';
-
   document.getElementById('content').value =
     data.content || '';
 
@@ -222,6 +257,8 @@ document.getElementById('exclude').value =
     ? JSON.stringify(data.exclude)
     : '';
 
+toggleRecurring();
+
 }
 
 async function saveEvent() {
@@ -230,6 +267,7 @@ async function saveEvent() {
 
 }
 
+toggleRecurring();
 loadEvent();
 
 </script>
