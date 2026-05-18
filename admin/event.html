@@ -52,15 +52,20 @@
 
 </div>
 
-
 <div class="row">
 
   <input id="category"
          placeholder="Kategorie">
 
-  <input id="imageFile"
-         type="file"
-         accept="image/*">
+  <div>
+
+    <input id="imageFile"
+           type="file"
+           accept="image/*">
+
+    <div id="currentImage"></div>
+
+  </div>
 
 </div>
 
@@ -69,11 +74,17 @@
   <input id="komoot"
          placeholder="Komoot Link">
 
-  <input id="gpxFile"
-         type="file"
-         accept=".gpx">
+  <div>
 
-         </div>
+    <input id="gpxFile"
+           type="file"
+           accept=".gpx">
+
+    <div id="currentGpx"></div>
+
+  </div>
+
+</div>
 
 <div id="recurringFields"
      class="hidden">
@@ -234,8 +245,40 @@ async function loadEvent() {
   document.getElementById('komoot').value =
     data.komoot || '';
 
-  document.getElementById('content').value =
-    data.content || '';
+document.getElementById('content').value =
+  data.content || '';
+
+if (data.image) {
+
+  document.getElementById('currentImage')
+    .innerHTML = `
+
+      <p>Aktuelles Bild:</p>
+
+      <img src="${data.image}"
+           class="preview-image">
+
+    `;
+
+}
+
+if (data.gpx) {
+
+  document.getElementById('currentGpx')
+    .innerHTML = `
+
+      <p>Aktuelle GPX:</p>
+
+      <a href="${data.gpx}"
+         target="_blank">
+
+        GPX herunterladen
+
+      </a>
+
+    `;
+
+}
 
   document.getElementById('recurring').checked =
   data.recurring || false;

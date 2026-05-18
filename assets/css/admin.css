@@ -243,3 +243,10 @@ h3 {
 .back-button:hover {
   background: #2e8b57;
 }
+
+.preview-image {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 12px;
+  margin-top: 10px;
+}
