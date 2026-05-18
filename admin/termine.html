@@ -83,25 +83,76 @@ async function loadEvents() {
 
   container.innerHTML = '';
 
-  data
-    .filter(event => {
 
-      return (
+data
 
-        event.title
-          ?.toLowerCase()
-          .includes(search)
+  .filter(event => {
 
-        ||
+    return (
 
-        event.location
-          ?.toLowerCase()
-          .includes(search)
+      event.title
+        ?.toLowerCase()
+        .includes(search)
 
-      );
+      ||
 
-    })
-    .forEach(event => {
+      event.location
+        ?.toLowerCase()
+        .includes(search)
+
+    );
+
+  })
+
+.sort((a, b) => {
+
+  if (a.recurring && !b.recurring) {
+    return -1;
+  }
+
+  if (!a.recurring && b.recurring) {
+    return 1;
+  }
+
+  if (a.recurring && b.recurring) {
+    return a.title.localeCompare(b.title);
+  }
+
+  const now = new Date();
+
+  const aDate =
+    new Date(a.date);
+
+  const bDate =
+    new Date(b.date);
+
+  const aPast =
+    aDate < now;
+
+  const bPast =
+    bDate < now;
+
+  if (!aPast && bPast) {
+    return -1;
+  }
+
+  if (aPast && !bPast) {
+    return 1;
+  }
+
+  if (!aPast && !bPast) {
+
+    return aDate - bDate;
+
+  }
+
+  return bDate - aDate;
+
+})
+
+
+  .forEach(event => {
+
 
       container.innerHTML += `
 
