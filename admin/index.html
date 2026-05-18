@@ -385,6 +385,12 @@ async function saveEvent() {
 
   const date =
     document.getElementById('date').value;
+  
+  const localDate =
+    date
+      ? new Date(date)
+          .toISOString()
+      : null;
 
   const location =
     document.getElementById('location').value;
@@ -452,9 +458,9 @@ const payload = {
   title,
 
   date:
-    recurring || !date
+    recurring || !localDate
       ? null
-      : date,
+      : localDate,
 
   location,
 
