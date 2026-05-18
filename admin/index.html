@@ -20,12 +20,13 @@
       background: #111;
       color: white;
       padding: 20px;
-      max-width: 800px;
+      max-width: 900px;
       margin: auto;
     }
 
     input,
     textarea,
+    select,
     button {
       width: 100%;
       margin-bottom: 15px;
@@ -37,7 +38,7 @@
     }
 
     textarea {
-      min-height: 120px;
+      min-height: 180px;
     }
 
     button {
@@ -54,13 +55,38 @@
 
     .event-card {
       background: #222;
-      padding: 15px;
-      border-radius: 10px;
+      padding: 20px;
+      border-radius: 12px;
       margin-bottom: 15px;
     }
 
     .hidden {
       display: none;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .checkbox {
+      width: auto;
+      margin-right: 10px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .delete-button {
+      background: #c0392b;
     }
 
   </style>
@@ -93,19 +119,111 @@
 
   <div id="events"></div>
 
-  <h2>Neuer Termin</h2>
+  <h2 id="form-title">
+    Neuer Termin
+  </h2>
 
   <input id="title"
          placeholder="Titel">
 
-  <input id="date"
-         type="datetime-local">
+  <div class="row">
 
-  <input id="location"
-         placeholder="Ort">
+    <input id="date"
+           type="datetime-local">
+
+    <input id="location"
+           placeholder="Ort">
+
+  </div>
+
+  <div class="row">
+
+    <input id="category"
+           placeholder="Kategorie">
+
+    <input id="image"
+           placeholder="Bild URL">
+
+  </div>
+
+  <div class="row">
+
+    <input id="komoot"
+           placeholder="Komoot Link">
+
+    <input id="gpx"
+           placeholder="GPX Datei URL">
+
+  </div>
+
+  <label>
+    <input id="recurring"
+           type="checkbox"
+           class="checkbox">
+    Wiederkehrender Termin
+  </label>
+
+  <div class="row">
+
+    <select id="daysOfWeek">
+
+      <option value="">
+        Wochentag
+      </option>
+
+      <option value="1">
+        Montag
+      </option>
+
+      <option value="2">
+        Dienstag
+      </option>
+
+      <option value="3">
+        Mittwoch
+      </option>
+
+      <option value="4">
+        Donnerstag
+      </option>
+
+      <option value="5">
+        Freitag
+      </option>
+
+      <option value="6">
+        Samstag
+      </option>
+
+      <option value="0">
+        Sonntag
+      </option>
+
+    </select>
+
+    <input id="startTime"
+           type="time">
+
+  </div>
+
+  <div class="row">
+
+    <input id="startRecur"
+           type="date">
+
+    <input id="endRecur"
+           type="date">
+
+  </div>
+
+  <textarea id="exclude"
+            placeholder='Ausnahmen JSON z.B. ["2026-05-26"]'></textarea>
 
   <textarea id="description"
-            placeholder="Beschreibung"></textarea>
+            placeholder="Kurzbeschreibung"></textarea>
+
+  <textarea id="content"
+            placeholder="Markdown Inhalt"></textarea>
 
   <button onclick="saveEvent()">
     Termin speichern
@@ -126,6 +244,8 @@ const supabaseClient =
     supabaseUrl,
     supabaseKey
   );
+
+let currentEditId = null;
 
 async function login() {
 
@@ -163,12 +283,13 @@ async function login() {
 
 async function loadEvents() {
 
-  const { data, error } = await supabaseClient
-    .from('Termine')
-    .select('*')
-    .order('id', {
-      ascending: false
-    });
+  const { data, error } =
+    await supabaseClient
+      .from('Termine')
+      .select('*')
+      .order('id', {
+        ascending: false
+      });
 
   if (error) {
     console.error(error);
@@ -188,17 +309,104 @@ async function loadEvents() {
 
         <h3>${event.title}</h3>
 
-        <p>${event.location || ''}</p>
+        <p>
+          ${event.location || ''}
+        </p>
 
-        <button onclick="deleteEvent(${event.id})">
-          Löschen
-        </button>
+        <p>
+          ${event.date || ''}
+        </p>
+
+        <div class="actions">
+
+          <button onclick="editEvent(${event.id})">
+            Bearbeiten
+          </button>
+
+          <button class="delete-button"
+                  onclick="deleteEvent(${event.id})">
+            Löschen
+          </button>
+
+        </div>
 
       </div>
 
     `;
 
   });
+
+}
+
+async function editEvent(id) {
+
+  const { data, error } =
+    await supabaseClient
+      .from('Termine')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  currentEditId = id;
+
+  document.getElementById('form-title')
+    .innerText = 'Termin bearbeiten';
+
+  document.getElementById('title').value =
+    data.title || '';
+
+  document.getElementById('date').value =
+    data.date
+      ? data.date.substring(0, 16)
+      : '';
+
+  document.getElementById('location').value =
+    data.location || '';
+
+  document.getElementById('category').value =
+    data.category || '';
+
+  document.getElementById('image').value =
+    data.image || '';
+
+  document.getElementById('komoot').value =
+    data.komoot || '';
+
+  document.getElementById('gpx').value =
+    data.gpx || '';
+
+  document.getElementById('description').value =
+    data.description || '';
+
+  document.getElementById('content').value =
+    data.content || '';
+
+  document.getElementById('recurring').checked =
+    data.recurring || false;
+
+  document.getElementById('startTime').value =
+    data.startTime || '';
+
+  document.getElementById('startRecur').value =
+    data.startRecur || '';
+
+  document.getElementById('endRecur').value =
+    data.endRecur || '';
+
+  document.getElementById('daysOfWeek').value =
+    data.daysOfWeek
+      ? data.daysOfWeek[0]
+      : '';
+
+  document.getElementById('exclude').value =
+    data.exclude
+      ? JSON.stringify(data.exclude)
+      : '';
 
 }
 
@@ -213,41 +421,139 @@ async function saveEvent() {
   const location =
     document.getElementById('location').value;
 
+  const category =
+    document.getElementById('category').value;
+
+  const image =
+    document.getElementById('image').value;
+
+  const komoot =
+    document.getElementById('komoot').value;
+
+  const gpx =
+    document.getElementById('gpx').value;
+
   const description =
     document.getElementById('description').value;
+
+  const content =
+    document.getElementById('content').value;
+
+  const recurring =
+    document.getElementById('recurring').checked;
+
+  const startTime =
+    document.getElementById('startTime').value;
+
+  const startRecur =
+    document.getElementById('startRecur').value;
+
+  const endRecur =
+    document.getElementById('endRecur').value;
+
+  const daysOfWeek =
+    document.getElementById('daysOfWeek').value;
+
+  const exclude =
+    document.getElementById('exclude').value;
 
   const slug =
     title
       .toLowerCase()
       .replaceAll(' ', '-');
 
-  const { error } = await supabase
-    .from('Termine')
-    .insert([{
+  const payload = {
 
-      title,
-      date,
-      location,
-      description,
-      slug,
+    title,
+    date,
+    location,
+    category,
+    image,
+    komoot,
+    gpx,
+    description,
+    content,
+    recurring,
+    startTime,
+    startRecur,
+    endRecur,
+    slug,
 
-      recurring: false
+    daysOfWeek:
+      recurring && daysOfWeek
+        ? [parseInt(daysOfWeek)]
+        : null,
 
-    }]);
+    exclude:
+      exclude
+        ? JSON.parse(exclude)
+        : null
+
+  };
+
+  let error;
+
+  if (currentEditId) {
+
+    ({ error } =
+      await supabaseClient
+        .from('Termine')
+        .update(payload)
+        .eq('id', currentEditId));
+
+  } else {
+
+    ({ error } =
+      await supabaseClient
+        .from('Termine')
+        .insert([payload]));
+
+  }
 
   if (error) {
     console.error(error);
+    alert(error.message);
     return;
   }
 
   alert('Termin gespeichert');
 
-  document.getElementById('title').value = '';
-  document.getElementById('date').value = '';
-  document.getElementById('location').value = '';
-  document.getElementById('description').value = '';
+  resetForm();
 
   loadEvents();
+
+}
+
+function resetForm() {
+
+  currentEditId = null;
+
+  document.getElementById('form-title')
+    .innerText = 'Neuer Termin';
+
+  [
+    'title',
+    'date',
+    'location',
+    'category',
+    'image',
+    'komoot',
+    'gpx',
+    'description',
+    'content',
+    'startTime',
+    'startRecur',
+    'endRecur',
+    'daysOfWeek',
+    'exclude'
+  ].forEach(id => {
+
+    document.getElementById(id).value = '';
+
+  });
+
+  document.getElementById('recurring')
+    .checked = false;
 
 }
 
@@ -260,10 +566,11 @@ async function deleteEvent(id) {
     return;
   }
 
-  const { error } = await supabase
-    .from('Termine')
-    .delete()
-    .eq('id', id);
+  const { error } =
+    await supabaseClient
+      .from('Termine')
+      .delete()
+      .eq('id', id);
 
   if (error) {
     console.error(error);
@@ -277,7 +584,7 @@ async function deleteEvent(id) {
 async function checkSession() {
 
   const { data } =
-    await supabase.auth.getSession();
+    await supabaseClient.auth.getSession();
 
   if (data.session) {
 
