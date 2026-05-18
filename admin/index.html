@@ -11,6 +11,8 @@
 
   <title>MTB Werdohl Admin</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
   <link rel="stylesheet"
         href="/assets/css/admin.css">
 
@@ -18,83 +20,200 @@
 
 <body>
 
-<div class="admin-wrapper">
+<div id="login-view">
 
-  <div class="admin-header">
+  <div class="login-box">
 
-    <div>
+    <h1>
+      MTB Werdohl
+    </h1>
 
-      <h1>
-        MTB Werdohl
-      </h1>
+    <p>
+      Admin Login
+    </p>
 
-      <p>
-        Content Management System
-      </p>
+    <input id="email"
+           type="email"
+           placeholder="E-Mail">
+
+    <input id="password"
+           type="password"
+           placeholder="Passwort">
+
+    <button onclick="login()">
+      Login
+    </button>
+
+  </div>
+
+</div>
+
+<div id="dashboard-view"
+     class="hidden">
+
+  <div class="admin-wrapper">
+
+    <div class="admin-header">
+
+      <div>
+
+        <h1>
+          MTB Werdohl
+        </h1>
+
+        <p>
+          Content Management System
+        </p>
+
+      </div>
+
+      <button class="logout-button"
+              onclick="logout()">
+        Logout
+      </button>
+
+    </div>
+
+    <div class="dashboard-grid">
+
+      <a href="/admin/termine.html"
+         class="dashboard-card">
+
+        <div class="dashboard-icon">
+          📅
+        </div>
+
+        <h2>
+          Termine
+        </h2>
+
+        <p>
+          Touren, Trainings, Events und
+          wiederkehrende Termine verwalten.
+        </p>
+
+      </a>
+
+      <a href="/admin/news.html"
+         class="dashboard-card">
+
+        <div class="dashboard-icon">
+          📰
+        </div>
+
+        <h2>
+          News
+        </h2>
+
+        <p>
+          Vereinsnews, Informationen und
+          Ankündigungen veröffentlichen.
+        </p>
+
+      </a>
+
+      <a href="/admin/galerien.html"
+         class="dashboard-card">
+
+        <div class="dashboard-icon">
+          🖼
+        </div>
+
+        <h2>
+          Galerien
+        </h2>
+
+        <p>
+          Bilder und Eventgalerien
+          organisieren und verlinken.
+        </p>
+
+      </a>
 
     </div>
 
   </div>
 
-  <div class="dashboard-grid">
-
-    <a href="/admin/termine.html"
-       class="dashboard-card">
-
-      <div class="dashboard-icon">
-        📅
-      </div>
-
-      <h2>
-        Termine
-      </h2>
-
-      <p>
-        Touren, Trainings, Events und
-        wiederkehrende Termine verwalten.
-      </p>
-
-    </a>
-
-    <a href="/admin/news.html"
-       class="dashboard-card">
-
-      <div class="dashboard-icon">
-        📰
-      </div>
-
-      <h2>
-        News
-      </h2>
-
-      <p>
-        Vereinsnews, Informationen und
-        Ankündigungen veröffentlichen.
-      </p>
-
-    </a>
-
-    <a href="/admin/galerien.html"
-       class="dashboard-card">
-
-      <div class="dashboard-icon">
-        🖼
-      </div>
-
-      <h2>
-        Galerien
-      </h2>
-
-      <p>
-        Bilder und Eventgalerien
-        organisieren und verlinken.
-      </p>
-
-    </a>
-
-  </div>
-
 </div>
+
+<script>
+
+const supabaseUrl =
+  'https://eazizesytrnknbgrnggj.supabase.co';
+
+const supabaseKey =
+  'sb_publishable_Bz-kKI-XUf9Y1sM3hWIfAw_4l8fIPQr';
+
+const supabaseClient =
+  window.supabase.createClient(
+    supabaseUrl,
+    supabaseKey
+  );
+
+async function login() {
+
+  const email =
+    document.getElementById('email').value;
+
+  const password =
+    document.getElementById('password').value;
+
+  const { error } =
+    await supabaseClient.auth
+      .signInWithPassword({
+
+        email,
+        password
+
+      });
+
+  if (error) {
+
+    alert(error.message);
+
+    return;
+
+  }
+
+  showDashboard();
+
+}
+
+async function logout() {
+
+  await supabaseClient.auth.signOut();
+
+  location.reload();
+
+}
+
+async function checkSession() {
+
+  const { data } =
+    await supabaseClient.auth
+      .getSession();
+
+  if (data.session) {
+
+    showDashboard();
+
+  }
+
+}
+
+function showDashboard() {
+
+  document.getElementById('login-view')
+    .classList.add('hidden');
+
+  document.getElementById('dashboard-view')
+    .classList.remove('hidden');
+
+}
+
+checkSession();
+
+</script>
 
 </body>
 

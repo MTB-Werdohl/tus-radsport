@@ -9,54 +9,40 @@
   <meta name="viewport"
         content="width=device-width, initial-scale=1">
 
-  <title>MTB Werdohl Admin</title>
+  <title>Termine Verwaltung</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
   <link rel="stylesheet"
-      href="/assets/css/admin.css">
+        href="/assets/css/admin.css">
 
 </head>
 
 <body>
 
-<div id="login">
+<div id="admin">
 
-  <h1>Admin Login</h1>
+  <h1>
+    Termine anlegen und bearbeiten
+  </h1>
 
-  <input id="email"
-         placeholder="E-Mail">
+  <div class="admin-topbar">
 
-  <input id="password"
-         type="password"
-         placeholder="Passwort">
+    <input id="search"
+           placeholder="Termine suchen..."
+           oninput="loadEvents()">
 
-  <button onclick="login()">
-    Login
-  </button>
+    <button class="new-button"
+            onclick="newEvent()">
+      ➕ Neuer Termin
+    </button>
 
-</div>
+  </div>
 
-<div id="admin"
-     class="hidden">
-
-  <h1>Adminbereich</h1>
-
-<div class="admin-topbar">
-
-  <input id="search"
-         placeholder="Termine suchen..."
-         oninput="loadEvents()">
-
-  <button class="new-button"
-          onclick="newEvent()">
-    ➕ Neuer Termin
-  </button>
+  <div id="events"></div>
 
 </div>
 
-<div id="events"></div>
- 
 <script>
 
 const supabaseUrl =
@@ -71,42 +57,6 @@ const supabaseClient =
     supabaseKey
   );
 
-let currentEditId = null;
-
-async function login() {
-
-  const email =
-    document.getElementById('email').value;
-
-  const password =
-    document.getElementById('password').value;
-
-  const { error } =
-    await supabaseClient.auth.signInWithPassword({
-
-      email,
-      password
-
-    });
-
-  if (error) {
-
-    alert(error.message);
-
-    return;
-
-  }
-
-  document.getElementById('login')
-    .classList.add('hidden');
-
-  document.getElementById('admin')
-    .classList.remove('hidden');
-
-  loadEvents();
-
-}
-
 async function loadEvents() {
 
   const { data, error } =
@@ -118,14 +68,17 @@ async function loadEvents() {
       });
 
   if (error) {
+
     console.error(error);
+
     return;
+
   }
 
   const search =
-  document.getElementById('search')
-    .value
-    .toLowerCase();
+    document.getElementById('search')
+      .value
+      .toLowerCase();
 
   const container =
     document.getElementById('events');
@@ -133,390 +86,92 @@ async function loadEvents() {
   container.innerHTML = '';
 
   data
-  .filter(event => {
+    .filter(event => {
 
-    return (
+      return (
 
-      event.title
-        ?.toLowerCase()
-        .includes(search)
+        event.title
+          ?.toLowerCase()
+          .includes(search)
 
-      ||
+        ||
 
-      event.location
-        ?.toLowerCase()
-        .includes(search)
+        event.location
+          ?.toLowerCase()
+          .includes(search)
 
-    );
+      );
 
-  })
-  .forEach(event => {
+    })
+    .forEach(event => {
 
-container.innerHTML += `
+      container.innerHTML += `
 
-  <div class="event-card">
+        <div class="event-card">
 
-    <div class="event-header">
+          <div class="event-header">
 
-      <div>
+            <div>
 
-        <strong>
-          ${event.title}
-        </strong>
+              <strong>
+                ${event.title}
+              </strong>
 
-<div class="event-meta">
+              <div class="event-meta">
 
-  ${event.recurring
-    ? '🔁 Wiederkehrend'
-    : `
-      📅 ${
-        new Date(event.date)
-          .toLocaleDateString('de-DE', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-          })
-      }
+                ${event.recurring
+                  ? '🔁 Wiederkehrend'
+                  : `
+                    📅 ${
+                      new Date(event.date)
+                        .toLocaleDateString('de-DE', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: 'numeric'
+                        })
+                    }
 
-      ·
+                    ·
 
-      🕒 ${
-        new Date(event.date)
-          .toLocaleTimeString('de-DE', {
-            hour: '2-digit',
-            minute: '2-digit'
-          })
-      } Uhr
-    `
-  }
+                    🕒 ${
+                      new Date(event.date)
+                        .toLocaleTimeString('de-DE', {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })
+                    } Uhr
+                  `
+                }
 
-  ${event.location
-    ? ' · 📍 ' + event.location
-    : ''
-  }
+                ${event.location
+                  ? ' · 📍 ' + event.location
+                  : ''
+                }
 
-</div>
+              </div>
 
-      </div>
+            </div>
 
-      <div class="actions">
+            <div class="actions">
 
-        <button onclick="openEvent(${event.id})">
-          ✏
-        </button>
+              <button onclick="openEvent(${event.id})">
+                ✏
+              </button>
 
-        <button class="delete-button"
-                onclick="deleteEvent(${event.id})">
-          🗑
-        </button>
+              <button class="delete-button"
+                      onclick="deleteEvent(${event.id})">
+                🗑
+              </button>
 
-      </div>
+            </div>
 
-    </div>
+          </div>
 
-  </div>
+        </div>
 
-`;
+      `;
 
-  });
-
-}
-
-async function editEvent(id) {
-
-  const { data, error } =
-    await supabaseClient
-      .from('Termine')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  currentEditId = id;
-
-  document.getElementById('form-title')
-    .innerText = 'Termin bearbeiten';
-
-  document.getElementById('title').value =
-    data.title || '';
-
-  document.getElementById('date').value =
-    data.date
-      ? data.date.substring(0, 16)
-      : '';
-
-  document.getElementById('location').value =
-    data.location || '';
-
-  document.getElementById('category').value =
-    data.category || '';
-
-  document.getElementById('komoot').value =
-    data.komoot || '';
-
-  document.getElementById('description').value =
-    data.description || '';
-
-  document.getElementById('content').value =
-    data.content || '';
-
-  document.getElementById('recurring').checked =
-    data.recurring || false;
-
-  document.getElementById('startTime').value =
-    data.startTime || '';
-
-  document.getElementById('startRecur').value =
-    data.startRecur || '';
-
-  document.getElementById('endRecur').value =
-    data.endRecur || '';
-
-  document.getElementById('daysOfWeek').value =
-    data.daysOfWeek
-      ? data.daysOfWeek[0]
-      : '';
-
-  document.getElementById('exclude').value =
-    data.exclude
-      ? JSON.stringify(data.exclude)
-      : '';
-
-}
-
-async function saveEvent() {
-
-  const title =
-    document.getElementById('title').value;
-
-  const date =
-    document.getElementById('date').value;
-  
-  const localDate =
-    date
-      ? new Date(date)
-          .toISOString()
-      : null;
-
-  const location =
-    document.getElementById('location').value;
-
-  const category =
-    document.getElementById('category').value;
-
-  const imageFile =
-    document.getElementById('imageFile')
-      .files[0];
-
-  const komoot =
-    document.getElementById('komoot').value;
-
-  const gpxFile =
-    document.getElementById('gpxFile')
-      .files[0];
-
-  const description =
-    document.getElementById('description').value;
-
-  const content =
-    document.getElementById('content').value;
-
-  const recurring =
-    document.getElementById('recurring').checked;
-
-  const startTime =
-    document.getElementById('startTime').value;
-
-  const startRecur =
-    document.getElementById('startRecur').value;
-
-  const endRecur =
-    document.getElementById('endRecur').value;
-
-  const daysOfWeek =
-    document.getElementById('daysOfWeek').value;
-
-  const exclude =
-    document.getElementById('exclude').value;
-
-  const slug =
-    title
-      .toLowerCase()
-      .replaceAll(' ', '-');
-
-let parsedExclude = [];
-
-try {
-
-  parsedExclude =
-    exclude && exclude.trim() !== ''
-      ? JSON.parse(exclude)
-      : [];
-
-} catch {
-
-  alert('Exclude JSON ungültig');
-
-  return;
-
-}
-
-let image = null;
-let gpx = null;
-
-if (imageFile) {
-
-  const imageName =
-    Date.now() + '-' + imageFile.name;
-
-  const { error } =
-    await supabaseClient.storage
-      .from('events')
-      .upload(imageName, imageFile);
-
-  if (!error) {
-
-    image =
-      supabaseUrl +
-      '/storage/v1/object/public/events/' +
-      imageName;
-
-  }
-
-}
-
-if (gpxFile) {
-
-  const gpxName =
-    Date.now() + '-' + gpxFile.name;
-
-  const { error } =
-    await supabaseClient.storage
-      .from('events')
-      .upload(gpxName, gpxFile);
-
-  if (!error) {
-
-    gpx =
-      supabaseUrl +
-      '/storage/v1/object/public/events/' +
-      gpxName;
-
-  }
-
-}
-
-const payload = {
-
-  title,
-
-  date:
-    recurring || !localDate
-      ? null
-      : localDate,
-
-  location,
-
-  category,
-
-  image,
-
-  komoot,
-
-  gpx,
-
-  description,
-
-  content,
-
-  recurring,
-
-  startTime,
-
-  startRecur:
-    startRecur || null,
-
-  endRecur:
-    endRecur || null,
-
-  slug,
-
-  daysOfWeek:
-    recurring && daysOfWeek
-      ? [parseInt(daysOfWeek)]
-      : null,
-
-  exclude: parsedExclude
-
-};
-
-  let error;
-
-  if (currentEditId) {
-
-    ({ error } =
-      await supabaseClient
-        .from('Termine')
-        .update(payload)
-        .eq('id', currentEditId));
-
-  } else {
-
-    ({ error } =
-      await supabaseClient
-        .from('Termine')
-        .insert([payload]));
-
-  }
-
-  if (error) {
-    console.error(error);
-    alert(error.message);
-    return;
-  }
-
-  alert('Termin gespeichert');
-
-  resetForm();
-
-  loadEvents();
-
-}
-
-function resetForm() {
-
-  currentEditId = null;
-
-  document.getElementById('form-title')
-    .innerText = 'Neuer Termin';
-
-  [
-    'title',
-    'date',
-    'location',
-    'category',
-    'image',
-    'komoot',
-    'gpx',
-    'description',
-    'content',
-    'startTime',
-    'startRecur',
-    'endRecur',
-    'daysOfWeek',
-    'exclude'
-  ].forEach(id => {
-
-    document.getElementById(id).value = '';
-
-  });
-
-  document.getElementById('recurring')
-    .checked = false;
+    });
 
 }
 
@@ -536,30 +191,14 @@ async function deleteEvent(id) {
       .eq('id', id);
 
   if (error) {
+
     console.error(error);
+
     return;
+
   }
 
   loadEvents();
-
-}
-
-async function checkSession() {
-
-  const { data } =
-    await supabaseClient.auth.getSession();
-
-  if (data.session) {
-
-    document.getElementById('login')
-      .classList.add('hidden');
-
-    document.getElementById('admin')
-      .classList.remove('hidden');
-
-    loadEvents();
-
-  }
 
 }
 
@@ -574,6 +213,25 @@ function openEvent(id) {
 
   window.location.href =
     '/admin/event.html?id=' + id;
+
+}
+
+async function checkSession() {
+
+  const { data } =
+    await supabaseClient.auth
+      .getSession();
+
+  if (!data.session) {
+
+    window.location.href =
+      '/admin/';
+
+    return;
+
+  }
+
+  loadEvents();
 
 }
 
