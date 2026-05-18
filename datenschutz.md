@@ -152,6 +152,35 @@ Es werden lediglich technisch notwendige Verbindungen im Rahmen des Hostings auf
 
 ---
 
+## 9a. Progressive Web App (PWA) und Push-Mitteilungen
+
+Diese Website kann auf unterstützten Geräten als sogenannte „Progressive Web App (PWA)“ installiert werden.
+
+Sofern Push-Mitteilungen ausdrücklich aktiviert werden, verarbeitet die Website technische Informationen zur Zustellung von Benachrichtigungen. Dazu gehören insbesondere:
+
+- eine browserbezogene Push-Subscription-ID  
+- technische Schlüssel zur Zustellung von Push-Mitteilungen  
+- Informationen zum verwendeten Browser und Gerät  
+
+Die Verarbeitung erfolgt ausschließlich zum Versand von Vereinsinformationen, Terminhinweisen oder kurzfristigen Mitteilungen (z. B. Trainingsausfälle).
+
+Push-Mitteilungen werden nur nach ausdrücklicher Zustimmung des Nutzers aktiviert. Die Zustimmung kann jederzeit über die entsprechenden Einstellungen im Browser oder innerhalb der PWA widerrufen werden.
+
+Die technischen Push-Daten werden auf Servern von Supabase Inc. verarbeitet.
+
+Anbieter ist:
+
+Supabase Inc.  
+970 Toa Payoh North  
+#07-04  
+Singapore 318992
+
+Rechtsgrundlage der Verarbeitung ist Art. 6 Abs. 1 lit. a DSGVO (Einwilligung).
+
+Die gespeicherten Push-Subscriptions werden gelöscht, sobald die Push-Mitteilungen deaktiviert oder ungültig werden.
+
+---
+
 ## 10. Rechte der betroffenen Personen
 
 Du hast das Recht:
