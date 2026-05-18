@@ -10,30 +10,53 @@ document.addEventListener('DOMContentLoaded', async () => {
   const registration =
     await navigator.serviceWorker.ready;
 
-  const existingSubscription =
-    await registration.pushManager.getSubscription();
+  async function updateButton() {
 
-  if (existingSubscription) {
+    const subscription =
+      await registration
+        .pushManager
+        .getSubscription();
 
-    button.innerText =
-      '✅ Push aktiviert';
+    if (subscription) {
 
-    button.disabled = true;
+      button.innerText =
+        '🔕 Push abbestellen';
 
-    return;
+      button.dataset.state =
+        'subscribed';
+
+    } else {
+
+      button.innerText =
+        '🔔 Push aktivieren';
+
+      button.dataset.state =
+        'unsubscribed';
+
+    }
 
   }
+
+  await updateButton();
 
   button.addEventListener('click', async () => {
 
     try {
 
-      await subscribeUserToPush();
+      if (
+        button.dataset.state ===
+        'subscribed'
+      ) {
 
-      button.innerText =
-        '✅ Push aktiviert';
+        await unsubscribeUserFromPush();
 
-      button.disabled = true;
+      } else {
+
+        await subscribeUserToPush();
+
+      }
+
+      await updateButton();
 
     } catch(error) {
 
