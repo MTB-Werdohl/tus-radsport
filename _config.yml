@@ -35,8 +35,6 @@ footer:
   note: "Der Radsport ist eine Abteilung des TuS Jahn Werdohl e. V."
 
 navigation:
-  - title: "Home"
-    url: "/"
   - title: "Terminkalender"
     url: "/kalender"
   - title: "Über uns"
