@@ -269,12 +269,18 @@ if (data.gpx) {
 
       <p>Aktuelle GPX:</p>
 
-      <a href="${data.gpx}"
-         target="_blank">
+<a href="${data.gpx}"
+   target="_blank">
 
-        GPX herunterladen
+  ${
+    data.gpx
+      .split('/')
+      .pop()
+      .replace(/^[0-9]+-/, '')
+  }
 
-      </a>
+</a>
+
 
     `;
 
