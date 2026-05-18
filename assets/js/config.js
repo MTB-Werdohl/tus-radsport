@@ -1,0 +1,2 @@
+const VAPID_PUBLIC_KEY = 'BK1Qb1ac1BWx72ahU6lCrqJ0SUW9gWoTiREwX3KPbRlgkjpyvsedbHwfuYUI0oEpq2A_FT2RNLPYgJ9Cu9bvJSI';
+const supabasekey = 'BK1Qb1ac1BWx72ahU6lCrqJ0SUW9gWoTiREwX3KPbRlgkjpyvsedbHwfuYUI0oEpq2A_FT2RNLPYgJ9Cu9bvJSI';
