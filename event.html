@@ -6,6 +6,7 @@ permalink: /event.html
 <div id="event"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <script>
 
@@ -35,18 +36,50 @@ async function loadEvent() {
     return;
   }
 
-  const eventDate = new Date(data.date);
+  let formattedDate = '';
+  let formattedTime = '';
 
-  const formattedDate = eventDate.toLocaleDateString('de-DE', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  });
+  if (data.recurring) {
 
-  const formattedTime = eventDate.toLocaleTimeString('de-DE', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+    const weekdays = [
+      'Sonntag',
+      'Montag',
+      'Dienstag',
+      'Mittwoch',
+      'Donnerstag',
+      'Freitag',
+      'Samstag'
+    ];
+
+    formattedDate =
+      'Jeden ' +
+      weekdays[data.daysOfWeek[0]];
+
+    formattedTime =
+      data.startTime || '';
+
+  } else {
+
+    const eventDate = new Date(data.date);
+
+    formattedDate = eventDate.toLocaleDateString(
+      'de-DE',
+      {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      }
+    );
+
+    formattedTime = eventDate.toLocaleTimeString(
+      'de-DE',
+      {
+        hour: '2-digit',
+        minute: '2-digit'
+      }
+    );
+
+  }
 
   document.title = `${data.title} · MTB Werdohl`;
 
@@ -54,15 +87,15 @@ async function loadEvent() {
 
     <div class="event-page">
 
-<div class="event-meta">
+      <div class="event-meta">
 
-  <h1 class="event-title">
-    ${data.title}
-  </h1>
+        <h1 class="event-title">
+          ${data.title}
+        </h1>
 
-  <h2 class="event-date">
-    📅 ${formattedDate}
-  </h2>
+        <h2 class="event-date">
+          📅 ${formattedDate}
+        </h2>
 
         <p class="event-time">
           🕒 ${formattedTime} Uhr
@@ -119,7 +152,7 @@ async function loadEvent() {
       }
 
       <div class="event-content">
-        ${data.content || ''}
+        ${marked.parse(data.content || '')}
       </div>
 
     </div>
