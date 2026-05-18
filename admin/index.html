@@ -121,7 +121,7 @@ const supabaseUrl =
 const supabaseKey =
   'sb_publishable_Bz-kKI-XUf9Y1sM3hWIfAw_4l8fIPQr';
 
-const supabase =
+const supabaseClient =
   window.supabase.createClient(
     supabaseUrl,
     supabaseKey
@@ -136,7 +136,7 @@ async function login() {
     document.getElementById('password').value;
 
   const { error } =
-    await supabase.auth.signInWithPassword({
+    await supabaseClient.auth.signInWithPassword({
 
       email,
       password
@@ -163,7 +163,7 @@ async function login() {
 
 async function loadEvents() {
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('Termine')
     .select('*')
     .order('id', {
