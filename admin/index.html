@@ -1,0 +1,302 @@
+<!doctype html>
+
+<html lang="de">
+
+<head>
+
+  <meta charset="utf-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+
+  <title>MTB Werdohl Admin</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <style>
+
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: white;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    input,
+    textarea,
+    button {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      min-height: 120px;
+    }
+
+    button {
+      background: #2e8b57;
+      color: white;
+      cursor: pointer;
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: white;
+    }
+
+    .event-card {
+      background: #222;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+<div id="login">
+
+  <h1>Admin Login</h1>
+
+  <input id="email"
+         placeholder="E-Mail">
+
+  <input id="password"
+         type="password"
+         placeholder="Passwort">
+
+  <button onclick="login()">
+    Login
+  </button>
+
+</div>
+
+<div id="admin"
+     class="hidden">
+
+  <h1>Adminbereich</h1>
+
+  <div id="events"></div>
+
+  <h2>Neuer Termin</h2>
+
+  <input id="title"
+         placeholder="Titel">
+
+  <input id="date"
+         type="datetime-local">
+
+  <input id="location"
+         placeholder="Ort">
+
+  <textarea id="description"
+            placeholder="Beschreibung"></textarea>
+
+  <button onclick="saveEvent()">
+    Termin speichern
+  </button>
+
+</div>
+
+<script>
+
+const supabaseUrl =
+  'https://eazizesytrnknbgrnggj.supabase.co';
+
+const supabaseKey =
+  'sb_publishable_Bz-kKI-XUf9Y1sM3hWIfAw_4l8fIPQr';
+
+const supabase =
+  window.supabase.createClient(
+    supabaseUrl,
+    supabaseKey
+  );
+
+async function login() {
+
+  const email =
+    document.getElementById('email').value;
+
+  const password =
+    document.getElementById('password').value;
+
+  const { error } =
+    await supabase.auth.signInWithPassword({
+
+      email,
+      password
+
+    });
+
+  if (error) {
+
+    alert(error.message);
+
+    return;
+
+  }
+
+  document.getElementById('login')
+    .classList.add('hidden');
+
+  document.getElementById('admin')
+    .classList.remove('hidden');
+
+  loadEvents();
+
+}
+
+async function loadEvents() {
+
+  const { data, error } = await supabase
+    .from('Termine')
+    .select('*')
+    .order('id', {
+      ascending: false
+    });
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  const container =
+    document.getElementById('events');
+
+  container.innerHTML = '';
+
+  data.forEach(event => {
+
+    container.innerHTML += `
+
+      <div class="event-card">
+
+        <h3>${event.title}</h3>
+
+        <p>${event.location || ''}</p>
+
+        <button onclick="deleteEvent(${event.id})">
+          Löschen
+        </button>
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+async function saveEvent() {
+
+  const title =
+    document.getElementById('title').value;
+
+  const date =
+    document.getElementById('date').value;
+
+  const location =
+    document.getElementById('location').value;
+
+  const description =
+    document.getElementById('description').value;
+
+  const slug =
+    title
+      .toLowerCase()
+      .replaceAll(' ', '-');
+
+  const { error } = await supabase
+    .from('Termine')
+    .insert([{
+
+      title,
+      date,
+      location,
+      description,
+      slug,
+
+      recurring: false
+
+    }]);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  alert('Termin gespeichert');
+
+  document.getElementById('title').value = '';
+  document.getElementById('date').value = '';
+  document.getElementById('location').value = '';
+  document.getElementById('description').value = '';
+
+  loadEvents();
+
+}
+
+async function deleteEvent(id) {
+
+  const confirmDelete =
+    confirm('Termin löschen?');
+
+  if (!confirmDelete) {
+    return;
+  }
+
+  const { error } = await supabase
+    .from('Termine')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  loadEvents();
+
+}
+
+async function checkSession() {
+
+  const { data } =
+    await supabase.auth.getSession();
+
+  if (data.session) {
+
+    document.getElementById('login')
+      .classList.add('hidden');
+
+    document.getElementById('admin')
+      .classList.remove('hidden');
+
+    loadEvents();
+
+  }
+
+}
+
+checkSession();
+
+</script>
+
+</body>
+
+</html>
