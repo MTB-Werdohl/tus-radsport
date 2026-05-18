@@ -151,8 +151,46 @@ data
 })
 
 
-  .forEach(event => {
+.forEach((event, index, array) => {
 
+  const now =
+    new Date();
+
+  const eventDate =
+    event.date
+      ? new Date(event.date)
+      : null;
+
+  const isPast =
+    eventDate && eventDate < now;
+
+  const previous =
+    array[index - 1];
+
+  const previousPast =
+    previous?.date
+      ? new Date(previous.date) < now
+      : false;
+
+  if (
+    isPast &&
+    !previousPast &&
+    !event.recurring
+  ) {
+
+    container.innerHTML += `
+
+      <div class="event-separator">
+
+        <span>
+          Vergangene Termine
+        </span>
+
+      </div>
+
+    `;
+
+  }
 
       container.innerHTML += `
 
