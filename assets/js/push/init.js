@@ -1,10 +1,27 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
 
   const button =
     document.getElementById('enable-push');
 
   if (!button) {
     return;
+  }
+
+  const registration =
+    await navigator.serviceWorker.ready;
+
+  const existingSubscription =
+    await registration.pushManager.getSubscription();
+
+  if (existingSubscription) {
+
+    button.innerText =
+      '✅ Push aktiviert';
+
+    button.disabled = true;
+
+    return;
+
   }
 
   button.addEventListener('click', async () => {
