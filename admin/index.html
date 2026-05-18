@@ -462,34 +462,49 @@ async function saveEvent() {
       .toLowerCase()
       .replaceAll(' ', '-');
 
-  const payload = {
+const payload = {
 
-    title,
-    date,
-    location,
-    category,
-    image,
-    komoot,
-    gpx,
-    description,
-    content,
-    recurring,
-    startTime,
-    startRecur,
-    endRecur,
-    slug,
+  title,
 
-    daysOfWeek:
-      recurring && daysOfWeek
-        ? [parseInt(daysOfWeek)]
-        : null,
+  date:
+    recurring || !date
+      ? null
+      : date,
 
-    exclude:
-      exclude
-        ? JSON.parse(exclude)
-        : null
+  location,
 
-  };
+  category,
+
+  image,
+
+  komoot,
+
+  gpx,
+
+  description,
+
+  content,
+
+  recurring,
+
+  startTime,
+
+  startRecur:
+    startRecur || null,
+
+  endRecur:
+    endRecur || null,
+
+  slug,
+
+  daysOfWeek:
+    recurring && daysOfWeek
+      ? [parseInt(daysOfWeek)]
+      : null,
+
+  exclude: parsedExclude
+
+};
 
   let error;
 
