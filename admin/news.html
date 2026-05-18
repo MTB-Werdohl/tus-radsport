@@ -1,23 +1,322 @@
+
 <!doctype html>
-
 <html lang="de">
-
 <head>
-
   <meta charset="utf-8">
-
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1">
-
-  <title>
-    News verwalten
-  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>News verwalten</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <link rel="stylesheet"
-        href="/assets/css/admin.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
+    body {
+      font-family: Inter, Arial, sans-serif;
+      background: #f4f6f9;
+      color: #111827;
+      padding: 32px;
+    }
+
+    #admin {
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+
+    .page-header h1 {
+      font-size: 40px;
+      margin-bottom: 8px;
+    }
+
+    .page-header p {
+      color: #6b7280;
+    }
+
+    .back-button {
+      text-decoration: none;
+      padding: 12px 18px;
+      border-radius: 12px;
+      background: white;
+      color: #111827;
+      border: 1px solid #e5e7eb;
+      transition: .2s;
+    }
+
+    .back-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 420px 1fr 420px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.05);
+    }
+
+    h2 {
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      font-size: 15px;
+      transition: .2s;
+      background: #fff;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #111827;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 140px;
+      line-height: 1.6;
+    }
+
+    .slug-wrapper {
+      position: relative;
+    }
+
+    .slug-helper {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .checkbox {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .checkbox input {
+      width: auto;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    button {
+      border: none;
+      padding: 14px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: .2s;
+    }
+
+    .primary {
+      background: #111827;
+      color: white;
+      flex: 1;
+    }
+
+    .secondary {
+      background: #eef2ff;
+      color: #111827;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    .search {
+      margin-bottom: 18px;
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .news-list {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .news-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 20px;
+      transition: .2s;
+    }
+
+    .news-card:hover {
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+    }
+
+    .news-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .news-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .news-slug {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .badge {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .published {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .draft {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .news-excerpt {
+      color: #4b5563;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .news-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .news-date {
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .edit-btn {
+      background: #111827;
+      color: white;
+    }
+
+    .delete-btn {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .preview-header {
+      margin-bottom: 20px;
+    }
+
+    .preview {
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 24px;
+      background: #fafafa;
+      min-height: 600px;
+    }
+
+    .preview-badge {
+      display: inline-flex;
+      margin-bottom: 18px;
+    }
+
+    .preview h1 {
+      font-size: 38px;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .preview-excerpt {
+      font-size: 18px;
+      color: #4b5563;
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    .preview-content {
+      line-height: 1.8;
+      color: #111827;
+      white-space: pre-wrap;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 50px 20px;
+      color: #6b7280;
+      border: 2px dashed #d1d5db;
+      border-radius: 18px;
+    }
+
+    .preview-placeholder {
+      color: #9ca3af;
+    }
+
+    @media (max-width: 1400px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -25,96 +324,134 @@
 <div id="admin">
 
   <div class="page-header">
-
     <div>
-
-      <h1>
-        News
-      </h1>
-
-      <p>
-        Newsbeiträge verwalten
-      </p>
-
+      <h1>News</h1>
+      <p>Newsbeiträge professionell verwalten</p>
     </div>
 
-    <a href="/admin/"
-       class="back-button">
-
+    <a href="/admin/" class="back-button">
       ← Dashboard
-
     </a>
-
   </div>
 
-  <div class="admin-grid">
+  <div class="layout">
 
-    <div class="admin-form">
+    <div class="panel">
 
-      <h2>
-        News erstellen
-      </h2>
+      <h2>Beitrag erstellen</h2>
 
       <form id="news-form">
 
-        <input type="hidden"
-               id="news-id">
+        <input type="hidden" id="news-id">
 
-        <label>
-          Titel
-        </label>
+        <div class="field">
+          <label>Titel</label>
 
-        <input type="text"
-               id="title"
-               required>
+          <input
+            type="text"
+            id="title"
+            placeholder="z. B. Sommerfest 2026"
+            required>
+        </div>
 
-        <label>
-          Slug
-        </label>
+        <div class="field">
+          <label>Slug</label>
 
-        <input type="text"
-               id="slug"
-               required>
+          <div class="slug-wrapper">
+            <input
+              type="text"
+              id="slug"
+              placeholder="sommerfest-2026"
+              required>
+          </div>
 
-        <label>
-          Kurztext
-        </label>
+          <div class="slug-helper">
+            Wird automatisch generiert
+          </div>
+        </div>
 
-        <textarea id="excerpt"
-                  rows="3"></textarea>
+        <div class="field">
+          <label>Kurztext</label>
 
-        <label>
-          Inhalt
-        </label>
+          <textarea
+            id="excerpt"
+            rows="4"
+            placeholder="Kurze Zusammenfassung..."></textarea>
+        </div>
 
-        <textarea id="content"
-                  rows="12"
-                  required></textarea>
+        <div class="field">
+          <label>Inhalt</label>
+
+          <textarea
+            id="content"
+            rows="14"
+            placeholder="Schreibe hier deinen Beitrag..."></textarea>
+        </div>
 
         <label class="checkbox">
-
-          <input type="checkbox"
-                 id="published">
-
-          Veröffentlicht
-
+          <input type="checkbox" id="published">
+          Direkt veröffentlichen
         </label>
 
-        <button type="submit">
-          Speichern
-        </button>
+        <div class="actions">
+          <button type="submit" class="primary">
+            Speichern
+          </button>
+
+          <button type="button" id="reset-btn" class="secondary">
+            Zurücksetzen
+          </button>
+        </div>
 
       </form>
 
     </div>
 
-    <div class="admin-list">
+    <div class="panel">
 
-      <h2>
-        Vorhandene News
-      </h2>
+      <div class="preview-header">
+        <h2>Live Preview</h2>
+      </div>
 
-      <div id="news-list"></div>
+      <div class="preview">
+
+        <div id="preview-status"></div>
+
+        <h1 id="preview-title" class="preview-placeholder">
+          Dein Titel erscheint hier
+        </h1>
+
+        <div id="preview-excerpt" class="preview-excerpt preview-placeholder">
+          Dein Kurztext erscheint hier
+        </div>
+
+        <div id="preview-content" class="preview-content preview-placeholder">
+          Dein Inhalt erscheint hier
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="panel">
+
+      <h2>Vorhandene News</h2>
+
+      <input
+        type="text"
+        id="search"
+        class="search"
+        placeholder="News durchsuchen...">
+
+      <div class="filter-row">
+        <select id="filter-status">
+          <option value="all">Alle</option>
+          <option value="published">Veröffentlicht</option>
+          <option value="draft">Entwürfe</option>
+        </select>
+      </div>
+
+      <div id="news-list" class="news-list"></div>
 
     </div>
 
@@ -136,6 +473,81 @@ const supabaseClient =
     supabaseKey
   );
 
+let allNews = [];
+
+const titleInput =
+  document.getElementById('title');
+
+const slugInput =
+  document.getElementById('slug');
+
+const excerptInput =
+  document.getElementById('excerpt');
+
+const contentInput =
+  document.getElementById('content');
+
+const publishedInput =
+  document.getElementById('published');
+
+function slugify(text) {
+
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/ä/g, 'ae')
+    .replace(/ö/g, 'oe')
+    .replace(/ü/g, 'ue')
+    .replace(/ß/g, 'ss')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+}
+
+titleInput.addEventListener('input', () => {
+
+  slugInput.value =
+    slugify(titleInput.value);
+
+  updatePreview();
+
+});
+
+slugInput.addEventListener('input', updatePreview);
+excerptInput.addEventListener('input', updatePreview);
+contentInput.addEventListener('input', updatePreview);
+publishedInput.addEventListener('change', updatePreview);
+
+function updatePreview() {
+
+  const title =
+    titleInput.value || 'Dein Titel erscheint hier';
+
+  const excerpt =
+    excerptInput.value || 'Dein Kurztext erscheint hier';
+
+  const content =
+    contentInput.value || 'Dein Inhalt erscheint hier';
+
+  document.getElementById('preview-title').textContent =
+    title;
+
+  document.getElementById('preview-excerpt').textContent =
+    excerpt;
+
+  document.getElementById('preview-content').textContent =
+    content;
+
+  const status =
+    publishedInput.checked
+      ? '<span class="badge published preview-badge">🟢 Veröffentlicht</span>'
+      : '<span class="badge draft preview-badge">🟡 Entwurf</span>';
+
+  document.getElementById('preview-status').innerHTML =
+    status;
+
+}
+
 async function loadNews() {
 
   const { data, error } =
@@ -147,23 +559,67 @@ async function loadNews() {
       });
 
   if (error) {
-
     console.error(error);
-
     return;
-
   }
 
-  renderNews(data);
+  allNews = data || [];
+
+  renderNews();
 
 }
 
-function renderNews(items) {
+function renderNews() {
 
   const container =
     document.getElementById('news-list');
 
+  const search =
+    document
+      .getElementById('search')
+      .value
+      .toLowerCase();
+
+  const filter =
+    document
+      .getElementById('filter-status')
+      .value;
+
+  let items =
+    [...allNews];
+
+  if (search) {
+
+    items =
+      items.filter(item =>
+        item.title.toLowerCase().includes(search) ||
+        (item.excerpt || '').toLowerCase().includes(search)
+      );
+
+  }
+
+  if (filter === 'published') {
+    items = items.filter(item => item.published);
+  }
+
+  if (filter === 'draft') {
+    items = items.filter(item => !item.published);
+  }
+
   container.innerHTML = '';
+
+  if (!items.length) {
+
+    container.innerHTML = `
+      <div class="empty-state">
+        <h3>Keine News gefunden</h3>
+        <p>Erstelle deinen ersten Beitrag.</p>
+      </div>
+    `;
+
+    return;
+
+  }
 
   items.forEach(item => {
 
@@ -171,23 +627,65 @@ function renderNews(items) {
       document.createElement('div');
 
     div.className =
-      'admin-item';
+      'news-card';
+
+    const badge =
+      item.published
+        ? '<span class="badge published">🟢 Veröffentlicht</span>'
+        : '<span class="badge draft">🟡 Entwurf</span>';
+
+    const date =
+      item.created_at
+        ? new Date(item.created_at).toLocaleDateString('de-DE')
+        : 'Kein Datum';
 
     div.innerHTML = `
 
-      <h3>${item.title}</h3>
+      <div class="news-top">
 
-      <p>${item.slug}</p>
+        <div>
+          <div class="news-title">
+            ${item.title}
+          </div>
 
-      <div class="admin-actions">
+          <div class="news-slug">
+            /news/${item.slug}
+          </div>
+        </div>
 
-        <button onclick="editNews('${item.id}')">
-          Bearbeiten
-        </button>
+        ${badge}
 
-        <button onclick="deleteNews('${item.id}')">
-          Löschen
-        </button>
+      </div>
+
+      <div class="news-excerpt">
+        ${item.excerpt || 'Kein Kurztext vorhanden.'}
+      </div>
+
+      <div class="news-meta">
+
+        <div class="news-date">
+          Erstellt am ${date}
+        </div>
+
+        <div class="card-actions">
+
+          <button
+            class="edit-btn"
+            onclick="editNews('${item.id}')">
+
+            Bearbeiten
+
+          </button>
+
+          <button
+            class="delete-btn"
+            onclick="deleteNews('${item.id}')">
+
+            Löschen
+
+          </button>
+
+        </div>
 
       </div>
 
@@ -198,6 +696,30 @@ function renderNews(items) {
   });
 
 }
+
+document
+  .getElementById('search')
+  .addEventListener('input', renderNews);
+
+document
+  .getElementById('filter-status')
+  .addEventListener('change', renderNews);
+
+document
+  .getElementById('reset-btn')
+  .addEventListener('click', () => {
+
+    document
+      .getElementById('news-form')
+      .reset();
+
+    document
+      .getElementById('news-id')
+      .value = '';
+
+    updatePreview();
+
+  });
 
 document
   .getElementById('news-form')
@@ -211,19 +733,19 @@ document
     const payload = {
 
       title:
-        document.getElementById('title').value,
+        titleInput.value,
 
       slug:
-        document.getElementById('slug').value,
+        slugInput.value,
 
       excerpt:
-        document.getElementById('excerpt').value,
+        excerptInput.value,
 
       content:
-        document.getElementById('content').value,
+        contentInput.value,
 
       published:
-        document.getElementById('published').checked
+        publishedInput.checked
 
     };
 
@@ -247,11 +769,8 @@ document
     }
 
     if (result.error) {
-
       console.error(result.error);
-
       return;
-
     }
 
     document
@@ -259,7 +778,10 @@ document
       .reset();
 
     document
-      .getElementById('news-id').value = '';
+      .getElementById('news-id')
+      .value = '';
+
+    updatePreview();
 
     loadNews();
 
@@ -281,20 +803,27 @@ async function editNews(id) {
   document.getElementById('news-id').value =
     data.id;
 
-  document.getElementById('title').value =
+  titleInput.value =
     data.title;
 
-  document.getElementById('slug').value =
+  slugInput.value =
     data.slug;
 
-  document.getElementById('excerpt').value =
+  excerptInput.value =
     data.excerpt || '';
 
-  document.getElementById('content').value =
+  contentInput.value =
     data.content || '';
 
-  document.getElementById('published').checked =
+  publishedInput.checked =
     data.published;
+
+  updatePreview();
+
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
 
 }
 
@@ -316,10 +845,10 @@ async function deleteNews(id) {
 
 }
 
+updatePreview();
 loadNews();
 
 </script>
 
 </body>
-
 </html>
