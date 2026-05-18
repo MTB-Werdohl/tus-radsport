@@ -70,8 +70,9 @@
     <input id="category"
            placeholder="Kategorie">
 
-    <input id="image"
-           placeholder="Bild URL">
+    <input id="imageFile"
+           type="file"
+           accept="image/*">
 
   </div>
 
@@ -80,8 +81,9 @@
     <input id="komoot"
            placeholder="Komoot Link">
 
-    <input id="gpx"
-           placeholder="GPX Datei URL">
+    <input id="gpxFile"
+           type="file"
+           accept=".gpx">
 
   </div>
 
@@ -267,19 +269,38 @@ container.innerHTML += `
           ${event.title}
         </strong>
 
-        <div class="event-meta">
+<div class="event-meta">
 
-          ${event.recurring
-            ? '🔁 Wiederkehrend'
-            : event.date || ''
-          }
+  ${event.recurring
+    ? '🔁 Wiederkehrend'
+    : `
+      📅 ${
+        new Date(event.date)
+          .toLocaleDateString('de-DE', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          })
+      }
 
-          ${event.location
-            ? ' · 📍 ' + event.location
-            : ''
-          }
+      ·
 
-        </div>
+      🕒 ${
+        new Date(event.date)
+          .toLocaleTimeString('de-DE', {
+            hour: '2-digit',
+            minute: '2-digit'
+          })
+      } Uhr
+    `
+  }
+
+  ${event.location
+    ? ' · 📍 ' + event.location
+    : ''
+  }
+
+</div>
 
       </div>
 
@@ -398,14 +419,16 @@ async function saveEvent() {
   const category =
     document.getElementById('category').value;
 
-  const image =
-    document.getElementById('image').value;
+  const imageFile =
+    document.getElementById('imageFile')
+      .files[0];
 
   const komoot =
     document.getElementById('komoot').value;
 
-  const gpx =
-    document.getElementById('gpx').value;
+  const gpxFile =
+    document.getElementById('gpxFile')
+      .files[0];
 
   const description =
     document.getElementById('description').value;
@@ -450,6 +473,51 @@ try {
   alert('Exclude JSON ungültig');
 
   return;
+
+}
+
+let image = null;
+let gpx = null;
+
+if (imageFile) {
+
+  const imageName =
+    Date.now() + '-' + imageFile.name;
+
+  const { error } =
+    await supabaseClient.storage
+      .from('events')
+      .upload(imageName, imageFile);
+
+  if (!error) {
+
+    image =
+      supabaseUrl +
+      '/storage/v1/object/public/events/' +
+      imageName;
+
+  }
+
+}
+
+if (gpxFile) {
+
+  const gpxName =
+    Date.now() + '-' + gpxFile.name;
+
+  const { error } =
+    await supabaseClient.storage
+      .from('events')
+      .upload(gpxName, gpxFile);
+
+  if (!error) {
+
+    gpx =
+      supabaseUrl +
+      '/storage/v1/object/public/events/' +
+      gpxName;
+
+  }
 
 }
 
