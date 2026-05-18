@@ -1,0 +1,83 @@
+.event-page {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.event-meta {
+  margin-bottom: 1.5rem;
+  color: #666;
+}
+
+.event-image {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.event-content {
+  line-height: 1.7;
+}
+
+.event-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  margin-bottom: 2rem;
+}
+
+.event-button {
+  display: inline-block;
+
+  padding: 0.8rem 1rem;
+
+  background: #2e8b57;
+  color: white;
+
+  border-radius: 10px;
+
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.event-button:hover {
+  opacity: 0.9;
+}
+
+.event-button.whatsapp {
+  background: #25D366;
+}
+
+.event-meta p {
+  color: #ffffff;
+}
+
+.event-meta h1 {
+  color: #ffffff;
+}
+
+.event-time {
+  font-size: 1rem;
+  color: #ffffff;
+  margin-top: -0.5rem;
+}
+
+.event-date {
+  color: #ffffff;
+}
+
+.event-back {
+  margin-top: 60px;
+  text-align: right;
+}
+
+.event-back a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.event-back a:hover {
+  text-decoration: underline;
+}
