@@ -52,23 +52,55 @@ eventSources: [
         throw error;
       }
 
-      const events = data.map(item => ({
+const events = data.map(item => {
 
-        title: item.title,
+  const baseEvent = {
 
-        start: item.date,
+    title: item.title,
 
-        description: item.description,
+    description: item.description,
 
-        location: item.location,
+    location: item.location,
 
-        url: '/event.html?slug=' + item.slug,
+    url: '/event.html?slug=' + item.slug,
 
-        backgroundColor: '#2e8b57',
+    backgroundColor: '#2e8b57',
 
-        borderColor: '#2e8b57'
+    borderColor: '#2e8b57',
 
-      }));
+    extendedProps: {
+      exclude: item.exclude || []
+    }
+
+  };
+
+  if (item.recurring) {
+
+    return {
+
+      ...baseEvent,
+
+      daysOfWeek: item.daysOfWeek,
+
+      startTime: item.startTime,
+
+      startRecur: item.startRecur,
+
+      endRecur: item.endRecur
+
+    };
+
+  }
+
+  return {
+
+    ...baseEvent,
+
+    start: item.date
+
+  };
+
+});
 
       successCallback(events);
 
