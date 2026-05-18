@@ -1,0 +1,217 @@
+<!doctype html>
+
+<html lang="de">
+
+<head>
+
+  <meta charset="utf-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+
+  <title>Termin bearbeiten</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <link rel="stylesheet"
+        href="/assets/css/admin.css">
+
+</head>
+
+<body>
+
+<h1 id="form-title">
+  Neuer Termin
+</h1>
+
+<input id="title"
+       placeholder="Titel">
+
+<div class="row">
+
+  <input id="date"
+         type="datetime-local">
+
+  <input id="location"
+         placeholder="Ort">
+
+</div>
+
+<div class="row">
+
+  <input id="category"
+         placeholder="Kategorie">
+
+  <input id="imageFile"
+         type="file"
+         accept="image/*">
+
+</div>
+
+<div class="row">
+
+  <input id="komoot"
+         placeholder="Komoot Link">
+
+  <input id="gpxFile"
+         type="file"
+         accept=".gpx">
+
+</div>
+
+<label>
+
+  <input id="recurring"
+         type="checkbox"
+         class="checkbox">
+
+  Wiederkehrender Termin
+
+</label>
+
+<div class="row">
+
+  <select id="daysOfWeek">
+
+    <option value="">
+      Wochentag
+    </option>
+
+    <option value="1">
+      Montag
+    </option>
+
+    <option value="2">
+      Dienstag
+    </option>
+
+    <option value="3">
+      Mittwoch
+    </option>
+
+    <option value="4">
+      Donnerstag
+    </option>
+
+    <option value="5">
+      Freitag
+    </option>
+
+    <option value="6">
+      Samstag
+    </option>
+
+    <option value="0">
+      Sonntag
+    </option>
+
+  </select>
+
+  <input id="startTime"
+         type="time">
+
+</div>
+
+<div class="row">
+
+  <input id="startRecur"
+         type="date">
+
+  <input id="endRecur"
+         type="date">
+
+</div>
+
+<textarea id="exclude"
+          placeholder='["2026-05-26"]'></textarea>
+
+<textarea id="description"
+          placeholder="Kurzbeschreibung"></textarea>
+
+<textarea id="content"
+          placeholder="Inhalt"></textarea>
+
+<button onclick="saveEvent()">
+  Speichern
+</button>
+
+<script>
+
+const supabaseUrl =
+  'https://eazizesytrnknbgrnggj.supabase.co';
+
+const supabaseKey =
+  'DEIN_KEY';
+
+const supabaseClient =
+  window.supabase.createClient(
+    supabaseUrl,
+    supabaseKey
+  );
+
+const params =
+  new URLSearchParams(window.location.search);
+
+const editId =
+  params.get('id');
+
+async function loadEvent() {
+
+  if (!editId) {
+    return;
+  }
+
+  document.getElementById('form-title')
+    .innerText =
+      'Termin bearbeiten';
+
+  const { data, error } =
+    await supabaseClient
+      .from('Termine')
+      .select('*')
+      .eq('id', editId)
+      .single();
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  document.getElementById('title').value =
+    data.title || '';
+
+  document.getElementById('date').value =
+    data.date
+      ? data.date.substring(0,16)
+      : '';
+
+  document.getElementById('location').value =
+    data.location || '';
+
+  document.getElementById('category').value =
+    data.category || '';
+
+  document.getElementById('komoot').value =
+    data.komoot || '';
+
+  document.getElementById('description').value =
+    data.description || '';
+
+  document.getElementById('content').value =
+    data.content || '';
+
+}
+
+async function saveEvent() {
+
+  alert('Save folgt jetzt 🙂');
+
+}
+
+loadEvent();
+
+</script>
+
+</body>
+
+</html>

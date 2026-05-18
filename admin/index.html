@@ -48,120 +48,12 @@
 
   <div id="events"></div>
 
-  <h2 id="form-title">
-    Neuer Termin
-  </h2>
-
-  <input id="title"
-         placeholder="Titel">
-
-  <div class="row">
-
-    <input id="date"
-           type="datetime-local">
-
-    <input id="location"
-           placeholder="Ort">
-
-  </div>
-
-  <div class="row">
-
-    <input id="category"
-           placeholder="Kategorie">
-
-    <input id="imageFile"
-           type="file"
-           accept="image/*">
-
-  </div>
-
-  <div class="row">
-
-    <input id="komoot"
-           placeholder="Komoot Link">
-
-    <input id="gpxFile"
-           type="file"
-           accept=".gpx">
-
-  </div>
-
-  <label>
-    <input id="recurring"
-           type="checkbox"
-           class="checkbox">
-    Wiederkehrender Termin
-  </label>
-
-  <div class="row">
-
-    <select id="daysOfWeek">
-
-      <option value="">
-        Wochentag
-      </option>
-
-      <option value="1">
-        Montag
-      </option>
-
-      <option value="2">
-        Dienstag
-      </option>
-
-      <option value="3">
-        Mittwoch
-      </option>
-
-      <option value="4">
-        Donnerstag
-      </option>
-
-      <option value="5">
-        Freitag
-      </option>
-
-      <option value="6">
-        Samstag
-      </option>
-
-      <option value="0">
-        Sonntag
-      </option>
-
-    </select>
-
-    <input id="startTime"
-           type="time">
-
-  </div>
-
-  <div class="row">
-
-    <input id="startRecur"
-           type="date">
-
-    <input id="endRecur"
-           type="date">
-
-  </div>
-
-  <textarea id="exclude"
-            placeholder='Ausnahmen JSON z.B. ["2026-05-26"]'></textarea>
-
-  <textarea id="description"
-            placeholder="Kurzbeschreibung"></textarea>
-
-  <textarea id="content"
-            placeholder="Markdown Inhalt"></textarea>
-
-  <button onclick="saveEvent()">
-    Termin speichern
+  <button onclick="newEvent()">
+    ➕ Neuer Termin
   </button>
 
-</div>
-
+  </div>
+ 
 <script>
 
 const supabaseUrl =
@@ -306,7 +198,7 @@ container.innerHTML += `
 
       <div class="actions">
 
-        <button onclick="editEvent(${event.id})">
+        onclick="openEvent(${event.id})"
           ✏
         </button>
 
@@ -665,6 +557,20 @@ async function checkSession() {
     loadEvents();
 
   }
+
+}
+
+function newEvent() {
+
+  window.location.href =
+    '/admin/event.html';
+
+}
+
+function openEvent(id) {
+
+  window.location.href =
+    '/admin/event.html?id=' + id;
 
 }
 
