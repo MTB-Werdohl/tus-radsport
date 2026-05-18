@@ -355,7 +355,7 @@ async function saveEvent() {
 
     const { error } =
       await supabaseClient.storage
-        .from('MEDIA')
+        .from('media')
         .upload(imageName, imageFile);
 
     if (!error) {
@@ -376,14 +376,14 @@ async function saveEvent() {
 
     const { error } =
       await supabaseClient.storage
-        .from('MEDIA')
+        .from('media')
         .upload(gpxName, gpxFile);
 
     if (!error) {
 
       gpx =
         supabaseUrl +
-        '/storage/v1/object/public/MEDIA/' +
+        '/storage/v1/object/public/media/' +
         gpxName;
 
     }
