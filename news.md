@@ -96,7 +96,7 @@ function renderNews(news) {
 
         <a
           class="news-more"
-          href="/news.html?slug=${item.slug}">
+          href="/news-detail.html?slug=${item.slug}">
 
           Mehr lesen
 
