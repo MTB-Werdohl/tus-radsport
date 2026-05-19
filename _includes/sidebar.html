@@ -1,29 +1,48 @@
 <section class="sidebar-block">
-  <h3>{{ site.data.sidebar.training.title }}</h3>
+
+  <h3>Trainingszeiten</h3>
 
   <p>
-    <strong>{{ site.data.sidebar.training.meeting_point_label }}</strong><br>
-    {{ site._data.sidebar.training.meeting_point_text }}
+    <strong>Treffpunkt:</strong><br>
+    Brüninghausplatz (vor dem alten WK)
   </p>
 
   <ul>
-    {% for item in site.data.sidebar.training.bullets %}
-      <li>{{ item }}</li>
-    {% endfor %}
+    <li>Dienstags 18:00 Uhr</li>
   </ul>
+
 </section>
 
 <section class="sidebar-block">
-  <h3>{{ site.data.sidebar.downloads.title }}</h3>
+
+  <h3>Downloads</h3>
 
   <p class="sidebar-links">
-    {% for item in site.data.sidebar.downloads.links %}
-      <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.label }}</a><br>
-    {% endfor %}
+
+    <a
+      href="https://www.tusjahnwerdohl.de/files/Satzung_2013.pdf"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Satzung
+    </a>
+
+    <br>
+
+    <a
+      href="https://www.tusjahnwerdohl.de/files/DSGVO_Aufnahmeantrag-TuS-Jahn-ab-2025.pdf"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Mitgliedsantrag
+    </a>
+
   </p>
+
 </section>
 
 <section class="sidebar-block">
+
   <h3>Du möchtest mitfahren?</h3>
 
   <a
@@ -33,6 +52,7 @@
   >
     JETZT ANFRAGEN (WhatsApp)
   </a>
+
 </section>
 
 <button id="enable-push" class="push-button">
