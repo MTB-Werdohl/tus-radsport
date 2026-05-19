@@ -10,10 +10,11 @@
         content="width=device-width, initial-scale=1">
 
   <title>
-    News verwalten
+    News Verwaltung
   </title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script src="/assets/js/calendar/config.js"></script>
 
   <link rel="stylesheet"
@@ -30,7 +31,7 @@
     <div>
 
       <h1>
-        News
+        News anlegen und bearbeiten
       </h1>
 
       <p>
@@ -39,28 +40,34 @@
 
     </div>
 
-    <div class="page-actions">
+    <a href="/admin/"
+       class="back-button">
 
-      <a href="/admin/"
-         class="back-button">
+      ← Dashboard
 
-        ← Dashboard
-
-      </a>
-
-      <a href="/admin/news_edit.html"
-         class="primary-button">
-
-        + Neue News
-
-      </a>
-
-    </div>
+    </a>
 
   </div>
 
-  <div id="news-list"
-       class="admin-list"></div>
+  <div class="admin-topbar">
+
+    <input
+      id="search"
+      placeholder="News suchen..."
+      oninput="loadNews()"
+    >
+
+    <button
+      class="new-button"
+      onclick="newNews()">
+
+      ➕ Neue News
+
+    </button>
+
+  </div>
+
+  <div id="news"></div>
 
 </div>
 
@@ -85,95 +92,104 @@ async function loadNews() {
 
   }
 
-  renderNews(data);
-
-}
-
-function renderNews(news) {
+  const search =
+    document
+      .getElementById('search')
+      .value
+      .toLowerCase();
 
   const container =
-    document.getElementById('news-list');
+    document.getElementById('news');
 
   container.innerHTML = '';
 
-  if (!news.length) {
+  data
 
-    container.innerHTML = `
-      <p>
-        Noch keine News vorhanden.
-      </p>
-    `;
+    .filter(item => {
 
-    return;
+      return (
 
-  }
+        item.title
+          ?.toLowerCase()
+          .includes(search)
 
-  news.forEach(item => {
+        ||
 
-    const article =
-      document.createElement('article');
+        item.excerpt
+          ?.toLowerCase()
+          .includes(search)
 
-    article.className =
-      'admin-item';
+      );
 
-    article.innerHTML = `
+    })
 
-      <div class="admin-item-content">
+    .forEach(item => {
 
-        <h2>
-          ${item.title}
-        </h2>
+      container.innerHTML += `
 
-        <p>
-          /news/${item.slug}
-        </p>
+        <div class="event-card">
 
-        <small>
-          ${
-            item.published
-              ? '✅ Veröffentlicht'
-              : '📝 Entwurf'
-          }
-        </small>
+          <div class="event-header">
 
-      </div>
+            <div>
 
-      <div class="admin-actions">
+              <strong>
+                ${item.title}
+              </strong>
 
-        <a
-          href="/admin/news_edit.html?id=${item.id}"
-          class="edit-button">
+              <div class="event-meta">
 
-          Bearbeiten
+                ${
+                  item.published
+                    ? '✅ Veröffentlicht'
+                    : '📝 Entwurf'
+                }
 
-        </a>
+                ·
 
-        <button
-          class="delete-button"
-          onclick="deleteNews('${item.id}')">
+                /news/${item.slug}
 
-          Löschen
+              </div>
 
-        </button>
+            </div>
 
-      </div>
+            <div class="actions">
 
-    `;
+              <button
+                onclick="openNews('${item.id}')">
 
-    container.appendChild(article);
+                ✏
 
-  });
+              </button>
+
+              <button
+                class="delete-button"
+                onclick="deleteNews('${item.id}')">
+
+                🗑
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      `;
+
+    });
 
 }
 
 async function deleteNews(id) {
 
-  const confirmed =
+  const confirmDelete =
     confirm(
-      'News wirklich löschen?'
+      'News löschen?'
     );
 
-  if (!confirmed) {
+  if (!confirmDelete) {
     return;
   }
 
@@ -195,7 +211,40 @@ async function deleteNews(id) {
 
 }
 
-loadNews();
+function newNews() {
+
+  window.location.href =
+    '/admin/news_edit.html';
+
+}
+
+function openNews(id) {
+
+  window.location.href =
+    '/admin/news_edit.html?id=' + id;
+
+}
+
+async function checkSession() {
+
+  const { data } =
+    await supabaseClient.auth
+      .getSession();
+
+  if (!data.session) {
+
+    window.location.href =
+      '/admin/';
+
+    return;
+
+  }
+
+  loadNews();
+
+}
+
+checkSession();
 
 </script>
 
