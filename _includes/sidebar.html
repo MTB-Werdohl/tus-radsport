@@ -45,13 +45,12 @@
 
   <h3>Du möchtest mitfahren?</h3>
 
-  <a
-    class="cta-btn"
-    href="https://wa.me/491608226897?text=Hallo%2C%20ich%20w%C3%BCrde%20gern%20mal%20bei%20euch%20mitfahren."
-    rel="noopener noreferrer"
-  >
-    JETZT ANFRAGEN (WhatsApp)
-  </a>
+
+{% include cta-button.html
+  href=site.data.social.whatsapp.url
+  label="JETZT ANFRAGEN (WhatsApp)"
+  external=true
+%}
 
 </section>
 
