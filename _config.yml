@@ -33,24 +33,3 @@ links:
 
 footer:
   note: "Der Radsport ist eine Abteilung des TuS Jahn Werdohl e. V."
-
-sidebar:
-  training:
-    title: "Trainingszeiten"
-    meeting_point_label: "Treffpunkt:"
-    meeting_point_text: "Brüninghausplatz (vor dem alten WK)"
-    bullets:
-      - "Dienstags 18:00 Uhr"
-
-  downloads:
-    title: "Downloads"
-    links:
-      - label: "Satzung"
-        url: "https://www.tusjahnwerdohl.de/files/Satzung_2013.pdf"
-      - label: "Mitgliedsantrag"
-        url: "https://www.tusjahnwerdohl.de/files/DSGVO_Aufnahmeantrag-TuS-Jahn-ab-2025.pdf"
-
-  join:
-    title: "Du möchtest mitfahren?"
-    intro: "Melde dich einfach bei"
-    outro: "per WhatsApp oder Anruf"
