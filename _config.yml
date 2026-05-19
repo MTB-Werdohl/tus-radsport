@@ -34,18 +34,6 @@ links:
 footer:
   note: "Der Radsport ist eine Abteilung des TuS Jahn Werdohl e. V."
 
-navigation:
-  - title: "Terminkalender"
-    url: "/kalender"
-  - title: "News"
-    url: "/news"
-  - title: "Über uns"
-    url: "/about"
-  - title: "Training"
-    url: "/training"
-  - title: "Radfahrer-Kodex"
-    url: "/kodex"
-
 sidebar:
   training:
     title: "Trainingszeiten"
