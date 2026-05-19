@@ -41,7 +41,7 @@
       </a>
 
       <nav class="nav" id="site-nav" aria-label="Hauptnavigation">
-        {% for item in site.navigation %}
+        {% for item in site.data.navigation %}
           <a href="{{ item.url | relative_url }}">{{ item.title }}</a>
         {% endfor %}
       </nav>
