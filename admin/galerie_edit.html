@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>Galerie bearbeiten</title>
+
+  <link rel="stylesheet" href="/assets/css/admin.css" />
+</head>
+<body>
+
+  <div class="admin-container">
+
+    <h1>Galerie bearbeiten</h1>
+
+    <form id="gallery-form">
+
+      <div class="form-group">
+        <label for="title">Titel</label>
+
+        <input type="text" id="title" required />
+      </div>
+
+      <div class="form-group">
+        <label for="slug">Slug</label>
+
+        <input type="text" id="slug" required />
+      </div>
+
+      <div class="form-group">
+        <label for="event_date">Datum</label>
+
+        <input type="date" id="event_date" />
+      </div>
+
+      <div class="form-group">
+        <label for="description">Beschreibung</label>
+
+        <textarea id="description" rows="5"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="images">Bilder hochladen</label>
+
+        <input type="file" id="images" multiple accept="image/*" />
+      </div>
+
+      <button type="submit" class="btn-primary">
+        Galerie speichern
+      </button>
+
+    </form>
+
+    <hr>
+
+    <h2>Bilder</h2>
+
+    <div id="gallery-images" class="gallery-images"></div>
+
+  </div>
+
+  <script type="module" src="/admin/js/gallery-edit.js"></script>
+
+</body>
+</html>
