@@ -15,6 +15,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <script src="/assets/js/calendar/config.js"></script>
+
   <link rel="stylesheet"
         href="/assets/css/admin.css">
 
@@ -22,137 +24,72 @@
 
 <body>
 
-<div id="admin">
+<h1 id="form-title">
+  Neue News
+</h1>
 
-  <div class="page-header">
+<input id="title"
+       placeholder="Titel">
 
-    <div>
+<input id="slug"
+       placeholder="Slug">
 
-      <h1>
-        News bearbeiten
-      </h1>
+<textarea id="excerpt"
+          placeholder="Kurztext"></textarea>
 
-      <p>
-        News erstellen oder bearbeiten
-      </p>
+<textarea id="content"
+          placeholder="Inhalt"></textarea>
 
-    </div>
+<div>
 
-    <a href="/admin/news.html"
-       class="back-button">
+  <input id="imageFile"
+         type="file"
+         accept="image/*">
 
-      ← Zurück
-
-    </a>
-
-  </div>
-
-  <form id="news-form"
-        class="admin-form">
-
-    <label for="title">
-      Titel
-    </label>
-
-    <input
-      type="text"
-      id="title"
-      required
-    >
-
-    <label for="slug">
-      Slug
-    </label>
-
-    <input
-      type="text"
-      id="slug"
-      required
-    >
-
-    <label for="excerpt">
-      Kurztext
-    </label>
-
-    <textarea
-      id="excerpt"
-      rows="4"
-    ></textarea>
-
-    <label for="content">
-      Inhalt
-    </label>
-
-    <textarea
-      id="content"
-      rows="14"
-      required
-    ></textarea>
-
-    <label for="image">
-      Bild URL
-    </label>
-
-    <input
-      type="text"
-      id="image"
-    >
-
-    <label class="checkbox">
-
-      <input
-        type="checkbox"
-        id="published"
-      >
-
-      Veröffentlicht
-
-    </label>
-
-    <button type="submit"
-            class="primary-button">
-
-      Speichern
-
-    </button>
-
-  </form>
+  <div id="currentImage"></div>
 
 </div>
 
+<label>
+
+  <input id="published"
+         type="checkbox"
+         class="checkbox">
+
+  Veröffentlicht
+
+</label>
+
+<button onclick="saveNews()">
+  Speichern
+</button>
+
 <script>
-
-const supabaseUrl =
-  'https://eazizesytrnknbgrnggj.supabase.co';
-
-const supabaseKey =
-  'DEIN_SUPABASE_ANON_KEY';
-
-const supabaseClient =
-  window.supabase.createClient(
-    supabaseUrl,
-    supabaseKey
-  );
 
 const params =
   new URLSearchParams(
     window.location.search
   );
 
-const newsId =
+const editId =
   params.get('id');
 
 async function loadNews() {
 
-  if (!newsId) {
+  if (!editId) {
     return;
   }
+
+  document
+    .getElementById('form-title')
+    .innerText =
+      'News bearbeiten';
 
   const { data, error } =
     await supabaseClient
       .from('News')
       .select('*')
-      .eq('id', newsId)
+      .eq('id', editId)
       .single();
 
   if (error) {
@@ -175,80 +112,179 @@ async function loadNews() {
   document.getElementById('content').value =
     data.content || '';
 
-  document.getElementById('image').value =
-    data.image || '';
-
   document.getElementById('published').checked =
     data.published || false;
 
+  if (data.image) {
+
+    document
+      .getElementById('currentImage')
+      .innerHTML = `
+
+        <p>Aktuelles Bild:</p>
+
+        <img src="${data.image}"
+             class="preview-image">
+
+      `;
+
+  }
+
 }
 
-document
-  .getElementById('news-form')
-  .addEventListener('submit', async event => {
+async function saveNews() {
 
-    event.preventDefault();
+  const title =
+    document
+      .getElementById('title')
+      .value;
 
-    const payload = {
+  const slugInput =
+    document
+      .getElementById('slug')
+      .value;
 
-      title:
-        document.getElementById('title').value,
+  const excerpt =
+    document
+      .getElementById('excerpt')
+      .value;
 
-      slug:
-        document.getElementById('slug').value,
+  const content =
+    document
+      .getElementById('content')
+      .value;
 
-      excerpt:
-        document.getElementById('excerpt').value,
+  const published =
+    document
+      .getElementById('published')
+      .checked;
 
-      content:
-        document.getElementById('content').value,
+  const imageFile =
+    document
+      .getElementById('imageFile')
+      .files[0];
 
-      image:
-        document.getElementById('image').value,
+  const slug =
+    slugInput && slugInput !== ''
+      ? slugInput
+      : title
+          .toLowerCase()
+          .replaceAll(' ', '-')
+          .replace(/[^\w-]+/g, '');
 
-      published:
-        document.getElementById('published').checked,
+  let image = null;
 
-      updated_at:
-        new Date().toISOString()
+  if (editId) {
 
-    };
+    const { data } =
+      await supabaseClient
+        .from('News')
+        .select('image')
+        .eq('id', editId)
+        .single();
 
-    let result;
+    image =
+      data?.image || null;
 
-    if (newsId) {
+  }
 
-      result =
-        await supabaseClient
-          .from('News')
-          .update(payload)
-          .eq('id', newsId);
+  if (imageFile) {
 
-    } else {
+    const imageName =
+      Date.now() +
+      '-' +
+      imageFile.name;
 
-      result =
-        await supabaseClient
-          .from('News')
-          .insert(payload);
+    const { error } =
+      await supabaseClient
+        .storage
+        .from('media')
+        .upload(
+          imageName,
+          imageFile
+        );
+
+    if (!error) {
+
+      image =
+        supabaseUrl +
+        '/storage/v1/object/public/media/' +
+        imageName;
 
     }
 
-    if (result.error) {
+  }
 
-      console.error(result.error);
+  const payload = {
 
-      alert('Fehler beim Speichern');
+    title,
+    slug,
+    excerpt,
+    content,
+    published,
+    updated_at:
+      new Date().toISOString()
 
-      return;
+  };
 
-    }
+  if (image) {
+    payload.image = image;
+  }
+
+  let error;
+
+  if (editId) {
+
+    ({ error } =
+      await supabaseClient
+        .from('News')
+        .update(payload)
+        .eq('id', editId));
+
+  } else {
+
+    ({ error } =
+      await supabaseClient
+        .from('News')
+        .insert([payload]));
+
+  }
+
+  if (error) {
+
+    console.error(error);
+
+    alert(error.message);
+
+    return;
+
+  }
+
+  window.location.href =
+    '/admin/news.html';
+
+}
+
+async function checkSession() {
+
+  const { data } =
+    await supabaseClient.auth
+      .getSession();
+
+  if (!data.session) {
 
     window.location.href =
-      '/admin/news.html';
+      '/admin/';
 
-  });
+    return;
 
-loadNews();
+  }
+
+  loadNews();
+
+}
+
+checkSession();
 
 </script>
 
