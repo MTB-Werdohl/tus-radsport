@@ -75,24 +75,35 @@
     </div>
   </main>
 
-  <footer class="site-footer">
-    <div class="wrap footer-inner">
-      <div class="footer-meta">
-        <span class="footer-note">{{ site.footer.note }}</span>
-      </div>
-
-      <nav class="footer-nav" aria-label="Footer-Navigation">
-        <a href="{{ site.links.impressum }}"
-           target="_blank" rel="noopener noreferrer">
-          Impressum
-        </a>
-        <span class="footer-sep">|</span>
-        <a href="{{ site.links.datenschutz | relative_url }}">
-          Datenschutz
-        </a>
-      </nav>
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <div class="footer-meta">
+      <span class="footer-note">{{ site.data.footer.note }}</span>
     </div>
-  </footer>
+
+    <nav class="footer-nav" aria-label="Footer-Navigation">
+
+      {% for item in site.data.footer.links %}
+
+        <a
+          href="{% if item.external %}{{ item.url }}{% else %}{{ item.url | relative_url }}{% endif %}"
+          {% if item.external %}
+            target="_blank"
+            rel="noopener noreferrer"
+          {% endif %}
+        >
+          {{ item.title }}
+        </a>
+
+        {% unless forloop.last %}
+          <span class="footer-sep">|</span>
+        {% endunless %}
+
+      {% endfor %}
+
+    </nav>
+  </div>
+</footer>
   <script src="{{ '/assets/js/nav.js' | relative_url }}"></script>
 
   <!-- GLightbox initialisieren -->

@@ -1,0 +1,10 @@
+note: "Der Radsport ist eine Abteilung des TuS Jahn Werdohl e. V."
+
+links:
+  - title: "Impressum"
+    url: "https://www.tusjahnwerdohl.de/impressum-.html"
+    external: true
+
+  - title: "Datenschutz"
+    url: "/datenschutz"
+    external: false

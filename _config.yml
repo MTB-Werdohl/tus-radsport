@@ -1,24 +1,13 @@
-title: "TuS Jahn Werdohl – Abteilung Radsport"
+title: "MTB Werdohl"
 lang: "de"
 timezone: Europe/Berlin
 
 future: true
 
-exclude:
-  - tools
-
-excerpt_separator: "<!--more-->"
-
 collections:
   news:
     output: true
     permalink: /news/:name/
-  event:
-    output: true
-
-  events:
-    output: true
-    permalink: /events/:name/
 
 contact:
   name: "Tobias Withalm"
@@ -30,6 +19,3 @@ contact:
 links:
   impressum: "https://www.tusjahnwerdohl.de/impressum-.html"
   datenschutz: "/datenschutz"
-
-footer:
-  note: "Der Radsport ist eine Abteilung des TuS Jahn Werdohl e. V."
