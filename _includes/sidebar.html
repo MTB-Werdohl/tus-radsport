@@ -45,9 +45,10 @@
 
   <h3>Du möchtest mitfahren?</h3>
 
+  {% assign whatsapp_text = "Hallo, ich würde gern mal bei euch mitfahren. Passt jetzt Dienstag 18:00uhr?" | url_encode %}
 
 {% include cta-button.html
-  href=site.data.social.whatsapp.url?text=Hi, ich würde gerne mitfahren! Passt diesen Dienstag?
+  href=site.data.social.whatsapp.url | append: "?text=" | append: whatsapp_text
   label="JETZT ANFRAGEN (WhatsApp)"
   external=true
 %}
