@@ -37,16 +37,12 @@ footer:
 navigation:
   - title: "Terminkalender"
     url: "/kalender"
-  - title: "Über uns"
-    url: "/about"
-  - title: "Termine"
-    url: "/termine"
   - title: "News"
     url: "/news"
+  - title: "Über uns"
+    url: "/about"
   - title: "Training"
     url: "/training"
-  - title: "Galerie"
-    url: "/events"
   - title: "Radfahrer-Kodex"
     url: "/kodex"
 
