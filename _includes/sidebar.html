@@ -1,23 +1,23 @@
 <section class="sidebar-block">
-  <h3>{{ site._data.sidebar.training.title }}</h3>
+  <h3>{{ site.data.sidebar.training.title }}</h3>
 
   <p>
-    <strong>{{ site._data.sidebar.training.meeting_point_label }}</strong><br>
+    <strong>{{ site.data.sidebar.training.meeting_point_label }}</strong><br>
     {{ site._data.sidebar.training.meeting_point_text }}
   </p>
 
   <ul>
-    {% for item in site._data.sidebar.training.bullets %}
+    {% for item in site.data.sidebar.training.bullets %}
       <li>{{ item }}</li>
     {% endfor %}
   </ul>
 </section>
 
 <section class="sidebar-block">
-  <h3>{{ site._data.sidebar.downloads.title }}</h3>
+  <h3>{{ site.data.sidebar.downloads.title }}</h3>
 
   <p class="sidebar-links">
-    {% for item in site._data.sidebar.downloads.links %}
+    {% for item in site.data.sidebar.downloads.links %}
       <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.label }}</a><br>
     {% endfor %}
   </p>
