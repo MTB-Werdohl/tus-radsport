@@ -1,0 +1,257 @@
+<!doctype html>
+
+<html lang="de">
+
+<head>
+
+  <meta charset="utf-8">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+
+  <title>
+    News bearbeiten
+  </title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <link rel="stylesheet"
+        href="/assets/css/admin.css">
+
+</head>
+
+<body>
+
+<div id="admin">
+
+  <div class="page-header">
+
+    <div>
+
+      <h1>
+        News bearbeiten
+      </h1>
+
+      <p>
+        News erstellen oder bearbeiten
+      </p>
+
+    </div>
+
+    <a href="/admin/news.html"
+       class="back-button">
+
+      ← Zurück
+
+    </a>
+
+  </div>
+
+  <form id="news-form"
+        class="admin-form">
+
+    <label for="title">
+      Titel
+    </label>
+
+    <input
+      type="text"
+      id="title"
+      required
+    >
+
+    <label for="slug">
+      Slug
+    </label>
+
+    <input
+      type="text"
+      id="slug"
+      required
+    >
+
+    <label for="excerpt">
+      Kurztext
+    </label>
+
+    <textarea
+      id="excerpt"
+      rows="4"
+    ></textarea>
+
+    <label for="content">
+      Inhalt
+    </label>
+
+    <textarea
+      id="content"
+      rows="14"
+      required
+    ></textarea>
+
+    <label for="image">
+      Bild URL
+    </label>
+
+    <input
+      type="text"
+      id="image"
+    >
+
+    <label class="checkbox">
+
+      <input
+        type="checkbox"
+        id="published"
+      >
+
+      Veröffentlicht
+
+    </label>
+
+    <button type="submit"
+            class="primary-button">
+
+      Speichern
+
+    </button>
+
+  </form>
+
+</div>
+
+<script>
+
+const supabaseUrl =
+  'https://eazizesytrnknbgrnggj.supabase.co';
+
+const supabaseKey =
+  'DEIN_SUPABASE_ANON_KEY';
+
+const supabaseClient =
+  window.supabase.createClient(
+    supabaseUrl,
+    supabaseKey
+  );
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const newsId =
+  params.get('id');
+
+async function loadNews() {
+
+  if (!newsId) {
+    return;
+  }
+
+  const { data, error } =
+    await supabaseClient
+      .from('News')
+      .select('*')
+      .eq('id', newsId)
+      .single();
+
+  if (error) {
+
+    console.error(error);
+
+    return;
+
+  }
+
+  document.getElementById('title').value =
+    data.title || '';
+
+  document.getElementById('slug').value =
+    data.slug || '';
+
+  document.getElementById('excerpt').value =
+    data.excerpt || '';
+
+  document.getElementById('content').value =
+    data.content || '';
+
+  document.getElementById('image').value =
+    data.image || '';
+
+  document.getElementById('published').checked =
+    data.published || false;
+
+}
+
+document
+  .getElementById('news-form')
+  .addEventListener('submit', async event => {
+
+    event.preventDefault();
+
+    const payload = {
+
+      title:
+        document.getElementById('title').value,
+
+      slug:
+        document.getElementById('slug').value,
+
+      excerpt:
+        document.getElementById('excerpt').value,
+
+      content:
+        document.getElementById('content').value,
+
+      image:
+        document.getElementById('image').value,
+
+      published:
+        document.getElementById('published').checked,
+
+      updated_at:
+        new Date().toISOString()
+
+    };
+
+    let result;
+
+    if (newsId) {
+
+      result =
+        await supabaseClient
+          .from('News')
+          .update(payload)
+          .eq('id', newsId);
+
+    } else {
+
+      result =
+        await supabaseClient
+          .from('News')
+          .insert(payload);
+
+    }
+
+    if (result.error) {
+
+      console.error(result.error);
+
+      alert('Fehler beim Speichern');
+
+      return;
+
+    }
+
+    window.location.href =
+      '/admin/news.html';
+
+  });
+
+loadNews();
+
+</script>
+
+</body>
+
+</html>
