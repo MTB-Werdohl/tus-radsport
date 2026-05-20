@@ -196,7 +196,6 @@ class="push-widget-card"
 
 <h3>
 
-📢
 ${push.title}
 
 </h3>
