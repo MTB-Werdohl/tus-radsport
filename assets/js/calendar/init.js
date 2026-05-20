@@ -26,6 +26,12 @@ document.addEventListener(
 
           firstDay:1,
 
+          validRange:{
+
+          start:new Date()
+
+          },
+
           headerToolbar:{
 
             left:
