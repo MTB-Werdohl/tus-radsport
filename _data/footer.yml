@@ -8,3 +8,7 @@ links:
   - title: "Datenschutz"
     url: "/datenschutz"
     external: false
+
+copyright:
+  text: "© MTB Werdohl"
+  url: "/admin/"
