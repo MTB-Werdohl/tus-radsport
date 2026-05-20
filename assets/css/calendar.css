@@ -1,141 +1,54 @@
 #calendar {
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 1rem;
+
+  max-width:700px;
+
+  margin:2rem auto 1rem;
+
+  padding:0 1rem;
+
+}
+
+/* HEADER */
+
+.fc-toolbar {
+
+  margin-bottom:1.5rem;
+
 }
 
 .fc-toolbar-title {
-  font-size: 1.5rem;
-}
 
-.fc-event {
-  cursor: pointer;
-}
-
-.fc-col-header-cell-cushion {
-  color: #ed1c24;
-  font-weight: 700;
-}
-
-.fc-col-header-cell {
-  background: #fff5f5;
-}
-
-/* LISTE */
-
-.fc-list {
-
- border:none;
-
-}
-
-.fc-list-table {
-
-  border-collapse:separate;
-
-  border-spacing:0 22px;
-
-}
-
-.fc-list-day {
-
- display:block;
-
- margin-top:24px;
-
-}
-
-.fc-list-day-cushion {
-
-  background:none !important;
-
-  color:white !important;
-
-  opacity:.65;
-
-  padding:0 0 18px 0 !important;
-
-  font-size:1rem;
-
-}
-
-.fc-list-event {
-
-  background:#171717;
-
-  border-radius:22px;
-
-  overflow:hidden;
-
-  box-shadow:
-
-    0 12px 35px
-    rgba(0,0,0,.35);
-
-}
-
-.fc-list-event:hover {
-
- transform:
- translateY(-2px);
-
- background:
-
- linear-gradient(
-
- 145deg,
-
- #2a2a2a,
-
- #1d1d1d
-
- );
-
-}
-
-.fc-list-event td {
-
-  padding:28px 24px !important;
-
-}
-
-.fc-list-event-time {
-
-  color:#ed1c24;
-
-  font-size:1.1rem;
-
-  font-weight:700;
-
-  width:90px;
-
-}
-
-.fc-list-event-title a {
-
-  color:white !important;
-
-  font-size:1.25rem;
+  font-size:2rem;
 
   font-weight:700;
 
 }
 
-.fc-list-event-dot {
+/* WOCHENTAGE AUSBLENDEN */
 
-  border-width:14px !important;
+.fc-col-header {
 
-}
-
-.fc-theme-standard td {
-
- border:none !important;
+  display:none;
 
 }
 
+/* MONATSGRID AUSBLENDEN */
+
+.fc-daygrid-body,
+.fc-daygrid-day-events,
+.fc-daygrid-event-harness,
+.fc-daygrid-day-number,
+.fc-scrollgrid-sync-table {
+
+  display:none;
+
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th,
 .fc-theme-standard .fc-scrollgrid {
 
- border:none !important;
+  border:none !important;
 
 }
 
@@ -146,79 +59,9 @@
 
 }
 
+/* BUTTONS */
 
 .fc-button {
-
-  background:#1d1d1d !important;
-
-  border:none !important;
-
-  border-radius:12px !important;
-
-  padding:10px 14px !important;
-
-  transition:.2s ease;
-
-}
-
-.fc-button:hover {
-
-  background:#2e8b57 !important;
-
-}
-
-.fc-button-active {
-
-  background:#2e8b57 !important;
-
-}
-
-.fc-toolbar {
-
-  margin-bottom:2rem;
-
-}
-
-.fc-daygrid-body,
-.fc-daygrid-day-events,
-.fc-daygrid-event-harness,
-.fc-daygrid-day-number,
-.fc-scrollgrid-sync-table {
-
- display:none;
-
-}
-
-.fc-theme-standard td,
-.fc-theme-standard th{
-
- border:none !important;
-
-}
-
-.fc-col-header {
-
-  display:none;
-
-}
-
-#event-cards{
-
-  max-width:700px;
-
-  margin:
-
-    2rem auto;
-
-  display:flex;
-
-  flex-direction:column;
-
-  gap:12px;
-
-}
-
-.calendar-card {
 
   background:
 
@@ -227,7 +70,67 @@
       38,
       56,
       .88
-    );
+    ) !important;
+
+  border:none !important;
+
+  border-radius:14px !important;
+
+  padding:10px 16px !important;
+
+  transition:.2s ease;
+
+}
+
+.fc-button:hover {
+
+  background:
+
+    rgba(
+      35,
+      58,
+      82,
+      .95
+    ) !important;
+
+}
+
+.fc-button-active {
+
+  background:
+
+    rgba(
+      45,
+      75,
+      105,
+      1
+    ) !important;
+
+}
+
+/* EVENT CARDS */
+
+#event-cards {
+
+  max-width:700px;
+
+  margin:auto;
+
+  padding:0 1rem;
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:8px;
+
+}
+
+.calendar-card {
+
+  background:
+
+ rgba(34, 81, 169, 0.90);
 
   backdrop-filter:
 
@@ -244,28 +147,26 @@
       .05
     );
 
-  border-radius:18px;
+  border-radius:14px;
 
-  padding:18px 20px;
+  padding:10px 14px;
 
   box-shadow:
 
-    0 8px 24px
+    0 4px 12px
 
     rgba(
       0,
       0,
       0,
-      .18
+      .15
     );
 
 }
 
 .calendar-card a {
 
-  display:flex;
-
-  align-items:center;
+  display:block;
 
   text-decoration:none;
 
@@ -273,22 +174,26 @@
 
 }
 
-.calendar-card h3{
+.calendar-card h3 {
 
- margin:0;
+  margin:0;
 
- font-size:1rem;
+  font-size:1rem;
 
- font-weight:700;
+  font-weight:700;
+
+  line-height:1.2;
 
 }
 
-.calendar-card p{
+.calendar-card p {
 
- margin-top:4px;
+  margin:4px 0 0;
 
- opacity:.75;
+  font-size:.88rem;
 
- font-size:.9rem;
+  opacity:.82;
+
+  line-height:1.3;
 
 }
