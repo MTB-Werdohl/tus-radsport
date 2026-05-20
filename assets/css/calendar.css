@@ -24,143 +24,128 @@
 /* LISTE */
 
 .fc-list {
-  border: none;
+
+ border:none;
+
 }
 
 .fc-list-table {
 
-  border-collapse: separate;
+ border-collapse:separate;
 
-  border-spacing: 0 14px;
+ border-spacing:0 14px;
 
 }
 
 .fc-list-day {
 
-  background: none;
+ display:block;
+
+ margin-top:24px;
 
 }
 
 .fc-list-day-cushion {
 
-  background: none !important;
+ background:none !important;
 
-  color: #666 !important;
+ color:white !important;
 
-  font-weight: 700;
+ font-size:1rem;
 
-  font-size: 0.95rem;
+ padding:0 0 12px 0 !important;
 
-  padding: 10px 0 !important;
-
-  opacity: 0.8;
-
-}
-
-.fc-list-day-text,
-.fc-list-day-side-text {
-
-  color: inherit !important;
-
-  text-decoration: none;
+ opacity:.7;
 
 }
 
 .fc-list-event {
 
-  background: #222;
+ display:block;
 
-  border-radius: 14px;
+ background:#222;
 
-  overflow: hidden;
+ border-radius:16px;
 
-  box-shadow:
-    0 10px 30px rgba(0,0,0,.18);
+ overflow:hidden;
 
-  transition:
-    transform .2s ease,
-    box-shadow .2s ease,
-    background .2s ease;
+ box-shadow:
+
+ 0 10px 30px
+ rgba(0,0,0,.25);
+
+ transition:.2s;
 
 }
 
 .fc-list-event:hover {
 
-  transform: translateY(-2px);
+ transform:
+ translateY(-2px);
 
-  background:
+ background:
 
-    linear-gradient(
-      145deg,
-      #2a2a2a,
-      #1d1d1d
-    );
+ linear-gradient(
+
+ 145deg,
+
+ #2a2a2a,
+
+ #1d1d1d
+
+ );
 
 }
 
 .fc-list-event td {
 
-  border: none !important;
+ border:none !important;
 
-  padding: 18px !important;
+ padding:22px !important;
 
 }
 
 .fc-list-event-time {
 
-  width: 110px;
+ width:110px;
 
-  color: #aaa;
+ color:#ed1c24;
 
-  font-size: .85rem;
+ font-weight:700;
 
-  font-weight: 500;
+ font-size:.9rem;
 
-  vertical-align: middle;
-
-}
-
-.fc-list-event-time::before {
-
-  content: attr(data-date);
-
-  display: block;
-
-  font-size: 1rem;
-
-  font-weight: 700;
-
-  color: #ed1c24;
-
-  margin-bottom: 4px;
-
-}
-
-.fc-list-event-title {
-
-  font-size: 1rem;
-
-  font-weight: 700;
+ vertical-align:top;
 
 }
 
 .fc-list-event-title a {
 
-  color: white !important;
+ color:white !important;
 
-  text-decoration: none;
+ text-decoration:none;
 
-}
+ font-size:1.05rem;
 
-.fc-list-event:hover .fc-list-event-title a {
-
-  color: #ed1c24 !important;
+ font-weight:700;
 
 }
 
 .fc-list-event-dot {
 
-  border-width: 10px !important;
+ border-width:12px !important;
+
+}
+
+.fc-theme-standard td {
+
+ border:none !important;
+
+}
+
+.fc-theme-standard .fc-scrollgrid {
+
+ border:none !important;
 
 }
 
@@ -173,5 +158,37 @@
 .fc-theme-standard .fc-scrollgrid {
 
   border: none !important;
+
+}
+
+.fc-button {
+
+  background:#1d1d1d !important;
+
+  border:none !important;
+
+  border-radius:12px !important;
+
+  padding:10px 14px !important;
+
+  transition:.2s ease;
+
+}
+
+.fc-button:hover {
+
+  background:#2e8b57 !important;
+
+}
+
+.fc-button-active {
+
+  background:#2e8b57 !important;
+
+}
+
+.fc-toolbar {
+
+  margin-bottom:2rem;
 
 }
