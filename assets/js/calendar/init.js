@@ -1,37 +1,71 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener(
+  'DOMContentLoaded',
 
-  const calendarEl = document.getElementById('calendar');
+  function(){
 
-  const calendar = new FullCalendar.Calendar(calendarEl, {
+    const calendarEl=
 
-    initialView: 'listMonth',
+      document.getElementById(
+        'calendar'
+      );
 
-    locale: 'de',
+    const calendar=
 
-    buttonText: {
-      today: 'Heute',
-      month: 'Monat',
-      list: 'Liste'
-    },
+      new FullCalendar.Calendar(
 
-    height: 'auto',
+        calendarEl,
 
-    firstDay: 1,
+        {
 
-    headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: ''
-    },
+          initialView:
+            'dayGridMonth',
 
-    eventSources: eventSources,
+          locale:'de',
 
-    eventDidMount: handleEventRender,
+          height:'auto',
 
-    eventClick: handleEventClick,
+          firstDay:1,
 
-  });
+          headerToolbar:{
 
-  calendar.render();
+            left:
+              'prev,next today',
 
-});
+            center:
+              'title',
+
+            right:''
+
+          },
+
+          buttonText:{
+
+            today:'Heute'
+
+          },
+
+          datesSet(
+
+            info
+
+          ){
+
+            loadCards(
+
+              info.start,
+
+              info.end
+
+            );
+
+          }
+
+        }
+
+      );
+
+    calendar.render();
+
+  }
+
+);

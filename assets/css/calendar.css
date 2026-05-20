@@ -178,3 +178,102 @@
   margin-bottom:2rem;
 
 }
+
+.fc-daygrid-body,
+.fc-daygrid-day-events,
+.fc-daygrid-event-harness,
+.fc-daygrid-day-number,
+.fc-scrollgrid-sync-table {
+
+ display:none;
+
+}
+
+.fc-theme-standard td,
+.fc-theme-standard th{
+
+ border:none !important;
+
+}
+
+#event-cards{
+
+ display:flex;
+
+ flex-direction:column;
+
+ gap:1rem;
+
+ margin-top:2rem;
+
+}
+
+.calendar-card{
+
+ background:#171717;
+
+ border-radius:22px;
+
+ padding:1.5rem;
+
+ box-shadow:
+
+ 0 12px 35px
+
+ rgba(
+
+ 0,
+
+ 0,
+
+ 0,
+
+ .35
+
+ );
+
+}
+
+.calendar-card a{
+
+ display:flex;
+
+ gap:1rem;
+
+ align-items:center;
+
+ color:white;
+
+ text-decoration:none;
+
+}
+
+.calendar-dot{
+
+ width:14px;
+
+ height:14px;
+
+ background:
+
+ #2e8b57;
+
+ border-radius:50%;
+
+ flex:none;
+
+}
+
+.calendar-card h3{
+
+ margin:0;
+
+}
+
+.calendar-card p{
+
+ margin:.4rem 0 0;
+
+ opacity:.7;
+
+}
