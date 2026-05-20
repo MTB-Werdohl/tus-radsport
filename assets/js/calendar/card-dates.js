@@ -10,9 +10,9 @@ function formatCardDate(
       event.date
     );
 
-  return date
+  const formattedDate =
 
-    .toLocaleString(
+    date.toLocaleDateString(
 
       'de-DE',
 
@@ -22,7 +22,21 @@ function formatCardDate(
 
         day:'2-digit',
 
-        month:'2-digit',
+        month:'2-digit'
+
+      }
+
+    );
+
+  const time =
+
+    event.startTime ||
+
+    date.toLocaleTimeString(
+
+      'de-DE',
+
+      {
 
         hour:'2-digit',
 
@@ -31,5 +45,7 @@ function formatCardDate(
       }
 
     );
+
+  return `${formattedDate} · ${time} Uhr`;
 
 }

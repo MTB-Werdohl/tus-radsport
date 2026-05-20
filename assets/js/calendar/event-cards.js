@@ -158,6 +158,28 @@ current.getDate()
 
       'calendar-card';
 
+      const colors = {
+
+  training:'#2e8b57',
+
+  event:'#ed1c24',
+
+  vereinsleben:'#f39c12',
+
+  race:'#9b59b6'
+
+};
+
+const color =
+
+  colors[
+    event.category
+  ]
+
+  ||
+
+  '#3498db';
+
     card.innerHTML=`
 
 <a
@@ -169,6 +191,10 @@ href="/event.html?slug=${event.slug}"
 <div
 
 class="calendar-dot"
+
+style="
+background:${color}
+"
 
 ></div>
 
