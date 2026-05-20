@@ -261,27 +261,15 @@
 
 }
 
-.calendar-card a{
+.calendar-card a {
 
- display:flex;
+  display:flex;
 
- gap:14px;
+  align-items:center;
 
- align-items:center;
+  text-decoration:none;
 
- min-height:62px;
-
-}
-
-.calendar-dot{
-
- width:12px;
-
- height:12px;
-
- border-radius:50%;
-
- flex:none;
+  color:white;
 
 }
 

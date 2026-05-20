@@ -250,14 +250,6 @@ href="/event.html?slug=${event.slug}"
 
 >
 
-<div
-
-class="calendar-dot"
-
-style="background:${category.color}"
-
-></div>
-
 <div>
 
 <h3>
