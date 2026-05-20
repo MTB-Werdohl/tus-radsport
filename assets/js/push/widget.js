@@ -119,7 +119,6 @@ function renderPush(
 
       <h3>
 
-        📢
         ${push.title}
 
       </h3>
