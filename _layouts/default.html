@@ -82,11 +82,17 @@
 
 <footer class="site-footer">
   <div class="wrap footer-inner">
+
     <div class="footer-meta">
-      <span class="footer-note">{{ site.data.footer.note }}</span>
+      <span class="footer-note">
+        {{ site.data.footer.note }}
+      </span>
     </div>
 
-    <nav class="footer-nav" aria-label="Footer-Navigation">
+    <nav
+      class="footer-nav"
+      aria-label="Footer-Navigation"
+    >
 
       {% for item in site.data.footer.links %}
 
@@ -106,7 +112,16 @@
 
       {% endfor %}
 
+      <span class="footer-sep">|</span>
+
+      <a
+        href="{{ site.data.footer.copyright.url }}"
+      >
+        {{ site.data.footer.copyright.text }}
+      </a>
+
     </nav>
+
   </div>
 </footer>
 <div
