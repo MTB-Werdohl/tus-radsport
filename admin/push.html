@@ -17,6 +17,10 @@
 
   <script src="/assets/js/push/config.js"></script>
 
+  <script src="/assets/js/core/supabase.js"></script>
+
+  <script src="/assets/js/push/state.js"></script>
+
   <link rel="stylesheet"
         href="/assets/css/admin.css">
 
@@ -146,17 +150,27 @@ document
         }
       );
 
-      const result =
-        await response.json();
+const result =
+  await response.json();
 
-      console.log(result);
+console.log(result);
 
-      status.innerText =
-        '✅ Push erfolgreich gesendet';
+await saveLastPush(
 
-      document
-        .getElementById('push-form')
-        .reset();
+  title,
+
+  body,
+
+  url
+
+);
+
+status.innerText =
+  '✅ Push erfolgreich gesendet';
+
+document
+  .getElementById('push-form')
+  .reset();
 
     } catch(error) {
 
