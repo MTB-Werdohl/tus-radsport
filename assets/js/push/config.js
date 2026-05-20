@@ -7,8 +7,3 @@ window.pushConfig = {
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVheml6ZXN5dHJua25iZ3JuZ2dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNDM2NDcsImV4cCI6MjA5NDYxOTY0N30.fLTAzJvNurXru8maAZYkD5MjgArZ3l_KRnVrb_ftR-o'
 
 };
-
-window.supabaseClient = supabase.createClient(
-  'https://eazizesytrnknbgrnggj.supabase.co',
-  window.pushConfig.supabaseKey
-);

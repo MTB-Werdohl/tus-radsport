@@ -1,5 +1,3 @@
-import { supabase } from '/assets/js/calendar/config.js';
-
 const params = new URLSearchParams(window.location.search);
 
 const slug = params.get('slug');
@@ -26,7 +24,7 @@ async function loadGallery() {
     return;
   }
 
-  const { data: gallery, error } = await supabase
+  const { data: gallery, error } = await supabaseClient
     .from('galleries')
     .select('*')
     .eq('slug', slug)
@@ -64,7 +62,7 @@ function renderGalleryMeta(gallery) {
 
 async function loadImages(galleryId) {
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from('gallery_images')
     .select('*')
     .eq('gallery_id', galleryId)

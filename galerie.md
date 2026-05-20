@@ -21,4 +21,4 @@ permalink: /galerie/
   </div>
 </section>
 
-<script type="module" src="/assets/js/gallery.js"></script>
+<script type="module" src="/assets/js/gallery/gallery.js"></script>
