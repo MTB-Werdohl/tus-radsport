@@ -57,7 +57,7 @@ body {
   font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   line-height: 1.55;
 
-  background-image: url("../images/background.jpg");
+  background-image: url("../images/background.avif");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
