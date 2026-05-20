@@ -38,9 +38,29 @@ async function loadCards(
 
       while(current<end){
 
-        const date=
-          current.toISOString()
-          .split('T')[0];
+const date=
+
+`${
+
+current.getFullYear()
+
+}-${
+String(
+current.getMonth()+1
+).padStart(
+2,
+'0'
+)
+
+}-${
+String(
+current.getDate()
+).padStart(
+2,
+'0'
+)
+
+}`;
 
         const excluded=
 

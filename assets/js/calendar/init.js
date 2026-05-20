@@ -44,21 +44,45 @@ document.addEventListener(
 
           },
 
-          datesSet(
+datesSet(info){
 
-            info
+  const current=
 
-          ){
+    info.view.currentStart;
 
-            loadCards(
+  const start=
 
-              info.start,
+    new Date(
 
-              info.end
+      current.getFullYear(),
 
-            );
+      current.getMonth(),
 
-          }
+      1
+
+    );
+
+  const end=
+
+    new Date(
+
+      current.getFullYear(),
+
+      current.getMonth()+1,
+
+      1
+
+    );
+
+  loadCards(
+
+    start,
+
+    end
+
+  );
+
+}
 
         }
 
