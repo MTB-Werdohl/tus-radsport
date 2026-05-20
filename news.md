@@ -9,6 +9,10 @@ permalink: /news/
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script src="/assets/js/push/config.js"></script>
+
+<script src="/assets/js/core/supabase.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <script>
