@@ -11,6 +11,7 @@ async function loadCards(
   if (!wrapper) return;
 
   const { data, error } =
+
     await supabaseClient
 
       .from('Termine')
@@ -29,6 +30,50 @@ async function loadCards(
 
   const cards=[];
 
+  const categories = {
+
+    training:{
+
+      color:'#2e8b57',
+
+      icon:'🚵'
+
+    },
+
+    vereinsleben:{
+
+      color:'#f1c40f',
+
+      icon:'🎉'
+
+    },
+
+    race:{
+
+      color:'#e74c3c',
+
+      icon:'🏁'
+
+    },
+
+    flex:{
+
+      color:'#3498db',
+
+      icon:'🔄'
+
+    },
+
+    event:{
+
+      color:'#9b59b6',
+
+      icon:'📅'
+
+    }
+
+  };
+
   data.forEach(item=>{
 
     if(item.recurring){
@@ -38,7 +83,7 @@ async function loadCards(
 
       while(current<end){
 
-const date=
+        const date=
 
 `${
 
@@ -146,7 +191,30 @@ current.getDate()
 
   );
 
-  cards.forEach(event=>{
+  const now=
+    new Date();
+
+  const visibleCards=
+
+    cards.filter(
+
+      event=>{
+
+        const date=
+
+          event.generatedDate ||
+
+          new Date(
+            event.date
+          );
+
+        return date>=now;
+
+      }
+
+    );
+
+  visibleCards.forEach(event=>{
 
     const card=
 
@@ -158,27 +226,21 @@ current.getDate()
 
       'calendar-card';
 
-      const colors = {
+    const category=
 
-  training:'#2e8b57',
+      categories[
+        event.category
+      ]
 
-  event:'#ed1c24',
+      ||
 
-  vereinsleben:'#f39c12',
+      {
 
-  race:'#9b59b6'
+        color:'#3498db',
 
-};
+        icon:'📍'
 
-const color =
-
-  colors[
-    event.category
-  ]
-
-  ||
-
-  '#3498db';
+      };
 
     card.innerHTML=`
 
@@ -192,9 +254,7 @@ href="/event.html?slug=${event.slug}"
 
 class="calendar-dot"
 
-style="
-background:${color}
-"
+style="background:${category.color}"
 
 ></div>
 
@@ -202,15 +262,29 @@ background:${color}
 
 <h3>
 
+${category.icon}
+
 ${event.title}
 
 </h3>
 
 <p>
 
-${formatCardDate(
-event
-)}
+🗓️
+
+${formatCardDate(event)}
+
+${
+
+event.location
+
+?
+
+` · 📍 ${event.location}`
+
+:''
+
+}
 
 </p>
 
