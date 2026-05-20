@@ -1,4 +1,5 @@
-import { supabase } from '/assets/js/calendar/config.js';
+const supabase =
+  window.supabaseClient;
 
 const form = document.getElementById('gallery-form');
 

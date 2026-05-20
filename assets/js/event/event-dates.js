@@ -60,12 +60,11 @@ function formatEventTime(
   if (!event)
     return '';
 
-  if (event.recurring) {
+if (event.recurring) {
 
-    return
-      event.startTime || '';
+  return event.startTime || '';
 
-  }
+}
 
   return new Date(
     event.date
