@@ -2,65 +2,34 @@ function formatCardDate(
   event
 ){
 
-  if (
-    event.recurring
-  ){
+  const date =
 
-    const weekdays=[
+    event.generatedDate ||
 
-      'So',
-      'Mo',
-      'Di',
-      'Mi',
-      'Do',
-      'Fr',
-      'Sa'
+    new Date(
+      event.date
+    );
 
-    ];
+  return date
 
-    return `
+    .toLocaleString(
 
-${
+      'de-DE',
 
-weekdays[
-event.daysOfWeek?.[0]
-] || ''
+      {
 
-}
+        weekday:'long',
 
-${
+        day:'2-digit',
 
-event.startTime || ''
+        month:'2-digit',
 
-}
+        hour:'2-digit',
 
-`;
+        minute:'2-digit'
 
-  }
+      }
 
-  if (!event.date)
-    return '';
-
-  return new Date(
-    event.date
-  )
-
-  .toLocaleString(
-
-    'de-DE',
-
-    {
-
-      day:'2-digit',
-
-      month:'2-digit',
-
-      hour:'2-digit',
-
-      minute:'2-digit'
-
-    }
-
-  );
+    );
 
 }

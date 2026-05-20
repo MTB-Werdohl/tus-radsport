@@ -196,6 +196,12 @@
 
 }
 
+.fc-col-header {
+
+  display:none;
+
+}
+
 #event-cards{
 
  display:flex;

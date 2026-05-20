@@ -1,160 +1,154 @@
 async function loadCards(
-
- start,
-
- end
-
+  start,
+  end
 ){
 
- const wrapper=
+  const wrapper =
+    document.getElementById(
+      'event-cards'
+    );
 
- document.getElementById(
+  if (!wrapper) return;
 
- 'event-cards'
+  const { data, error } =
+    await supabaseClient
 
- );
+      .from('Termine')
 
- if(
+      .select('*');
 
- !wrapper
+  if (error){
 
- ) return;
+    console.error(error);
 
- const {
+    return;
 
- data,
+  }
 
- error
+  wrapper.innerHTML='';
 
- }=
+  const cards=[];
 
- await supabaseClient
+  data.forEach(item=>{
 
- .from('Termine')
+    if(item.recurring){
 
- .select('*');
+      const current=
+        new Date(start);
 
- if(
+      while(current<end){
 
- error
+        const date=
+          current.toISOString()
+          .split('T')[0];
 
- ){
+        const excluded=
 
- console.error(error);
+          item.exclude
+          ?.includes(date);
 
- return;
+        const validDay=
 
- }
+          item.daysOfWeek
+          ?.includes(
+            current.getDay()
+          );
 
- wrapper.innerHTML='';
+        if(
 
- const events=
+          validDay &&
 
- data
+          !excluded
 
- .filter(
+        ){
 
- item=>{
+          cards.push({
 
- if(
+            ...item,
 
- item.recurring
+            generatedDate:
 
- )
+            new Date(current)
 
- return true;
+          });
 
- const date=
+        }
 
- new Date(
+        current.setDate(
 
- item.date
+          current.getDate()+1
 
- );
+        );
 
- return(
+      }
 
- date>=start &&
+      return;
 
- date<end
+    }
 
- );
+    const eventDate=
 
- }
+      new Date(item.date);
 
- )
+    if(
 
- .sort(
+      eventDate>=start &&
 
- (a,b)=>{
+      eventDate<end
 
-const first=
+    ){
 
-a.date ||
+      cards.push(item);
 
-`${new Date().getFullYear()}-01-01`;
+    }
 
-const second=
+  });
 
-b.date ||
+  cards.sort(
 
-`${new Date().getFullYear()}-01-01`;
+    (a,b)=>{
 
- return new Date(
+      const first=
 
- first
+        a.generatedDate ||
 
- )
+        new Date(a.date);
 
- -
+      const second=
 
- new Date(
+        b.generatedDate ||
 
- second
+        new Date(b.date);
 
- );
+      return first-second;
 
- }
+    }
 
- );
+  );
 
- events.forEach(
+  cards.forEach(event=>{
 
- event=>{
+    const card=
 
- const card=
+      document.createElement(
+        'article'
+      );
 
- document
+    card.className=
 
- .createElement(
+      'calendar-card';
 
- 'article'
-
- );
-
- card.className=
-
- 'calendar-card';
-
- card.innerHTML=
-
- `
+    card.innerHTML=`
 
 <a
 
-href=
-
-"/event.html?slug=
-
-${event.slug}"
+href="/event.html?slug=${event.slug}"
 
 >
 
 <div
 
-class=
-
-"calendar-dot"
+class="calendar-dot"
 
 ></div>
 
@@ -169,9 +163,7 @@ ${event.title}
 <p>
 
 ${formatCardDate(
-
 event
-
 )}
 
 </p>
@@ -182,16 +174,10 @@ event
 
 `;
 
- wrapper
+    wrapper.appendChild(
+      card
+    );
 
- .appendChild(
-
- card
-
- );
-
- }
-
- );
+  });
 
 }
