@@ -1,86 +1,170 @@
-self.addEventListener('install', () => {
-  console.log('Service Worker installiert');
-});
+self.addEventListener(
+  'install',
+  () => {
 
-self.addEventListener('push', event => {
+    console.log(
+      'Service Worker installiert'
+    );
 
-  let data = {
-
-    title: 'MTB Werdohl',
-
-    body: 'Neue Mitteilung',
-
-    url: '/'
-
-  };
-
-  try {
-
-    if (event.data) {
-      data = event.data.json();
-    }
-
-  } catch(error) {
-
-    console.error(error);
+    self.skipWaiting();
 
   }
+);
 
-  event.waitUntil(
+self.addEventListener(
+  'activate',
+  event => {
 
-    self.registration.showNotification(
-      data.title,
-      {
+    event.waitUntil(
 
-        body: data.body,
+      clients.claim()
 
-        icon: '/assets/images/icon-192.png',
+    );
 
-        badge: '/assets/images/icon-192.png',
+  }
+);
 
-        vibrate: [200, 100, 200],
+self.addEventListener(
+  'push',
+  event => {
 
-        requireInteraction: true,
+    let data = {
 
-        data: {
-          url: data.url
+      title:'MTB Werdohl',
+
+      body:'Neue Mitteilung',
+
+      url:'/'
+
+    };
+
+    try{
+
+      if(event.data){
+
+        data =
+          event.data.json();
+
+      }
+
+    }catch(error){
+
+      console.error(
+        error
+      );
+
+    }
+
+    event.waitUntil(
+
+      self.registration
+      .showNotification(
+
+        data.title,
+
+        {
+
+          body:
+            data.body,
+
+          icon:
+            '/assets/images/icon-192.png',
+
+          badge:
+            '/assets/images/icon-192.png',
+
+          vibrate:
+            [200,100,200],
+
+          requireInteraction:
+            true,
+
+          data:{
+
+            url:
+              data.url
+
+          }
+
         }
 
-      }
-    )
+      )
 
-  );
+    );
 
-});
+  }
+);
 
-self.addEventListener('notificationclick', event => {
+self.addEventListener(
+  'notificationclick',
+  event => {
 
-  event.notification.close();
+    event.notification.close();
 
-  event.waitUntil(
+    event.waitUntil(
 
-    clients.matchAll({
-      type: 'window',
-      includeUncontrolled: true
-    })
-    .then(clientList => {
+      (async()=>{
 
-      for (const client of clientList) {
+        const url =
 
-        if ('focus' in client) {
-          return client.focus();
+          event
+          .notification
+          .data
+          ?.url ||
+
+          '/';
+
+        const clientList =
+
+          await clients
+          .matchAll({
+
+            type:'window',
+
+            includeUncontrolled:
+              true
+
+          });
+
+        for(
+          const client
+          of clientList
+        ){
+
+          client.postMessage({
+
+            type:
+              'PUSH_OPENED'
+
+          });
+
+          if(
+            'focus'
+            in client
+          ){
+
+            await client.focus();
+
+            return;
+
+          }
+
         }
 
-      }
+        if(
+          clients.openWindow
+        ){
 
-      if (clients.openWindow) {
-        return clients.openWindow(
-          event.notification.data.url
-        );
-      }
+          return clients
+          .openWindow(
+            url
+          );
 
-    })
+        }
 
-  );
+      })()
 
-});
+    );
+
+  }
+);

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "TuS Jahn – Radfahrer-Kodex"
+title: "Kodex"
 ---
 
 Dieser Kodex wurde von der Abteilungsversammlung verabschiedet und bildet die Grundlage für unser gemeinsames Auftreten und Verhalten im Trainings- und Vereinsbetrieb.

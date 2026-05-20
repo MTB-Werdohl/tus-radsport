@@ -3,157 +3,236 @@ document.addEventListener(
   initPushWidget
 );
 
+navigator
+.serviceWorker
+?.addEventListener(
+
+'message',
+
+async event=>{
+
+if(
+
+event
+.data
+?.type
+
+!==
+
+'PUSH_OPENED'
+
+){
+
+return;
+
+}
+
+await initPushWidget();
+
+}
+
+);
+
 async function initPushWidget(){
 
-  const widget =
-    document.getElementById(
-      'push-widget'
-    );
+const widget =
 
-  const content =
-    document.getElementById(
-      'push-widget-content'
-    );
+document
+.getElementById(
+'push-widget'
+);
 
-  const toggle =
-    document.getElementById(
-      'push-widget-toggle'
-    );
+const content =
 
-  if(
-    !widget ||
-    !content
-  ){
-    return;
-  }
+document
+.getElementById(
+'push-widget-content'
+);
 
-  const push =
-    await getLastPush();
+const toggle =
 
-  if(!push){
-    return;
-  }
+document
+.getElementById(
+'push-widget-toggle'
+);
 
-  const pushId =
-    push.sent_at;
+if(
 
-  const stored =
-    localStorage.getItem(
-      'lastSeenPush'
-    );
+!widget ||
 
-  const collapsed =
-    localStorage.getItem(
-      'pushCollapsed'
-    );
+!content
 
-  widget.classList.remove(
-    'hidden'
-  );
+){
 
-  renderPush(
-    content,
-    push
-  );
+return;
 
-  if(
-    stored !== pushId
-  ){
+}
 
-    widget.classList.remove(
-      'collapsed'
-    );
+const push =
 
-  } else {
+await getLastPush();
 
-    if(
-      collapsed === 'true'
-    ){
+if(!push){
 
-      widget.classList.add(
-        'collapsed'
-      );
+return;
 
-    }
+}
 
-  }
+const pushId =
 
-  toggle.addEventListener(
-    'click',
-    () => {
+push.sent_at;
 
-      widget.classList.toggle(
-        'collapsed'
-      );
+const stored =
 
-      localStorage.setItem(
+localStorage
+.getItem(
+'lastSeenPush'
+);
 
-        'pushCollapsed',
+const collapsed =
 
-        widget.classList.contains(
-          'collapsed'
-        )
+localStorage
+.getItem(
+'pushCollapsed'
+);
 
-      );
+widget
+.classList
+.remove(
+'hidden'
+);
 
-      localStorage.setItem(
-        'lastSeenPush',
-        pushId
-      );
+renderPush(
 
-    }
-  );
+content,
+
+push
+
+);
+
+if(
+
+stored
+!==
+
+pushId
+
+){
+
+widget
+.classList
+.remove(
+'collapsed'
+);
+
+}else{
+
+if(
+
+collapsed
+===
+
+'true'
+
+){
+
+widget
+.classList
+.add(
+'collapsed'
+);
+
+}
+
+}
+
+toggle.onclick=()=>{
+
+widget
+.classList
+.toggle(
+'collapsed'
+);
+
+localStorage
+.setItem(
+
+'pushCollapsed',
+
+widget
+.classList
+.contains(
+'collapsed'
+)
+
+);
+
+localStorage
+.setItem(
+
+'lastSeenPush',
+
+pushId
+
+);
+
+};
 
 }
 
 function renderPush(
-  target,
-  push
+
+target,
+
+push
+
 ){
 
-  target.innerHTML = `
+target.innerHTML=`
 
-    <div
-      class="push-widget-card"
-    >
+<div
+class="push-widget-card"
+>
 
-      <h3>
+<h3>
 
-        ${push.title}
+📢
+${push.title}
 
-      </h3>
+</h3>
 
-      <p>
+<p>
 
-        ${push.body}
+${push.body}
 
-      </p>
+</p>
 
-      ${
-        push.url
+${
 
-        ?
+push.url
 
-        `
+?
 
-        <a
-          href="${push.url}"
-        >
+`
 
-          Mehr erfahren
+<a
+href="${push.url}"
+>
 
-        </a>
+Mehr erfahren
 
-        `
+</a>
 
-        :
+`
 
-        ''
+:
 
-      }
+''
 
-    </div>
+}
 
-  `;
+</div>
+
+`;
 
 }
