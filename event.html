@@ -4,6 +4,7 @@ permalink: /event.html
 ---
 
 <div id="event"></div>
+<div id="share"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
@@ -14,3 +15,10 @@ permalink: /event.html
 <script src="/assets/js/event/event-render.js"></script>
 
 <script src="/assets/js/event/event-page.js"></script>
+
+<script src="/assets/js/core/share.js"></script>
+
+buildShareButton(
+  'share',
+  data.title
+);
