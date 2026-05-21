@@ -76,7 +76,7 @@
 
     <div class="dashboard-grid">
 
-      <a href="/admin/push.html"
+<a href="/admin/push.html"
    class="dashboard-card">
 
   <div class="dashboard-icon">
@@ -91,6 +91,18 @@
     Mitteilungen, Trainingsabsagen
     und wichtige Informationen
     direkt an alle Geräte senden.
+  </p>
+
+  <p class="push-count">
+
+    Erreichte Geräte:
+
+    <span id="push-count">
+
+      ...
+
+    </span>
+
   </p>
 
 </a>
@@ -218,8 +230,6 @@ async function checkSession() {
 
   }
 
-}
-
 function showDashboard() {
 
   document.getElementById('login-view')
@@ -228,9 +238,59 @@ function showDashboard() {
   document.getElementById('dashboard-view')
     .classList.remove('hidden');
 
-}
+  loadPushCount();
+
+}}
 
 checkSession();
+
+async function loadPushCount() {
+
+  const {
+
+    count,
+    error
+
+  } =
+
+    await supabaseClient
+
+      .from(
+        'PushSubscriptions'
+      )
+
+      .select(
+        '*',
+        {
+
+          count: 'exact',
+          head: true
+
+        }
+
+      );
+
+  if (error) {
+
+    console.error(
+      error
+    );
+
+    return;
+
+  }
+
+  document
+
+    .getElementById(
+      'push-count'
+    )
+
+    .textContent =
+
+      count;
+
+}
 
 </script>
 
