@@ -4,16 +4,13 @@ title: News
 permalink: /news/
 ---
 
-<div id="news-list"
-     class="news-list"></div>
+<div id="news-cards"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="/assets/js/push/config.js"></script>
 
 <script src="/assets/js/core/supabase.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 <script>
 
@@ -41,16 +38,18 @@ async function loadNews() {
 
 }
 
-function renderNews(news) {
+function renderNews(news){
 
   const container =
-    document.getElementById('news-list');
+    document.getElementById(
+      'news-cards'
+    );
 
-  container.innerHTML = '';
+  container.innerHTML='';
 
-  if (!news.length) {
+  if(!news.length){
 
-    container.innerHTML = `
+    container.innerHTML=`
 
       <p>
         Aktuell sind keine News vorhanden.
@@ -61,6 +60,66 @@ function renderNews(news) {
     return;
 
   }
+
+  news.forEach(item=>{
+
+    const card =
+      document.createElement(
+        'article'
+      );
+
+    card.className=
+      'event-card';
+
+    card.innerHTML=`
+
+      <div class="event-header">
+
+        <div>
+
+          <strong>
+
+            ${item.title}
+
+          </strong>
+
+          <div
+            class="event-meta"
+          >
+
+            ${
+
+              item.excerpt
+              ||
+
+              'Keine Beschreibung'
+
+            }
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+    card.onclick=()=>{
+
+      window.location.href=
+
+        '/news-detail.html?slug='
+        + item.slug;
+
+    };
+
+    container.appendChild(
+      card
+    );
+
+  });
+
+}
 
   news.forEach(item => {
 
