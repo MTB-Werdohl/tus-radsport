@@ -1,25 +1,38 @@
 function renderNewsCards(news){
 
-  const container =
+  const wrapper =
     document.getElementById(
       'news-cards'
     );
 
-  if(!container){
+  if(!wrapper){
     return;
   }
 
-  container.innerHTML='';
+  wrapper.innerHTML='';
 
   if(!news?.length){
 
-    container.innerHTML=`
+    wrapper.innerHTML=`
 
-      <div class="event-card">
+      <article
+        class="calendar-card"
+      >
 
-        Keine News vorhanden
+        <h3>
 
-      </div>
+          Keine News
+
+        </h3>
+
+        <p>
+
+          Aktuell gibt es
+          nichts Neues.
+
+        </p>
+
+      </article>
 
     `;
 
@@ -35,51 +48,39 @@ function renderNewsCards(news){
       );
 
     card.className=
-      'event-card';
-
-    card.style.cursor =
-      'pointer';
-
-    card.onclick=()=>{
-
-      window.location.href=
-
-        '/news-detail.html?slug='
-        + item.slug;
-
-    };
+      'calendar-card';
 
     card.innerHTML=`
 
-      <div class="event-header">
+<a
+href="/news-detail.html?slug=${item.slug}"
+>
 
-        <div>
+<div>
 
-          <strong>
+<h3>
 
-            ${item.title}
+${item.title}
 
-          </strong>
+</h3>
 
-          <div
-            class="event-meta"
-          >
+<p>
 
-            ${
-              item.excerpt
-              ||
-              'Keine Beschreibung'
-            }
+${
+item.excerpt
+||
+'Mehr lesen'
+}
 
-          </div>
+</p>
 
-        </div>
+</div>
 
-      </div>
+</a>
 
-    `;
+`;
 
-    container.appendChild(
+    wrapper.appendChild(
       card
     );
 
