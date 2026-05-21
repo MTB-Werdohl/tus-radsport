@@ -535,8 +535,29 @@ async function saveEvent() {
 
 }
 
-toggleRecurring();
-loadEvent();
+async function checkSession() {
+
+  const { data } =
+
+    await supabaseClient.auth
+      .getSession();
+
+  if (!data.session) {
+
+    window.location.href =
+      '/admin/';
+
+    return;
+
+  }
+
+  toggleRecurring();
+
+  loadEvent();
+
+}
+
+checkSession();
 
 </script>
 

@@ -183,6 +183,26 @@ document
 
   });
 
+async function checkSession() {
+
+  const { data } =
+
+    await supabaseClient.auth
+      .getSession();
+
+  if (!data.session) {
+
+    window.location.href =
+      '/admin/';
+
+    return;
+
+  }
+
+}
+
+checkSession();
+
 </script>
 
 </body>

@@ -66,5 +66,29 @@
 
   <script type="module" src="/admin/js/gallery-edit.js"></script>
 
+  <script>
+
+async function checkSession() {
+
+  const { data } =
+
+    await supabaseClient.auth
+      .getSession();
+
+  if (!data.session) {
+
+    window.location.href =
+      '/admin/';
+
+    return;
+
+  }
+
+}
+
+checkSession();
+
+</script>
+
 </body>
 </html>
