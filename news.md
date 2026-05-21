@@ -4,6 +4,9 @@ title: News
 permalink: /news/
 ---
 
+<link rel="stylesheet"
+      href="/assets/css/news.css">
+
   <div id="news-cards"></div>
 
 <script src="/assets/js/push/config.js"></script>
