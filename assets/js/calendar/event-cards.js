@@ -194,6 +194,13 @@ current.getDate()
   const now=
     new Date();
 
+  now.setHours(
+  0,
+  0,
+  0,
+  0
+  );
+
   const visibleCards=
 
     cards.filter(
