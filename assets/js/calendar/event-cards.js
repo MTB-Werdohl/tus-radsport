@@ -78,6 +78,20 @@ async function loadCards(
 
     if(item.recurring){
 
+      const recurringEnd =
+
+  item.endRecur
+
+  ?
+
+  new Date(
+    item.endRecur
+  )
+
+  :
+
+  null;
+
       const current=
         new Date(start);
 
@@ -121,11 +135,19 @@ current.getDate()
 
         if(
 
-          validDay &&
+ validDay &&
 
-          !excluded
+ !excluded &&
 
-        ){
+ (
+
+   !recurringEnd ||
+
+   current <= recurringEnd
+
+ )
+
+){
 
           cards.push({
 
