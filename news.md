@@ -10,6 +10,6 @@ permalink: /news/
 
 <script src="/assets/js/core/supabase.js"></script>
 
-<script src="/assets/js/news/render-news-cards.js"></script>
+<script src="/assets/js/news/render-cards.js"></script>
 
 <script src="/assets/js/news/load-news.js"></script>
