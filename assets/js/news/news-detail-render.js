@@ -26,7 +26,59 @@ ${data.title}
 id="share"
 ></div>
 
-...
+${
+
+data.image
+
+?
+
+`
+
+<img
+
+src="${data.image}"
+
+class="news-hero"
+
+alt="${data.title}"
+
+>
+
+`
+
+:''
+
+}
+
+<div
+class="news-body"
+>
+
+${
+
+marked.parse(
+
+data.content || ''
+
+)
+
+}
+
+</div>
+
+<div
+class="event-back"
+>
+
+<a
+href="/news/"
+>
+
+← Zurück zur Newsübersicht
+
+</a>
+
+</div>
 
 </article>
 
