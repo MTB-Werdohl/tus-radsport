@@ -4,7 +4,11 @@ title: News
 permalink: /news/
 ---
 
-<div id="news-cards"></div>
+<div id="event-cards">
+
+  <div id="news-cards"></div>
+
+</div>
 
 <script src="/assets/js/push/config.js"></script>
 

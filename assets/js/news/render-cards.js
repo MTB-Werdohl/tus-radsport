@@ -31,11 +31,14 @@ function renderNewsCards(news){
 
     const card =
       document.createElement(
-        'div'
+        'article'
       );
 
     card.className=
       'event-card';
+
+    card.style.cursor =
+      'pointer';
 
     card.onclick=()=>{
 
