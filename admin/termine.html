@@ -11,7 +11,8 @@
 
   <title>Termine Verwaltung</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="/assets/js/push/config.js"></script>
+  <script src="/assets/js/core/supabase.js"></script>
 
   <link rel="stylesheet"
         href="/assets/css/admin.css">
@@ -42,18 +43,6 @@
 </div>
 
 <script>
-
-const supabaseUrl =
-  'https://eazizesytrnknbgrnggj.supabase.co';
-
-const supabaseKey =
-  'sb_publishable_Bz-kKI-XUf9Y1sM3hWIfAw_4l8fIPQr';
-
-const supabaseClient =
-  window.supabase.createClient(
-    supabaseUrl,
-    supabaseKey
-  );
 
 async function loadEvents() {
 

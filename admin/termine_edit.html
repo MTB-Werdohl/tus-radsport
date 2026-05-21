@@ -278,7 +278,7 @@ if (data.gpx) {
       .replace(/^[0-9]+-/, '')
   }
 
-</a>
+</div>
 
 
     `;
@@ -408,10 +408,15 @@ async function saveEvent() {
 
     if (!error) {
 
+      const {
+        data:imageData
+      } =
+        supabaseClient.storage
+          .from('media')
+          .getPublicUrl(imageName);
+
       image =
-        supabaseUrl +
-        '/storage/v1/object/public/media/' +
-        imageName;
+        imageData.publicUrl;
 
     }
 
@@ -429,10 +434,15 @@ async function saveEvent() {
 
     if (!error) {
 
+      const {
+        data:gpxData
+      } =
+        supabaseClient.storage
+          .from('media')
+          .getPublicUrl(gpxName);
+
       gpx =
-        supabaseUrl +
-        '/storage/v1/object/public/media/' +
-        gpxName;
+        gpxData.publicUrl;
 
     }
 

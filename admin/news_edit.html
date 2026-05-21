@@ -15,7 +15,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script src="/assets/js/calendar/config.js"></script>
+  <script src="/assets/js/push/config.js"></script>
+  <script src="/assets/js/core/supabase.js"></script>
 
   <link rel="stylesheet"
         href="/assets/css/admin.css">
@@ -206,10 +207,16 @@ async function saveNews() {
 
     if (!error) {
 
-      image =
-        supabaseUrl +
-        '/storage/v1/object/public/media/' +
-        imageName;
+const {
+  data: imageData
+} =
+  supabaseClient
+    .storage
+    .from('media')
+    .getPublicUrl(imageName);
+
+image =
+  imageData.publicUrl;
 
     }
 
