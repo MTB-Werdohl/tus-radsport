@@ -1,93 +1,9 @@
----
-layout: default
-permalink: /news-detail.html
----
-
 <div id="news"></div>
-<div id="share"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="/assets/js/push/config.js"></script>
-
-<script src="/assets/js/core/supabase.js"></script>
 
 <script src="/assets/js/core/share.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="/assets/js/news/news-detail-service.js"></script>
 
-<script>
+<script src="/assets/js/news/news-detail-render.js"></script>
 
-const params =
-  new URLSearchParams(
-    window.location.search
-  );
-
-const slug =
-  params.get('slug');
-
-async function loadNews() {
-
-  const { data, error } =
-    await supabaseClient
-      .from('News')
-      .select('*')
-      .eq('slug', slug)
-      .eq('published', true)
-      .single();
-
-  if (error) {
-
-    console.error(error);
-
-    return;
-
-  }
-
-  document.title =
-    `${data.title} · MTB Werdohl`;
-
-  document.getElementById('news')
-    .innerHTML = `
-
-      <article class="news-page">
-
-        <h1 class="news-title">
-          ${data.title}
-        </h1>
-
-        ${data.image
-          ? `
-            <img
-              src="${data.image}"
-              class="news-hero"
-              alt="${data.title}">
-          `
-          : ''
-        }
-
-        <div class="news-body">
-
-          ${marked.parse(
-            data.content || ''
-          )}
-
-        </div>
-
-        <div class="event-back">
-
-          <a href="/news/">
-            ← Zurück zur Newsübersicht
-          </a>
-
-        </div>
-
-      </article>
-
-    `;
-
-}
-
-loadNews();
-
-</script>
+<script src="/assets/js/news/news-detail-page.js"></script>

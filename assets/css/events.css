@@ -94,6 +94,8 @@
 
   font-size:.95rem;
 
+  color:white;
+
   opacity:.82;
 
   cursor:pointer;
@@ -107,5 +109,7 @@
 .share-button:hover{
 
   opacity:1;
+
+  color:white;
 
 }
