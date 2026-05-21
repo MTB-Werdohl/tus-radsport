@@ -1,0 +1,24 @@
+/*
+News nutzt die calendar-card
+Komponente aus calendar.css
+Erst wenn die Homepage erweitert wird lohnt sich eine weiteres refactor von calender.css zu globale .css
+
+Eigene Styles nur für
+Layout / Spacing.
+*/
+
+#news-cards {
+
+  max-width:700px;
+
+  margin:auto;
+
+  padding:0 1rem;
+
+  display:flex;
+
+  flex-direction:column;
+
+  gap:8px;
+
+}
