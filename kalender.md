@@ -9,7 +9,7 @@ permalink: /kalender/
 
 <div id="event-cards"></div>
 
-<script src="/assets/fullcalendar/index.global.min.js"></script>
+<script src="/assets/js/fullcalendar/index.global.min.js"></script>
 
 <script src="/assets/js/calendar/card-dates.js"></script>
 
