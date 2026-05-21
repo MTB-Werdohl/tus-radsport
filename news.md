@@ -4,7 +4,7 @@ title: News
 permalink: /news/
 ---
 
-<div id="event-cards">
+<div id="calendar-cards">
 
   <div id="news-cards"></div>
 
