@@ -235,3 +235,49 @@ Mehr erfahren
 `;
 
 }
+
+setupFooterProtection();
+
+function setupFooterProtection(){
+
+const footer = document.querySelector(
+'.site-footer'
+);
+
+const widget = document.getElementById(
+'push-widget'
+);
+
+if(
+!footer ||
+!widget
+){
+return;
+}
+
+const observer =
+new IntersectionObserver(
+
+entries=>{
+
+widget.classList.toggle(
+
+'footer-visible',
+
+entries[0].isIntersecting
+
+);
+
+},
+
+{
+threshold:0.05
+}
+
+);
+
+observer.observe(
+footer
+);
+
+}

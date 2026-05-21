@@ -476,7 +476,25 @@ z-index:999;
 
 max-width:320px;
 
-transition:.2s;
+transition:
+bottom .25s ease,
+transform .25s ease;
+
+}
+
+.push-widget.footer-visible{
+
+bottom:120px;
+
+}
+
+@media(max-width:768px){
+
+.push-widget.footer-visible{
+
+bottom:95px;
+
+}
 
 }
 
