@@ -127,6 +127,11 @@ event.content || ''
 
 `;
 
+buildShareButton(
+  'share',
+  event.title
+);
+
 }
 
 function renderLinks(
