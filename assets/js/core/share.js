@@ -13,18 +13,18 @@ function buildShareButton(
     return;
   }
 
-  const button =
+const button =
 
-    document.createElement(
-      'button'
-    );
+  document.createElement(
+    'div'
+  );
 
-  button.className =
-    'share-button';
+button.className =
+  'share-button';
 
-  button.innerHTML =
+button.innerHTML =
 
-    '📤 Teilen';
+  '↗ Teilen';
 
   button.onclick =
     async()=>{

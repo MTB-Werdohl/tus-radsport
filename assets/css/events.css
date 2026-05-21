@@ -81,3 +81,31 @@
 .event-back a:hover {
   text-decoration: underline;
 }
+
+.share-button{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:6px;
+
+  margin:.4rem 0 1rem;
+
+  font-size:.95rem;
+
+  opacity:.82;
+
+  cursor:pointer;
+
+  width:fit-content;
+
+  transition:.2s ease;
+
+}
+
+.share-button:hover{
+
+  opacity:1;
+
+}
