@@ -29,6 +29,8 @@ ${event.title}
 
 </h1>
 
+<div id="share"></div>
+
 <h2 class="event-date">
 
 📅
