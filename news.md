@@ -88,12 +88,9 @@ function renderNews(news){
           >
 
             ${
-
               item.excerpt
               ||
-
               'Keine Beschreibung'
-
             }
 
           </div>
@@ -108,66 +105,14 @@ function renderNews(news){
 
       window.location.href=
 
-        '/news-detail.html?slug='
-        + item.slug;
+      '/news-detail.html?slug='
+      + item.slug;
 
     };
 
     container.appendChild(
       card
     );
-
-  });
-
-}
-
-  news.forEach(item => {
-
-    const article =
-      document.createElement('article');
-
-    article.className =
-      'news-card';
-
-    article.innerHTML = `
-
-      ${item.image
-        ? `
-          <img
-            src="${item.image}"
-            class="news-image"
-            alt="${item.title}">
-        `
-        : ''
-      }
-
-      <div class="news-content">
-
-        <h2>
-          ${item.title}
-        </h2>
-
-        <div class="news-excerpt">
-
-          ${marked.parse(
-            item.excerpt || ''
-          )}
-
-        </div>
-
-        <a
-          class="news-more"
-          href="/news-detail.html?slug=${item.slug}">
-
-          Mehr lesen
-
-        </a>
-
-      </div>
-
-    `;
-
-    container.appendChild(article);
 
   });
 
