@@ -1,14 +1,28 @@
 async function loadEvent() {
 
-  const slug =
+  let slug =
 
     new URLSearchParams(
-
       window.location.search
-
     )
 
     .get('slug');
+
+  if (!slug) {
+
+    const parts =
+
+      window.location.pathname
+        .split('/')
+        .filter(Boolean);
+
+    slug =
+
+      parts[
+        parts.length - 1
+      ];
+
+  }
 
   if (!slug)
     return;

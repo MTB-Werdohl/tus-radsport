@@ -1,20 +1,32 @@
-async function initNews(){
+let slug=
 
-  const params=
+new URLSearchParams(
+window.location.search
+)
 
-    new URLSearchParams(
-      window.location.search
-    );
+.get(
+'slug'
+);
 
-  const slug=
+if(!slug){
 
-    params.get(
-      'slug'
-    );
+const parts=
 
-  if(!slug){
-    return;
-  }
+window.location.pathname
+.split('/')
+.filter(Boolean);
+
+slug=
+
+parts[
+parts.length-1
+];
+
+}
+
+if(!slug){
+return;
+}
 
   const data=
 
