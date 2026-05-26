@@ -160,7 +160,7 @@ article.excerpt,
 
 article.image,
 
-`/news-detail.html?slug=${article.slug}`
+`/ news / ${slug} /${article.slug}`
 
 );
 
@@ -183,7 +183,7 @@ termin.content,
 
 termin.image,
 
-`/event.html?slug=${termin.slug}`
+`/ events / ${slug} /${termin.slug}`
 
 );
 
