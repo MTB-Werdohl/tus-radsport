@@ -23,8 +23,11 @@ Authorization:
 
 if(!response.ok){
 
+const error =
+await response.text();
+
 throw new Error(
-`${table} konnte nicht geladen werden`
+`${table}: ${error}`
 );
 
 }
@@ -42,6 +45,14 @@ image,
 target
 ){
 
+if(
+!slug
+||
+!title
+){
+return;
+}
+
 const dir =
 path.join(
 process.cwd(),
@@ -54,7 +65,7 @@ dir,
 {recursive:true}
 );
 
-const html =
+const html=
 `
 <!doctype html>
 
@@ -64,10 +75,7 @@ const html =
 
 <meta charset="utf-8">
 
-<title>
-${title}
-· MTB Werdohl
-</title>
+<title>${title} · MTB Werdohl</title>
 
 <meta
 property="og:title"
@@ -76,7 +84,8 @@ content="${title}">
 <meta
 property="og:description"
 content="${
-description||""
+(description||"")
+.replace(/"/g,"'")
 }">
 
 <meta
@@ -129,7 +138,7 @@ await fetchTable(
 "News"
 );
 
-const events =
+const termine =
 await fetchTable(
 "Termine"
 );
@@ -139,14 +148,6 @@ const article
 of news
 ){
 
-if(
-!article.slug
-||
-!article.title
-){
-continue;
-}
-
 createPage(
 
 "news",
@@ -155,17 +156,9 @@ article.slug,
 
 article.title,
 
-article.summary
-||
-article.description
-||
-"",
+article.excerpt,
 
-article.image
-||
-article.image_url
-||
-"",
+article.image,
 
 `/news-detail.html?slug=${article.slug}`
 
@@ -174,43 +167,35 @@ article.image_url
 }
 
 for(
-const event
-of events
+const termin
+of termine
 ){
-
-if(
-!event.slug
-||
-!event.title
-){
-continue;
-}
 
 createPage(
 
 "events",
 
-event.slug,
+termin.slug,
 
-event.title,
+termin.title,
 
-event.description
-||
-event.summary
-||
-"",
+termin.content,
 
-event.image
-||
-event.image_url
-||
-"",
+termin.image,
 
-`/event.html?slug=${event.slug}`
+`/event.html?slug=${termin.slug}`
 
 );
 
 }
+
+console.log(
+`News: ${news.length}`
+);
+
+console.log(
+`Termine: ${termine.length}`
+);
 
 }
 
