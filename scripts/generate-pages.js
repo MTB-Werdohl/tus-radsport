@@ -106,10 +106,6 @@ content="https://mtb-werdohl.de/${folder}/${slug}/">
 rel="canonical"
 href="https://mtb-werdohl.de/${folder}/${slug}/">
 
-<meta
-http-equiv="refresh"
-content="0;url=${target}">
-
 </head>
 
 <body>
