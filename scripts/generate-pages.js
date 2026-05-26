@@ -110,9 +110,13 @@ href="https://mtb-werdohl.de/${folder}/${slug}/">
 
 <body>
 
-<meta
-http-equiv="refresh"
-content="0;url=${target}">
+<script>
+
+window.location.replace(
+'${target}'
+);
+
+</script>
 
 Weiterleitung...
 
