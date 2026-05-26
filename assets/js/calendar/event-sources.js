@@ -23,7 +23,7 @@ const eventSources = [
 
           location: item.location,
 
-          url: '/events/' + item.slug + '/',
+          url: '/kalender/' + item.slug + '/',
 
           backgroundColor: '#2e8b57',
 

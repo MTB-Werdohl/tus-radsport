@@ -173,7 +173,7 @@ of termine
 
 createPage(
 
-"events",
+"kalender",
 
 termin.slug,
 

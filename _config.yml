@@ -4,11 +4,6 @@ timezone: Europe/Berlin
 
 future: true
 
-collections:
-  news:
-    output: true
-    permalink: /news/:name/
-
 contact:
   name: "Tobias Withalm"
   phone_display: "0160 8226897"
