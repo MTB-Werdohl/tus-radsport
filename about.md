@@ -14,7 +14,7 @@ Unser Grundsatz ist einfach:
 
 > **Der Schwächste bestimmt das Tempo.**
 
-So bleibt die Gruppe zusammen. Niemand wird zurückgelassen.
+So bleibt die Gruppe zusammen. Niemand wird zurückgelassen!
 
 ---
 
