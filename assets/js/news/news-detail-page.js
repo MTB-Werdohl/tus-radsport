@@ -1,3 +1,5 @@
+async function initNews(){
+
 let slug=
 
 new URLSearchParams(
@@ -28,23 +30,25 @@ if(!slug){
 return;
 }
 
-  const data=
+const data=
 
-    await fetchNews(
-      slug
-    );
+await fetchNews(
+slug
+);
 
-  if(!data){
-    return;
-  }
+if(!data){
+return;
+}
 
-  document.title=
+document.title=
 
-    `${data.title}
-    · MTB Werdohl`;
+`${data.title}
+· MTB Werdohl`;
 
-  renderNewsDetail(
-    data
-  );
+renderNewsDetail(
+data
+);
+
+}
 
 initNews();
