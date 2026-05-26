@@ -53,7 +53,7 @@ function renderNewsCards(news){
     card.innerHTML=`
 
 <a
-href="/ news / ${slug} /${item.slug}"
+href="/news/${item.slug}/"
 >
 
 <div>

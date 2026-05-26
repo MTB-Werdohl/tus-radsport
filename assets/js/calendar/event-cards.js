@@ -275,7 +275,7 @@ current.getDate()
 
 <a
 
-href="/ events / ${slug} /${event.slug}"
+href="/events/${event.slug}/"
 
 >
 

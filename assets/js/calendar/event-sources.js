@@ -23,7 +23,7 @@ const eventSources = [
 
           location: item.location,
 
-          url: '/ events / ${slug} /' + item.slug,
+          url: '/events/' + item.slug + '/',
 
           backgroundColor: '#2e8b57',
 
