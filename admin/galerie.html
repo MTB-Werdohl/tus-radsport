@@ -1,16 +1,12 @@
+---
+layout: null
+title: Galerien verwalten
+---
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>Galerien verwalten</title>
-
-  <link rel="stylesheet" href="/assets/css/admin.css" />
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="/assets/js/push/config.js"></script>
-  <script src="/assets/js/core/supabase.js"></script>
+{% include admin-head.html %}
 </head>
 <body>
 
@@ -32,29 +28,13 @@
 
   <script type="module" src="/admin/js/gallery-list.js"></script>
 
+  <script src="/admin/js/auth-guard.js"></script>
+
   <script>
 
-async function checkSession() {
+requireAdminSession();
 
-  const { data } =
-
-    await supabaseClient.auth
-      .getSession();
-
-  if (!data.session) {
-
-    window.location.href =
-      '/admin/';
-
-    return;
-
-  }
-
-}
-
-checkSession();
-
-</script>
+  </script>
 
 </body>
 </html>

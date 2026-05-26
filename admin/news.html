@@ -1,25 +1,15 @@
+---
+layout: null
+title: News Verwaltung
+---
+
 <!doctype html>
 
 <html lang="de">
 
 <head>
 
-  <meta charset="utf-8">
-
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1">
-
-  <title>
-    News Verwaltung
-  </title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <script src="/assets/js/push/config.js"></script>
-  <script src="/assets/js/core/supabase.js"></script>
-
-  <link rel="stylesheet"
-        href="/assets/css/admin.css">
+{% include admin-head.html %}
 
 </head>
 
@@ -226,26 +216,13 @@ function openNews(id) {
 
 }
 
-async function checkSession() {
+</script>
 
-  const { data } =
-    await supabaseClient.auth
-      .getSession();
+<script src="/admin/js/auth-guard.js"></script>
 
-  if (!data.session) {
+<script>
 
-    window.location.href =
-      '/admin/';
-
-    return;
-
-  }
-
-  loadNews();
-
-}
-
-checkSession();
+requireAdminSession(loadNews);
 
 </script>
 

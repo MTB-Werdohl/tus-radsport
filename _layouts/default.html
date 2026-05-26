@@ -12,13 +12,18 @@
 
   <link rel="stylesheet" href="/assets/js/glightbox/glightbox.min.css">
 
+  {% if page.load_calendar_css %}
   <link rel="stylesheet" href="/assets/css/calendar.css">
+  {% endif %}
+  {% if page.load_events_css %}
   <link rel="stylesheet" href="/assets/css/events.css">
+  {% endif %}
 
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#ed1c24">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/js/core/site-config.js"></script>
   <script src="/assets/js/push/config.js"></script>
   <script src="/assets/js/core/supabase.js"></script>
   <script src="/assets/js/core/config.js"></script>
@@ -141,8 +146,6 @@ class="push-widget-content"
 </div>
 
 </div>
-
-<script src="/assets/js/push/state.js"></script>
 
 <script src="/assets/js/push/widget.js"></script>
   <script src="{{ '/assets/js/nav.js' | relative_url }}"></script>

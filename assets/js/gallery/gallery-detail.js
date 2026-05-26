@@ -24,7 +24,7 @@ async function loadGallery() {
     return;
   }
 
-  const { data: gallery, error } = await supabaseClient
+  const { data: gallery, error } = await window.supabaseClient
     .from('galleries')
     .select('*')
     .eq('slug', slug)
@@ -62,7 +62,7 @@ function renderGalleryMeta(gallery) {
 
 async function loadImages(galleryId) {
 
-  const { data, error } = await supabaseClient
+  const { data, error } = await window.supabaseClient
     .from('gallery_images')
     .select('*')
     .eq('gallery_id', galleryId)

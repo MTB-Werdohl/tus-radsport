@@ -1,7 +1,7 @@
 async function saveSubscription(subscription) {
 
   const response = await fetch(
-    'https://eazizesytrnknbgrnggj.supabase.co/functions/v1/save-push-subscription',
+    `${window.siteConfig.functionsUrl}/save-push-subscription`,
     {
 
       method: 'POST',

@@ -11,7 +11,7 @@ async function unsubscribeUserFromPush() {
   }
 
   await fetch(
-    'https://eazizesytrnknbgrnggj.supabase.co/functions/v1/delete-push-subscription',
+    `${window.siteConfig.functionsUrl}/delete-push-subscription`,
     {
 
       method: 'POST',

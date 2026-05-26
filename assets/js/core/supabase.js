@@ -1,8 +1,8 @@
 window.supabaseClient =
   supabase.createClient(
 
-    'https://eazizesytrnknbgrnggj.supabase.co',
+    window.siteConfig.supabaseUrl,
 
-    window.pushConfig.supabaseKey
+    window.siteConfig.supabaseAnonKey
 
   );

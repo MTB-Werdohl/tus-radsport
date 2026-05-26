@@ -12,7 +12,7 @@ async function loadGalleries() {
   `;
 
   const { data, error } =
-    await supabaseClient
+    await window.supabaseClient
 
       .from('galleries')
 

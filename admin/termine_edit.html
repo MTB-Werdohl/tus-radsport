@@ -1,20 +1,15 @@
+---
+layout: null
+title: Termin bearbeiten
+---
+
 <!doctype html>
 
 <html lang="de">
 
 <head>
 
-  <meta charset="utf-8">
-
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1">
-
-  <title>Termin bearbeiten</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
-  <link rel="stylesheet"
-        href="/assets/css/admin.css">
+{% include admin-head.html %}
 
 </head>
 
@@ -155,18 +150,6 @@
 </button>
 
 <script>
-
-const supabaseUrl =
-  'https://eazizesytrnknbgrnggj.supabase.co';
-
-const supabaseKey =
-  'sb_publishable_Bz-kKI-XUf9Y1sM3hWIfAw_4l8fIPQr';
-
-const supabaseClient =
-  window.supabase.createClient(
-    supabaseUrl,
-    supabaseKey
-  );
 
 const params =
   new URLSearchParams(window.location.search);
@@ -535,29 +518,19 @@ async function saveEvent() {
 
 }
 
-async function checkSession() {
+</script>
 
-  const { data } =
+<script src="/admin/js/auth-guard.js"></script>
 
-    await supabaseClient.auth
-      .getSession();
+<script>
 
-  if (!data.session) {
-
-    window.location.href =
-      '/admin/';
-
-    return;
-
-  }
+requireAdminSession(function () {
 
   toggleRecurring();
 
   loadEvent();
 
-}
-
-checkSession();
+});
 
 </script>
 

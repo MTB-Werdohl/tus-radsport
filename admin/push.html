@@ -1,28 +1,17 @@
+---
+layout: null
+title: Push-Mitteilungen
+---
+
 <!doctype html>
 
 <html lang="de">
 
 <head>
 
-  <meta charset="utf-8">
-
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1">
-
-  <title>
-    Push-Mitteilungen
-  </title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <script src="/assets/js/push/config.js"></script>
-
-  <script src="/assets/js/core/supabase.js"></script>
+{% include admin-head.html %}
 
   <script src="/assets/js/push/state.js"></script>
-
-  <link rel="stylesheet"
-        href="/assets/css/admin.css">
 
 </head>
 
@@ -125,7 +114,7 @@ document
     try {
 
       const response = await fetch(
-        'https://eazizesytrnknbgrnggj.supabase.co/functions/v1/send-push',
+        `${window.siteConfig.functionsUrl}/send-push`,
         {
 
           method: 'POST',
@@ -135,7 +124,7 @@ document
             'Content-Type': 'application/json',
 
             'Authorization':
-              `Bearer ${window.pushConfig.supabaseKey}`
+              `Bearer ${window.siteConfig.supabaseAnonKey}`
 
           },
 
@@ -183,25 +172,13 @@ document
 
   });
 
-async function checkSession() {
+</script>
 
-  const { data } =
+<script src="/admin/js/auth-guard.js"></script>
 
-    await supabaseClient.auth
-      .getSession();
+<script>
 
-  if (!data.session) {
-
-    window.location.href =
-      '/admin/';
-
-    return;
-
-  }
-
-}
-
-checkSession();
+requireAdminSession();
 
 </script>
 

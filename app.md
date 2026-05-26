@@ -1,5 +1,6 @@
 ---
-layout: page
+layout: default
+hide_title: true
 title: MTB Werdohl App
 permalink: /app/
 description: Installiere MTB Werdohl direkt auf deinem Handy.

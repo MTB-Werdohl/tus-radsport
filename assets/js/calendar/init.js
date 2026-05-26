@@ -9,6 +9,8 @@ document.addEventListener(
         'calendar'
       );
 
+    if (!calendarEl) return;
+
     const calendar=
 
       new FullCalendar.Calendar(
@@ -49,6 +51,15 @@ document.addEventListener(
             today:'Heute'
 
           },
+
+          eventSources:
+            eventSources,
+
+          eventClick:
+            handleEventClick,
+
+          eventDidMount:
+            handleEventRender,
 
 datesSet(info){
 

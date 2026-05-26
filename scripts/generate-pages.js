@@ -7,6 +7,10 @@ process.env.SUPABASE_URL;
 const SUPABASE_KEY =
 process.env.SUPABASE_KEY;
 
+const SITE_URL =
+(process.env.SITE_URL || 'https://www.mtb-werdohl.de')
+.replace(/\/$/, '');
+
 async function fetchTable(table){
 
 const response =
@@ -71,7 +75,7 @@ image
 
 ? image
 
-: "https://www.mtb-werdohl.de/assets/images/icon-512.png";
+: `${SITE_URL}/assets/images/icon-512.png`;
 
 const html=
 `
@@ -114,11 +118,11 @@ content="article">
 
 <meta
 property="og:url"
-content="https://mtb-werdohl.de/${folder}/${slug}/">
+content="${SITE_URL}/${folder}/${slug}/">
 
 <link
 rel="canonical"
-href="https://mtb-werdohl.de/${folder}/${slug}/">
+href="${SITE_URL}/${folder}/${slug}/">
 
 </head>
 
