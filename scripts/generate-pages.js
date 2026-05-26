@@ -65,6 +65,14 @@ dir,
 {recursive:true}
 );
 
+const imageUrl =
+
+image
+
+? image
+
+: "https://www.mtb-werdohl.de/assets/images/icon-512.png";
+
 const html=
 `
 <!doctype html>
@@ -90,9 +98,15 @@ content="${
 
 <meta
 property="og:image"
-content="${
-image||""
-}">
+content="${imageUrl}">
+
+<meta
+property="og:image:width"
+content="512">
+
+<meta
+property="og:image:height"
+content="512">
 
 <meta
 property="og:type"
