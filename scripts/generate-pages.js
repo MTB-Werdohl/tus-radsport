@@ -126,18 +126,26 @@ async function build(){
 
 const news =
 await fetchTable(
-"news"
+"News"
 );
 
 const events =
 await fetchTable(
-"events"
+"Termine"
 );
 
 for(
 const article
 of news
 ){
+
+if(
+!article.slug
+||
+!article.title
+){
+continue;
+}
 
 createPage(
 
@@ -147,9 +155,17 @@ article.slug,
 
 article.title,
 
-article.summary,
+article.summary
+||
+article.description
+||
+"",
 
-article.image,
+article.image
+||
+article.image_url
+||
+"",
 
 `/news-detail.html?slug=${article.slug}`
 
@@ -162,6 +178,14 @@ const event
 of events
 ){
 
+if(
+!event.slug
+||
+!event.title
+){
+continue;
+}
+
 createPage(
 
 "events",
@@ -170,9 +194,17 @@ event.slug,
 
 event.title,
 
-event.description,
+event.description
+||
+event.summary
+||
+"",
 
-event.image,
+event.image
+||
+event.image_url
+||
+"",
 
 `/event.html?slug=${event.slug}`
 
