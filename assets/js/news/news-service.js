@@ -1,21 +1,16 @@
-async function fetchNews(slug) {
+async function fetchPublishedNews() {
 
   const { data, error } =
     await window.supabaseClient
       .from(window.siteConfig.tables.news)
       .select('*')
-      .eq('slug', slug)
       .eq('published', true)
-      .single();
+      .order('created_at', { ascending: false });
 
   if (error) {
-
-    console.error(error);
-
-    return null;
-
+    throw error;
   }
 
-  return data;
+  return data || [];
 
 }

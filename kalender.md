@@ -15,6 +15,12 @@ load_events_css: true
 
 <script src="/assets/js/calendar/card-dates.js"></script>
 
+<script src="/assets/js/calendar/categories.js"></script>
+
+<script src="/assets/js/calendar/termine-loader.js"></script>
+
+<script src="/assets/js/calendar/termin-to-calendar.js"></script>
+
 <script src="/assets/js/calendar/event-filter.js"></script>
 
 <script src="/assets/js/calendar/fullcalendar-hooks.js"></script>

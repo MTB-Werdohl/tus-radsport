@@ -1,7 +1,7 @@
 async function saveSubscription(subscription) {
 
   const response = await fetch(
-    `${window.siteConfig.functionsUrl}/save-push-subscription`,
+    getFunctionUrl('savePushSubscription'),
     {
 
       method: 'POST',
@@ -11,7 +11,7 @@ async function saveSubscription(subscription) {
         'Content-Type': 'application/json',
 
         'Authorization':
-          `Bearer ${window.pushConfig.supabaseKey}`
+          `Bearer ${window.siteConfig.supabaseAnonKey}`
 
       },
 

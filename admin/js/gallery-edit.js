@@ -18,7 +18,7 @@ async function loadGallery() {
   if (!galleryId) return;
 
   const { data, error } = await supabase
-    .from('galleries')
+    .from(window.siteConfig.tables.galleries)
     .select('*')
     .eq('id', galleryId)
     .single();
@@ -41,7 +41,7 @@ async function loadGallery() {
 async function loadImages() {
 
   const { data, error } = await supabase
-    .from('gallery_images')
+    .from(window.siteConfig.tables.galleryImages)
     .select('*')
     .eq('gallery_id', galleryId)
     .order('sort_order', { ascending: true });
@@ -88,11 +88,11 @@ async function deleteImage(image) {
   const path = extractStoragePath(image.image_path);
 
   await supabase.storage
-    .from('media')
+    .from(window.siteConfig.storage.media)
     .remove([path]);
 
   await supabase
-    .from('gallery_images')
+    .from(window.siteConfig.tables.galleryImages)
     .delete()
     .eq('id', image.id);
 
@@ -120,7 +120,7 @@ form.addEventListener('submit', async (e) => {
   if (!galleryId) {
 
     const { data, error } = await supabase
-      .from('galleries')
+      .from(window.siteConfig.tables.galleries)
       .insert([
         {
           title,
@@ -142,7 +142,7 @@ form.addEventListener('submit', async (e) => {
   } else {
 
     const { error } = await supabase
-      .from('galleries')
+      .from(window.siteConfig.tables.galleries)
       .update({
         title,
         slug,
@@ -175,7 +175,7 @@ form.addEventListener('submit', async (e) => {
         `galleries/${year}/${slug}/${filename}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('media')
+        .from(window.siteConfig.storage.media)
         .upload(storagePath, file);
 
       if (uploadError) {
@@ -184,11 +184,11 @@ form.addEventListener('submit', async (e) => {
       }
 
       const { data: publicUrlData } = supabase.storage
-        .from('media')
+        .from(window.siteConfig.storage.media)
         .getPublicUrl(storagePath);
 
       await supabase
-        .from('gallery_images')
+        .from(window.siteConfig.tables.galleryImages)
         .insert([
           {
             gallery_id: savedGalleryId,

@@ -45,12 +45,12 @@ title: News Verwaltung
     <input
       id="search"
       placeholder="News suchen..."
-      oninput="loadNews()"
     >
 
     <button
+      id="new-news"
       class="new-button"
-      onclick="newNews()">
+      type="button">
 
       ➕ Neue News
 
@@ -62,168 +62,10 @@ title: News Verwaltung
 
 </div>
 
-<script>
-
-async function loadNews() {
-
-  const { data, error } =
-    await supabaseClient
-      .from('News')
-      .select('*')
-      .order(
-        'created_at',
-        { ascending: false }
-      );
-
-  if (error) {
-
-    console.error(error);
-
-    return;
-
-  }
-
-  const search =
-    document
-      .getElementById('search')
-      .value
-      .toLowerCase();
-
-  const container =
-    document.getElementById('news');
-
-  container.innerHTML = '';
-
-  data
-
-    .filter(item => {
-
-      return (
-
-        item.title
-          ?.toLowerCase()
-          .includes(search)
-
-        ||
-
-        item.excerpt
-          ?.toLowerCase()
-          .includes(search)
-
-      );
-
-    })
-
-    .forEach(item => {
-
-      container.innerHTML += `
-
-        <div class="event-card">
-
-          <div class="event-header">
-
-            <div>
-
-              <strong>
-                ${item.title}
-              </strong>
-
-              <div class="event-meta">
-
-                ${
-                  item.published
-                    ? '✅ Veröffentlicht'
-                    : '📝 Entwurf'
-                }
-
-                ·
-
-                /news/${item.slug}
-
-              </div>
-
-            </div>
-
-            <div class="actions">
-
-              <button
-                onclick="openNews('${item.id}')">
-
-                ✏
-
-              </button>
-
-              <button
-                class="delete-button"
-                onclick="deleteNews('${item.id}')">
-
-                🗑
-
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      `;
-
-    });
-
-}
-
-async function deleteNews(id) {
-
-  const confirmDelete =
-    confirm(
-      'News löschen?'
-    );
-
-  if (!confirmDelete) {
-    return;
-  }
-
-  const { error } =
-    await supabaseClient
-      .from('News')
-      .delete()
-      .eq('id', id);
-
-  if (error) {
-
-    console.error(error);
-
-    return;
-
-  }
-
-  loadNews();
-
-}
-
-function newNews() {
-
-  window.location.href =
-    '/admin/news_edit.html';
-
-}
-
-function openNews(id) {
-
-  window.location.href =
-    '/admin/news_edit.html?id=' + id;
-
-}
-
-</script>
-
 <script src="/admin/js/auth-guard.js"></script>
-
+<script src="/admin/js/news-list.js"></script>
 <script>
-
 requireAdminSession(loadNews);
-
 </script>
 
 </body>

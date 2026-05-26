@@ -25,7 +25,7 @@ async function subscribeUserToPush() {
 
       applicationServerKey:
         urlBase64ToUint8Array(
-          window.pushConfig.VAPID_PUBLIC_KEY
+          window.siteConfig.vapidPublicKey
         )
 
     });

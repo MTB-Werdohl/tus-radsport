@@ -8,7 +8,7 @@ async function loadGalleries() {
   galleryList.innerHTML = '<p>Lade...</p>';
 
   const { data, error } = await supabase
-    .from('galleries')
+    .from(window.siteConfig.tables.galleries)
     .select('*')
     .order('event_date', { ascending: false });
 

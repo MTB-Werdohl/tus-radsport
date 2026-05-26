@@ -1,0 +1,30 @@
+# Jekyll
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+
+# Ruby
+.bundle/
+vendor/bundle/
+*.gem
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Secrets & lokale Umgebung
+.env
+.env.*
+!.env.example
+
+# Editor
+.idea/
+.vscode/
+*.swp
+*~
+
+# Lokal oder in CI erzeugte OG-Redirect-Ordner (generate-pages.js)
+/kalender/
+/news/

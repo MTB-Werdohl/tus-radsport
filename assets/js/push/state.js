@@ -2,7 +2,7 @@ async function saveLastPush(
   title,
   body,
   url
-){
+) {
 
   const payload = {
 
@@ -19,25 +19,16 @@ async function saveLastPush(
   };
 
   const { error } =
-
-    await window
-      .supabaseClient
-
-      .from('site_state')
-
+    await window.supabaseClient
+      .from(window.siteConfig.tables.siteState)
       .upsert({
-
-        key:'last_push',
-
-        value:payload
-
+        key: window.siteConfig.siteStateKeys.lastPush,
+        value: payload
       });
 
-  if(error){
+  if (error) {
 
-    console.error(
-      error
-    );
+    console.error(error);
 
     return false;
 
@@ -47,36 +38,21 @@ async function saveLastPush(
 
 }
 
+async function getLastPush() {
 
-async function getLastPush(){
+  const { data, error } =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.siteState)
+      .select('value')
+      .eq(
+        'key',
+        window.siteConfig.siteStateKeys.lastPush
+      )
+      .single();
 
-  const {
+  if (error) {
 
-    data,
-
-    error
-
-  } =
-
-  await window
-    .supabaseClient
-
-    .from('site_state')
-
-    .select('value')
-
-    .eq(
-      'key',
-      'last_push'
-    )
-
-    .single();
-
-  if(error){
-
-    console.error(
-      error
-    );
+    console.error(error);
 
     return null;
 

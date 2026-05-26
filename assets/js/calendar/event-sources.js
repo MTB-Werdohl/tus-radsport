@@ -5,67 +5,14 @@ const eventSources = [
 
     try {
 
-      const { data, error } = await supabaseClient
-        .from('Termine')
-        .select('*');
+      const termine =
+        await fetchTermine();
 
-      if (error) {
-        throw error;
-      }
+      successCallback(
+        termineToCalendarEvents(termine)
+      );
 
-      const events = data.map(item => {
-
-        const baseEvent = {
-
-          title: item.title,
-
-          description: item.description,
-
-          location: item.location,
-
-          url: '/kalender/' + item.slug + '/',
-
-          backgroundColor: '#2e8b57',
-
-          borderColor: '#2e8b57',
-
-          extendedProps: {
-            exclude: item.exclude || []
-          }
-
-        };
-
-        if (item.recurring) {
-
-          return {
-
-            ...baseEvent,
-
-            daysOfWeek: item.daysOfWeek,
-
-            startTime: item.startTime,
-
-            startRecur: item.startRecur,
-
-            endRecur: item.endRecur
-
-          };
-
-        }
-
-        return {
-
-          ...baseEvent,
-
-          start: item.date
-
-        };
-
-      });
-
-      successCallback(events);
-
-    } catch(error) {
+    } catch (error) {
 
       console.error(error);
 

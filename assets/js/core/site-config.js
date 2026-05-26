@@ -13,6 +13,35 @@ window.siteConfig = {
     'https://www.mtb-werdohl.de',
 
   functionsUrl:
-    'https://eazizesytrnknbgrnggj.supabase.co/functions/v1'
+    'https://eazizesytrnknbgrnggj.supabase.co/functions/v1',
+
+  tables: {
+    termine: 'Termine',
+    news: 'News',
+    galleries: 'galleries',
+    galleryImages: 'gallery_images',
+    pushSubscriptions: 'PushSubscriptions',
+    siteState: 'site_state'
+  },
+
+  storage: {
+    media: 'media'
+  },
+
+  functions: {
+    savePushSubscription: 'save-push-subscription',
+    deletePushSubscription: 'delete-push-subscription',
+    sendPush: 'send-push'
+  },
+
+  siteStateKeys: {
+    lastPush: 'last_push'
+  }
+
+};
+
+window.getFunctionUrl = function (name) {
+
+  return `${window.siteConfig.functionsUrl}/${window.siteConfig.functions[name]}`;
 
 };

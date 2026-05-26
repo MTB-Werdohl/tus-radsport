@@ -10,5 +10,5 @@ permalink: /news/
   <div id="news-cards"></div>
 
 <script src="/assets/js/news/render-cards.js"></script>
-
-<script src="/assets/js/news/load-news.js"></script>
+<script src="/assets/js/news/news-service.js"></script>
+<script src="/assets/js/news/news-page.js"></script>

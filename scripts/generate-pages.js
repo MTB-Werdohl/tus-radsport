@@ -1,6 +1,12 @@
 const fs = require("fs");
 const path = require("path");
 
+// Tabellennamen — synchron halten mit assets/js/core/site-config.js
+const TABLES = {
+  news: "News",
+  termine: "Termine"
+};
+
 const SUPABASE_URL =
 process.env.SUPABASE_URL;
 
@@ -157,12 +163,12 @@ async function build(){
 
 const news =
 await fetchTable(
-"News"
+TABLES.news
 );
 
 const termine =
 await fetchTable(
-"Termine"
+TABLES.termine
 );
 
 for(

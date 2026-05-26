@@ -249,7 +249,7 @@ async function loadPushCount() {
     await supabaseClient
 
       .from(
-        'PushSubscriptions'
+        window.siteConfig.tables.pushSubscriptions
       )
 
       .select(

@@ -11,7 +11,7 @@ async function unsubscribeUserFromPush() {
   }
 
   await fetch(
-    `${window.siteConfig.functionsUrl}/delete-push-subscription`,
+    getFunctionUrl('deletePushSubscription'),
     {
 
       method: 'POST',
@@ -21,7 +21,7 @@ async function unsubscribeUserFromPush() {
         'Content-Type': 'application/json',
 
         'Authorization':
-          `Bearer ${window.pushConfig.supabaseKey}`
+          `Bearer ${window.siteConfig.supabaseAnonKey}`
 
       },
 

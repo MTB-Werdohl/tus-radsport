@@ -10,15 +10,13 @@ async function loadCards(
 
   if (!wrapper) return;
 
-  const { data, error } =
+  let data;
 
-    await supabaseClient
+  try {
 
-      .from('Termine')
+    data = await fetchTermine();
 
-      .select('*');
-
-  if (error){
+  } catch (error) {
 
     console.error(error);
 
@@ -29,50 +27,6 @@ async function loadCards(
   wrapper.innerHTML='';
 
   const cards=[];
-
-  const categories = {
-
-    training:{
-
-      color:'#2e8b57',
-
-      icon:'🚵'
-
-    },
-
-    vereinsleben:{
-
-      color:'#f1c40f',
-
-      icon:'🎉'
-
-    },
-
-    race:{
-
-      color:'#e74c3c',
-
-      icon:'🏁'
-
-    },
-
-    flex:{
-
-      color:'#3498db',
-
-      icon:'🔄'
-
-    },
-
-    event:{
-
-      color:'#9b59b6',
-
-      icon:'📅'
-
-    }
-
-  };
 
   data.forEach(item=>{
 
@@ -256,20 +210,7 @@ current.getDate()
       'calendar-card';
 
     const category=
-
-      categories[
-        event.category
-      ]
-
-      ||
-
-      {
-
-        color:'#3498db',
-
-        icon:'📍'
-
-      };
+      getTerminCategory(event.category);
 
     card.innerHTML=`
 
