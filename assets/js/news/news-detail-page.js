@@ -49,6 +49,12 @@ renderNewsDetail(
 data
 );
 
+window.history.replaceState(
+  {},
+  '',
+  `/news/${data.slug}`
+);
+
 }
 
 initNews();

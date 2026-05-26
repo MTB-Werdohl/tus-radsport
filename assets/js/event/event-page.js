@@ -40,6 +40,12 @@ async function loadEvent() {
     event
   );
 
+window.history.replaceState(
+  {},
+  '',
+  `/kalender/${event.slug}`
+);
+
 }
 
 loadEvent();
