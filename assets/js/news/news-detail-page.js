@@ -47,6 +47,4 @@ return;
     data
   );
 
-}
-
 initNews();
