@@ -19,17 +19,22 @@ function updateMemberNav(member) {
     return;
   }
 
+  const isLoggedIn = !!member;
+
   guestEl.classList.toggle(
     'is-active',
-    !member
+    !isLoggedIn
   );
 
   memberEl.classList.toggle(
     'is-active',
-    !!member
+    isLoggedIn
   );
 
-  if (!member) {
+  guestEl.hidden = isLoggedIn;
+  memberEl.hidden = !isLoggedIn;
+
+  if (!isLoggedIn) {
 
     if (greetingEl) {
       greetingEl.textContent = '';
@@ -56,11 +61,6 @@ function setupMemberNav() {
   const form =
     document.getElementById(
       'member-login-form'
-    );
-
-  const logoutBtn =
-    document.getElementById(
-      'member-logout'
     );
 
   if (form) {
@@ -92,21 +92,6 @@ function setupMemberNav() {
         );
 
         submitBtn.disabled = false;
-
-      }
-    );
-
-  }
-
-  if (logoutBtn) {
-
-    logoutBtn.addEventListener(
-      'click',
-      async () => {
-
-        await logoutMember();
-
-        updateMemberNav(null);
 
       }
     );

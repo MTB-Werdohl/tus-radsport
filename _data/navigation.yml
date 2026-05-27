@@ -2,8 +2,6 @@
     url: "/kalender"
   - title: "News"
     url: "/news"
-  - title: "Galerie"
-    url: "/galerie"
   - title: "Über uns"
     url: "/about"
   - title: "Training"

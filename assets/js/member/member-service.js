@@ -70,43 +70,140 @@ function normalizeMemberRow(row) {
 
   return {
 
-    email:
-      row.email ||
-      row.Email ||
-      '',
-
-    vorname:
-      row.vorname ||
-      row.Vorname ||
-      '',
-
-    nachname:
-      row.nachname ||
-      row.Nachname ||
-      '',
+    id: row.id,
 
     mitgliedsnummer:
-      row.mitgliedsnummer ||
-      row.Mitgliedsnummer ||
-      row.mitglieds_nr ||
-      '',
+      row.mitgliedsnummer || '',
+
+    vorname:
+      row.vorname || '',
+
+    nachname:
+      row.nachname || '',
 
     abteilung:
-      row.abteilung ||
-      row.Abteilung ||
-      '',
+      row.abteilung || '',
+
+    strasse:
+      row.strasse || '',
+
+    hausnummer:
+      row.hausnummer || '',
+
+    plz:
+      row.plz || '',
 
     wohnort:
-      row.wohnort ||
-      row.Wohnort ||
-      '',
+      row.wohnort || '',
 
     geburtsdatum:
-      row.geburtsdatum ||
-      row.Geburtsdatum ||
-      ''
+      row.geburtsdatum || '',
+
+    email:
+      row.email || '',
+
+    telefonnummer:
+      row.telefonnummer || '',
+
+    einwilligung_kontakt:
+      row.einwilligung_kontakt === true,
+
+    kontakt_eingewilligt_am:
+      row.kontakt_eingewilligt_am || '',
+
+    einwilligung_bilder:
+      row.einwilligung_bilder === true,
+
+    bilder_eingewilligt_am:
+      row.bilder_eingewilligt_am || ''
 
   };
+
+}
+
+async function updateMemberContactFields(
+  memberId,
+  fields
+) {
+
+  const { data, error } =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.members)
+      .update({
+        strasse: fields.strasse || null,
+        hausnummer: fields.hausnummer || null,
+        plz: fields.plz || null,
+        wohnort: fields.wohnort || null,
+        telefonnummer: fields.telefonnummer || null
+      })
+      .eq('id', memberId)
+      .select('*')
+      .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return normalizeMemberRow(data);
+
+}
+
+async function grantMemberConsent(
+  memberId,
+  kind,
+  member
+) {
+
+  const today =
+    new Date()
+      .toISOString()
+      .slice(0, 10);
+
+  let payload = null;
+
+  if (kind === 'kontakt') {
+
+    if (member.einwilligung_kontakt) {
+      return null;
+    }
+
+    payload = {
+      einwilligung_kontakt: true,
+      kontakt_eingewilligt_am: today
+    };
+
+  }
+
+  if (kind === 'bilder') {
+
+    if (member.einwilligung_bilder) {
+      return null;
+    }
+
+    payload = {
+      einwilligung_bilder: true,
+      bilder_eingewilligt_am: today
+    };
+
+  }
+
+  if (!payload) {
+    return null;
+  }
+
+  const { data, error } =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.members)
+      .update(payload)
+      .eq('id', memberId)
+      .select('*')
+      .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return normalizeMemberRow(data);
 
 }
 

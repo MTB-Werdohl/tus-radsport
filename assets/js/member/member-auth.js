@@ -8,6 +8,27 @@ function getCurrentMember() {
   return currentMember;
 }
 
+function refreshMemberNav() {
+
+  if (
+    typeof updateMemberNav === 'function'
+  ) {
+    updateMemberNav(currentMember);
+  }
+
+}
+
+function applyMemberUpdate(row) {
+
+  currentMember =
+    normalizeMemberRow(row);
+
+  refreshMemberNav();
+
+  return currentMember;
+
+}
+
 function isAuthCallback() {
 
   const hash =
@@ -146,6 +167,8 @@ async function validateMemberSession(
   }
 
   currentMember = member;
+
+  refreshMemberNav();
 
   return member;
 
@@ -333,6 +356,8 @@ async function logoutMember() {
 
   currentMember = null;
 
+  refreshMemberNav();
+
 }
 
 function cleanAuthCallbackUrl() {
@@ -373,7 +398,7 @@ async function initMemberAuth() {
   if (
     typeof updateMemberNav === 'function'
   ) {
-    updateMemberNav(currentMember);
+    refreshMemberNav();
   }
 
   window.supabaseClient.auth.onAuthStateChange(
@@ -412,11 +437,7 @@ async function initMemberAuth() {
 
       }
 
-      if (
-        typeof updateMemberNav === 'function'
-      ) {
-        updateMemberNav(currentMember);
-      }
+      refreshMemberNav();
 
     }
 

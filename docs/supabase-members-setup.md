@@ -166,7 +166,7 @@ Admin-Login unter `/admin/` ist vom Mitglieder-Login getrennt.
 ## Checkliste
 
 - [ ] `members.email` für alle Mitglieder gesetzt
-- [ ] [`supabase-members-auth.sql`](supabase-members-auth.sql) ausgeführt
+- [ ] [`supabase-members-auth.sql`](supabase-members-auth.sql) ausgeführt (inkl. **UPDATE-Policy** für Profil speichern)
 - [ ] `check_member_email('test@…')` → `true` für bekannte E-Mail
 - [ ] Site URL + Redirect URLs gesetzt
 - [ ] E-Mail-Provider / SMTP konfiguriert

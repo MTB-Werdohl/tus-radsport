@@ -36,6 +36,71 @@ function formatMemberBirthdate(value) {
 
 }
 
+function formatMemberBoolean(value) {
+
+  return value === true ? 'Ja' : 'Nein';
+
+}
+
+function formatConsentDate(value) {
+
+  if (!value) {
+    return '';
+  }
+
+  return formatDateLong(value);
+
+}
+
+function renderConsentBlock(
+  label,
+  granted,
+  grantedDate,
+  consentKey
+) {
+
+  if (granted) {
+
+    return `
+      <div class="member-consent-row">
+        <div class="member-consent-info">
+          <strong>${escapeMemberHtml(label)}</strong>
+          <span class="member-consent-status member-consent-status--yes">
+            Erteilt am ${formatConsentDate(grantedDate)}
+          </span>
+        </div>
+        <button
+          type="button"
+          class="member-consent-btn"
+          disabled
+        >
+          Einwilligen
+        </button>
+      </div>
+    `;
+
+  }
+
+  return `
+    <div class="member-consent-row">
+      <div class="member-consent-info">
+        <strong>${escapeMemberHtml(label)}</strong>
+        <span class="member-consent-status member-consent-status--no">
+          Noch nicht erteilt
+        </span>
+      </div>
+      <button
+        type="button"
+        class="member-consent-btn member-consent-btn--active"
+        data-consent="${consentKey}"
+      >
+        Einwilligen
+      </button>
+    </div>
+  `;
+
+}
+
 function renderMemberProfile(member) {
 
   const container =
@@ -49,59 +114,115 @@ function renderMemberProfile(member) {
 
   container.innerHTML = `
 
-<dl class="member-profile-list">
+<section class="member-profile-section-block">
 
-  <div class="member-profile-row">
-    <dt>Vorname</dt>
-    <dd>${formatMemberField(member.vorname)}</dd>
-  </div>
+  <h2>Stammdaten</h2>
 
-  <div class="member-profile-row">
-    <dt>Nachname</dt>
-    <dd>${formatMemberField(member.nachname)}</dd>
-  </div>
+  <dl class="member-profile-list">
 
-  <div class="member-profile-row">
-    <dt>Mitgliedsnummer</dt>
-    <dd>${formatMemberField(member.mitgliedsnummer)}</dd>
-  </div>
+    <div class="member-profile-row">
+      <dt>Mitgliedsnummer</dt>
+      <dd>${formatMemberField(member.mitgliedsnummer)}</dd>
+    </div>
 
-  <div class="member-profile-row">
-    <dt>Abteilung</dt>
-    <dd>${formatMemberField(member.abteilung)}</dd>
-  </div>
+    <div class="member-profile-row">
+      <dt>Vorname</dt>
+      <dd>${formatMemberField(member.vorname)}</dd>
+    </div>
 
-  <div class="member-profile-row">
-    <dt>Wohnort</dt>
-    <dd>${formatMemberField(member.wohnort)}</dd>
-  </div>
+    <div class="member-profile-row">
+      <dt>Nachname</dt>
+      <dd>${formatMemberField(member.nachname)}</dd>
+    </div>
 
-  <div class="member-profile-row">
-    <dt>Geburtsdatum</dt>
-    <dd>${formatMemberBirthdate(member.geburtsdatum)}</dd>
-  </div>
+    <div class="member-profile-row">
+      <dt>Abteilung</dt>
+      <dd>${formatMemberField(member.abteilung)}</dd>
+    </div>
 
-</dl>
+    <div class="member-profile-row">
+      <dt>Geburtsdatum</dt>
+      <dd>${formatMemberBirthdate(member.geburtsdatum)}</dd>
+    </div>
 
-  `;
+    <div class="member-profile-row">
+      <dt>E-Mail</dt>
+      <dd>${formatMemberField(member.email)}</dd>
+    </div>
 
-}
+  </dl>
 
-function renderMemberProfileError(message) {
+</section>
 
-  const container =
-    document.getElementById(
-      'member-profile'
-    );
+<section class="member-profile-section-block">
 
-  if (!container) {
-    return;
-  }
+  <h2>Kontaktdaten bearbeiten</h2>
 
-  container.innerHTML = `
-    <p class="member-profile-error">
-      ${escapeMemberHtml(message)}
-    </p>
+  <form id="member-edit-form" class="member-edit-form">
+
+    <label>
+      Straße
+      <input type="text" name="strasse" value="${escapeMemberHtml(member.strasse)}">
+    </label>
+
+    <label>
+      Hausnummer
+      <input type="text" name="hausnummer" value="${escapeMemberHtml(member.hausnummer)}">
+    </label>
+
+    <label>
+      PLZ
+      <input type="text" name="plz" value="${escapeMemberHtml(member.plz)}">
+    </label>
+
+    <label>
+      Wohnort
+      <input type="text" name="wohnort" value="${escapeMemberHtml(member.wohnort)}">
+    </label>
+
+    <label>
+      Telefonnummer
+      <input type="tel" name="telefonnummer" value="${escapeMemberHtml(member.telefonnummer)}">
+    </label>
+
+    <button type="submit" class="member-save-btn">
+      Änderungen speichern
+    </button>
+
+    <p id="member-save-status" class="member-save-status" hidden></p>
+
+  </form>
+
+</section>
+
+<section class="member-profile-section-block">
+
+  <h2>Datenschutz-Einwilligungen</h2>
+
+  ${renderConsentBlock(
+    'Einwilligung Kontakt',
+    member.einwilligung_kontakt,
+    member.kontakt_eingewilligt_am,
+    'kontakt'
+  )}
+
+  ${renderConsentBlock(
+    'Einwilligung Bilder',
+    member.einwilligung_bilder,
+    member.bilder_eingewilligt_am,
+    'bilder'
+  )}
+
+</section>
+
+<section class="member-profile-section-block member-profile-actions">
+
+  <button type="button" id="member-logout-btn" class="member-logout-btn">
+    Logout
+  </button>
+
+</section>
+
   `;
 
 }
