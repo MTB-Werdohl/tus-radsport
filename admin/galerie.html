@@ -1,40 +1,73 @@
 ---
 layout: null
-title: Galerien verwalten
+title: Galerien Verwaltung
 ---
 
-<!DOCTYPE html>
+<!doctype html>
+
 <html lang="de">
+
 <head>
+
 {% include admin-head.html %}
+
 </head>
+
 <body>
 
-  <div class="admin-container">
+<div id="admin">
 
-    <div class="admin-header">
-      <h1>Galerien</h1>
+  <div class="page-header">
 
-      <a href="/admin/galerie_edit.html" class="btn-primary">
-        Neue Galerie
-      </a>
+    <div>
+
+      <h1>
+        Galerien anlegen und bearbeiten
+      </h1>
+
+      <p>
+        Bildergalerien verwalten
+      </p>
+
     </div>
 
-    <div id="gallery-list" class="gallery-list">
-      <p>Lade Galerien...</p>
-    </div>
+    <a href="/admin/"
+       class="back-button">
+
+      ← Dashboard
+
+    </a>
 
   </div>
 
-  <script type="module" src="/admin/js/gallery-list.js"></script>
+  <div class="admin-topbar">
 
-  <script src="/admin/js/auth-guard.js"></script>
+    <input
+      id="search"
+      placeholder="Galerie suchen..."
+    >
 
-  <script>
+    <button
+      id="new-gallery"
+      class="new-button"
+      type="button">
 
-requireAdminSession();
+      ➕ Neue Galerie
 
-  </script>
+    </button>
+
+  </div>
+
+  <div id="galleries"></div>
+
+</div>
+
+<script src="/admin/js/auth-guard.js"></script>
+<script src="/admin/js/gallery-list.js"></script>
+<script>
+requireAdminSession(loadGalleries);
+</script>
 
 </body>
+
 </html>
