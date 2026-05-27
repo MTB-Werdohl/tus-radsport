@@ -1,6 +1,6 @@
 ---
 layout: null
-title: News Verwaltung
+title: Mitglieder Verwaltung
 ---
 
 <!doctype html>
@@ -22,11 +22,11 @@ title: News Verwaltung
     <div>
 
       <h1>
-        News anlegen und bearbeiten
+        Mitglieder verwalten
       </h1>
 
       <p>
-        Newsbeiträge verwalten
+        Vereinsmitglieder anlegen und bearbeiten
       </p>
 
     </div>
@@ -44,28 +44,28 @@ title: News Verwaltung
 
     <input
       id="search"
-      placeholder="News suchen..."
+      placeholder="Vorname suchen..."
     >
 
     <button
-      id="new-news"
+      id="new-member"
       class="new-button"
       type="button">
 
-      ➕ Neue News
+      ➕ Neues Mitglied
 
     </button>
 
   </div>
 
-  <div id="news"></div>
+  <div id="members"></div>
 
 </div>
 
 <script src="/admin/js/auth-guard.js"></script>
-<script src="/admin/js/news-list.js"></script>
+<script src="/admin/js/members-list.js"></script>
 <script>
-requireAdminSession(loadNews);
+requireAdminSession(loadMembers);
 </script>
 
 </body>

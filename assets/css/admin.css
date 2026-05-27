@@ -163,13 +163,6 @@ h3 {
   gap: 16px;
 }
 
-.page-header-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-end;
-}
-
 .admin-escape-nav {
   flex-shrink: 0;
 }
@@ -365,4 +358,44 @@ h3 {
 
   font-weight: 600;
 
+}
+
+.member-admin-form label {
+  display: block;
+  margin-bottom: 15px;
+}
+
+.member-admin-form input,
+.member-admin-form select {
+  width: 100%;
+  margin-top: 6px;
+  margin-bottom: 0;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.member-admin-hint {
+  margin: -5px 0 15px;
+  font-size: 14px;
+  opacity: 0.75;
+}
+
+.member-consent-readonly {
+  background: #222;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 15px;
+}
+
+.member-consent-readonly h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.member-consent-readonly p {
+  margin: 0 0 6px;
+  opacity: 0.9;
 }

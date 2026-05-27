@@ -1,0 +1,140 @@
+---
+layout: null
+title: Mitglied bearbeiten
+---
+
+<!doctype html>
+
+<html lang="de">
+
+<head>
+
+{% include admin-head.html %}
+
+</head>
+
+<body>
+
+<h1 id="form-title">
+  Neues Mitglied
+</h1>
+
+<div class="member-admin-form">
+
+  <div class="row">
+
+    <label>
+      Vorname
+      <input id="vorname" type="text" autocomplete="given-name">
+    </label>
+
+    <label>
+      Nachname
+      <input id="nachname" type="text" autocomplete="family-name">
+    </label>
+
+  </div>
+
+  <div class="row">
+
+    <label>
+      Mitgliedsnummer
+      <input id="mitgliedsnummer" type="text">
+    </label>
+
+    <label>
+      Abteilung
+      <input id="abteilung" type="text">
+    </label>
+
+  </div>
+
+  <label>
+    E-Mail
+    <input id="email" type="email" autocomplete="email">
+  </label>
+
+  <p class="member-admin-hint">
+    Bei geänderter E-Mail muss sich das Mitglied
+    erneut per Magic Link anmelden.
+  </p>
+
+  <div class="row">
+
+    <label>
+      Straße
+      <input id="strasse" type="text" autocomplete="street-address">
+    </label>
+
+    <label>
+      Hausnummer
+      <input id="hausnummer" type="text">
+    </label>
+
+  </div>
+
+  <div class="row">
+
+    <label>
+      PLZ
+      <input id="plz" type="text" autocomplete="postal-code">
+    </label>
+
+    <label>
+      Wohnort
+      <input id="wohnort" type="text" autocomplete="address-level2">
+    </label>
+
+  </div>
+
+  <div class="row">
+
+    <label>
+      Geburtsdatum
+      <input id="geburtsdatum" type="date">
+    </label>
+
+    <label>
+      Telefon
+      <input id="telefonnummer" type="tel" autocomplete="tel">
+    </label>
+
+  </div>
+
+  <label>
+    Rolle
+    <select id="rolle">
+      <option value="Mitglied">Mitglied</option>
+      <option value="Vorstand">Vorstand</option>
+    </select>
+  </label>
+
+  <div
+    id="consent-info"
+    class="member-consent-readonly hidden"
+  >
+
+    <h2>
+      Einwilligungen
+    </h2>
+
+    <p id="consent-kontakt"></p>
+    <p id="consent-bilder"></p>
+
+  </div>
+
+  <button id="save-member" type="button">
+    Speichern
+  </button>
+
+</div>
+
+<script src="/admin/js/auth-guard.js"></script>
+<script src="/admin/js/members-edit.js"></script>
+<script>
+requireAdminSession(initMemberEdit);
+</script>
+
+</body>
+
+</html>
