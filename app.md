@@ -3,60 +3,101 @@ layout: default
 hide_title: true
 title: MTB Werdohl App
 permalink: /app/
-description: Installiere MTB Werdohl direkt auf deinem Handy.
+description: MTB Werdohl App installieren, einloggen und Push-Mitteilungen aktivieren.
 ---
 
-# 📱 MTB Werdohl als App installieren
+# 📱 MTB Werdohl App — so geht's
 
-Unsere Website kann direkt auf deinem Handy installiert werden – wie eine normale App.
+Mit drei Schritten bist du dabei:
 
-Vorteile:
+**App installieren → Einloggen → Push aktivieren**
 
-✅ Push-Mitteilungen direkt aufs Handy  
-✅ Wichtige Vereinsinfos schneller sehen  
-✅ Termine immer griffbereit  
-✅ Start direkt vom Homescreen  
-✅ Läuft wie eine normale App  
+Push-Mitteilungen funktionieren **nur in der installierten App** — nicht im normalen Browser-Tab.
 
----
+Bitte die Schritte genau in dieser Reihenfolge durchführen und **alles in der installierten App** erledigen.
 
-## Android
+Mit der App bekommst du wichtige Informationen direkt auf dein Handy.
 
-1. Menü oben rechts öffnen (⋮)
-2. **„App installieren“** auswählen
+Aktuell kannst du über die Webseite:
 
-Falls die Option nicht erscheint:
+- dein Profil bearbeiten
+- deine Kontaktdaten verwalten
 
-**„Zum Startbildschirm hinzufügen“**
+Für die Zukunft sind weitere Funktionen geplant, zum Beispiel unterschiedliche Ansichten.
 
-Fertig ✅
+Während die „Welt“ das sieht, was öffentlich sichtbar sein soll, werden Mitglieder später interne Termine sehen und sich direkt anmelden können.
 
 ---
 
-## iPhone / iPad
+## Schritt 1 — App installieren
 
-1. Auf das **Teilen-Symbol** tippen
-2. **„Zum Home-Bildschirm“** auswählen
+Unsere Website lässt sich wie eine normale App auf den Homescreen legen.
 
-Fertig ✅
+### Android
+
+1. **mtb-werdohl.de** in Chrome öffnen
+2. Menü oben rechts (⋮) öffnen
+3. **„App installieren“** oder **„Zum Startbildschirm hinzufügen“** wählen
+4. Die App **vom Homescreen starten** — nicht weiter im Browser-Tab nutzen
+
+### iPhone / iPad
+
+1. **mtb-werdohl.de** in Safari öffnen
+2. Auf das **Teilen-Symbol** tippen
+3. **„Zum Home-Bildschirm“** wählen
+4. Die App **vom Homescreen starten** — nicht weiter in Safari nutzen
 
 ---
 
-## Push-Mitteilungen aktivieren
+## Schritt 2 — Einloggen
 
-Push-Mitteilungen können direkt in der App aktiviert werden.
+1. Die **installierte App** öffnen
+2. Im Menü deine **E-Mail-Adresse** eingeben
+3. Auf den **Login-Link in der E-Mail** tippen
+4. Du landest auf **Mein Profil** — dann bist du angemeldet
 
-Einfach den entsprechenden Button auf der Website nutzen und Benachrichtigungen erlauben.
+**Wichtig:**
+
+Der Login funktioniert nur mit der E-Mail-Adresse, die beim Verein hinterlegt ist.
+
+### Login klappt nicht?
+
+Schick uns eine E-Mail an **[info@mtb-werdohl.de](mailto:info@mtb-werdohl.de)** mit der Adresse, mit der du dich anmelden möchtest.
+
+Wir tragen sie nach.
+
+Prüfe bitte auch den **Spam-Ordner**, falls der Login-Link nicht ankommt.
+
+---
+
+## Schritt 3 — Push-Mitteilungen aktivieren
+
+1. In der **installierten App** eingeloggt sein (Schritt 2)
+2. **Mein Profil** öffnen (Menü oder direkt nach dem Login)
+3. **Push-Mitteilungen aktivieren** und Benachrichtigungen **erlauben**
 
 So verpasst du keine:
 
-- Vereinsinfos
-- Änderungen bei Touren
-- Wichtige Hinweise
-- Neue Inhalte auf der Website
+- Vereinsinfos und News
+- Änderungen bei Touren und Terminen
+- Wichtige Hinweise vom Vorstand
+
+Eingeloggt siehst du außerdem Inhalte, die nur für Mitglieder bestimmt sind.
+
+---
+
+## Kurzüberblick
+
+| Schritt | Was du tust |
+|----------|--------------|
+| 1 | App auf den Homescreen installieren |
+| 2 | Mit Vereins-E-Mail einloggen (Magic Link) |
+| 3 | Push-Mitteilungen auf **Mein Profil** aktivieren |
+
+Alles in der **installierten App** — nicht im Browser.
 
 ---
 
 Vielen Dank 🚵
 
-So bleiben wir als Verein schnell und direkt verbunden.
+So bleiben wir als Verein schnell, direkt und zuverlässig verbunden.
