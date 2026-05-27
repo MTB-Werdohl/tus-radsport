@@ -183,10 +183,11 @@ Admin-Login unter `/admin/` ist vom Mitglieder-Login getrennt.
 - SMTP / Supabase E-Mail-Limits prüfen
 - **Authentication → Logs** im Dashboard
 
-### Link öffnet Seite, aber sofort „Kein Vereinsmitglied gefunden“
+### Link öffnet Seite, aber sofort zurück zur Startseite
 
-- Policy `members_select_own` fehlt oder E-Mail stimmt nicht überein
-- In SQL: `select email from members where lower(email) = lower('deine@mail.de');`
+- **Ursache (behoben im Code):** Session aus Magic Link braucht einen Moment; die URL mit `?code=` darf nicht zu früh bereinigt werden.
+- Zusätzlich prüfen: RLS-Policy `members_select_own` aktiv (SQL aus Schritt 2)
+- E-Mail in `auth.users` und `members.email` identisch (Groß/Kleinschreibung egal)
 
 ### `check_member_email` Fehler in Browser-Konsole
 

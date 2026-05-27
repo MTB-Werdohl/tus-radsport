@@ -8,6 +8,20 @@ function getCurrentMember() {
   return currentMember;
 }
 
+function isAuthCallback() {
+
+  const hash =
+    window.location.hash || '';
+
+  const search =
+    window.location.search || '';
+
+  return hash.includes('access_token')
+    || hash.includes('type=magiclink')
+    || search.includes('code=');
+
+}
+
 function showMemberToast(
   message,
   type,
@@ -137,12 +151,84 @@ async function validateMemberSession(
 
 }
 
+async function waitForAuthSession(
+  timeoutMs
+) {
+
+  const limit =
+    timeoutMs || 12000;
+
+  const { data: { session: initial } } =
+    await window.supabaseClient.auth.getSession();
+
+  if (initial?.user) {
+    return initial;
+  }
+
+  if (!isAuthCallback()) {
+    return null;
+  }
+
+  return new Promise((resolve) => {
+
+    let settled = false;
+
+    const finish = (session) => {
+
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+
+      window.clearTimeout(timer);
+
+      subscription.unsubscribe();
+
+      resolve(session);
+
+    };
+
+    const timer =
+      window.setTimeout(() => {
+
+        finish(null);
+
+      }, limit);
+
+    const { data: { subscription } } =
+      window.supabaseClient.auth.onAuthStateChange(
+
+        (event, session) => {
+
+          if (
+            !session?.user
+          ) {
+            return;
+          }
+
+          if (
+            event === 'SIGNED_IN' ||
+            event === 'INITIAL_SESSION' ||
+            event === 'TOKEN_REFRESHED'
+          ) {
+            finish(session);
+          }
+
+        }
+
+      );
+
+  });
+
+}
+
 async function ensureMemberSession(
   options
 ) {
 
-  const { data: { session } } =
-    await window.supabaseClient.auth.getSession();
+  const session =
+    await waitForAuthSession();
 
   return validateMemberSession(
     session,
@@ -251,40 +337,38 @@ async function logoutMember() {
 
 function cleanAuthCallbackUrl() {
 
-  if (
-    !window.location.hash &&
-    !window.location.search.includes(
-      'code='
-    )
-  ) {
+  if (!isAuthCallback()) {
     return;
   }
+
+  const path =
+    window.location.pathname.endsWith('/')
+      ? window.location.pathname
+      : `${window.location.pathname}/`;
 
   window.history.replaceState(
     {},
     '',
-    `${window.location.pathname}${window.location.pathname.endsWith('/') ? '' : '/'}`
+    path
   );
 
 }
 
 async function initMemberAuth() {
 
-  const { data: { session } } =
-    await window.supabaseClient.auth.getSession();
+  const session =
+    await waitForAuthSession();
 
-  const isCallback =
-    window.location.hash.includes(
-      'access_token'
-    ) ||
-    window.location.search.includes(
-      'code='
+  if (session) {
+
+    await validateMemberSession(
+      session,
+      { strict: true }
     );
 
-  await validateMemberSession(
-    session,
-    { strict: isCallback }
-  );
+    cleanAuthCallbackUrl();
+
+  }
 
   if (
     typeof updateMemberNav === 'function'
@@ -292,13 +376,14 @@ async function initMemberAuth() {
     updateMemberNav(currentMember);
   }
 
-  cleanAuthCallbackUrl();
-
   window.supabaseClient.auth.onAuthStateChange(
 
     async (event, session) => {
 
-      if (event === 'SIGNED_IN') {
+      if (
+        event === 'SIGNED_IN' &&
+        session
+      ) {
 
         await validateMemberSession(
           session,

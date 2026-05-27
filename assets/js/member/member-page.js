@@ -13,7 +13,7 @@ async function loadMemberProfilePage() {
 
       window.location.href = '/';
 
-    }, 1500);
+    }, 2500);
 
     return;
 
@@ -23,6 +23,12 @@ async function loadMemberProfilePage() {
     `Mein Profil · MTB Werdohl`;
 
   renderMemberProfile(member);
+
+  if (
+    typeof updateMemberNav === 'function'
+  ) {
+    updateMemberNav(member);
+  }
 
 }
 
