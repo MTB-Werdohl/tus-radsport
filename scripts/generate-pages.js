@@ -17,6 +17,12 @@ const SITE_URL =
 (process.env.SITE_URL || 'https://www.mtb-werdohl.de')
 .replace(/\/$/, '');
 
+function isPublicVisibility(value) {
+
+  return value === 'public' || !value;
+
+}
+
 async function fetchTable(table){
 
 const response =
@@ -173,7 +179,13 @@ TABLES.termine
 
 for(
 const article
-of news
+of news.filter(item =>
+  isPublicVisibility(item.sichtbarkeit)
+    || (
+      item.published === true
+      && !item.sichtbarkeit
+    )
+)
 ){
 
 createPage(
@@ -196,7 +208,9 @@ article.image,
 
 for(
 const termin
-of termine
+of termine.filter(item =>
+  isPublicVisibility(item.sichtbarkeit)
+)
 ){
 
 createPage(

@@ -64,11 +64,7 @@ async function loadNews() {
 
               <div class="event-meta">
 
-                ${
-                  item.published
-                    ? '✅ Veröffentlicht'
-                    : '📝 Entwurf'
-                }
+                ${visibilityListLabel(item.sichtbarkeit)}
 
                 ·
 

@@ -5,7 +5,11 @@ async function getEvent(slug) {
       .from(window.siteConfig.tables.termine)
       .select('*')
       .eq('slug', slug)
-      .single();
+      .neq(
+        'sichtbarkeit',
+        window.siteConfig.visibility.draft
+      )
+      .maybeSingle();
 
   if (error) {
 

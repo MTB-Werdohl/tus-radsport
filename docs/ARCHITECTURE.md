@@ -100,6 +100,16 @@ Ausführliche Einrichtung: [`docs/supabase-members-setup.md`](supabase-members-s
 
 SQL für Rollen und RLS: [`docs/supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql)
 
+**Sichtbarkeit** (`sichtbarkeit` auf `News` und `Termine`):
+
+| Wert | Wer sieht es |
+|------|----------------|
+| `public` | Alle (auch Gäste) |
+| `members` | Eingeloggte Mitglieder + Vorstand |
+| `draft` | Nur Vorstand |
+
+SQL: [`docs/supabase-content-visibility.sql`](supabase-content-visibility.sql)
+
 ## Supabase — logische Tabellen
 
 | Tabelle | Zweck |

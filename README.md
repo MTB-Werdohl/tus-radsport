@@ -83,7 +83,7 @@ Push-Setup (RLS + Edge Function): [`docs/supabase-push-members.sql`](docs/supaba
 
 Authentifizierung: Magic Link (wie Profil). Nur `members.rolle = 'Vorstand'` erhält Zugriff. Geschützte Seiten nutzen `requireAdminSession()` aus `admin/js/auth-guard.js`.
 
-Setup SQL: [`docs/supabase-vorstand-roles.sql`](docs/supabase-vorstand-roles.sql) · Redirect-URL `https://www.mtb-werdohl.de/admin/` in Supabase Auth freigeben.
+Setup SQL: [`docs/supabase-vorstand-roles.sql`](docs/supabase-vorstand-roles.sql) · Sichtbarkeit: [`docs/supabase-content-visibility.sql`](docs/supabase-content-visibility.sql) · Redirect-URL `https://www.mtb-werdohl.de/admin/` in Supabase Auth freigeben.
 
 ---
 

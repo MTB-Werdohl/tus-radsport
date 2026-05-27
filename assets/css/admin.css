@@ -7,9 +7,8 @@ body {
   margin: auto;
 }
 
-input,
-textarea,
 select,
+textarea,
 button {
   width: 100%;
   margin-bottom: 15px;

@@ -33,6 +33,7 @@ async function fetchMemberByEmail(email) {
         .from(table)
         .select('*')
         .eq('email', normalized)
+        .limit(1)
         .maybeSingle(),
 
     () =>
@@ -40,6 +41,7 @@ async function fetchMemberByEmail(email) {
         .from(table)
         .select('*')
         .eq('email', trimmed)
+        .limit(1)
         .maybeSingle(),
 
     () =>
@@ -47,6 +49,7 @@ async function fetchMemberByEmail(email) {
         .from(table)
         .select('*')
         .filter('email', 'ilike', trimmed)
+        .limit(1)
         .maybeSingle()
 
   ];

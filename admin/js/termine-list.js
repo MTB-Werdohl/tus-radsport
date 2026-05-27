@@ -186,6 +186,8 @@ async function loadEvents() {
                   : ''
                 }
 
+                · ${visibilityListLabel(event.sichtbarkeit)}
+
               </div>
 
             </div>

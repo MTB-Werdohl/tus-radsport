@@ -60,7 +60,7 @@ function setupMemberNav() {
 
   const form =
     document.getElementById(
-      'member-login-form'
+      'member-auth-guest'
     );
 
   if (form) {

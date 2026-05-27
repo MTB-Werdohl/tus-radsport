@@ -172,6 +172,22 @@ Mitglieder ohne Vorstand-Rolle erhalten auf `/admin/` die Meldung „Kein Vorsta
 
 ---
 
+## Schritt 9 — Sichtbarkeit (News & Termine)
+
+Spalte `sichtbarkeit` mit Werten `public`, `members`, `draft`.
+
+| Wert | Bedeutung |
+|------|-----------|
+| `public` | Für alle sichtbar (Gäste inkl.) |
+| `members` | Nur eingeloggte Mitglieder |
+| `draft` | Nur Vorstand (Entwurf) |
+
+SQL: [`supabase-content-visibility.sql`](supabase-content-visibility.sql)
+
+Im Admin beim Anlegen/Bearbeiten von News und Terminen auswählen. Bestehende News wurden aus `published` migriert; Termine standardmäßig `public`.
+
+---
+
 ## Checkliste
 
 - [ ] `members.email` für alle Mitglieder gesetzt

@@ -37,6 +37,12 @@ window.siteConfig = {
 
   siteStateKeys: {
     lastPush: 'last_push'
+  },
+
+  visibility: {
+    public: 'public',
+    members: 'members',
+    draft: 'draft'
   }
 
 };

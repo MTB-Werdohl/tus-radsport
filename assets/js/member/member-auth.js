@@ -330,26 +330,15 @@ async function sendAdminMagicLink(email) {
   const isVorstand =
     await isVorstandEmail(normalized);
 
-  if (isVorstand === false) {
+  if (isVorstand !== true) {
 
-    alert(ADMIN_ERROR_NOT_VORSTAND);
+    alert(
+      isVorstand === false
+        ? ADMIN_ERROR_NOT_VORSTAND
+        : 'Vorstand-Prüfung fehlgeschlagen. Bitte später erneut versuchen.'
+    );
 
     return false;
-
-  }
-
-  if (isVorstand === null) {
-
-    const member =
-      await fetchMemberByEmail(normalized);
-
-    if (!member || !isVorstand(member)) {
-
-      alert(ADMIN_ERROR_NOT_VORSTAND);
-
-      return false;
-
-    }
 
   }
 
@@ -402,10 +391,12 @@ async function sendMemberMagicLink(email) {
   const isMember =
     await isMemberEmail(normalized);
 
-  if (isMember === false) {
+  if (isMember !== true) {
 
     showMemberToast(
-      MEMBER_ERROR_NOT_FOUND,
+      isMember === false
+        ? MEMBER_ERROR_NOT_FOUND
+        : 'Mitgliedsprüfung fehlgeschlagen. Bitte später erneut versuchen.',
       'error'
     );
 

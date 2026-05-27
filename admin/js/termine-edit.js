@@ -117,6 +117,10 @@ async function loadEvent() {
   document.getElementById('recurring').checked =
     data.recurring || false;
 
+  document.getElementById('sichtbarkeit').value =
+    data.sichtbarkeit
+    || window.siteConfig.visibility.public;
+
   document.getElementById('startTime').value =
     data.startTime || '';
 
@@ -318,7 +322,13 @@ async function saveEvent() {
 
     exclude: parsedExclude,
 
-    slug
+    slug,
+
+    sichtbarkeit:
+      document
+        .getElementById('sichtbarkeit')
+        .value
+      || window.siteConfig.visibility.public
 
   };
 

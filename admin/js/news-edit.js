@@ -44,8 +44,13 @@ async function loadNews() {
   document.getElementById('content').value =
     data.content || '';
 
-  document.getElementById('published').checked =
-    data.published || false;
+  document.getElementById('sichtbarkeit').value =
+    data.sichtbarkeit
+    || (
+      data.published
+        ? window.siteConfig.visibility.public
+        : window.siteConfig.visibility.draft
+    );
 
   if (data.image) {
 
@@ -86,10 +91,13 @@ async function saveNews() {
       .getElementById('content')
       .value;
 
-  const published =
+  const sichtbarkeit =
     document
-      .getElementById('published')
-      .checked;
+      .getElementById('sichtbarkeit')
+      .value;
+
+  const published =
+    publishedFromVisibility(sichtbarkeit);
 
   const imageFile =
     document
@@ -160,6 +168,7 @@ async function saveNews() {
     excerpt,
     content,
     published,
+    sichtbarkeit,
     updated_at:
       new Date().toISOString()
 

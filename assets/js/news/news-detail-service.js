@@ -5,8 +5,11 @@ async function fetchNews(slug) {
       .from(window.siteConfig.tables.news)
       .select('*')
       .eq('slug', slug)
-      .eq('published', true)
-      .single();
+      .neq(
+        'sichtbarkeit',
+        window.siteConfig.visibility.draft
+      )
+      .maybeSingle();
 
   if (error) {
 
