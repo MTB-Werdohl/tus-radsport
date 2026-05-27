@@ -7,6 +7,7 @@ const editId =
   params.get('id');
 
 let originalEmail = '';
+let currentMember = null;
 
 function emptyToNull(value) {
 
@@ -194,8 +195,59 @@ async function initMemberEdit() {
   originalEmail =
     data.email || '';
 
+  currentMember = data;
+
   fillMemberForm(data);
   showConsentInfo(data);
+
+  document
+    .getElementById('export-member-pdf')
+    ?.classList.remove('hidden');
+
+}
+
+function buildMemberExportData() {
+
+  const fields =
+    readMemberFormFields();
+
+  return {
+    ...currentMember,
+    ...buildMemberPayload(fields),
+    einwilligung_kontakt:
+      currentMember?.einwilligung_kontakt,
+    kontakt_eingewilligt_am:
+      currentMember?.kontakt_eingewilligt_am,
+    einwilligung_bilder:
+      currentMember?.einwilligung_bilder,
+    bilder_eingewilligt_am:
+      currentMember?.bilder_eingewilligt_am
+  };
+
+}
+
+function exportCurrentMemberPdf() {
+
+  if (!currentMember) {
+    return;
+  }
+
+  try {
+
+    exportMemberPdf(
+      buildMemberExportData()
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      error.message
+      || 'PDF konnte nicht erstellt werden.'
+    );
+
+  }
 
 }
 
@@ -287,3 +339,7 @@ async function saveMember() {
 document
   .getElementById('save-member')
   ?.addEventListener('click', saveMember);
+
+document
+  .getElementById('export-member-pdf')
+  ?.addEventListener('click', exportCurrentMemberPdf);

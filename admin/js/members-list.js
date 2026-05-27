@@ -28,6 +28,37 @@ function showMembersLoadError(error) {
 
 }
 
+let allMembers = [];
+
+function getMemberSearchTerm() {
+
+  return document
+    .getElementById('search')
+    ?.value
+    .toLowerCase()
+    .trim() || '';
+
+}
+
+function filterMembersBySearch(members) {
+
+  const search =
+    getMemberSearchTerm();
+
+  return (members || []).filter((item) => {
+
+    if (!search) {
+      return true;
+    }
+
+    return item.vorname
+      ?.toLowerCase()
+      .includes(search);
+
+  });
+
+}
+
 async function loadMembers() {
 
   const { data, error } =
@@ -45,33 +76,23 @@ async function loadMembers() {
 
   }
 
-  const search =
-    document
-      .getElementById('search')
-      .value
-      .toLowerCase()
-      .trim();
+  allMembers = data || [];
+
+  renderMembersList(allMembers);
+
+}
+
+function renderMembersList(members) {
+
+  const filtered =
+    filterMembersBySearch(members);
 
   const container =
     document.getElementById('members');
 
   container.innerHTML = '';
 
-  (data || [])
-
-    .filter(item => {
-
-      if (!search) {
-        return true;
-      }
-
-      return item.vorname
-        ?.toLowerCase()
-        .includes(search);
-
-    })
-
-    .forEach(item => {
+  filtered.forEach(item => {
 
       const name =
         escapeAdminHtml(
@@ -221,10 +242,38 @@ function openMember(id) {
 
 }
 
+function exportMembersPdf() {
+
+  const filtered =
+    filterMembersBySearch(allMembers);
+
+  try {
+
+    exportMembersListPdf(filtered);
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      error.message
+      || 'PDF konnte nicht erstellt werden.'
+    );
+
+  }
+
+}
+
 document
   .getElementById('search')
-  ?.addEventListener('input', loadMembers);
+  ?.addEventListener('input', () => {
+    renderMembersList(allMembers);
+  });
 
 document
   .getElementById('new-member')
   ?.addEventListener('click', newMember);
+
+document
+  .getElementById('export-members-pdf')
+  ?.addEventListener('click', exportMembersPdf);

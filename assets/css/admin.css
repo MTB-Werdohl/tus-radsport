@@ -116,6 +116,29 @@ h3 {
   white-space: nowrap;
 }
 
+.secondary-button {
+  width: auto;
+  white-space: nowrap;
+  background: #444;
+}
+
+.admin-topbar .secondary-button,
+.admin-topbar .new-button {
+  margin-bottom: 0;
+}
+
+.member-admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.member-admin-actions button {
+  width: auto;
+  flex: 1 1 180px;
+  margin-bottom: 0;
+}
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit,minmax(180px,1fr));

@@ -144,14 +144,30 @@ title: Mitglied bearbeiten
 
   </div>
 
-  <button id="save-member" type="button">
-    Speichern
-  </button>
+  <div class="member-admin-actions">
+
+    <button
+      id="export-member-pdf"
+      class="secondary-button hidden"
+      type="button">
+
+      📄 PDF-Auszug
+
+    </button>
+
+    <button id="save-member" type="button">
+      Speichern
+    </button>
+
+  </div>
 
   </div>
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/pdfmake.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/vfs_fonts.min.js"></script>
+<script src="/admin/js/member-pdf.js"></script>
 <script src="/admin/js/members-edit.js"></script>
 <script>
 requireAdminSession(initMemberEdit);
