@@ -1,3 +1,5 @@
+const PDF_ORG_NAME = 'MTB Werdohl';
+
 function ensurePdfMakeReady() {
 
   if (
@@ -57,6 +59,12 @@ function formatPdfDate(value) {
 
 }
 
+function formatPdfYesNo(value) {
+
+  return value === true ? 'Ja' : 'Nein';
+
+}
+
 function formatPdfConsent(
   label,
   granted,
@@ -78,45 +86,12 @@ function formatPdfConsent(
 
 }
 
-function formatPdfAddress(member) {
-
-  const street =
-    [
-      member.strasse,
-      member.hausnummer
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .trim();
-
-  const city =
-    [
-      member.plz,
-      member.wohnort
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .trim();
-
-  if (street && city) {
-    return `${street}, ${city}`;
-  }
-
-  return formatPdfField(street || city);
-
-}
-
 function pdfStyles() {
 
   return {
     org: {
       fontSize: 11,
       color: '#444444'
-    },
-    orgSub: {
-      fontSize: 10,
-      color: '#666666',
-      margin: [0, 2, 0, 0]
     },
     title: {
       fontSize: 16,
@@ -167,17 +142,13 @@ function buildMemberPdfDefinition(member) {
     styles: pdfStyles(),
     content: [
       {
-        text: 'TuS Jahn Werdohl e.V.',
+        text: PDF_ORG_NAME,
         style: 'org'
-      },
-      {
-        text: 'Abteilung Radsport / MTB Werdohl',
-        style: 'orgSub'
       },
       {
         text: 'Mitgliederauszug',
         style: 'title',
-        margin: [0, 16, 0, 4]
+        margin: [0, 12, 0, 4]
       },
       {
         text: fullName,
@@ -209,8 +180,20 @@ function buildMemberPdfDefinition(member) {
               formatPdfField(member.abteilung)
             ],
             [
-              { text: 'Rolle', style: 'label' },
-              formatPdfField(member.rolle || 'Mitglied')
+              { text: 'Straße', style: 'label' },
+              formatPdfField(member.strasse)
+            ],
+            [
+              { text: 'Hausnummer', style: 'label' },
+              formatPdfField(member.hausnummer)
+            ],
+            [
+              { text: 'PLZ', style: 'label' },
+              formatPdfField(member.plz)
+            ],
+            [
+              { text: 'Wohnort', style: 'label' },
+              formatPdfField(member.wohnort)
             ],
             [
               { text: 'Geburtsdatum', style: 'label' },
@@ -225,8 +208,8 @@ function buildMemberPdfDefinition(member) {
               formatPdfField(member.telefonnummer)
             ],
             [
-              { text: 'Adresse', style: 'label' },
-              formatPdfAddress(member)
+              { text: 'Rolle', style: 'label' },
+              formatPdfField(member.rolle || 'Mitglied')
             ]
           ]
         },
@@ -263,6 +246,29 @@ function buildMemberPdfDefinition(member) {
 
 }
 
+function buildMemberListRow(member) {
+
+  return [
+    formatPdfField(member.mitgliedsnummer),
+    formatPdfField(member.vorname),
+    formatPdfField(member.nachname),
+    formatPdfField(member.abteilung),
+    formatPdfField(member.strasse),
+    formatPdfField(member.hausnummer),
+    formatPdfField(member.plz),
+    formatPdfField(member.wohnort),
+    formatPdfDate(member.geburtsdatum),
+    formatPdfField(member.email),
+    formatPdfField(member.telefonnummer),
+    formatPdfField(member.rolle || 'Mitglied'),
+    formatPdfYesNo(member.einwilligung_kontakt === true),
+    formatPdfDate(member.kontakt_eingewilligt_am),
+    formatPdfYesNo(member.einwilligung_bilder === true),
+    formatPdfDate(member.bilder_eingewilligt_am)
+  ];
+
+}
+
 function buildMembersListPdfDefinition(members) {
 
   const created =
@@ -270,50 +276,69 @@ function buildMembersListPdfDefinition(members) {
 
   const header = [
     { text: 'Nr.', style: 'label' },
-    { text: 'Nachname', style: 'label' },
     { text: 'Vorname', style: 'label' },
+    { text: 'Nachname', style: 'label' },
+    { text: 'Abt.', style: 'label' },
+    { text: 'Straße', style: 'label' },
+    { text: 'Hnr.', style: 'label' },
+    { text: 'PLZ', style: 'label' },
+    { text: 'Ort', style: 'label' },
+    { text: 'Geb.', style: 'label' },
     { text: 'E-Mail', style: 'label' },
     { text: 'Telefon', style: 'label' },
-    { text: 'Abteilung', style: 'label' },
-    { text: 'Rolle', style: 'label' }
+    { text: 'Rolle', style: 'label' },
+    { text: 'Einw. Kontakt', style: 'label' },
+    { text: 'Kontakt am', style: 'label' },
+    { text: 'Einw. Bilder', style: 'label' },
+    { text: 'Bilder am', style: 'label' }
   ];
 
   const body =
-    members.map((member) => ([
-      formatPdfField(member.mitgliedsnummer),
-      formatPdfField(member.nachname),
-      formatPdfField(member.vorname),
-      formatPdfField(member.email),
-      formatPdfField(member.telefonnummer),
-      formatPdfField(member.abteilung),
-      formatPdfField(member.rolle || 'Mitglied')
-    ]));
+    members.map(buildMemberListRow);
 
   return {
     pageSize: 'A4',
     pageOrientation: 'landscape',
-    pageMargins: [40, 40, 40, 40],
+    pageMargins: [24, 32, 24, 32],
     defaultStyle: {
       font: 'Roboto',
-      fontSize: 8
+      fontSize: 6.5
     },
     styles: pdfStyles(),
     content: [
       {
-        text: 'TuS Jahn Werdohl e.V. — Mitgliederliste',
+        text: `${PDF_ORG_NAME} — Mitgliederliste`,
         style: 'title',
+        fontSize: 13,
         margin: [0, 0, 0, 4]
       },
       {
         text:
           `${members.length} Einträge · Erstellt am ${created}`,
         style: 'meta',
-        margin: [0, 0, 0, 12]
+        margin: [0, 0, 0, 10]
       },
       {
         table: {
           headerRows: 1,
-          widths: [28, '*', '*', '*', 62, 52, 42],
+          widths: [
+            20,
+            38,
+            38,
+            30,
+            42,
+            18,
+            22,
+            34,
+            34,
+            72,
+            46,
+            30,
+            28,
+            34,
+            28,
+            34
+          ],
           body: [header, ...body]
         },
         layout: 'lightHorizontalLines'
