@@ -63,7 +63,7 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Push
 | `/galerie/` | `galerie.md` | Galerie-Übersicht |
 | `/galerie-detail.html?slug=…` | `galerie-detail.html` | Galerie-Detail |
 | `/about`, `/training`, `/kodex`, … | jeweilige `.md` | Statische Infoseiten |
-| `/profil/` | `profil.md` | Mitgliederprofil (Magic Link) |
+| `/profil/` | `profil.md` | Mitgliederprofil (Magic Link) — Setup: [`docs/supabase-members-setup.md`](docs/supabase-members-setup.md) |
 | `/admin/` | `admin/index.html` | Admin-Login & Dashboard |
 
 Navigation: `_data/navigation.yml`

@@ -1,7 +1,16 @@
--- Mitglieder-Login: RLS-Policies für Supabase
--- Einmalig im Supabase SQL Editor ausführen.
+-- Mitglieder-Login für MTB Werdohl
+-- Einmalig im Supabase SQL Editor ausführen (Dashboard → SQL → New query)
+--
+-- Voraussetzung: Tabelle public.members existiert (siehe Tabellenschema im Projekt)
 
--- Eingeloggte User dürfen ihre eigene Zeile lesen (Profil + Session-Check)
+-- 1) Row Level Security aktivieren
+alter table public.members enable row level security;
+
+-- 2) Alte Policies/Funktionen entfernen (falls vorhanden)
+drop policy if exists "members_select_own" on public.members;
+drop policy if exists "members_anon_select" on public.members;
+
+-- 3) Eingeloggte User dürfen nur ihre eigene Zeile lesen (Profil + Session-Check)
 create policy "members_select_own"
 on public.members
 for select
@@ -10,9 +19,10 @@ using (
   lower(trim(email)) = lower(trim(auth.jwt() ->> 'email'))
 );
 
--- Optional: E-Mail-Prüfung vor Magic Link (ohne andere Mitgliederdaten preiszugeben)
--- Dafür im Frontend supabase.rpc('check_member_email', { check_email: '...' }) nutzen.
+-- Kein INSERT/UPDATE/DELETE für anon/authenticated über die Website.
+-- Schreibzugriffe nur über Supabase Dashboard oder Service Role.
 
+-- 4) E-Mail-Prüfung vor Magic Link (ohne Mitgliederdaten preiszugeben)
 create or replace function public.check_member_email(check_email text)
 returns boolean
 language sql
@@ -28,3 +38,6 @@ $$;
 
 revoke all on function public.check_member_email(text) from public;
 grant execute on function public.check_member_email(text) to anon, authenticated;
+
+-- 5) Test (optional — danach wieder löschen oder auskommentieren)
+-- select public.check_member_email('deine@email.de');

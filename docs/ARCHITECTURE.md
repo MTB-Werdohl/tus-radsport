@@ -79,7 +79,7 @@ Optionale Frontmatter-Flags:
 
 Ablauf: E-Mail in `members` → Magic Link → Session → E-Mail-Abgleich → Profil unter `/profil/`.
 
-**Supabase:** Redirect-URL `https://www.mtb-werdohl.de/profil/` freigeben. RLS + optional RPC: siehe [`docs/supabase-members-auth.sql`](supabase-members-auth.sql).
+Ausführliche Einrichtung: [`docs/supabase-members-setup.md`](supabase-members-setup.md) · SQL: [`docs/supabase-members-auth.sql`](supabase-members-auth.sql)
 
 ---
 
