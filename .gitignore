@@ -18,6 +18,7 @@ desktop.ini
 .env
 .env.*
 !.env.example
+.cursor/mcp.json
 
 # Editor
 .idea/
