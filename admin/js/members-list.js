@@ -27,22 +27,33 @@ function formatMemberListName(member) {
 
 }
 
+function showMembersLoadError(error) {
+
+  console.error(error);
+
+  const message =
+    error?.message
+    || String(error);
+
+  alert(
+    'Mitglieder konnten nicht geladen werden: '
+    + message
+  );
+
+}
+
 async function loadMembers() {
 
-  let data;
+  const { data, error } =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.members)
+      .select('*')
+      .order('nachname', { ascending: true })
+      .order('vorname', { ascending: true });
 
-  try {
+  if (error) {
 
-    data =
-      await fetchAllMembersForAdmin();
-
-  } catch (error) {
-
-    console.error(error);
-
-    alert(
-      'Mitglieder konnten nicht geladen werden.'
-    );
+    showMembersLoadError(error);
 
     return;
 
@@ -60,7 +71,7 @@ async function loadMembers() {
 
   container.innerHTML = '';
 
-  data
+  (data || [])
 
     .filter(item => {
 
@@ -174,11 +185,29 @@ async function deleteMember(id) {
     return;
   }
 
-  try {
+  const { error: pushError } =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.pushSubscriptions)
+      .delete()
+      .eq('member_id', id);
 
-    await deleteMemberAdmin(id);
+  if (pushError) {
 
-  } catch (error) {
+    console.error(pushError);
+
+    alert(pushError.message);
+
+    return;
+
+  }
+
+  const { error } =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.members)
+      .delete()
+      .eq('id', id);
+
+  if (error) {
 
     console.error(error);
 

@@ -8,6 +8,20 @@ const editId =
 
 let originalEmail = '';
 
+function emptyToNull(value) {
+
+  if (
+    value === null ||
+    value === undefined ||
+    String(value).trim() === ''
+  ) {
+    return null;
+  }
+
+  return String(value).trim();
+
+}
+
 function readMemberFormFields() {
 
   return {
@@ -35,6 +49,30 @@ function readMemberFormFields() {
       document.getElementById('telefonnummer').value,
     rolle:
       document.getElementById('rolle').value
+  };
+
+}
+
+function buildMemberPayload(fields) {
+
+  const rolle =
+    fields.rolle === 'Vorstand'
+      ? 'Vorstand'
+      : 'Mitglied';
+
+  return {
+    mitgliedsnummer: emptyToNull(fields.mitgliedsnummer),
+    vorname: emptyToNull(fields.vorname),
+    nachname: emptyToNull(fields.nachname),
+    abteilung: emptyToNull(fields.abteilung),
+    strasse: emptyToNull(fields.strasse),
+    hausnummer: emptyToNull(fields.hausnummer),
+    plz: emptyToNull(fields.plz),
+    wohnort: emptyToNull(fields.wohnort),
+    geburtsdatum: emptyToNull(fields.geburtsdatum),
+    email: emptyToNull(fields.email)?.toLowerCase() || null,
+    telefonnummer: emptyToNull(fields.telefonnummer),
+    rolle
   };
 
 }
@@ -109,14 +147,14 @@ function showConsentInfo(member) {
   document.getElementById('consent-kontakt').textContent =
     formatConsentLine(
       'Kontakt',
-      member.einwilligung_kontakt,
+      member.einwilligung_kontakt === true,
       member.kontakt_eingewilligt_am
     );
 
   document.getElementById('consent-bilder').textContent =
     formatConsentLine(
       'Bilder',
-      member.einwilligung_bilder,
+      member.einwilligung_bilder === true,
       member.bilder_eingewilligt_am
     );
 
@@ -133,19 +171,20 @@ async function initMemberEdit() {
     .innerText =
       'Mitglied bearbeiten';
 
-  let member;
+  const { data, error } =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.members)
+      .select('*')
+      .eq('id', editId)
+      .single();
 
-  try {
-
-    member =
-      await fetchMemberByIdForAdmin(editId);
-
-  } catch (error) {
+  if (error) {
 
     console.error(error);
 
     alert(
-      'Mitglied konnte nicht geladen werden.'
+      'Mitglied konnte nicht geladen werden: '
+      + error.message
     );
 
     return;
@@ -153,10 +192,10 @@ async function initMemberEdit() {
   }
 
   originalEmail =
-    member.email || '';
+    data.email || '';
 
-  fillMemberForm(member);
-  showConsentInfo(member);
+  fillMemberForm(data);
+  showConsentInfo(data);
 
 }
 
@@ -194,22 +233,29 @@ async function saveMember() {
 
   }
 
-  try {
+  const payload =
+    buildMemberPayload(fields);
 
-    if (editId) {
+  let error;
 
-      await updateMemberAdmin(
-        editId,
-        fields
-      );
+  if (editId) {
 
-    } else {
+    ({ error } =
+      await window.supabaseClient
+        .from(window.siteConfig.tables.members)
+        .update(payload)
+        .eq('id', editId));
 
-      await createMemberAdmin(fields);
+  } else {
 
-    }
+    ({ error } =
+      await window.supabaseClient
+        .from(window.siteConfig.tables.members)
+        .insert([payload]));
 
-  } catch (error) {
+  }
+
+  if (error) {
 
     console.error(error);
 
