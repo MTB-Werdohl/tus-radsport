@@ -123,57 +123,72 @@ function renderConsentDialogs() {
     .entries(MEMBER_CONSENT_TEXTS)
     .map(([key, info]) => `
 
-      <dialog
-        class="member-consent-dialog"
+      <div
+        class="member-consent-modal"
         id="member-consent-dialog-${key}"
-        aria-labelledby="member-consent-dialog-title-${key}"
+        hidden
       >
 
-        <div class="member-consent-dialog__inner">
+        <button
+          type="button"
+          class="member-consent-modal__backdrop"
+          aria-label="Schließen"
+        ></button>
 
-          <header class="member-consent-dialog__header">
+        <div
+          class="member-consent-dialog"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="member-consent-dialog-title-${key}"
+        >
 
-            <h3
-              class="member-consent-dialog__title"
-              id="member-consent-dialog-title-${key}"
-            >
-              ${escapeMemberHtml(info.label)}
-            </h3>
+          <div class="member-consent-dialog__inner">
 
-            <button
-              type="button"
-              class="member-consent-dialog__close"
-              aria-label="Schließen"
-            >
-              ×
-            </button>
+            <header class="member-consent-dialog__header">
 
-          </header>
+              <h3
+                class="member-consent-dialog__title"
+                id="member-consent-dialog-title-${key}"
+              >
+                ${escapeMemberHtml(info.label)}
+              </h3>
 
-          <div class="member-consent-dialog__body">
+              <button
+                type="button"
+                class="member-consent-dialog__close"
+                aria-label="Schließen"
+              >
+                ×
+              </button>
 
-            <p>${escapeMemberHtml(info.body)}</p>
+            </header>
 
-            <p class="member-consent-dialog__revoke">
-              ${escapeMemberHtml(MEMBER_CONSENT_REVOKE_HINT)}
-            </p>
+            <div class="member-consent-dialog__body">
+
+              <p>${escapeMemberHtml(info.body)}</p>
+
+              <p class="member-consent-dialog__revoke">
+                ${escapeMemberHtml(MEMBER_CONSENT_REVOKE_HINT)}
+              </p>
+
+            </div>
+
+            <footer class="member-consent-dialog__footer">
+
+              <button
+                type="button"
+                class="member-consent-dialog__close-btn"
+              >
+                Schließen
+              </button>
+
+            </footer>
 
           </div>
 
-          <footer class="member-consent-dialog__footer">
-
-            <button
-              type="button"
-              class="member-consent-dialog__close-btn"
-            >
-              Schließen
-            </button>
-
-          </footer>
-
         </div>
 
-      </dialog>
+      </div>
 
     `)
     .join('');

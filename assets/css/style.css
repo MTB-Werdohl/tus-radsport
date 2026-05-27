@@ -439,8 +439,9 @@ a:hover {
 
 .member-consent-tooltip__trigger {
   flex-shrink: 0;
-  width: 1.25rem;
-  height: 1.25rem;
+  box-sizing: border-box;
+  min-width: 1.75rem;
+  min-height: 1.75rem;
   padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 50%;
@@ -449,7 +450,9 @@ a:hover {
   font-size: 0.75rem;
   font-weight: 700;
   line-height: 1;
-  cursor: help;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .member-consent-tooltip__trigger:hover,
@@ -490,6 +493,16 @@ a:hover {
   font-size: 0.8rem;
 }
 
+@media (hover: none), (pointer: coarse) {
+
+  .member-consent-tooltip__trigger {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    font-size: 0.875rem;
+  }
+
+}
+
 @media (hover: hover) and (pointer: fine) {
 
   .member-consent-tooltip__panel {
@@ -508,21 +521,45 @@ a:hover {
 
 }
 
-.member-consent-dialog {
-  border: none;
-  border-radius: 12px;
+body.member-consent-modal-open {
+  overflow: hidden;
+}
+
+.member-consent-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.member-consent-modal[hidden] {
+  display: none !important;
+}
+
+.member-consent-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   padding: 0;
-  width: min(420px, calc(100vw - 32px));
-  max-width: none;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+}
+
+.member-consent-modal .member-consent-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(420px, 100%);
   max-height: calc(100vh - 32px);
   overflow: hidden;
+  border-radius: 12px;
   background: #fff;
   color: #222;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
-}
-
-.member-consent-dialog::backdrop {
-  background: rgba(0, 0, 0, 0.55);
 }
 
 .member-consent-dialog__inner {

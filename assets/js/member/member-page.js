@@ -1,85 +1,120 @@
-function bindConsentInfoDialogs() {
+function openMemberConsentModal(key) {
 
-  const touchUi =
-    window.matchMedia(
-      '(hover: none), (pointer: coarse)'
-    ).matches;
+  const modal =
+    document.getElementById(
+      `member-consent-dialog-${key}`
+    );
 
-  document
-    .querySelectorAll('[data-consent-dialog]')
-    .forEach((button) => {
+  if (!modal) {
+    return;
+  }
 
-      button.addEventListener(
-        'click',
-        (event) => {
+  modal.hidden = false;
 
-          if (!touchUi) {
-            return;
-          }
+  document.body.classList.add(
+    'member-consent-modal-open'
+  );
 
-          event.preventDefault();
-          event.stopPropagation();
+  const closeBtn =
+    modal.querySelector(
+      '.member-consent-dialog__close'
+    );
 
-          const key =
-            button.dataset.consentDialog;
+  if (closeBtn) {
+    closeBtn.focus();
+  }
 
-          const dialog =
-            document.getElementById(
-              `member-consent-dialog-${key}`
-            );
+}
 
-          if (
-            dialog &&
-            typeof dialog.showModal === 'function'
-          ) {
-            dialog.showModal();
-          }
+function closeMemberConsentModal(modal) {
 
-        }
-      );
+  if (!modal) {
+    return;
+  }
 
-    });
+  modal.hidden = true;
 
-  document
-    .querySelectorAll('.member-consent-dialog')
-    .forEach((dialog) => {
+  document.body.classList.remove(
+    'member-consent-modal-open'
+  );
 
-      dialog
-        .querySelectorAll(
-          '.member-consent-dialog__close, '
+}
+
+function setupConsentInfoDialogs() {
+
+  const root =
+    document.getElementById('member-profile');
+
+  if (!root) {
+    return;
+  }
+
+  if (root.dataset.consentDialogsBound === 'true') {
+    return;
+  }
+
+  root.dataset.consentDialogsBound = 'true';
+
+  root.addEventListener(
+    'click',
+    (event) => {
+
+      const trigger =
+        event.target.closest(
+          '[data-consent-dialog]'
+        );
+
+      if (trigger) {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        openMemberConsentModal(
+          trigger.dataset.consentDialog
+        );
+
+        return;
+
+      }
+
+      const closeTarget =
+        event.target.closest(
+          '.member-consent-modal__backdrop, '
+          + '.member-consent-dialog__close, '
           + '.member-consent-dialog__close-btn'
-        )
-        .forEach((button) => {
+        );
 
-          button.addEventListener(
-            'click',
-            () => {
-              dialog.close();
-            }
-          );
+      if (!closeTarget) {
+        return;
+      }
 
-        });
+      const modal =
+        closeTarget.closest(
+          '.member-consent-modal'
+        );
 
-      dialog.addEventListener(
-        'click',
-        (event) => {
+      closeMemberConsentModal(modal);
 
-          if (event.target === dialog) {
-            dialog.close();
-          }
+    }
+  );
 
-        }
-      );
+  document.addEventListener(
+    'keydown',
+    (event) => {
 
-      dialog.addEventListener(
-        'cancel',
-        (event) => {
-          event.preventDefault();
-          dialog.close();
-        }
-      );
+      if (event.key !== 'Escape') {
+        return;
+      }
 
-    });
+      const openModal =
+        document.querySelector(
+          '.member-consent-modal:not([hidden])'
+        );
+
+      closeMemberConsentModal(openModal);
+
+    }
+  );
 
 }
 
@@ -421,8 +456,6 @@ function bindMemberProfileEvents(
 
   }
 
-  bindConsentInfoDialogs();
-
 }
 
 async function loadMemberProfilePage() {
@@ -461,6 +494,8 @@ async function loadMemberProfilePage() {
     member,
     pushState
   );
+
+  setupConsentInfoDialogs();
 
 }
 
