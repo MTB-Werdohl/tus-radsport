@@ -40,6 +40,18 @@ h3 {
   display: none;
 }
 
+.login-hint {
+  font-size: 0.875rem;
+  opacity: 0.85;
+  margin: 0 0 16px;
+}
+
+.login-status {
+  font-size: 0.9375rem;
+  color: #c8f7c8;
+  margin: 0;
+}
+
 .row {
   display: grid;
   grid-template-columns: 1fr 1fr;

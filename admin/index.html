@@ -24,20 +24,23 @@ title: MTB Werdohl Admin
     </h1>
 
     <p>
-      Admin Login
+      Vorstand Login
+    </p>
+
+    <p class="login-hint">
+      Magic Link — gleiche E-Mail wie in der Mitgliederliste,
+      Rolle muss „Vorstand“ sein.
     </p>
 
     <input id="email"
            type="email"
            placeholder="E-Mail">
 
-    <input id="password"
-           type="password"
-           placeholder="Passwort">
-
-    <button onclick="login()">
-      Login
+    <button type="button" onclick="sendLoginLink()">
+      Login-Link senden
     </button>
+
+    <p id="login-status" class="login-status hidden"></p>
 
   </div>
 
@@ -164,32 +167,27 @@ title: MTB Werdohl Admin
 
 <script>
 
-async function login() {
+async function sendLoginLink() {
 
   const email =
     document.getElementById('email').value;
 
-  const password =
-    document.getElementById('password').value;
+  const statusEl =
+    document.getElementById('login-status');
 
-  const { error } =
-    await supabaseClient.auth
-      .signInWithPassword({
+  statusEl.classList.add('hidden');
 
-        email,
-        password
+  const sent =
+    await sendAdminMagicLink(email);
 
-      });
+  if (sent) {
 
-  if (error) {
+    statusEl.textContent =
+      'Login-Link wurde gesendet. Bitte E-Mail prüfen.';
 
-    alert(error.message);
-
-    return;
+    statusEl.classList.remove('hidden');
 
   }
-
-  await checkSession();
 
 }
 
@@ -201,21 +199,7 @@ async function logout() {
 
 }
 
-async function checkSession() {
-
-  const { data } =
-    await supabaseClient.auth
-      .getSession();
-
-  if (data.session) {
-
-    showDashboard();
-
-  }
-
-}
-
-function showDashboard() {
+function showAdminDashboard() {
 
   document.getElementById(
     'login-view'
@@ -235,7 +219,7 @@ function showDashboard() {
 
 }
 
-checkSession();
+initAdminLoginPage();
 
 async function loadPushCount() {
 

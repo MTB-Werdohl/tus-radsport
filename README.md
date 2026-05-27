@@ -81,7 +81,9 @@ Unter `/admin/` (nicht in der Hauptnavigation verlinkt; Footer-Link).
 
 Push-Setup (RLS + Edge Function): [`docs/supabase-push-members.sql`](docs/supabase-push-members.sql) · [`docs/supabase-edge-save-push-subscription.ts`](docs/supabase-edge-save-push-subscription.ts)
 
-Authentifizierung: Supabase E-Mail/Passwort. Geschützte Seiten nutzen `requireAdminSession()` aus `admin/js/auth-guard.js`.
+Authentifizierung: Magic Link (wie Profil). Nur `members.rolle = 'Vorstand'` erhält Zugriff. Geschützte Seiten nutzen `requireAdminSession()` aus `admin/js/auth-guard.js`.
+
+Setup SQL: [`docs/supabase-vorstand-roles.sql`](docs/supabase-vorstand-roles.sql) · Redirect-URL `https://www.mtb-werdohl.de/admin/` in Supabase Auth freigeben.
 
 ---
 
@@ -95,7 +97,7 @@ Authentifizierung: Supabase E-Mail/Passwort. Geschützte Seiten nutzen `requireA
 | `gallery_images` | Tabelle | Bilder pro Galerie |
 | `PushSubscriptions` | Tabelle | Push-Empfänger (mit `member_id`, `device_name`, `user_agent`) |
 | `site_state` | Tabelle | z. B. letzte Push-Meldung |
-| `members` | Tabelle | Vereinsmitglieder (Magic-Link-Login) |
+| `members` | Tabelle | Vereinsmitglieder (`rolle`: Mitglied / Vorstand) |
 | `media` | Storage | Uploads (Bilder, GPX) |
 
 Frontend-Konfiguration: `assets/js/core/site-config.js` (URL, Keys, Tabellennamen, Storage, Edge Functions). Anon-Key ist öffentlich — Schutz nur über **RLS** in Supabase.

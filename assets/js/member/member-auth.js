@@ -286,6 +286,107 @@ async function isMemberEmail(email) {
 
 }
 
+const ADMIN_ERROR_NOT_VORSTAND =
+  'Kein Vorstand-Zugang für diese E-Mail.';
+
+async function isVorstandEmail(email) {
+
+  const normalized =
+    email.trim().toLowerCase();
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'check_vorstand_email',
+      { check_email: normalized }
+    );
+
+  if (error) {
+
+    console.warn(
+      'check_vorstand_email nicht verfügbar:',
+      error.message
+    );
+
+    return null;
+
+  }
+
+  return data === true;
+
+}
+
+async function sendAdminMagicLink(email) {
+
+  const normalized =
+    email.trim().toLowerCase();
+
+  if (
+    !normalized ||
+    !normalized.includes('@')
+  ) {
+    return false;
+  }
+
+  const isVorstand =
+    await isVorstandEmail(normalized);
+
+  if (isVorstand === false) {
+
+    alert(ADMIN_ERROR_NOT_VORSTAND);
+
+    return false;
+
+  }
+
+  if (isVorstand === null) {
+
+    const member =
+      await fetchMemberByEmail(normalized);
+
+    if (!member || !isVorstand(member)) {
+
+      alert(ADMIN_ERROR_NOT_VORSTAND);
+
+      return false;
+
+    }
+
+  }
+
+  const { error } =
+    await window.supabaseClient.auth.signInWithOtp({
+
+      email: normalized,
+
+      options: {
+
+        shouldCreateUser: true,
+
+        emailRedirectTo:
+          `${window.siteConfig.siteUrl}/admin/`
+
+      }
+
+    });
+
+  if (error) {
+
+    console.error(error);
+
+    alert(error.message);
+
+    return false;
+
+  }
+
+  alert(
+    'Login-Link wurde an deine E-Mail gesendet.'
+  );
+
+  return true;
+
+}
+
 async function sendMemberMagicLink(email) {
 
   const normalized =

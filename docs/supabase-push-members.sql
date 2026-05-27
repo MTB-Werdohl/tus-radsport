@@ -21,18 +21,15 @@ CREATE POLICY push_subscriptions_select_own
     )
   );
 
--- Admin-Accounts (nicht in members) dürfen alle Subscriptions lesen
-DROP POLICY IF EXISTS push_subscriptions_admin_select ON "PushSubscriptions";
-CREATE POLICY push_subscriptions_admin_select
-  ON "PushSubscriptions"
-  FOR SELECT
-  TO authenticated
-  USING (
-    NOT EXISTS (
-      SELECT 1 FROM members
-      WHERE lower(trim(members.email)) = lower(trim(auth.jwt()->>'email'))
-    )
-  );
+-- PushSubscriptions: Vorstand sieht alle (Dashboard)
+-- Voraussetzung: public.is_vorstand() existiert (docs/supabase-vorstand-roles.sql)
+drop policy if exists push_subscriptions_admin_select on "PushSubscriptions";
+
+create policy push_subscriptions_admin_select
+  on "PushSubscriptions"
+  for select
+  to authenticated
+  using (public.is_vorstand());
 
 -- Alte zu offene Policies entfernen (Schreiben über Edge Functions + Service Role)
 DROP POLICY IF EXISTS "PushSubscriptions Public Insert" ON "PushSubscriptions";

@@ -1,3 +1,20 @@
+const MEMBER_ROLE_VORSTAND =
+  'Vorstand';
+
+const MEMBER_ROLE_MITGLIED =
+  'Mitglied';
+
+function isVorstand(member) {
+
+  if (!member?.rolle) {
+    return false;
+  }
+
+  return member.rolle.trim().toLowerCase()
+    === MEMBER_ROLE_VORSTAND.toLowerCase();
+
+}
+
 async function fetchMemberByEmail(email) {
 
   const normalized =
@@ -115,7 +132,10 @@ function normalizeMemberRow(row) {
       row.einwilligung_bilder === true,
 
     bilder_eingewilligt_am:
-      row.bilder_eingewilligt_am || ''
+      row.bilder_eingewilligt_am || '',
+
+    rolle:
+      row.rolle || MEMBER_ROLE_MITGLIED
 
   };
 

@@ -79,16 +79,26 @@ Optionale Frontmatter-Flags:
 
 Ablauf: E-Mail in `members` → Magic Link → Session → E-Mail-Abgleich → Profil unter `/profil/`.
 
-Ausführliche Einrichtung: [`docs/supabase-members-setup.md`](supabase-members-setup.md) · SQL: [`docs/supabase-members-auth.sql`](supabase-members-auth.sql)
+**Rollen** (`members.rolle`):
+
+| Rolle | Profil | Admin `/admin/` |
+|-------|--------|-----------------|
+| `Mitglied` | ja | nein |
+| `Vorstand` | ja | ja (voller CMS-Zugriff) |
+
+Ausführliche Einrichtung: [`docs/supabase-members-setup.md`](supabase-members-setup.md) · SQL: [`docs/supabase-members-auth.sql`](supabase-members-auth.sql) · Rollen/RLS: [`docs/supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql)
 
 ---
 
 ## Admin
 
 - Eigene HTML-Seiten unter `admin/` mit Jekyll-Frontmatter `layout: null`
-- Gemeinsamer Kopf: `_includes/admin-head.html`
-- Session-Prüfung: `admin/js/auth-guard.js` → `requireAdminSession(callback)`
+- Gemeinsamer Kopf: `_includes/admin-head.html` (lädt Member-Service + Admin-Auth)
+- Login: Magic Link auf `/admin/` — nur `members.rolle = 'Vorstand'`
+- Session-Prüfung: `admin/js/auth-guard.js` → `requireAdminSession(callback)` prüft Session + Vorstand-Rolle
 - Admin-Logik liegt in `admin/js/` (Termine, News, Push, Galerie)
+
+SQL für Rollen und RLS: [`docs/supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql)
 
 ## Supabase — logische Tabellen
 

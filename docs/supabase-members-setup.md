@@ -75,11 +75,13 @@ select public.check_member_email('deine-echte@email.de');
 |------|------|
 | **Site URL** | `https://www.mtb-werdohl.de` |
 | **Redirect URLs** (jeweils eine Zeile) | `https://www.mtb-werdohl.de/profil/` |
+| | `https://www.mtb-werdohl.de/admin/` |
 | | `https://www.mtb-werdohl.de/**` |
 | | `http://localhost:4000/profil/` *(nur für lokales Testen)* |
+| | `http://localhost:4000/admin/` *(lokal Admin)* |
 | | `http://127.0.0.1:4000/profil/` *(optional)* |
 
-Ohne `/profil/` in den Redirect URLs landet der Magic Link nicht korrekt auf der Profilseite.
+Ohne `/profil/` bzw. `/admin/` in den Redirect URLs landen Magic Links nicht korrekt.
 
 ---
 
@@ -150,16 +152,23 @@ Magic Link muss auf localhost zeigen dürfen (Redirect URLs).
 
 ---
 
-## Schritt 8 — Admin vs. Mitglieder-Login
+## Schritt 8 — Rollen: Mitglied und Vorstand
 
-| | **Mitglieder** (Website) | **Admin** (`/admin/`) |
-|--|--------------------------|-------------------------|
-| Methode | Magic Link | E-Mail + Passwort |
-| Tabelle | `members` | Supabase Auth User (CMS) |
-| Zweck | Profil lesen | Termine, News, Push |
+Beide nutzen **denselben Magic-Link-Login** (Supabase Auth + Tabelle `members`).
 
-Beide nutzen **dieselbe Supabase-Instanz**, aber **unterschiedliche Auth-User**.  
-Admin-Login unter `/admin/` ist vom Mitglieder-Login getrennt.
+| Rolle (`members.rolle`) | Profil `/profil/` | Admin `/admin/` |
+|-------------------------|-------------------|-----------------|
+| `Mitglied` (Standard) | ja | nein |
+| `Vorstand` | ja | ja (CMS) |
+
+**Vorstand einrichten:**
+
+1. In `members`: Spalte `rolle` auf `Vorstand` setzen (exakt so, Groß/Kleinschreibung egal in der DB-Prüfung)
+2. SQL aus [`supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql) ausführen (RLS: nur Vorstand darf schreiben)
+3. `/admin/` öffnen → E-Mail → Login-Link (nur bei Rolle Vorstand)
+4. Redirect URL `/admin/` muss in Schritt 3 eingetragen sein
+
+Mitglieder ohne Vorstand-Rolle erhalten auf `/admin/` die Meldung „Kein Vorstand-Zugang“.
 
 ---
 
@@ -170,8 +179,12 @@ Admin-Login unter `/admin/` ist vom Mitglieder-Login getrennt.
 - [ ] `check_member_email('test@…')` → `true` für bekannte E-Mail
 - [ ] Site URL + Redirect URLs gesetzt
 - [ ] E-Mail-Provider / SMTP konfiguriert
+- [ ] [`supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql) ausgeführt (Vorstand-RLS)
+- [ ] Mindestens ein Test-Vorstand mit `rolle = 'Vorstand'`
+- [ ] Redirect URL `/admin/` gesetzt
 - [ ] Magic Link kommt an und `/profil/` funktioniert
-- [ ] Fremde E-Mail (nicht in `members`) → Toast „Kein Vereinsmitglied gefunden“
+- [ ] Vorstand: `/admin/` nach Magic Link erreichbar
+- [ ] Mitglied ohne Vorstand-Rolle: kein Admin-Zugang
 
 ---
 
