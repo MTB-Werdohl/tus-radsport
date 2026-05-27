@@ -1,11 +1,33 @@
-async function subscribeUserToPush() {
+async function subscribeUserToPush(options = {}) {
+
+  const memberId =
+    options.memberId;
+
+  if (!memberId) {
+
+    return {
+      ok: false,
+      reason: 'not_authenticated'
+    };
+
+  }
 
   if (!('serviceWorker' in navigator)) {
-    return;
+
+    return {
+      ok: false,
+      reason: 'unsupported'
+    };
+
   }
 
   if (!('PushManager' in window)) {
-    return;
+
+    return {
+      ok: false,
+      reason: 'unsupported'
+    };
+
   }
 
   const registration =
@@ -15,21 +37,46 @@ async function subscribeUserToPush() {
     await Notification.requestPermission();
 
   if (permission !== 'granted') {
-    return;
+
+    return {
+      ok: false,
+      reason: 'permission_denied'
+    };
+
   }
 
-  const subscription =
-    await registration.pushManager.subscribe({
+  let subscription =
+    await registration
+      .pushManager
+      .getSubscription();
 
-      userVisibleOnly: true,
+  if (!subscription) {
 
-      applicationServerKey:
-        urlBase64ToUint8Array(
-          window.siteConfig.vapidPublicKey
-        )
+    subscription =
+      await registration.pushManager.subscribe({
 
-    });
+        userVisibleOnly: true,
 
-  await saveSubscription(subscription);
+        applicationServerKey:
+          urlBase64ToUint8Array(
+            window.siteConfig.vapidPublicKey
+          )
+
+      });
+
+  }
+
+  await saveSubscription(
+    subscription,
+    {
+      memberId,
+      deviceName: getDeviceName(),
+      userAgent: navigator.userAgent
+    }
+  );
+
+  return {
+    ok: true
+  };
 
 }

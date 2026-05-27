@@ -98,7 +98,7 @@ Ausführliche Einrichtung: [`docs/supabase-members-setup.md`](supabase-members-s
 | `News` | Vereinsnachrichten |
 | `galleries` | Galerie-Metadaten |
 | `gallery_images` | Bilder pro Galerie |
-| `PushSubscriptions` | Web-Push-Endpunkte |
+| `PushSubscriptions` | Web-Push-Endpunkte (verknüpft mit `members` über `member_id`) |
 | `site_state` | z. B. letzte Push-Nachricht (`last_push`) |
 
 **Storage-Bucket:** `media` (Bilder, GPX)
@@ -109,7 +109,24 @@ Ausführliche Einrichtung: [`docs/supabase-members-setup.md`](supabase-members-s
 - `delete-push-subscription`
 - `send-push`
 
-## URLs & Weiterleitungen
+## Web Push (Mitglieder)
+
+Push-Aktivierung nur auf `/profil/` für eingeloggte Mitglieder (Magic Link).
+
+| Datei | Aufgabe |
+|-------|---------|
+| `push/subscribe.js` | Permission, `pushManager.subscribe`, ruft `saveSubscription` |
+| `push/save-subscription.js` | POST an Edge Function mit JWT + `member_id`, `device_name`, `user_agent` |
+| `push/push-subscription-service.js` | Profil-Status: Browser-Endpoint + DB-Abfrage |
+| `push/utils.js` | VAPID-Hilfe, `getDeviceName()` |
+| `push/widget.js` | Anzeige letzter Push (unabhängig von Aktivierung) |
+| `sw.js` | Service Worker |
+
+Ablauf: Profil → „Push-Mitteilungen aktivieren“ → Upsert in `PushSubscriptions` nach `endpoint` (keine Duplikate).
+
+Supabase-Setup: [`docs/supabase-push-members.sql`](supabase-push-members.sql) · Edge Function: [`docs/supabase-edge-save-push-subscription.ts`](supabase-edge-save-push-subscription.ts)
+
+---
 
 | Aufruf | Verhalten |
 |--------|-----------|

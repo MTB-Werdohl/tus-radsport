@@ -101,7 +101,76 @@ function renderConsentBlock(
 
 }
 
-function renderMemberProfile(member) {
+function renderMemberPushSection(pushState) {
+
+  if (!pushState?.supported) {
+
+    return `
+      <p class="member-push-unsupported">
+        Push-Mitteilungen werden in diesem Browser nicht unterstützt.
+      </p>
+    `;
+
+  }
+
+  if (pushState.active) {
+
+    return `
+      <p class="member-push-status member-push-status--yes">
+        ✓ Push aktiviert
+      </p>
+
+      <dl class="member-profile-list member-push-details">
+
+        <div class="member-profile-row">
+          <dt>Gerät</dt>
+          <dd>${formatMemberField(pushState.device_name)}</dd>
+        </div>
+
+        <div class="member-profile-row">
+          <dt>Registriert</dt>
+          <dd>${formatMemberPushDate(pushState.created_at)}</dd>
+        </div>
+
+      </dl>
+
+      <button
+        type="button"
+        class="member-push-btn"
+        disabled
+      >
+        Push-Mitteilungen aktivieren
+      </button>
+    `;
+
+  }
+
+  return `
+    <button
+      type="button"
+      id="member-push-enable"
+      class="member-push-btn member-push-btn--active"
+    >
+      Push-Mitteilungen aktivieren
+    </button>
+  `;
+
+}
+
+function formatMemberPushDate(value) {
+
+  if (!value) {
+    return '—';
+  }
+
+  return formatDateLong(value);
+
+}
+
+function renderMemberProfile(
+  member,
+  pushState = {}
+) {
 
   const container =
     document.getElementById(
@@ -212,6 +281,14 @@ function renderMemberProfile(member) {
     member.bilder_eingewilligt_am,
     'bilder'
   )}
+
+</section>
+
+<section class="member-profile-section-block">
+
+  <h2>Push-Mitteilungen</h2>
+
+  ${renderMemberPushSection(pushState)}
 
 </section>
 

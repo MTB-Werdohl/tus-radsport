@@ -77,7 +77,9 @@ Unter `/admin/` (nicht in der Hauptnavigation verlinkt; Footer-Link).
 - **Termine** — Tabelle `Termine`, Bilder/GPX in Storage `media`
 - **News** — Tabelle `News`
 - **Galerien** — `galleries` + `gallery_images`
-- **Push** — Edge Function `send-push`
+- **Push** — Edge Function `send-push` (Aktivierung nur auf `/profil/` für Mitglieder)
+
+Push-Setup (RLS + Edge Function): [`docs/supabase-push-members.sql`](docs/supabase-push-members.sql) · [`docs/supabase-edge-save-push-subscription.ts`](docs/supabase-edge-save-push-subscription.ts)
 
 Authentifizierung: Supabase E-Mail/Passwort. Geschützte Seiten nutzen `requireAdminSession()` aus `admin/js/auth-guard.js`.
 
@@ -91,7 +93,7 @@ Authentifizierung: Supabase E-Mail/Passwort. Geschützte Seiten nutzen `requireA
 | `News` | Tabelle | News-Liste & Detail |
 | `galleries` | Tabelle | Galerie-Metadaten |
 | `gallery_images` | Tabelle | Bilder pro Galerie |
-| `PushSubscriptions` | Tabelle | Push-Empfänger |
+| `PushSubscriptions` | Tabelle | Push-Empfänger (mit `member_id`, `device_name`, `user_agent`) |
 | `site_state` | Tabelle | z. B. letzte Push-Meldung |
 | `members` | Tabelle | Vereinsmitglieder (Magic-Link-Login) |
 | `media` | Storage | Uploads (Bilder, GPX) |

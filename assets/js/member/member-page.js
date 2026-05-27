@@ -1,4 +1,7 @@
-function bindMemberProfileEvents(member) {
+function bindMemberProfileEvents(
+  member,
+  pushState = {}
+) {
 
   const form =
     document.getElementById(
@@ -121,12 +124,22 @@ function bindMemberProfileEvents(member) {
 
             applyMemberUpdate(updated);
 
+            const currentMember =
+              getCurrentMember();
+
+            const currentPushState =
+              await resolveMemberPushState(
+                currentMember
+              );
+
             renderMemberProfile(
-              getCurrentMember()
+              currentMember,
+              currentPushState
             );
 
             bindMemberProfileEvents(
-              getCurrentMember()
+              currentMember,
+              currentPushState
             );
 
             showMemberToast(
@@ -152,6 +165,94 @@ function bindMemberProfileEvents(member) {
       );
 
     });
+
+  const pushBtn =
+    document.getElementById(
+      'member-push-enable'
+    );
+
+  if (pushBtn) {
+
+    pushBtn.addEventListener(
+      'click',
+      async () => {
+
+        pushBtn.disabled = true;
+
+        try {
+
+          const result =
+            await subscribeUserToPush({
+              memberId: member.id
+            });
+
+          if (!result.ok) {
+
+            let message =
+              'Push-Mitteilungen konnten nicht aktiviert werden.';
+
+            if (result.reason === 'permission_denied') {
+              message =
+                'Benachrichtigungen wurden nicht erlaubt.';
+            }
+
+            if (result.reason === 'unsupported') {
+              message =
+                'Push-Mitteilungen werden in diesem Browser nicht unterstützt.';
+            }
+
+            showMemberToast(
+              message,
+              'error'
+            );
+
+            pushBtn.disabled = false;
+
+            return;
+
+          }
+
+          const currentMember =
+            getCurrentMember();
+
+          const currentPushState =
+            await resolveMemberPushState(
+              currentMember
+            );
+
+          renderMemberProfile(
+            currentMember,
+            currentPushState
+          );
+
+          bindMemberProfileEvents(
+            currentMember,
+            currentPushState
+          );
+
+          showMemberToast(
+            'Push-Mitteilungen aktiviert.',
+            'success',
+            3000
+          );
+
+        } catch (error) {
+
+          console.error(error);
+
+          showMemberToast(
+            'Push-Mitteilungen konnten nicht aktiviert werden.',
+            'error'
+          );
+
+          pushBtn.disabled = false;
+
+        }
+
+      }
+    );
+
+  }
 
   const logoutBtn =
     document.getElementById(
@@ -199,9 +300,18 @@ async function loadMemberProfilePage() {
   document.title =
     `Mein Profil · MTB Werdohl`;
 
-  renderMemberProfile(member);
+  const pushState =
+    await resolveMemberPushState(member);
 
-  bindMemberProfileEvents(member);
+  renderMemberProfile(
+    member,
+    pushState
+  );
+
+  bindMemberProfileEvents(
+    member,
+    pushState
+  );
 
 }
 
