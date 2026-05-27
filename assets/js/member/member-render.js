@@ -52,19 +52,83 @@ function formatConsentDate(value) {
 
 }
 
+const MEMBER_CONSENT_TEXTS = {
+
+  kontakt: {
+    label: 'Einwilligung Kontakt',
+    body:
+      'Ich willige ein, dass meine oben angegebenen Kontaktdaten durch die Abteilung zur '
+      + 'Organisation des Trainings- und Wettkampfbetriebs, zur Weitergabe von Terminen und '
+      + 'Informationen sowie zur internen Abstimmung innerhalb der Abteilung genutzt werden '
+      + 'dürfen. Eine Weitergabe an Dritte außerhalb des Vereins erfolgt nicht.'
+  },
+
+  bilder: {
+    label: 'Einwilligung Bilder',
+    body:
+      'Ich willige ein, dass Fotos und Videos meiner Person, die im Rahmen von Training, '
+      + 'Wettkämpfen oder Vereinsveranstaltungen entstehen, für Zwecke der '
+      + 'Öffentlichkeitsarbeit der Abteilung veröffentlicht werden dürfen (insbesondere auf der '
+      + 'Vereinswebsite, in sozialen Medien sowie in Presseveröffentlichungen). '
+      + 'Ich wurde darauf hingewiesen, dass Inhalte im Internet weltweit abrufbar sind und eine '
+      + 'Weiterverwendung durch Dritte nicht ausgeschlossen werden kann.'
+  }
+
+};
+
+const MEMBER_CONSENT_REVOKE_HINT =
+  'Zum Widerruf genügt eine Mitteilung in Textform (z. B. per E-Mail) an den Verein '
+  + '(Hinweis siehe unten).';
+
+function renderConsentLabel(consentKey) {
+
+  const info =
+    MEMBER_CONSENT_TEXTS[consentKey];
+
+  if (!info) {
+    return '';
+  }
+
+  return `
+    <span class="member-consent-tooltip">
+      <strong class="member-consent-tooltip__label">
+        ${escapeMemberHtml(info.label)}
+      </strong>
+      <button
+        type="button"
+        class="member-consent-tooltip__trigger"
+        aria-label="Einwilligungstext und Widerruf anzeigen"
+      >
+        i
+      </button>
+      <span class="member-consent-tooltip__panel" role="tooltip">
+        <span class="member-consent-tooltip__text">
+          ${escapeMemberHtml(info.body)}
+        </span>
+        <span class="member-consent-tooltip__revoke">
+          ${escapeMemberHtml(MEMBER_CONSENT_REVOKE_HINT)}
+        </span>
+      </span>
+    </span>
+  `;
+
+}
+
 function renderConsentBlock(
-  label,
   granted,
   grantedDate,
   consentKey
 ) {
+
+  const labelHtml =
+    renderConsentLabel(consentKey);
 
   if (granted) {
 
     return `
       <div class="member-consent-row">
         <div class="member-consent-info">
-          <strong>${escapeMemberHtml(label)}</strong>
+          ${labelHtml}
           <span class="member-consent-status member-consent-status--yes">
             Erteilt am ${formatConsentDate(grantedDate)}
           </span>
@@ -84,7 +148,7 @@ function renderConsentBlock(
   return `
     <div class="member-consent-row">
       <div class="member-consent-info">
-        <strong>${escapeMemberHtml(label)}</strong>
+        ${labelHtml}
         <span class="member-consent-status member-consent-status--no">
           Noch nicht erteilt
         </span>
@@ -269,18 +333,22 @@ function renderMemberProfile(
   <h2>Datenschutz-Einwilligungen</h2>
 
   ${renderConsentBlock(
-    'Einwilligung Kontakt',
     member.einwilligung_kontakt,
     member.kontakt_eingewilligt_am,
     'kontakt'
   )}
 
   ${renderConsentBlock(
-    'Einwilligung Bilder',
     member.einwilligung_bilder,
     member.bilder_eingewilligt_am,
     'bilder'
   )}
+
+  <p class="member-consent-footnote">
+    Die Einwilligungen sind freiwillig und können jederzeit mit Wirkung für die Zukunft
+    widerrufen werden. Der Widerruf ist in Textform (z.&nbsp;B. per E-Mail) gegenüber dem Verein
+    zu richten.
+  </p>
 
 </section>
 
