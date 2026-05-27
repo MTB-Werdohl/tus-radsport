@@ -19,7 +19,7 @@ title: MTB Werdohl Admin
 
   <div class="admin-wrapper">
 
-    <div class="admin-header">
+    <div class="admin-header admin-header-top">
 
       <div>
 
@@ -33,10 +33,7 @@ title: MTB Werdohl Admin
 
       </div>
 
-      <button class="logout-button"
-              onclick="logoutAdmin()">
-        Logout
-      </button>
+      {% include admin-escape-nav.html %}
 
     </div>
 
@@ -134,14 +131,6 @@ title: MTB Werdohl Admin
 </div>
 
 <script>
-
-async function logoutAdmin() {
-
-  await supabaseClient.auth.signOut();
-
-  window.location.href = '/';
-
-}
 
 function showAdminDashboard() {
 
