@@ -21,7 +21,8 @@ window.siteConfig = {
     galleries: 'galleries',
     galleryImages: 'gallery_images',
     pushSubscriptions: 'PushSubscriptions',
-    siteState: 'site_state'
+    siteState: 'site_state',
+    members: 'members'
   },
 
   storage: {

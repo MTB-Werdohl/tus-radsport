@@ -3,6 +3,14 @@ window.supabaseClient =
 
     window.siteConfig.supabaseUrl,
 
-    window.siteConfig.supabaseAnonKey
+    window.siteConfig.supabaseAnonKey,
+
+    {
+      auth: {
+        persistSession: true,
+        detectSessionInUrl: true,
+        flowType: 'pkce'
+      }
+    }
 
   );

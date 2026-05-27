@@ -25,6 +25,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/js/core/site-config.js"></script>
   <script src="/assets/js/core/supabase.js"></script>
+  <script src="/assets/js/member/member-service.js"></script>
+  <script src="/assets/js/member/member-auth.js"></script>
   <script src="/assets/js/core/config.js"></script>
   <script src="/assets/js/push/utils.js"></script>
   <script src="/assets/js/push/save-subscription.js"></script>
@@ -48,6 +50,33 @@
         {% for item in site.data.navigation %}
           <a href="{{ item.url | relative_url }}">{{ item.title }}</a>
         {% endfor %}
+
+        <div id="member-auth" class="member-auth" aria-live="polite">
+
+          <p id="member-auth-message" class="member-auth-message" hidden></p>
+
+          <form id="member-login-form" class="member-auth-guest">
+            <label class="visually-hidden" for="member-email">E-Mail</label>
+            <input
+              type="email"
+              id="member-email"
+              name="email"
+              placeholder="E-Mail"
+              autocomplete="email"
+              required
+            >
+            <button type="submit">
+              Login-Link senden
+            </button>
+          </form>
+
+          <div id="member-auth-member" class="member-auth-member" hidden>
+            <span id="member-greeting" class="member-greeting"></span>
+            <a href="{{ '/profil/' | relative_url }}">Mein Profil</a>
+            <button type="button" id="member-logout">Logout</button>
+          </div>
+
+        </div>
       </nav>
       <button class="nav-toggle"
               aria-label="Menü öffnen"
@@ -141,6 +170,7 @@ class="push-widget-content"
 </div>
 
 <script src="/assets/js/push/widget.js"></script>
+<script src="/assets/js/member/member-nav.js"></script>
   <script src="{{ '/assets/js/nav.js' | relative_url }}"></script>
 
   <!-- GLightbox initialisieren -->

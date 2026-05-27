@@ -15,4 +15,18 @@ if (toggle && nav) {
       toggle.setAttribute('aria-expanded', 'false');
     });
   });
+
+  const memberAuth =
+    document.getElementById('member-auth');
+
+  if (memberAuth) {
+
+    memberAuth.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('click', () => {
+        nav.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+  }
 }

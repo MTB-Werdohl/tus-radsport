@@ -65,6 +65,24 @@ Optionale Frontmatter-Flags:
 - `hide_title: true` — kein automatisches `<h1>` aus `page.title`
 - `load_calendar_css` / `load_events_css` — CSS nur auf Kalender/Event-Seiten
 
+## Mitglieder-Login (Magic Link)
+
+Öffentliche Seiten nutzen `assets/js/member/`:
+
+| Datei | Aufgabe |
+|-------|---------|
+| `member-service.js` | Abfrage Tabelle `members` |
+| `member-auth.js` | Session, Magic Link, Logout, Validierung |
+| `member-nav.js` | Header-UI (Login / Profil / Logout) |
+| `member-render.js` | Profilseite rendern |
+| `member-page.js` | Profilseite initialisieren |
+
+Ablauf: E-Mail in `members` → Magic Link → Session → E-Mail-Abgleich → Profil unter `/profil/`.
+
+**Supabase:** Redirect-URL `https://www.mtb-werdohl.de/profil/` freigeben; RLS auf `members` (SELECT für anon/authenticated nach E-Mail).
+
+---
+
 ## Admin
 
 - Eigene HTML-Seiten unter `admin/` mit Jekyll-Frontmatter `layout: null`

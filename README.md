@@ -38,6 +38,7 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Push
 │       ├── event/       # Termin-Detailseite
 │       ├── news/        # News-Liste & Detail
 │       ├── gallery/     # Galerie
+│       ├── member/      # Mitglieder-Login (Magic Link)
 │       └── push/        # Web-Push
 ├── *.md, *.html         # Öffentliche Seiten (Jekyll)
 ├── scripts/
@@ -62,7 +63,7 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Push
 | `/galerie/` | `galerie.md` | Galerie-Übersicht |
 | `/galerie-detail.html?slug=…` | `galerie-detail.html` | Galerie-Detail |
 | `/about`, `/training`, `/kodex`, … | jeweilige `.md` | Statische Infoseiten |
-| `/app/` | `app.md` | PWA-Installationshinweise |
+| `/profil/` | `profil.md` | Mitgliederprofil (Magic Link) |
 | `/admin/` | `admin/index.html` | Admin-Login & Dashboard |
 
 Navigation: `_data/navigation.yml`
@@ -92,6 +93,7 @@ Authentifizierung: Supabase E-Mail/Passwort. Geschützte Seiten nutzen `requireA
 | `gallery_images` | Tabelle | Bilder pro Galerie |
 | `PushSubscriptions` | Tabelle | Push-Empfänger |
 | `site_state` | Tabelle | z. B. letzte Push-Meldung |
+| `members` | Tabelle | Vereinsmitglieder (Magic-Link-Login) |
 | `media` | Storage | Uploads (Bilder, GPX) |
 
 Frontend-Konfiguration: `assets/js/core/site-config.js` (URL, Keys, Tabellennamen, Storage, Edge Functions). Anon-Key ist öffentlich — Schutz nur über **RLS** in Supabase.
