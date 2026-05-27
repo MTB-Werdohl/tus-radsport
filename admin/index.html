@@ -15,39 +15,7 @@ title: MTB Werdohl Admin
 
 <body>
 
-<div id="login-view">
-
-  <div class="login-box">
-
-    <h1>
-      MTB Werdohl
-    </h1>
-
-    <p>
-      Vorstand Login
-    </p>
-
-    <p class="login-hint">
-      Magic Link — gleiche E-Mail wie in der Mitgliederliste,
-      Rolle muss „Vorstand“ sein.
-    </p>
-
-    <input id="email"
-           type="email"
-           placeholder="E-Mail">
-
-    <button type="button" onclick="sendLoginLink()">
-      Login-Link senden
-    </button>
-
-    <p id="login-status" class="login-status hidden"></p>
-
-  </div>
-
-</div>
-
-<div id="dashboard-view"
-     class="hidden">
+<div id="dashboard-view">
 
   <div class="admin-wrapper">
 
@@ -66,7 +34,7 @@ title: MTB Werdohl Admin
       </div>
 
       <button class="logout-button"
-              onclick="logout()">
+              onclick="logoutAdmin()">
         Logout
       </button>
 
@@ -167,59 +135,21 @@ title: MTB Werdohl Admin
 
 <script>
 
-async function sendLoginLink() {
-
-  const email =
-    document.getElementById('email').value;
-
-  const statusEl =
-    document.getElementById('login-status');
-
-  statusEl.classList.add('hidden');
-
-  const sent =
-    await sendAdminMagicLink(email);
-
-  if (sent) {
-
-    statusEl.textContent =
-      'Login-Link wurde gesendet. Bitte E-Mail prüfen.';
-
-    statusEl.classList.remove('hidden');
-
-  }
-
-}
-
-async function logout() {
+async function logoutAdmin() {
 
   await supabaseClient.auth.signOut();
 
-  location.reload();
+  window.location.href = '/';
 
 }
 
 function showAdminDashboard() {
 
-  document.getElementById(
-    'login-view'
-  )
-    .classList.add(
-      'hidden'
-    );
-
-  document.getElementById(
-    'dashboard-view'
-  )
-    .classList.remove(
-      'hidden'
-    );
-
   loadPushCount();
 
 }
 
-initAdminLoginPage();
+initAdminDashboardPage();
 
 async function loadPushCount() {
 

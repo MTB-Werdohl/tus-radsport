@@ -165,8 +165,8 @@ Beide nutzen **denselben Magic-Link-Login** (Supabase Auth + Tabelle `members`).
 
 1. In `members`: Spalte `rolle` auf `Vorstand` setzen (exakt so, Groß/Kleinschreibung egal in der DB-Prüfung)
 2. SQL aus [`supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql) ausführen (RLS: nur Vorstand darf schreiben)
-3. `/admin/` öffnen → E-Mail → Login-Link (nur bei Rolle Vorstand)
-4. Redirect URL `/admin/` muss in Schritt 3 eingetragen sein
+3. `/admin/` öffnen (Link „Admin“ erscheint in der Navbar nach Login) — ohne Vorstand-Rolle Redirect nach `/`
+4. Redirect URL `/profil/` muss in Schritt 3 eingetragen sein (`/admin/` nicht mehr nötig für Login)
 
 Mitglieder ohne Vorstand-Rolle erhalten auf `/admin/` die Meldung „Kein Vorstand-Zugang“.
 

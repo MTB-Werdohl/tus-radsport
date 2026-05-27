@@ -17,85 +17,30 @@ async function ensureVorstandSession(
     );
 
   if (!member || !isVorstand(member)) {
-
-    if (options.signOutOnDeny) {
-
-      await window.supabaseClient.auth.signOut();
-
-    }
-
     return null;
-
   }
 
   return member;
 
 }
 
-function cleanAdminAuthCallbackUrl() {
-
-  if (!isAuthCallback()) {
-    return;
-  }
-
-  const path =
-    window.location.pathname.endsWith('/')
-      ? window.location.pathname
-      : `${window.location.pathname}/`;
-
-  window.history.replaceState(
-    {},
-    '',
-    path
-  );
-
-}
-
-async function initAdminLoginPage() {
-
-  const params =
-    new URLSearchParams(
-      window.location.search
-    );
-
-  if (
-    params.get('error') === 'access_denied'
-  ) {
-
-    alert(ADMIN_ERROR_NOT_VORSTAND);
-
-    window.history.replaceState(
-      {},
-      '',
-      '/admin/'
-    );
-
-  }
+async function initAdminDashboardPage() {
 
   const member =
     await ensureVorstandSession();
 
-  if (member) {
+  if (!member) {
 
-    cleanAdminAuthCallbackUrl();
-
-    if (
-      typeof showAdminDashboard === 'function'
-    ) {
-      showAdminDashboard();
-    }
+    window.location.href = '/';
 
     return;
 
   }
 
-  if (isAuthCallback()) {
-
-    await window.supabaseClient.auth.signOut();
-
-    window.location.href =
-      '/admin/?error=access_denied';
-
+  if (
+    typeof showAdminDashboard === 'function'
+  ) {
+    showAdminDashboard();
   }
 
 }

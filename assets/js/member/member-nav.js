@@ -15,6 +15,11 @@ function updateMemberNav(member) {
       'member-greeting'
     );
 
+  const adminLinkEl =
+    document.getElementById(
+      'member-admin-link'
+    );
+
   if (!guestEl || !memberEl) {
     return;
   }
@@ -40,7 +45,18 @@ function updateMemberNav(member) {
       greetingEl.textContent = '';
     }
 
+    if (adminLinkEl) {
+      adminLinkEl.hidden = true;
+    }
+
     return;
+
+  }
+
+  if (adminLinkEl) {
+
+    adminLinkEl.hidden =
+      !isVorstand(member);
 
   }
 

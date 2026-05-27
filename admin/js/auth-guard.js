@@ -1,27 +1,14 @@
+const ADMIN_HOME_URL = '/';
+
 window.requireAdminSession = async function (callback) {
 
-  const { data: { session } } =
-    await window.supabaseClient.auth.getSession();
-
-  if (!session) {
-
-    window.location.href = '/admin/';
-
-    return;
-
-  }
-
   const member =
-    await fetchMemberByEmail(
-      session.user.email
-    );
+    await ensureVorstandSession();
 
-  if (!member || !isVorstand(member)) {
-
-    await window.supabaseClient.auth.signOut();
+  if (!member) {
 
     window.location.href =
-      '/admin/?error=access_denied';
+      ADMIN_HOME_URL;
 
     return;
 

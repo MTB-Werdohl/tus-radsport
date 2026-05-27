@@ -94,8 +94,9 @@ Ausführliche Einrichtung: [`docs/supabase-members-setup.md`](supabase-members-s
 
 - Eigene HTML-Seiten unter `admin/` mit Jekyll-Frontmatter `layout: null`
 - Gemeinsamer Kopf: `_includes/admin-head.html` (lädt Member-Service + Admin-Auth)
-- Login: Magic Link auf `/admin/` — nur `members.rolle = 'Vorstand'`
-- Session-Prüfung: `admin/js/auth-guard.js` → `requireAdminSession(callback)` prüft Session + Vorstand-Rolle
+- Kein separates Admin-Login: Vorstand meldet sich in der Website-Navigation per Magic Link an
+- `/admin/` und Unterseiten: ohne Vorstand-Session → Redirect nach `/` (Mitglied bleibt eingeloggt)
+- Session-Prüfung: `admin/js/auth-guard.js` → `requireAdminSession(callback)`
 - Admin-Logik liegt in `admin/js/` (Termine, News, Push, Galerie)
 
 SQL für Rollen und RLS: [`docs/supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql)
