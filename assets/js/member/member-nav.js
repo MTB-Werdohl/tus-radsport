@@ -19,30 +19,34 @@ function updateMemberNav(member) {
     return;
   }
 
-  if (member) {
+  guestEl.classList.toggle(
+    'is-active',
+    !member
+  );
 
-    guestEl.hidden = true;
-    memberEl.hidden = false;
+  memberEl.classList.toggle(
+    'is-active',
+    !!member
+  );
+
+  if (!member) {
 
     if (greetingEl) {
-
-      const name =
-        member.vorname || 'Mitglied';
-
-      greetingEl.textContent =
-        `Hallo ${name}`;
-
+      greetingEl.textContent = '';
     }
 
     return;
 
   }
 
-  guestEl.hidden = false;
-  memberEl.hidden = true;
-
   if (greetingEl) {
-    greetingEl.textContent = '';
+
+    const name =
+      member.vorname || 'Mitglied';
+
+    greetingEl.textContent =
+      `Hallo ${name}`;
+
   }
 
 }

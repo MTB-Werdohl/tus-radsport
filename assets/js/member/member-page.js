@@ -9,15 +9,11 @@ async function loadMemberProfilePage() {
 
   if (!member) {
 
-    renderMemberProfileError(
-      MEMBER_ERROR_NOT_FOUND
-    );
-
     window.setTimeout(() => {
 
       window.location.href = '/';
 
-    }, 2500);
+    }, 1500);
 
     return;
 

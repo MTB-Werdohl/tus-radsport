@@ -46,16 +46,17 @@
              alt="{{ site.title }}">
       </a>
 
-      <nav class="nav" id="site-nav" aria-label="Hauptnavigation">
-        {% for item in site.data.navigation %}
-          <a href="{{ item.url | relative_url }}">{{ item.title }}</a>
-        {% endfor %}
+      <div class="header-nav-wrap" id="header-nav-wrap">
+
+        <nav class="nav" id="site-nav" aria-label="Hauptnavigation">
+          {% for item in site.data.navigation %}
+            <a href="{{ item.url | relative_url }}">{{ item.title }}</a>
+          {% endfor %}
+        </nav>
 
         <div id="member-auth" class="member-auth" aria-live="polite">
 
-          <p id="member-auth-message" class="member-auth-message" hidden></p>
-
-          <form id="member-login-form" class="member-auth-guest">
+          <form id="member-login-form" class="member-auth-guest is-active">
             <label class="visually-hidden" for="member-email">E-Mail</label>
             <input
               type="email"
@@ -70,14 +71,15 @@
             </button>
           </form>
 
-          <div id="member-auth-member" class="member-auth-member" hidden>
+          <div id="member-auth-member" class="member-auth-member">
             <span id="member-greeting" class="member-greeting"></span>
             <a href="{{ '/profil/' | relative_url }}">Mein Profil</a>
             <button type="button" id="member-logout">Logout</button>
           </div>
 
         </div>
-      </nav>
+
+      </div>
       <button class="nav-toggle"
               aria-label="Menü öffnen"
               aria-expanded="false">
