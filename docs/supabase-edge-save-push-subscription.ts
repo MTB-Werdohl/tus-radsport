@@ -1,7 +1,11 @@
+// @ts-nocheck
 // Edge Function: save-push-subscription
 // Deploy in Supabase Dashboard → Edge Functions → save-push-subscription
 //
 // Env (automatisch gesetzt): SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY
+// Deno Edge Function — LSP: docs/deno.json
+
+import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
 

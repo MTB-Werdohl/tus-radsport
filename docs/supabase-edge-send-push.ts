@@ -1,3 +1,4 @@
+// @ts-nocheck
 // Edge Function: send-push
 // Deploy: Supabase Dashboard → Edge Functions → send-push
 //
@@ -5,6 +6,9 @@
 //      VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY
 //
 // Nur eingeloggte Vorstände dürfen Push an alle Abonnenten senden.
+// Deno Edge Function — LSP: docs/deno.json + Deno für docs/ in .vscode/settings.json
+
+import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import webpush from 'npm:web-push';
@@ -16,7 +20,7 @@ const corsHeaders = {
 };
 
 function jsonResponse(
-  body: Record<string, unknown>,
+  body,
   status = 200
 ) {
 
@@ -39,7 +43,7 @@ webpush.setVapidDetails(
   Deno.env.get('VAPID_PRIVATE_KEY') ?? ''
 );
 
-async function requireVorstand(req: Request) {
+async function requireVorstand(req) {
 
   const authHeader =
     req.headers.get('Authorization');
@@ -145,7 +149,7 @@ Deno.serve(async (req) => {
     }
 
     const supabaseAdmin =
-      authResult.supabaseAdmin!;
+      authResult.supabaseAdmin;
 
     const body =
       await req.json();
@@ -220,13 +224,12 @@ Deno.serve(async (req) => {
 
         sent += 1;
 
-      } catch (pushError: unknown) {
+      } catch (pushError) {
 
         console.error(pushError);
 
         const statusCode =
-          (pushError as { statusCode?: number })
-            ?.statusCode;
+          pushError?.statusCode;
 
         if (
           statusCode === 404
@@ -256,7 +259,7 @@ Deno.serve(async (req) => {
     return jsonResponse(
       {
         error:
-          (error as Error)?.message
+          error?.message
           || 'Internal server error'
       },
       500
