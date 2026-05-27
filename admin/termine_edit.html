@@ -15,9 +15,32 @@ title: Termin bearbeiten
 
 <body>
 
-<h1 id="form-title">
-  Neuer Termin
-</h1>
+<div id="admin">
+
+  <div class="page-header">
+
+    <div>
+
+      <h1 id="form-title">
+        Neuer Termin
+      </h1>
+
+      <p>
+        Termin anlegen oder bearbeiten
+      </p>
+
+    </div>
+
+    <a href="/admin/termine.html"
+       class="back-button">
+
+      ← Termine
+
+    </a>
+
+  </div>
+
+  <div class="member-admin-form">
 
 <input id="title"
        placeholder="Titel">
@@ -170,7 +193,10 @@ title: Termin bearbeiten
   Speichern
 </button>
 
-<script src="/admin/js/auth-guard.js"></script>
+  </div>
+
+</div>
+
 <script src="/admin/js/termine-edit.js"></script>
 <script>
 requireAdminSession(initTerminEdit);

@@ -1,5 +1,5 @@
--- Phase 1: Rollen Vorstand / Mitglied
--- Einmalig im Supabase SQL Editor ausführen.
+-- Schritt 2 — Rollen Vorstand / Mitglied
+-- Siehe docs/supabase/RUNBOOK.md
 
 -- Hilfsfunktion: eingeloggter User ist Vorstand
 create or replace function public.is_vorstand()

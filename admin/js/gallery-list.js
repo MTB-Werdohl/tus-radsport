@@ -1,17 +1,3 @@
-function escapeAdminHtml(value) {
-
-  if (value === null || value === undefined) {
-    return '';
-  }
-
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-
-}
-
 function formatGalleryDate(dateString) {
 
   if (!dateString) {
@@ -156,15 +142,6 @@ async function loadGalleries() {
     });
 
   });
-
-}
-
-function extractStoragePath(url) {
-
-  const split =
-    url.split('/storage/v1/object/public/media/');
-
-  return split[1] || null;
 
 }
 

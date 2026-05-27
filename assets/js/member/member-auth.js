@@ -124,7 +124,9 @@ async function rejectInvalidMemberSession() {
 
   currentMember = null;
 
-  await window.supabaseClient.auth.signOut();
+  await window.supabaseClient.auth.signOut({
+    scope: 'local'
+  });
 
   showMemberToast(
     MEMBER_ERROR_NOT_FOUND,
@@ -354,7 +356,9 @@ async function sendMemberMagicLink(email) {
 
 async function logoutMember() {
 
-  await window.supabaseClient.auth.signOut();
+  await window.supabaseClient.auth.signOut({
+    scope: 'local'
+  });
 
   currentMember = null;
 

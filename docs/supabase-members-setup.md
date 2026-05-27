@@ -50,6 +50,8 @@ order by nachname;
 
 **Dashboard → SQL → New query**
 
+Reihenfolge siehe [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md). Minimum für Login:
+
 Inhalt aus [`supabase-members-auth.sql`](supabase-members-auth.sql) einfügen und **Run** klicken.
 
 Das richtet ein:
@@ -74,14 +76,13 @@ select public.check_member_email('deine-echte@email.de');
 | Feld | Wert |
 |------|------|
 | **Site URL** | `https://www.mtb-werdohl.de` |
-| **Redirect URLs** (jeweils eine Zeile) | `https://www.mtb-werdohl.de/profil/` |
-| | `https://www.mtb-werdohl.de/admin/` |
+| **Redirect URLs** (Allow-List, jeweils eine Zeile) | `https://www.mtb-werdohl.de/profil/` |
 | | `https://www.mtb-werdohl.de/**` |
-| | `http://localhost:4000/profil/` *(nur für lokales Testen)* |
-| | `http://localhost:4000/admin/` *(lokal Admin)* |
-| | `http://127.0.0.1:4000/profil/` *(optional)* |
+| | `http://localhost:4000/profil/` *(lokal)* |
 
-Ohne `/profil/` bzw. `/admin/` in den Redirect URLs landen Magic Links nicht korrekt.
+`/admin/` muss **nicht** als Login-Ziel konfiguriert sein — Vorstand geht nach Magic Link auf `/profil/` und öffnet Admin über die Navbar. `/admin/` in der Allow-List ist optional (z. B. für alte Links).
+
+Vollständige SQL-Reihenfolge: [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md)
 
 ---
 
@@ -164,9 +165,8 @@ Beide nutzen **denselben Magic-Link-Login** (Supabase Auth + Tabelle `members`).
 **Vorstand einrichten:**
 
 1. In `members`: Spalte `rolle` auf `Vorstand` setzen (exakt so, Groß/Kleinschreibung egal in der DB-Prüfung)
-2. SQL aus [`supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql) ausführen (RLS: nur Vorstand darf schreiben)
-3. `/admin/` öffnen (Link „Admin“ erscheint in der Navbar nach Login) — ohne Vorstand-Rolle Redirect nach `/`
-4. Redirect URL `/profil/` muss in Schritt 3 eingetragen sein (`/admin/` nicht mehr nötig für Login)
+2. SQL-Skripte gemäß [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md) ausführen (Schritte 2–4)
+3. `/admin/` über Navbar-Link „Admin“ öffnen — ohne Vorstand-Rolle stiller Redirect nach `/`
 
 Mitglieder ohne Vorstand-Rolle erhalten auf `/admin/` die Meldung „Kein Vorstand-Zugang“.
 

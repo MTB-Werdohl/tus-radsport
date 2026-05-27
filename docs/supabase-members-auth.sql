@@ -1,7 +1,5 @@
--- Mitglieder-Login für MTB Werdohl
--- Einmalig im Supabase SQL Editor ausführen (Dashboard → SQL → New query)
---
--- Voraussetzung: Tabelle public.members existiert (siehe Tabellenschema im Projekt)
+-- Schritt 1 — Mitglieder-Login: RLS Basis + check_member_email
+-- Siehe docs/supabase/RUNBOOK.md
 
 -- 1) Row Level Security aktivieren
 alter table public.members enable row level security;

@@ -15,11 +15,32 @@ title: Mitglied bearbeiten
 
 <body>
 
-<h1 id="form-title">
-  Neues Mitglied
-</h1>
+<div id="admin">
 
-<div class="member-admin-form">
+  <div class="page-header">
+
+    <div>
+
+      <h1 id="form-title">
+        Neues Mitglied
+      </h1>
+
+      <p>
+        Mitgliedsdaten pflegen
+      </p>
+
+    </div>
+
+    <a href="/admin/mitglieder.html"
+       class="back-button">
+
+      ← Mitglieder
+
+    </a>
+
+  </div>
+
+  <div class="member-admin-form">
 
   <div class="row">
 
@@ -127,9 +148,10 @@ title: Mitglied bearbeiten
     Speichern
   </button>
 
+  </div>
+
 </div>
 
-<script src="/admin/js/auth-guard.js"></script>
 <script src="/admin/js/members-edit.js"></script>
 <script>
 requireAdminSession(initMemberEdit);

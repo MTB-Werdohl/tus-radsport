@@ -59,16 +59,16 @@ async function loadNews() {
             <div>
 
               <strong>
-                ${item.title}
+                ${escapeAdminHtml(item.title)}
               </strong>
 
               <div class="event-meta">
 
-                ${visibilityListLabel(item.sichtbarkeit)}
+                ${escapeAdminHtml(visibilityListLabel(item.sichtbarkeit))}
 
                 ·
 
-                /news/${item.slug}
+                /news/${escapeAdminHtml(item.slug)}
 
               </div>
 

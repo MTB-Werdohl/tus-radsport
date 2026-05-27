@@ -15,59 +15,77 @@ title: News bearbeiten
 
 <body>
 
-<h1 id="form-title">
-  Neue News
-</h1>
+<div id="admin">
 
-<input id="title"
-       placeholder="Titel">
+  <div class="page-header">
 
-<input id="slug"
-       placeholder="Slug">
+    <div>
 
-<textarea id="excerpt"
-          placeholder="Kurztext"></textarea>
+      <h1 id="form-title">
+        Neue News
+      </h1>
 
-<textarea id="content"
-          placeholder="Inhalt"></textarea>
+      <p>
+        Newsbeitrag anlegen oder bearbeiten
+      </p>
 
-<div>
+    </div>
 
-  <input id="imageFile"
-         type="file"
-         accept="image/*">
+    <a href="/admin/news.html"
+       class="back-button">
 
-  <div id="currentImage"></div>
+      ← News
+
+    </a>
+
+  </div>
+
+  <div class="member-admin-form">
+
+    <label>
+      Titel
+      <input id="title" type="text">
+    </label>
+
+    <label>
+      Slug
+      <input id="slug" type="text">
+    </label>
+
+    <label>
+      Kurztext
+      <textarea id="excerpt" rows="3"></textarea>
+    </label>
+
+    <label>
+      Inhalt
+      <textarea id="content" rows="8"></textarea>
+    </label>
+
+    <label>
+      Bild
+      <input id="imageFile" type="file" accept="image/*">
+    </label>
+
+    <div id="currentImage"></div>
+
+    <label>
+      Sichtbarkeit
+      <select id="sichtbarkeit">
+        <option value="draft">Entwurf (nur Vorstand)</option>
+        <option value="public">Öffentlich</option>
+        <option value="members">Nur Mitglieder</option>
+      </select>
+    </label>
+
+    <button id="save-news" type="button">
+      Speichern
+    </button>
+
+  </div>
 
 </div>
 
-<label>
-
-  Sichtbarkeit
-
-  <select id="sichtbarkeit">
-
-    <option value="draft">
-      Entwurf (nur Vorstand)
-    </option>
-
-    <option value="public">
-      Öffentlich
-    </option>
-
-    <option value="members">
-      Nur Mitglieder
-    </option>
-
-  </select>
-
-</label>
-
-<button id="save-news" type="button">
-  Speichern
-</button>
-
-<script src="/admin/js/auth-guard.js"></script>
 <script src="/admin/js/news-edit.js"></script>
 <script>
 requireAdminSession(loadNews);

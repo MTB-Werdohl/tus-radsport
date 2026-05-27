@@ -18,15 +18,6 @@ const galleryId =
 
 let currentGallery = null;
 
-function extractStoragePath(url) {
-
-  const split =
-    url.split('/storage/v1/object/public/media/');
-
-  return split[1] || null;
-
-}
-
 function formatDateInputValue(value) {
 
   if (!value) {
@@ -120,7 +111,7 @@ async function loadImages() {
     div.className = 'gallery-image-item';
 
     div.innerHTML = `
-      <img src="${image.image_path}" alt="">
+      <img src="${safeMediaUrl(image.image_path)}" alt="">
       <button type="button" class="delete-button" data-id="${image.id}">
         Löschen
       </button>

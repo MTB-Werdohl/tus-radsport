@@ -19,6 +19,22 @@ document
     status.innerText =
       'Push wird gesendet...';
 
+    const {
+
+      data: { session }
+
+    } =
+      await window.supabaseClient.auth.getSession();
+
+    if (!session?.access_token) {
+
+      status.innerText =
+        '❌ Nicht angemeldet';
+
+      return;
+
+    }
+
     try {
 
       const response = await fetch(
@@ -32,7 +48,7 @@ document
             'Content-Type': 'application/json',
 
             'Authorization':
-              `Bearer ${window.siteConfig.supabaseAnonKey}`
+              `Bearer ${session.access_token}`
 
           },
 
@@ -49,6 +65,16 @@ document
 
       const result =
         await response.json();
+
+      if (!response.ok) {
+
+        status.innerText =
+          '❌ '
+          + (result.error || 'Fehler beim Senden');
+
+        return;
+
+      }
 
       console.log(result);
 

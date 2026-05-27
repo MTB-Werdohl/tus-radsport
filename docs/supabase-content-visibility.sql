@@ -1,5 +1,5 @@
--- Phase 2: Sichtbarkeit für News und Termine
--- Werte: public | members | draft
+-- Schritt 3 — Sichtbarkeit News / Termine
+-- Siehe docs/supabase/RUNBOOK.md
 
 create or replace function public.is_member()
 returns boolean
@@ -7,6 +7,7 @@ language sql
 stable
 security definer
 set search_path = public
+set row_security = off
 as $$
   select exists (
     select 1

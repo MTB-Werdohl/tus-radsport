@@ -1,5 +1,5 @@
--- Mitglieder-Verwaltung im Admin (Vorstand)
--- Voraussetzung: public.is_vorstand() existiert (docs/supabase-vorstand-roles.sql)
+-- Schritt 4 — Vorstand: Mitglieder verwalten
+-- Siehe docs/supabase/RUNBOOK.md
 
 drop policy if exists members_select_vorstand on public.members;
 drop policy if exists members_insert_vorstand on public.members;

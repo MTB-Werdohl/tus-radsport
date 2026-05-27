@@ -1,6 +1,6 @@
 # Architektur
 
-Überblick, wie die Teile des Projekts zusammenspielen. Für Setup und Ordnerstruktur siehe [README](../README.md).
+Überblick, wie die Teile des Projekts zusammenspielen. Für Setup und Ordnerstruktur siehe [README](../README.md). Supabase-SQL: [docs/supabase/RUNBOOK.md](supabase/RUNBOOK.md).
 
 ## Prinzip
 
@@ -93,11 +93,13 @@ Ausführliche Einrichtung: [`docs/supabase-members-setup.md`](supabase-members-s
 ## Admin
 
 - Eigene HTML-Seiten unter `admin/` mit Jekyll-Frontmatter `layout: null`
-- Gemeinsamer Kopf: `_includes/admin-head.html` (lädt Member-Service + Admin-Auth)
+- Gemeinsamer Kopf: `_includes/admin-head.html` (Supabase, Member-Service, `admin-utils.js`, `auth-guard.js`)
+- Einheitliches Layout: `.page-header` + `.admin-topbar` (Listen) bzw. `.member-admin-form` (Formulare)
 - Kein separates Admin-Login: Vorstand meldet sich in der Website-Navigation per Magic Link an
 - `/admin/` und Unterseiten: ohne Vorstand-Session → Redirect nach `/` (Mitglied bleibt eingeloggt)
-- Session-Prüfung: `admin/js/auth-guard.js` → `requireAdminSession(callback)`
-- Admin-Logik liegt in `admin/js/` (Termine, News, Push, Galerie)
+- Session-Prüfung: `requireAdminSession(callback)` in `admin/js/auth-guard.js`
+- Admin-Module: Termine, News, Galerien, Mitglieder, Push (`admin/js/*-list.js`, `*-edit.js`)
+- HTML-Escaping: `escapeAdminHtml()` in `admin/js/admin-utils.js`
 
 SQL für Rollen und RLS: [`docs/supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql)
 
@@ -109,7 +111,7 @@ SQL für Rollen und RLS: [`docs/supabase-vorstand-roles.sql`](supabase-vorstand-
 | `members` | Eingeloggte Mitglieder + Vorstand |
 | `draft` | Nur Vorstand |
 
-SQL: [`docs/supabase-content-visibility.sql`](supabase-content-visibility.sql)
+SQL: [`docs/supabase-content-visibility.sql`](supabase-content-visibility.sql) · Hilfsfunktionen: `assets/js/core/visibility.js`
 
 ## Supabase — logische Tabellen
 
@@ -121,14 +123,15 @@ SQL: [`docs/supabase-content-visibility.sql`](supabase-content-visibility.sql)
 | `gallery_images` | Bilder pro Galerie |
 | `PushSubscriptions` | Web-Push-Endpunkte (verknüpft mit `members` über `member_id`) |
 | `site_state` | z. B. letzte Push-Nachricht (`last_push`) |
+| `members` | Vereinsmitglieder (`rolle`, Profil, Einwilligungen) |
 
 **Storage-Bucket:** `media` (Bilder, GPX)
 
 **Edge Functions** (URLs in `site-config.js` → `functionsUrl`):
 
-- `save-push-subscription`
-- `delete-push-subscription`
-- `send-push`
+- `save-push-subscription` — JWT des Mitglieds (Referenz: `docs/supabase-edge-save-push-subscription.ts`)
+- `delete-push-subscription` — JWT des Mitglieds
+- `send-push` — JWT + Vorstand-Check serverseitig; Referenz: [`supabase-edge-send-push.ts`](supabase-edge-send-push.ts)
 
 ## Web Push (Mitglieder)
 

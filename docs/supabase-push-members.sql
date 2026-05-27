@@ -1,5 +1,5 @@
--- Push-Mitteilungen: Mitgliederverknüpfung + RLS
--- In Supabase SQL Editor ausführen (idempotent wo möglich).
+-- Schritt 5 — Push RLS
+-- Siehe docs/supabase/RUNBOOK.md
 
 -- Unique Constraint für Upsert nach endpoint (nur einmal ausführen)
 -- ALTER TABLE "PushSubscriptions"
@@ -17,7 +17,7 @@ CREATE POLICY push_subscriptions_select_own
   USING (
     member_id IN (
       SELECT id FROM members
-      WHERE lower(email) = lower(auth.jwt()->>'email')
+      WHERE lower(trim(email)) = lower(trim(auth.jwt()->>'email'))
     )
   );
 

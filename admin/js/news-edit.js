@@ -60,7 +60,7 @@ async function loadNews() {
 
         <p>Aktuelles Bild:</p>
 
-        <img src="${data.image}"
+        <img src="${safeMediaUrl(data.image)}"
              class="preview-image">
 
       `;

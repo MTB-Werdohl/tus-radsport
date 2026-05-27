@@ -28,7 +28,7 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Push
 ├── _data/               # Navigation, Footer, Social-Links (YAML)
 ├── _includes/           # wiederverwendbare HTML-Fragmente (Sidebar, Admin-Head)
 ├── _layouts/            # Seiten-Layout (default.html)
-├── admin/               # CMS-Oberfläche (Login, Termine, News, Galerie, Push)
+├── admin/               # CMS für Vorstand (Termine, News, Galerie, Mitglieder, Push)
 │   └── js/              # Admin-Logik (termine-list, news-edit, …)
 ├── assets/
 │   ├── css/             # Styles (global, Kalender, News, Admin, …)
@@ -46,7 +46,9 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Push
 ├── .github/workflows/   # Deploy-Pipeline
 ├── sw.js, manifest.json # PWA
 └── docs/
-    └── ARCHITECTURE.md  # Datenfluss & Muster (technisch)
+    ├── README.md           # Doku-Index
+    ├── ARCHITECTURE.md     # Datenfluss & Muster
+    └── supabase/RUNBOOK.md # SQL-Reihenfolge, RLS-Matrix
 ```
 
 ---
@@ -64,7 +66,7 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Push
 | `/galerie-detail.html?slug=…` | `galerie-detail.html` | Galerie-Detail |
 | `/about`, `/training`, `/kodex`, … | jeweilige `.md` | Statische Infoseiten |
 | `/profil/` | `profil.md` | Mitgliederprofil (Magic Link) — Setup: [`docs/supabase-members-setup.md`](docs/supabase-members-setup.md) |
-| `/admin/` | `admin/index.html` | Admin-Login & Dashboard |
+| `/admin/` | `admin/index.html` | Vorstand-Dashboard (Magic Link in Navbar) |
 
 Navigation: `_data/navigation.yml`
 
@@ -75,15 +77,18 @@ Navigation: `_data/navigation.yml`
 Unter `/admin/` (nicht in der Hauptnavigation verlinkt; Footer-Link).
 
 - **Termine** — Tabelle `Termine`, Bilder/GPX in Storage `media`
-- **News** — Tabelle `News`
+- **News** — Tabelle `News` (`sichtbarkeit`)
 - **Galerien** — `galleries` + `gallery_images`
-- **Push** — Edge Function `send-push` (Aktivierung nur auf `/profil/` für Mitglieder)
+- **Mitglieder** — `members` (CRUD, Rolle Vorstand/Mitglied)
+- **Push** — Edge Function `send-push` (Mitglieder-Abo nur auf `/profil/`)
 
-Push-Setup (RLS + Edge Function): [`docs/supabase-push-members.sql`](docs/supabase-push-members.sql) · [`docs/supabase-edge-save-push-subscription.ts`](docs/supabase-edge-save-push-subscription.ts)
+SQL-Reihenfolge und Policies: [`docs/supabase/RUNBOOK.md`](docs/supabase/RUNBOOK.md)
 
-Authentifizierung: Magic Link in der Website-Navigation. Nur `members.rolle = 'Vorstand'` erhält Zugriff auf `/admin/`. Ohne Vorstand-Session leitet `/admin/` nach `/` um (keine separate Login-Seite).
+Push-Setup: [`docs/supabase-push-members.sql`](docs/supabase-push-members.sql) · [`docs/supabase-edge-save-push-subscription.ts`](docs/supabase-edge-save-push-subscription.ts)
 
-Setup: [`docs/supabase-vorstand-roles.sql`](docs/supabase-vorstand-roles.sql) · [`docs/supabase-content-visibility.sql`](docs/supabase-content-visibility.sql)
+Authentifizierung: Magic Link in der Website-Navigation. Nur `members.rolle = 'Vorstand'` erhält Zugriff auf `/admin/`. Ohne Vorstand-Session leitet `/admin/` still nach `/` um (keine separate Login-Seite).
+
+Rollen & Sichtbarkeit: [`docs/supabase-vorstand-roles.sql`](docs/supabase-vorstand-roles.sql) · [`docs/supabase-content-visibility.sql`](docs/supabase-content-visibility.sql) · [`docs/supabase-members-admin.sql`](docs/supabase-members-admin.sql)
 
 ---
 

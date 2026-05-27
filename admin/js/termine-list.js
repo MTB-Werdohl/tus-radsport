@@ -152,7 +152,7 @@ async function loadEvents() {
             <div>
 
               <strong>
-                ${event.title}
+                ${escapeAdminHtml(event.title)}
               </strong>
 
               <div class="event-meta">
@@ -182,11 +182,11 @@ async function loadEvents() {
                 }
 
                 ${event.location
-                  ? ' · 📍 ' + event.location
+                  ? ' · 📍 ' + escapeAdminHtml(event.location)
                   : ''
                 }
 
-                · ${visibilityListLabel(event.sichtbarkeit)}
+                · ${escapeAdminHtml(visibilityListLabel(event.sichtbarkeit))}
 
               </div>
 
