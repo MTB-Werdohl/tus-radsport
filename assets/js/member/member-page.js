@@ -3,6 +3,30 @@ function bindMemberProfileEvents(
   pushState = {}
 ) {
 
+  async function refreshProfilePushState() {
+
+    const currentMember =
+      getCurrentMember();
+
+    const currentPushState =
+      await resolveMemberPushState(
+        currentMember
+      );
+
+    renderMemberProfile(
+      currentMember,
+      currentPushState
+    );
+
+    bindMemberProfileEvents(
+      currentMember,
+      currentPushState
+    );
+
+    return currentPushState;
+
+  }
+
   const form =
     document.getElementById(
       'member-edit-form'
@@ -124,23 +148,7 @@ function bindMemberProfileEvents(
 
             applyMemberUpdate(updated);
 
-            const currentMember =
-              getCurrentMember();
-
-            const currentPushState =
-              await resolveMemberPushState(
-                currentMember
-              );
-
-            renderMemberProfile(
-              currentMember,
-              currentPushState
-            );
-
-            bindMemberProfileEvents(
-              currentMember,
-              currentPushState
-            );
+            await refreshProfilePushState();
 
             showMemberToast(
               'Einwilligung gespeichert.',
@@ -189,7 +197,7 @@ function bindMemberProfileEvents(
           if (!result.ok) {
 
             let message =
-              'Push-Mitteilungen konnten nicht aktiviert werden.';
+              'Push konnte nicht bestellt werden.';
 
             if (result.reason === 'permission_denied') {
               message =
@@ -212,26 +220,10 @@ function bindMemberProfileEvents(
 
           }
 
-          const currentMember =
-            getCurrentMember();
-
-          const currentPushState =
-            await resolveMemberPushState(
-              currentMember
-            );
-
-          renderMemberProfile(
-            currentMember,
-            currentPushState
-          );
-
-          bindMemberProfileEvents(
-            currentMember,
-            currentPushState
-          );
+          await refreshProfilePushState();
 
           showMemberToast(
-            'Push-Mitteilungen aktiviert.',
+            'Push bestellt.',
             'success',
             3000
           );
@@ -241,11 +233,81 @@ function bindMemberProfileEvents(
           console.error(error);
 
           showMemberToast(
-            'Push-Mitteilungen konnten nicht aktiviert werden.',
+            'Push konnte nicht bestellt werden.',
             'error'
           );
 
           pushBtn.disabled = false;
+
+        }
+
+      }
+    );
+
+  }
+
+  const pushDisableBtn =
+    document.getElementById(
+      'member-push-disable'
+    );
+
+  if (pushDisableBtn) {
+
+    pushDisableBtn.addEventListener(
+      'click',
+      async () => {
+
+        pushDisableBtn.disabled = true;
+
+        try {
+
+          const result =
+            await unsubscribeUserFromPush();
+
+          if (!result.ok) {
+
+            let message =
+              'Push konnte nicht abbestellt werden.';
+
+            if (result.reason === 'not_subscribed') {
+              message =
+                'Keine Push-Mitteilung aktiv.';
+            }
+
+            if (result.reason === 'unsupported') {
+              message =
+                'Push-Mitteilungen werden in diesem Browser nicht unterstützt.';
+            }
+
+            showMemberToast(
+              message,
+              'error'
+            );
+
+            pushDisableBtn.disabled = false;
+
+            return;
+
+          }
+
+          await refreshProfilePushState();
+
+          showMemberToast(
+            'Push abbestellt.',
+            'success',
+            3000
+          );
+
+        } catch (error) {
+
+          console.error(error);
+
+          showMemberToast(
+            'Push konnte nicht abbestellt werden.',
+            'error'
+          );
+
+          pushDisableBtn.disabled = false;
 
         }
 

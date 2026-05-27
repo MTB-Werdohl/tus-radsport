@@ -136,10 +136,10 @@ function renderMemberPushSection(pushState) {
 
       <button
         type="button"
-        class="member-push-btn"
-        disabled
+        id="member-push-disable"
+        class="member-push-btn member-push-btn--active member-push-btn--cancel"
       >
-        Push-Mitteilungen aktivieren
+        Push abbestellen
       </button>
     `;
 
@@ -151,7 +151,7 @@ function renderMemberPushSection(pushState) {
       id="member-push-enable"
       class="member-push-btn member-push-btn--active"
     >
-      Push-Mitteilungen aktivieren
+      Push bestellen
     </button>
   `;
 

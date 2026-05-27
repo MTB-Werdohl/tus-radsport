@@ -174,7 +174,7 @@ Deno.serve(async (req) => {
             endpoint,
             p256dh: keys.p256dh,
             auth: keys.auth,
-            active: true,
+            active: 'true',
             member_id: resolvedMemberId,
             device_name: device_name ?? null,
             user_agent: user_agent ?? null

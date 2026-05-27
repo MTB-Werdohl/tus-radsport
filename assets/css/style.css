@@ -483,6 +483,10 @@ a:hover {
   background: rgba(255, 255, 255, 0.22);
 }
 
+.member-push-btn--cancel {
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .member-push-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;

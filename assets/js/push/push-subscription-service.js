@@ -39,7 +39,7 @@ async function fetchMemberPushSubscription(
       )
       .eq('member_id', memberId)
       .eq('endpoint', endpoint)
-      .eq('active', true)
+      .eq('active', 'true')
       .maybeSingle();
 
   if (error) {
