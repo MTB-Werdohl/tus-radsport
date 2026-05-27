@@ -1,3 +1,88 @@
+function bindConsentInfoDialogs() {
+
+  const touchUi =
+    window.matchMedia(
+      '(hover: none), (pointer: coarse)'
+    ).matches;
+
+  document
+    .querySelectorAll('[data-consent-dialog]')
+    .forEach((button) => {
+
+      button.addEventListener(
+        'click',
+        (event) => {
+
+          if (!touchUi) {
+            return;
+          }
+
+          event.preventDefault();
+          event.stopPropagation();
+
+          const key =
+            button.dataset.consentDialog;
+
+          const dialog =
+            document.getElementById(
+              `member-consent-dialog-${key}`
+            );
+
+          if (
+            dialog &&
+            typeof dialog.showModal === 'function'
+          ) {
+            dialog.showModal();
+          }
+
+        }
+      );
+
+    });
+
+  document
+    .querySelectorAll('.member-consent-dialog')
+    .forEach((dialog) => {
+
+      dialog
+        .querySelectorAll(
+          '.member-consent-dialog__close, '
+          + '.member-consent-dialog__close-btn'
+        )
+        .forEach((button) => {
+
+          button.addEventListener(
+            'click',
+            () => {
+              dialog.close();
+            }
+          );
+
+        });
+
+      dialog.addEventListener(
+        'click',
+        (event) => {
+
+          if (event.target === dialog) {
+            dialog.close();
+          }
+
+        }
+      );
+
+      dialog.addEventListener(
+        'cancel',
+        (event) => {
+          event.preventDefault();
+          dialog.close();
+        }
+      );
+
+    });
+
+}
+
 function bindMemberProfileEvents(
   member,
   pushState = {}
@@ -335,6 +420,8 @@ function bindMemberProfileEvents(
     );
 
   }
+
+  bindConsentInfoDialogs();
 
 }
 

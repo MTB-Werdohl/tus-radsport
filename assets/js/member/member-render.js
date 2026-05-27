@@ -97,7 +97,10 @@ function renderConsentLabel(consentKey) {
       <button
         type="button"
         class="member-consent-tooltip__trigger"
-        aria-label="Einwilligungstext und Widerruf anzeigen"
+        data-consent-dialog="${consentKey}"
+        aria-haspopup="dialog"
+        aria-controls="member-consent-dialog-${consentKey}"
+        aria-label="Einwilligungstext anzeigen"
       >
         i
       </button>
@@ -111,6 +114,69 @@ function renderConsentLabel(consentKey) {
       </span>
     </span>
   `;
+
+}
+
+function renderConsentDialogs() {
+
+  return Object
+    .entries(MEMBER_CONSENT_TEXTS)
+    .map(([key, info]) => `
+
+      <dialog
+        class="member-consent-dialog"
+        id="member-consent-dialog-${key}"
+        aria-labelledby="member-consent-dialog-title-${key}"
+      >
+
+        <div class="member-consent-dialog__inner">
+
+          <header class="member-consent-dialog__header">
+
+            <h3
+              class="member-consent-dialog__title"
+              id="member-consent-dialog-title-${key}"
+            >
+              ${escapeMemberHtml(info.label)}
+            </h3>
+
+            <button
+              type="button"
+              class="member-consent-dialog__close"
+              aria-label="Schließen"
+            >
+              ×
+            </button>
+
+          </header>
+
+          <div class="member-consent-dialog__body">
+
+            <p>${escapeMemberHtml(info.body)}</p>
+
+            <p class="member-consent-dialog__revoke">
+              ${escapeMemberHtml(MEMBER_CONSENT_REVOKE_HINT)}
+            </p>
+
+          </div>
+
+          <footer class="member-consent-dialog__footer">
+
+            <button
+              type="button"
+              class="member-consent-dialog__close-btn"
+            >
+              Schließen
+            </button>
+
+          </footer>
+
+        </div>
+
+      </dialog>
+
+    `)
+    .join('');
 
 }
 
@@ -349,6 +415,8 @@ function renderMemberProfile(
     widerrufen werden. Der Widerruf ist in Textform (z.&nbsp;B. per E-Mail) gegenüber dem Verein
     zu richten.
   </p>
+
+  ${renderConsentDialogs()}
 
 </section>
 
