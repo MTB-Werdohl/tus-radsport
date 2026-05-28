@@ -2,6 +2,7 @@
 layout: default
 title: News
 permalink: /news/
+load_calendar_css: true
 ---
 
 <link rel="stylesheet"
