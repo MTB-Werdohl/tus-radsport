@@ -32,6 +32,21 @@ function normalizePushMessage(row) {
 
 }
 
+function normalizePushTimestamp(value) {
+
+  if (!value) {
+    return 0;
+  }
+
+  const time =
+    new Date(value).getTime();
+
+  return Number.isNaN(time)
+    ? 0
+    : time;
+
+}
+
 function getLastSeenPushAt() {
 
   return localStorage.getItem(
@@ -53,23 +68,64 @@ function isPushUnread(push) {
     return true;
   }
 
-  return push.sent_at > lastSeen;
+  const seenId =
+    localStorage.getItem('lastSeenPushId');
+
+  if (
+    push.id
+    && seenId
+    && String(push.id) === seenId
+  ) {
+    return false;
+  }
+
+  return normalizePushTimestamp(push.sent_at)
+    > normalizePushTimestamp(lastSeen);
 
 }
 
-function markPushSeen(sentAt) {
+function markPushSeen(pushOrSentAt) {
+
+  const push =
+    typeof pushOrSentAt === 'object'
+      ? pushOrSentAt
+      : { sent_at: pushOrSentAt };
+
+  const sentAt =
+    push?.sent_at;
+
+  const id =
+    push?.id;
+
+  if (!sentAt && !id) {
+    return;
+  }
+
+  if (id) {
+    localStorage.setItem(
+      'lastSeenPushId',
+      String(id)
+    );
+  }
 
   if (!sentAt) {
     return;
   }
 
+  const normalizedSentAt =
+    new Date(sentAt).toISOString();
+
   const current =
     getLastSeenPushAt();
 
-  if (!current || sentAt > current) {
+  if (
+    !current
+    || normalizePushTimestamp(sentAt)
+      >= normalizePushTimestamp(current)
+  ) {
     localStorage.setItem(
       PUSH_SEEN_STORAGE_KEY,
-      sentAt
+      normalizedSentAt
     );
   }
 
@@ -81,7 +137,7 @@ function markAllPushesSeen(messages) {
     return;
   }
 
-  markPushSeen(messages[0].sent_at);
+  markPushSeen(messages[0]);
 
 }
 

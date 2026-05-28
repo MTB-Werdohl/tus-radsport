@@ -45,24 +45,15 @@ async function initPushWidget() {
     return;
   }
 
-  const pushId =
-    push.sent_at;
-
-  const stored =
-    getLastSeenPushAt();
-
-  const collapsed =
-    localStorage.getItem('pushCollapsed');
-
   widget.classList.remove('hidden');
 
   renderPush(content, push);
 
-  if (stored !== pushId) {
+  if (isPushUnread(push)) {
 
     widget.classList.remove('collapsed');
 
-  } else if (collapsed === 'true') {
+  } else {
 
     widget.classList.add('collapsed');
 
@@ -72,12 +63,9 @@ async function initPushWidget() {
 
     widget.classList.toggle('collapsed');
 
-    localStorage.setItem(
-      'pushCollapsed',
-      widget.classList.contains('collapsed')
-    );
-
-    markPushSeen(pushId);
+    if (widget.classList.contains('collapsed')) {
+      markPushSeen(push);
+    }
 
   };
 
