@@ -1,6 +1,7 @@
 ---
 layout: default
 title: "Trainingszeiten"
+description: "Trainingszeiten MTB Werdohl — jeden Dienstag 18:00 am Brüninghausplatz. Touren im Sauerland, Gäste willkommen."
 ---
 
 Unsere regelmäßigen Trainingsfahrten finden **dienstags um 18:00 Uhr** statt.

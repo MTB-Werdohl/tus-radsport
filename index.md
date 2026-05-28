@@ -3,6 +3,7 @@ layout: default
 title: Fahr nicht allein. Fahr mit uns.
 hide_title: true
 load_calendar_css: true
+description: Radsportabteilung TuS Jahn Werdohl — gemeinsam MTB, Gravel & E-Bike fahren. Jeden Dienstag 18:00 After-Work Tour. Gäste willkommen!
 ---
 
 <div class="home-page">

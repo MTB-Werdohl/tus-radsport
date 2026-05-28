@@ -3,6 +3,15 @@ url: "https://www.mtb-werdohl.de"
 lang: "de"
 timezone: Europe/Berlin
 
+seo:
+  description: "Radsportabteilung TuS Jahn Werdohl — gemeinsam MTB, Gravel & E-Bike fahren. Jeden Dienstag 18:00 After-Work Tour am Brüninghausplatz. Gäste willkommen!"
+  image: /assets/images/hero.jpeg
+  image_width: 1793
+  image_height: 762
+  image_alt: "Radsportler der MTB Werdohl / TuS Jahn Werdohl"
+  type: website
+  twitter_card: summary_large_image
+
 future: true
 
 contact:
