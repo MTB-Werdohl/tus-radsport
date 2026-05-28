@@ -12,6 +12,46 @@ function closeNav() {
     toggle.setAttribute('aria-expanded', 'false');
   }
 
+  if (
+    typeof closeMemberAuthPanel === 'function'
+  ) {
+    closeMemberAuthPanel();
+  }
+
+}
+
+function markActiveNavLinks() {
+
+  if (!nav) {
+    return;
+  }
+
+  const path =
+    window.location.pathname;
+
+  nav.querySelectorAll('a').forEach((link) => {
+
+    const href =
+      link.pathname;
+
+    const isActive =
+      path === href
+      || (
+        href !== '/'
+        && path.startsWith(
+          href.endsWith('/')
+            ? href
+            : `${href}/`
+        )
+      );
+
+    link.classList.toggle(
+      'is-active',
+      isActive
+    );
+
+  });
+
 }
 
 if (toggle && navWrap && nav) {
@@ -43,10 +83,22 @@ if (toggle && navWrap && nav) {
 
     memberAuth.querySelectorAll('a, button').forEach(el => {
 
-      el.addEventListener('click', closeNav);
+      el.addEventListener('click', (event) => {
+
+        if (
+          el.id === 'member-auth-trigger'
+        ) {
+          return;
+        }
+
+        closeNav();
+
+      });
 
     });
 
   }
 
 }
+
+markActiveNavLinks();

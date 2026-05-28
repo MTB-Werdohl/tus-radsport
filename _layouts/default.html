@@ -55,20 +55,43 @@
 
         <div id="member-auth" class="member-auth" aria-live="polite">
 
-          <form id="member-auth-guest" class="member-auth-guest is-active">
-            <label class="visually-hidden" for="member-email">E-Mail</label>
-            <input
-              type="email"
-              id="member-email"
-              name="email"
-              placeholder="E-Mail"
-              autocomplete="email"
-              required
-            >
-            <button type="submit">
-              Login-Link senden
-            </button>
-          </form>
+          <div id="member-auth-guest" class="member-auth-guest is-active">
+            <div class="member-auth-dropdown" id="member-auth-dropdown">
+              <button
+                type="button"
+                class="member-auth-trigger"
+                id="member-auth-trigger"
+                aria-expanded="false"
+                aria-controls="member-auth-panel">
+                Mitglieder
+              </button>
+
+              <div
+                id="member-auth-panel"
+                class="member-auth-panel"
+                role="region"
+                aria-label="Mitglieder-Login">
+                <p class="member-auth-mobile-label">Mitgliederbereich</p>
+                <p class="member-auth-hint">
+                  Schon dabei? E-Mail eingeben — wir schicken dir einen Login-Link.
+                </p>
+                <form id="member-auth-guest-form" class="member-auth-form">
+                  <label class="visually-hidden" for="member-email">E-Mail</label>
+                  <input
+                    type="email"
+                    id="member-email"
+                    name="email"
+                    placeholder="deine@email.de"
+                    autocomplete="email"
+                    required
+                  >
+                  <button type="submit">
+                    Link senden
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
 
           <div id="member-auth-member" class="member-auth-member" hidden>
             <span id="member-greeting" class="member-greeting"></span>
