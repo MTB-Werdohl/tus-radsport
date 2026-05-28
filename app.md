@@ -12,20 +12,18 @@ Mit drei Schritten bist du dabei:
 
 **App installieren → Einloggen → Push aktivieren**
 
-Push-Mitteilungen funktionieren **nur in der installierten App** — nicht im normalen Browser-Tab.
+Push-Mitteilungen funktionieren auf dem **iPhone nur in der installierten App** — nicht im normalen Safari-Tab. Auf **Android** geht Push oft auch im Browser, wir empfehlen trotzdem die App vom Homescreen.
 
-Bitte die Schritte genau in dieser Reihenfolge durchführen und **alles in der installierten App** erledigen.
+Bitte die Schritte genau in dieser Reihenfolge durchführen und **möglichst alles in der installierten App** erledigen.
 
 Mit der App bekommst du wichtige Informationen direkt auf dein Handy.
 
-Aktuell kannst du über die Webseite:
+Eingeloggt als Vereinsmitglied kannst du:
 
-- dein Profil bearbeiten
-- deine Kontaktdaten verwalten
-
-Für die Zukunft sind weitere Funktionen geplant, zum Beispiel unterschiedliche Ansichten.
-
-Während die „Welt“ das sieht, was öffentlich sichtbar sein soll, werden Mitglieder später interne Termine sehen und sich direkt anmelden können.
+- deine **Kontaktdaten** bearbeiten (Adresse, Telefon)
+- **Datenschutz-Einwilligungen** verwalten
+- **Push-Mitteilungen** bestellen oder abbestellen
+- **Mitteilungen** und den **Kalender** mit Inhalten sehen, die nur für Mitglieder sichtbar sind
 
 ---
 
@@ -52,9 +50,10 @@ Unsere Website lässt sich wie eine normale App auf den Homescreen legen.
 ## Schritt 2 — Einloggen
 
 1. Die **installierte App** öffnen
-2. Im Menü deine **E-Mail-Adresse** eingeben
-3. Auf den **Login-Link in der E-Mail** tippen
-4. Du landest auf **Mein Profil** — dann bist du angemeldet
+2. Oben rechts auf **Mitglieder** tippen
+3. Deine **Vereins-E-Mail-Adresse** eingeben und **Link senden** wählen
+4. Auf den **Login-Link in der E-Mail** tippen
+5. Du landest auf **Mein Profil** — dann bist du angemeldet
 
 **Wichtig:**
 
@@ -73,8 +72,9 @@ Prüfe bitte auch den **Spam-Ordner**, falls der Login-Link nicht ankommt.
 ## Schritt 3 — Push-Mitteilungen aktivieren
 
 1. In der **installierten App** eingeloggt sein (Schritt 2)
-2. **Mein Profil** öffnen (Menü oder direkt nach dem Login)
-3. **Push-Mitteilungen aktivieren** und Benachrichtigungen **erlauben**
+2. **Profil** öffnen (oben rechts nach dem Login, oder direkt nach dem Magic Link)
+3. Nach unten zu **Push-Mitteilungen** scrollen
+4. **Push bestellen** tippen und Benachrichtigungen **erlauben**
 
 So verpasst du keine:
 
@@ -82,7 +82,7 @@ So verpasst du keine:
 - Änderungen bei Touren und Terminen
 - Wichtige Hinweise vom Vorstand
 
-Eingeloggt siehst du außerdem Inhalte, die nur für Mitglieder bestimmt sind.
+Vergangene Mitteilungen findest du unter **[Mitteilungen](/mitteilungen/)** (über die Push-Karte auf der Seite oder direkt per Link).
 
 ---
 
@@ -91,10 +91,10 @@ Eingeloggt siehst du außerdem Inhalte, die nur für Mitglieder bestimmt sind.
 | Schritt | Was du tust |
 |----------|--------------|
 | 1 | App auf den Homescreen installieren |
-| 2 | Mit Vereins-E-Mail einloggen (Magic Link) |
-| 3 | Push-Mitteilungen auf **Mein Profil** aktivieren |
+| 2 | Oben **Mitglieder** → Vereins-E-Mail → Magic Link → **Profil** |
+| 3 | Auf **Profil** → **Push bestellen** |
 
-Alles in der **installierten App** — nicht im Browser.
+Auf dem **iPhone** unbedingt die **installierte App** nutzen — nicht Safari.
 
 ---
 
