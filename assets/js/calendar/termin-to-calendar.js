@@ -11,7 +11,9 @@ function termineToCalendarEvents(termine) {
 
       location: item.location,
 
-      url: '/kalender/' + item.slug + '/',
+      url:
+        '/event.html?slug='
+        + encodeURIComponent(item.slug),
 
       backgroundColor: category.color,
 

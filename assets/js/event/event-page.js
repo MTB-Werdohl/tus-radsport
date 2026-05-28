@@ -50,7 +50,7 @@ async function loadEvent() {
 window.history.replaceState(
   {},
   '',
-  `/kalender/${event.slug}`
+  `/event.html?slug=${encodeURIComponent(event.slug)}`
 );
 
 }

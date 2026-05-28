@@ -1,0 +1,67 @@
+---
+permalink: /404.html
+layout: null
+---
+
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weiterleitung · MTB Werdohl</title>
+  <script>
+    (function () {
+
+      const path =
+        window.location.pathname
+          .replace(/\/$/, '');
+
+      const kalenderMatch =
+        path.match(
+          /^\/kalender\/([^/]+)$/
+        );
+
+      if (kalenderMatch) {
+
+        window.location.replace(
+          '/event.html?slug='
+          + encodeURIComponent(
+            decodeURIComponent(
+              kalenderMatch[1]
+            )
+          )
+        );
+
+        return;
+
+      }
+
+      const newsMatch =
+        path.match(
+          /^\/news\/([^/]+)$/
+        );
+
+      if (newsMatch) {
+
+        window.location.replace(
+          '/news-detail.html?slug='
+          + encodeURIComponent(
+            decodeURIComponent(
+              newsMatch[1]
+            )
+          )
+        );
+
+        return;
+
+      }
+
+      window.location.replace('/');
+
+    })();
+  </script>
+</head>
+<body>
+  <p>Weiterleitung …</p>
+</body>
+</html>
