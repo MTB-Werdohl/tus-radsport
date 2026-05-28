@@ -8,3 +8,15 @@ links:
   - title: "Datenschutz"
     url: "/datenschutz"
     external: false
+
+  - title: "Mitgliedsantrag"
+    url: "https://www.tusjahnwerdohl.de/files/DSGVO_Aufnahmeantrag-TuS-Jahn-ab-2025.pdf"
+    external: true
+
+  - title: "Satzung"
+    url: "https://www.tusjahnwerdohl.de/files/Satzung_2013.pdf"
+    external: true
+
+  - title: "Radfahrerkodex"
+    url: "/kodex"
+    external: false

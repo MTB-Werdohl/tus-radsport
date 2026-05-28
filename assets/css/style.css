@@ -778,19 +778,73 @@ body.member-consent-modal-open {
   padding: 24px 0;
 }
 
+.layout-single {
+  display: block;
+}
+
+.layout-single .content {
+  max-width: none;
+}
+
+/* legacy alias */
 .layout-2col {
+  display: block;
+}
+
+.home-title {
+  text-align: center;
+  margin: 0 0 16px;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+.home-lead {
+  font-size: 1.05rem;
+  line-height: 1.5;
+  margin: 0 0 20px;
+  text-align: center;
+}
+
+.home-teaser-heading {
+  margin: 20px 0 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.home-teaser-heading:first-of-type {
+  margin-top: 0;
+}
+
+.home-teaser-grid {
   display: grid;
-  grid-template-columns: 1fr 3fr;
-  grid-template-areas: "sidebar content";
-  gap: 24px;
-  align-items: start;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.home-teaser-links {
+  margin: 16px 0 0;
+  font-weight: 600;
+}
+
+.home-teaser-links a {
+  text-decoration: underline;
+}
+
+.home-card-grid {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.quick-facts {
+  text-align: center;
+  margin: 16px 0 0;
+  opacity: 0.95;
 }
 
 /* =========================
-   7) Content & Sidebar Blocks
+   7) Content
    ========================= */
 
-.sidebar,
 .content {
   background: var(--bg-card);
   border-radius: var(--radius);
@@ -798,18 +852,7 @@ body.member-consent-modal-open {
   box-shadow: var(--shadow);
 
   padding: 24px 16px;
-}
-
-.content {
-  grid-area: content;
   color: var(--text-main);
-}
-
-.sidebar {
-  grid-area: sidebar;
-  position: sticky;
-  top: calc(var(--header-height) + 16px);
-  color: var(--text-muted);
 }
 
 .content img.hero {
@@ -819,21 +862,7 @@ body.member-consent-modal-open {
   border-radius: var(--radius) var(--radius) 0 0;
 }
 
-/* Sidebar blocks */
-
-.sidebar-block + .sidebar-block {
-  margin-top: 24px;
-}
-
-.sidebar h3 {
-  margin: 0 0 8px;
-  color: #fff;
-  font-size: 1rem;
-}
-
-/* =========================
-   8) Cards (Startseite)
-   ========================= */
+/* Cards (Startseite + allgemein)
 
 .card-grid {
   display: grid;
@@ -926,15 +955,8 @@ h2 { font-weight: 600; }
 }
 
 @media (max-width: 800px) {
-  .layout-2col {
+  .home-card-grid {
     grid-template-columns: 1fr;
-    grid-template-areas:
-      "content"
-      "sidebar";
-  }
-
-  .sidebar {
-    position: static;
   }
 
   .card-grid {
