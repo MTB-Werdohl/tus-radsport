@@ -19,7 +19,9 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Feedback:** [`supabase-feedback.sql`](../supabase-feedback.sql) — `feedback_modules` + `feedback_answers` (nach #2). Polymorphe `entity_type`/`entity_id` **ohne FK**; Poll-Antworten speichern `option_id` in `answer`.
 
-**Feedback öffentliche Abstimmung:** [`supabase-feedback-public-voting.sql`](../supabase-feedback-public-voting.sql) — Spalte `public_voting`, `client_token`, anon-RLS (nach Feedback-Basis).
+**Feedback öffentliche Abstimmung:** [`supabase-feedback-public-voting.sql`](../supabase-feedback-public-voting.sql) — Spalte `public_voting` (nach Feedback-Basis).
+
+**Rolle „public“ (externe Teilnehmer):** [`supabase-members-public-role.sql`](../supabase-members-public-role.sql) — `is_member()` ohne public, RPC `submit_public_feedback` / `get_public_feedback_answer` (nach public_voting).
 
 **Wichtig:** Schritt 3 ersetzt die News-SELECT-Policy aus Schritt 2. Ohne Schritt 3 gelten News-Leserechte noch über `published`, nicht `sichtbarkeit`.
 

@@ -1,5 +1,6 @@
 -- Feedback: optionale öffentliche Abstimmung (ohne Login)
 -- Nach supabase-feedback.sql ausführen
+-- Anschließend: docs/supabase-members-public-role.sql (externe Teilnehmer als members.rolle = public)
 
 alter table public.feedback_modules
   add column if not exists public_voting

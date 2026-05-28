@@ -67,10 +67,6 @@ async function saveFeedbackAnswer(
     identity?.memberId
     || null;
 
-  const clientToken =
-    identity?.clientToken
-    || null;
-
   const payload = {
     module_id: moduleId,
     answer,
@@ -82,18 +78,15 @@ async function saveFeedbackAnswer(
       new Date().toISOString()
   };
 
-  if (memberId) {
-    payload.member_id = memberId;
+  if (!memberId) {
+    return {
+      error: new Error(
+        'Kein Mitglied für die Abstimmung.'
+      )
+    };
   }
 
-  if (clientToken) {
-    payload.client_token = clientToken;
-  }
-
-  const onConflict =
-    memberId
-      ? 'module_id,member_id'
-      : 'module_id,client_token';
+  payload.member_id = memberId;
 
   const { data, error } =
     await window.supabaseClient
@@ -102,7 +95,7 @@ async function saveFeedbackAnswer(
       )
       .upsert(
         payload,
-        { onConflict }
+        { onConflict: 'module_id,member_id' }
       )
       .select('*')
       .single();
@@ -116,6 +109,83 @@ async function saveFeedbackAnswer(
   }
 
   return { data };
+
+}
+
+async function submitPublicFeedbackAnswer(
+  moduleId,
+  registration,
+  answer,
+  comment
+) {
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'submit_public_feedback',
+      {
+        p_module_id: moduleId,
+        p_email: registration.email,
+        p_vorname: registration.vorname,
+        p_nachname: registration.nachname,
+        p_telefon: registration.telefon || null,
+        p_answer: answer,
+        p_comment:
+          comment
+            ? String(comment).trim()
+            : null
+      }
+    );
+
+  if (error) {
+
+    console.error(error);
+
+    return { error };
+
+  }
+
+  setPublicFeedbackEmail(
+    registration.email
+  );
+
+  return { data };
+
+}
+
+async function fetchPublicFeedbackAnswerByEmail(
+  moduleId,
+  email
+) {
+
+  if (!moduleId || !email) {
+    return null;
+  }
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'get_public_feedback_answer',
+      {
+        p_module_id: moduleId,
+        p_email: email.trim().toLowerCase()
+      }
+    );
+
+  if (error) {
+
+    console.error(error);
+
+    return null;
+
+  }
+
+  if (!data || data.answer == null) {
+    return null;
+  }
+
+  return {
+    answer: data.answer,
+    comment: data.comment || null
+  };
 
 }
 
@@ -231,7 +301,8 @@ async function fetchFeedbackAnswersForModule(
         members (
           vorname,
           nachname,
-          email
+          email,
+          rolle
         )
       `)
       .eq('module_id', moduleId)

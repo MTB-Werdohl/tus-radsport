@@ -70,10 +70,18 @@ async function initFeedbackModule(options) {
 
   } else if (module.public_voting) {
 
-    ownAnswer =
-      getFeedbackClientAnswerCache(
-        module.id
-      );
+    const storedEmail =
+      getPublicFeedbackEmail();
+
+    if (storedEmail) {
+
+      ownAnswer =
+        await fetchPublicFeedbackAnswerByEmail(
+          module.id,
+          storedEmail
+        );
+
+    }
 
   }
 

@@ -81,10 +81,11 @@ Ablauf: E-Mail in `members` → Magic Link → Session → E-Mail-Abgleich → P
 
 **Rollen** (`members.rolle`):
 
-| Rolle | Profil | Admin `/admin/` |
-|-------|--------|-----------------|
-| `Mitglied` | ja | nein |
-| `Vorstand` | ja | ja (voller CMS-Zugriff) |
+| Rolle | Profil | Admin `/admin/` | Interne Inhalte (`sichtbarkeit=members`) |
+|-------|--------|-----------------|------------------------------------------|
+| `Mitglied` | ja | nein | ja |
+| `Vorstand` | ja | ja (voller CMS-Zugriff) | ja |
+| `public` | ja (eingeschränkt) | nein | nein — nur öffentliche Abstimmungen |
 
 Ausführliche Einrichtung: [`docs/supabase-members-setup.md`](supabase-members-setup.md) · SQL: [`docs/supabase-members-auth.sql`](supabase-members-auth.sql) · Rollen/RLS: [`docs/supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql)
 

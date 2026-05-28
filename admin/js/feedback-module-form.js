@@ -520,12 +520,12 @@ function mountFeedbackAdminForm(mountId) {
     type="checkbox"
     class="checkbox">
 
-  Öffentliche Abstimmung (ohne Login)
+  Öffentliche Abstimmung (externe Teilnehmer mit Name/E-Mail, Rolle „public“)
 
 </label>
 
 <p class="admin-hint">
-  Standard: nur Vereinsmitglieder. Öffentlich z. B. für Trainingslager nach einiger Zeit.
+  Standard: nur Vereinsmitglieder. Öffentlich: externe Anmeldung (Trainingslager etc.) — Daten landen in members mit Rolle public.
 </p>
 
 <div

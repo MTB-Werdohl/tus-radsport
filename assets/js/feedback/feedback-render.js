@@ -28,8 +28,66 @@ function renderFeedbackPublicHint() {
 
   return `
 <p class="feedback-hint feedback-hint--public">
-  Öffentliche Abstimmung — ohne Anmeldung.
+  Bitte Name und E-Mail angeben — du wirst als externer Teilnehmer erfasst,
+  kein Vereinsmitglied. Später kannst du dich per E-Mail-Link anmelden.
 </p>
+`;
+
+}
+
+function renderFeedbackPublicRegistrationForm(
+  storedEmail
+) {
+
+  const email =
+    storedEmail || getPublicFeedbackEmail();
+
+  return `
+<form
+  class="feedback-public-registration"
+  novalidate>
+
+  <div class="feedback-public-registration__row">
+
+    <label>
+      Vorname
+      <input
+        type="text"
+        class="feedback-public-vorname"
+        autocomplete="given-name"
+        required>
+    </label>
+
+    <label>
+      Nachname
+      <input
+        type="text"
+        class="feedback-public-nachname"
+        autocomplete="family-name"
+        required>
+    </label>
+
+  </div>
+
+  <label>
+    E-Mail
+    <input
+      type="email"
+      class="feedback-public-email"
+      value="${escapeFeedbackHtml(email)}"
+      autocomplete="email"
+      required>
+  </label>
+
+  <label>
+    Telefon (optional)
+    <input
+      type="tel"
+      class="feedback-public-telefon"
+      autocomplete="tel">
+  </label>
+
+</form>
 `;
 
 }
@@ -215,11 +273,23 @@ function canVoteOnFeedbackModule(
   member
 ) {
 
-  if (member?.id) {
+  if (module?.public_voting === true) {
     return true;
   }
 
-  return module?.public_voting === true;
+  return isClubMember(member);
+
+}
+
+function shouldShowPublicRegistration(
+  module,
+  member
+) {
+
+  return (
+    module?.public_voting === true
+    && !member?.id
+  );
 
 }
 
@@ -284,6 +354,12 @@ function renderFeedbackModule(
 
   }
 
+  const showRegistration =
+    shouldShowPublicRegistration(
+      module,
+      member
+    );
+
   container.innerHTML = `
 
 <section class="feedback-module">
@@ -297,9 +373,12 @@ ${escapeFeedbackHtml(module.question)}
 ${
   canVote
     ? (
-      member
-        ? ''
-        : renderFeedbackPublicHint()
+      showRegistration
+        ? renderFeedbackPublicHint()
+        + renderFeedbackPublicRegistrationForm(
+          getPublicFeedbackEmail()
+        )
+        : ''
     )
     + body
     : renderFeedbackMembersOnlyHint()
@@ -333,10 +412,13 @@ function bindFeedbackModuleEvents(
   const identity =
     member?.id
       ? { memberId: member.id }
-      : {
-          clientToken:
-            getFeedbackClientToken(module.id)
-        };
+      : null;
+
+  const usesPublicRegistration =
+    shouldShowPublicRegistration(
+      module,
+      member
+    );
 
   async function persistAnswer(
     answer,
@@ -362,13 +444,51 @@ function bindFeedbackModuleEvents(
 
     }
 
-    const result =
-      await saveFeedbackAnswer(
-        module.id,
-        identity,
-        answer,
-        comment
-      );
+    let result;
+
+    if (usesPublicRegistration) {
+
+      const registration =
+        readPublicFeedbackRegistration(
+          container
+        );
+
+      const registrationError =
+        validatePublicFeedbackRegistration(
+          registration
+        );
+
+      if (registrationError) {
+
+        statusEl.innerHTML =
+          renderFeedbackStatus(
+            registrationError,
+            true
+          );
+
+        return;
+
+      }
+
+      result =
+        await submitPublicFeedbackAnswer(
+          module.id,
+          registration,
+          answer,
+          comment
+        );
+
+    } else {
+
+      result =
+        await saveFeedbackAnswer(
+          module.id,
+          identity,
+          answer,
+          comment
+        );
+
+    }
 
     if (result?.error) {
 
@@ -380,16 +500,6 @@ function bindFeedbackModuleEvents(
         );
 
       return;
-
-    }
-
-    if (identity.clientToken) {
-
-      setFeedbackClientAnswerCache(
-        module.id,
-        answer,
-        comment
-      );
 
     }
 

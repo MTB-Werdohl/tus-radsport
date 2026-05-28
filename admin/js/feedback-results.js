@@ -16,7 +16,17 @@ function formatFeedbackMemberName(memberRow) {
       .join(' ')
       .trim();
 
-  return name || member.email || 'Mitglied';
+  const baseName =
+    name || member.email || 'Mitglied';
+
+  if (
+    member.rolle
+    && member.rolle.trim().toLowerCase() === 'public'
+  ) {
+    return `${baseName} (extern)`;
+  }
+
+  return baseName;
 
 }
 

@@ -59,7 +59,9 @@ function buildMemberPayload(fields) {
   const rolle =
     fields.rolle === 'Vorstand'
       ? 'Vorstand'
-      : 'Mitglied';
+      : fields.rolle === 'public'
+        ? 'public'
+        : 'Mitglied';
 
   return {
     mitgliedsnummer: emptyToNull(fields.mitgliedsnummer),

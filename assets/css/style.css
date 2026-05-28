@@ -396,6 +396,16 @@ a:hover {
   border: var(--border-soft);
 }
 
+.member-public-hint {
+
+margin: 0 0 16px;
+
+line-height: 1.45;
+
+opacity: 0.92;
+
+}
+
 .member-save-status {
   margin: 0;
   font-size: 0.875rem;

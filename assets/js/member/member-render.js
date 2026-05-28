@@ -326,6 +326,59 @@ function renderMemberProfile(
     return;
   }
 
+  if (isPublicParticipant(member)) {
+
+    container.innerHTML = `
+
+<section class="member-profile-section-block">
+
+  <h2>Externe Anmeldung</h2>
+
+  <p class="member-public-hint">
+    Du bist als externer Teilnehmer registriert — kein Vereinsmitglied.
+    Du kannst an öffentlichen Abstimmungen teilnehmen und dich per Magic Link anmelden.
+  </p>
+
+  <dl class="member-profile-list">
+
+    <div class="member-profile-row">
+      <dt>Vorname</dt>
+      <dd>${formatMemberField(member.vorname)}</dd>
+    </div>
+
+    <div class="member-profile-row">
+      <dt>Nachname</dt>
+      <dd>${formatMemberField(member.nachname)}</dd>
+    </div>
+
+    <div class="member-profile-row">
+      <dt>E-Mail</dt>
+      <dd>${formatMemberField(member.email)}</dd>
+    </div>
+
+    <div class="member-profile-row">
+      <dt>Telefon</dt>
+      <dd>${formatMemberField(member.telefonnummer)}</dd>
+    </div>
+
+  </dl>
+
+</section>
+
+<section class="member-profile-section-block member-profile-actions">
+
+  <button type="button" id="member-logout-btn" class="member-logout-btn">
+    Logout
+  </button>
+
+</section>
+
+    `;
+
+    return;
+
+  }
+
   container.innerHTML = `
 
 <section class="member-profile-section-block">

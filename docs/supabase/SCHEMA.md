@@ -14,7 +14,7 @@ Stand: Projekt MTB Werdohl. Spalten aus Code + Supabase; bei Abweichungen Dashbo
 | `geburtsdatum` | date | |
 | `email` | text | Magic-Link-Identität; mit `auth.users.email` abgleichen |
 | `telefonnummer` | text | Profil editierbar |
-| `rolle` | text | `Mitglied` (default) \| `Vorstand` |
+| `rolle` | text | `Mitglied` (default) \| `Vorstand` \| `public` (extern, kein Vereinszugang) |
 | `einwilligung_kontakt` | boolean | Profil: nur Erteilen |
 | `kontakt_eingewilligt_am` | date | |
 | `einwilligung_bilder` | boolean | Profil: nur Erteilen |

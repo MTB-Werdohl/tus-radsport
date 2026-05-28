@@ -4,6 +4,9 @@ const MEMBER_ROLE_VORSTAND =
 const MEMBER_ROLE_MITGLIED =
   'Mitglied';
 
+const MEMBER_ROLE_PUBLIC =
+  'public';
+
 function isVorstand(member) {
 
   if (!member?.rolle) {
@@ -12,6 +15,37 @@ function isVorstand(member) {
 
   return member.rolle.trim().toLowerCase()
     === MEMBER_ROLE_VORSTAND.toLowerCase();
+
+}
+
+function isClubMember(member) {
+
+  if (!member?.id) {
+    return false;
+  }
+
+  if (!member.rolle) {
+    return true;
+  }
+
+  const role =
+    member.rolle.trim().toLowerCase();
+
+  return (
+    role === MEMBER_ROLE_MITGLIED.toLowerCase()
+    || role === MEMBER_ROLE_VORSTAND.toLowerCase()
+  );
+
+}
+
+function isPublicParticipant(member) {
+
+  if (!member?.rolle) {
+    return false;
+  }
+
+  return member.rolle.trim().toLowerCase()
+    === MEMBER_ROLE_PUBLIC;
 
 }
 
