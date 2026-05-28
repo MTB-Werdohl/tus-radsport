@@ -59,19 +59,6 @@ function filterMembersBySearch(members) {
 
 }
 
-function normalizeMemberId(value) {
-
-  const trimmed =
-    String(value || '').trim();
-
-  if (/^\d+$/.test(trimmed)) {
-    return Number(trimmed);
-  }
-
-  return trimmed;
-
-}
-
 async function loadMembers() {
 
   const { data, error } =

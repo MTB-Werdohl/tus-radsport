@@ -235,19 +235,6 @@ async function initMemberEdit() {
 
 }
 
-function normalizeMemberId(value) {
-
-  const trimmed =
-    String(value || '').trim();
-
-  if (/^\d+$/.test(trimmed)) {
-    return Number(trimmed);
-  }
-
-  return trimmed;
-
-}
-
 async function fetchMemberById(memberId) {
 
   return window.supabaseClient

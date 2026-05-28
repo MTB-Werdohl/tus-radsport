@@ -25,9 +25,9 @@ Internet: https://www.tusjahnwerdohl.de
 
 Der Schutz personenbezogener Daten ist uns wichtig.
 
-Diese Website dient der Information über die Abteilung Radsport des TuS Jahn Werdohl e.V. Die Seiten werden als statische Website bereitgestellt. Für den **Mitgliederbereich**, die Verwaltung von Vereinsinhalten und **Push-Mitteilungen** nutzen wir zusätzlich einen Backend-Dienst (Supabase, siehe Abschnitt 11).
+Diese Website dient der Information über die Abteilung Radsport des TuS Jahn Werdohl e.V. Die Seiten werden als statische Website bereitgestellt. Für den **Mitgliederbereich**, die Verwaltung von Vereinsinhalten, **Feedback/Abstimmungen**, **externe Anmeldungen** (z. B. Trainingslager) und **Push-Mitteilungen** nutzen wir zusätzlich einen Backend-Dienst (Supabase, siehe Abschnitt 11).
 
-Personenbezogene Daten werden nur verarbeitet, soweit dies für die Mitgliedschaft, die Nutzung des Mitgliederbereichs, eine Einwilligung oder eine gesetzliche Grundlage erforderlich ist.
+Personenbezogene Daten werden nur verarbeitet, soweit dies für die Mitgliedschaft, die Nutzung des Mitgliederbereichs, eine Anmeldung zu Vereinsangeboten, eine Einwilligung oder eine gesetzliche Grundlage erforderlich ist.
 
 ---
 
@@ -65,6 +65,8 @@ Weitere Informationen: [GitHub Privacy Statement](https://docs.github.com/de/sit
 
 Zur Anbindung an unser Backend wird die JavaScript-Bibliothek **Supabase** über das Content Delivery Network **jsDelivr** geladen.
 
+Im **Admin-Bereich** (nur für den Vorstand) kann beim PDF-Export von Mitgliederlisten zusätzlich die Bibliothek **pdfmake** über jsDelivr nachgeladen werden. Das erfolgt erst, wenn du den Export auslöst — nicht beim normalen Seitenaufruf.
+
 Anbieter:
 
 jsDelivr / Prospect One Sp. z o.o.  
@@ -72,13 +74,13 @@ Polen / CDN weltweit
 
 Beim Laden können technisch erforderliche Verbindungsdaten (insbesondere IP-Adresse, Browsertyp, Zeitpunkt des Abrufs) verarbeitet werden.
 
-Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer funktionsfähigen Website und Mitglieder-Anmeldung).
+Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer funktionsfähigen Website, Mitglieder-Anmeldung und Vereinsverwaltung).
 
 ---
 
 ## 5. Datenübermittlung in Drittländer
 
-**Mitgliederdaten, Push-Abonnements und Inhalte aus dem Mitgliederbereich** werden in unserem Supabase-Projekt in der Region **eu-central-2** gespeichert und primär verarbeitet (siehe Abschnitt 11).
+**Mitgliederdaten, Feedback, Push-Abonnements und Inhalte aus dem Mitgliederbereich** werden in unserem Supabase-Projekt in der Region **eu-central-2** gespeichert und primär verarbeitet (siehe Abschnitt 11).
 
 Andere eingesetzte Dienste — insbesondere **GitHub Pages**, **jsDelivr** und **Push-Dienste der Browser-Hersteller** (Abschnitt 13) — können Daten auch außerhalb der Europäischen Union verarbeiten.
 
@@ -170,7 +172,7 @@ Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an erreichba
 
 ## 11. Backend-Dienst Supabase (Mitgliederbereich, Inhalte, Push)
 
-Für den Mitgliederbereich, die Speicherung von Vereinsinhalten (News, Termine, Galerie), Mitgliederdaten und Push-Abonnements nutzen wir **Supabase** als technischen Dienstleister.
+Für den Mitgliederbereich, die Speicherung von Vereinsinhalten (News, Termine, Galerie), Mitgliederdaten, Feedback/Abstimmungen und Push-Abonnements nutzen wir **Supabase** als technischen Dienstleister.
 
 Anbieter:
 
@@ -195,7 +197,9 @@ Beim Aufruf von Seiten mit Mitgliederfunktionen oder beim Speichern von Inhalten
 
 - Vereins-News, Termine und Galerie-Bilder (inkl. Metadaten und Mediendateien)
 - Mitgliederstammdaten (siehe Abschnitt 12)
+- Feedback und Abstimmungen (siehe Abschnitt 12.6)
 - Push-Abonnements (siehe Abschnitt 13)
+- Push-Verlauf (`PushMessages`) für die Anzeige auf der Website
 - technischer Website-Zustand (z. B. letzte Push-Mitteilung für die Anzeige auf der Startseite)
 
 Rechtsgrundlagen:
@@ -212,24 +216,26 @@ Weitere Informationen: [Supabase Privacy Policy](https://supabase.com/privacy)
 
 ### 12.1 Anmeldung (Magic Link)
 
-Mitglieder können sich mit ihrer **beim Verein hinterlegten E-Mail-Adresse** anmelden. Es wird kein Passwort gespeichert. Stattdessen sendet Supabase Auth einen **einmaligen Login-Link** per E-Mail.
+Du kannst dich mit deiner **E-Mail-Adresse** anmelden. Es wird kein Passwort gespeichert. Stattdessen sendet Supabase Auth einen **einmaligen Login-Link** per E-Mail.
+
+**Vereinsmitglieder** (Rolle „Mitglied“ oder „Vorstand“): Die E-Mail muss in der Mitgliederliste des Vereins hinterlegt sein. Andernfalls wird kein Login-Link versendet.
+
+**Externe Teilnehmer** (Rolle „public“, siehe Abschnitt 12.5): Nach einer Anmeldung über eine öffentliche Abstimmung ist die E-Mail in unserer Datenbank gespeichert; anschließend ist auch hier ein Login per Magic Link möglich.
 
 Verarbeitete Daten:
 
 - E-Mail-Adresse
 - technische Auth-Daten (Session-Token, Ablaufzeitpunkt, Gerätebezug der Anmeldung)
-- Prüfung, ob die E-Mail in der Mitgliederliste des Vereins hinterlegt ist
+- Prüfung, ob die E-Mail in unserer Mitgliederdatenbank hinterlegt ist
 
 Rechtsgrundlagen:
 
-- Art. 6 Abs. 1 lit. b DSGVO — Zugang zum Mitgliederbereich im Rahmen der Vereinsmitgliedschaft
+- Art. 6 Abs. 1 lit. b DSGVO — Zugang zum Mitgliederbereich im Rahmen der Vereinsmitgliedschaft oder einer Anmeldung zu Vereinsangeboten
 - Art. 6 Abs. 1 lit. f DSGVO — sichere Authentifizierung ohne Passwortspeicherung
-
-Die Anmeldung ist nur für Personen möglich, die in der Vereinsmitgliederliste geführt werden.
 
 ### 12.2 Mitgliederstammdaten
 
-Im Mitgliederbereich (**Mein Profil**) werden Daten aus der Vereinsmitgliederliste angezeigt und — soweit vorgesehen — vom Mitglied selbst bearbeitet.
+Im Mitgliederbereich (**Mein Profil**) werden Daten aus unserer Mitgliederdatenbank angezeigt und — soweit vorgesehen — vom Nutzer selbst bearbeitet.
 
 Dies können insbesondere sein:
 
@@ -238,10 +244,12 @@ Dies können insbesondere sein:
 - E-Mail-Adresse
 - Adresse (Straße, Hausnummer, PLZ, Wohnort)
 - Telefonnummer
-- Rolle im Verein (z. B. Mitglied / Vorstand)
-- Datenschutz-Einwilligungen (siehe Abschnitt 12.3)
+- Rolle (z. B. **Mitglied**, **Vorstand** oder **public** — externer Teilnehmer)
+- Datenschutz-Einwilligungen (siehe Abschnitt 12.3; nur bei Vereinsmitgliedern)
 
-Der Vorstand kann Mitgliederdaten zur Vereinsverwaltung pflegen (Anlegen, Bearbeiten, Löschen). Beim Löschen eines Mitglieds werden auch zugehörige Push-Abonnements entfernt.
+**Rolle „public“:** Es wird eine **eingeschränkte Profilansicht** angezeigt (Name, E-Mail, Telefon, Logout). Push-Mitteilungen und Datenschutz-Einwilligungen auf der Profilseite stehen externen Teilnehmern nicht zur Verfügung.
+
+Der Vorstand kann Mitgliederdaten zur Vereinsverwaltung pflegen (Anlegen, Bearbeiten, Löschen). Beim Löschen eines Datensatzes werden auch zugehörige Push-Abonnements und Feedback-Antworten entfernt, soweit technisch verknüpft.
 
 Rechtsgrundlagen:
 
@@ -250,7 +258,7 @@ Rechtsgrundlagen:
 
 ### 12.3 Einwilligungen auf der Profilseite
 
-Auf der Profilseite (**Mein Profil**, [mtb-werdohl.de/profil/](https://www.mtb-werdohl.de/profil/)) können eingeloggte Mitglieder gesonderte Einwilligungen **online** erteilen, insbesondere:
+Auf der Profilseite (**Mein Profil**, [mtb-werdohl.de/profil/](https://www.mtb-werdohl.de/profil/)) können eingeloggte **Vereinsmitglieder** (Rollen „Mitglied“ oder „Vorstand“) gesonderte Einwilligungen **online** erteilen, insbesondere:
 
 - **Einwilligung Kontakt** — Nutzung der Daten für vereinsbezogene Kontaktaufnahme
 - **Einwilligung Bilder** — Verwendung von Bildern im Vereinskontext
@@ -267,9 +275,58 @@ Die Einwilligungen können jederzeit mit Wirkung für die Zukunft widerrufen wer
 
 ### 12.4 Mitglieder-only Inhalte
 
-Bestimmte News und Termine sind nur für **eingeloggte Mitglieder** sichtbar. Beim Abruf wird geprüft, ob eine gültige Mitglieder-Session besteht.
+Bestimmte News und Termine sind nur für **eingeloggte Vereinsmitglieder** (Rollen „Mitglied“ oder „Vorstand“) sichtbar. Externe Teilnehmer (Rolle „public“) haben **keinen** Zugang zu diesen Inhalten.
+
+Beim Abruf wird geprüft, ob eine gültige Session besteht und ob die Rolle berechtigt ist.
 
 Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO und Art. 6 Abs. 1 lit. f DSGVO.
+
+### 12.5 Externe Teilnehmer (Rolle „public“)
+
+Bei **öffentlichen Abstimmungen** (z. B. Anmeldung zum Trainingslager) kannst du dich ohne Vereinsmitgliedschaft mit Name und E-Mail anmelden.
+
+Verarbeitete Daten:
+
+- Vorname, Nachname
+- E-Mail-Adresse
+- Telefonnummer (optional)
+- Rolle „public“ in unserer Mitgliederdatenbank
+
+Zweck:
+
+- Organisation von Vereinsveranstaltungen und Auswertung von Anmeldungen/Abstimmungen durch den Vorstand
+- optional späterer Login per Magic Link (siehe Abschnitt 12.1)
+
+Externe Teilnehmer sind **keine** Vereinsmitglieder: kein Zugang zu internen Inhalten, kein Admin-Bereich, keine Push-Bestellung.
+
+Rechtsgrundlagen:
+
+- Art. 6 Abs. 1 lit. b DSGVO — Durchführung der von dir gewünschten Anmeldung/Teilnahme
+- Art. 6 Abs. 1 lit. f DSGVO — Organisation des Radsportbetriebs und Auswertung durch den Vorstand
+
+Speicherdauer: bis zur Löschung durch den Vorstand oder auf deine Anfrage hin (siehe Abschnitt 15), sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen.
+
+### 12.6 Feedback und Abstimmungen
+
+An Terminen und News kann optional ein **Feedback-Modul** eingerichtet sein (z. B. „Wer fährt mit?“ / Ja–Vielleicht, Ja–Nein mit Kommentar, Umfrage).
+
+Verarbeitete Daten:
+
+- deine Antwort (z. B. Ja / Vielleicht / Nein oder gewählte Umfrage-Option)
+- optional ein Kommentar
+- Zuordnung zu deinem Datensatz in der Mitgliederdatenbank (`member_id`)
+- Zeitpunkt der Abgabe bzw. Änderung
+
+**Nur für Vereinsmitglieder:** Abstimmung ist nur nach Anmeldung als Mitglied oder Vorstand möglich.
+
+**Öffentliche Abstimmung:** Auch ohne Login — dafür ist eine kurze Anmeldung mit Name und E-Mail erforderlich (Abschnitt 12.5). Bereits Vereinsmitglieder sollen sich für die Abstimmung anmelden, statt die externe Anmeldung zu nutzen.
+
+Der Vorstand kann Antworten in der Verwaltung einsehen und exportieren (Name/E-Mail der Teilnehmer sind für den Vorstand sichtbar).
+
+Rechtsgrundlagen:
+
+- Art. 6 Abs. 1 lit. b DSGVO — Durchführung der Anmeldung/Abstimmung
+- Art. 6 Abs. 1 lit. f DSGVO — Organisation und Auswertung durch den Vorstand
 
 ---
 
@@ -283,7 +340,11 @@ Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO.
 
 ### 13.2 Push-Mitteilungen
 
-Push-Mitteilungen funktionieren **nur in der installierten App** und nur nach ausdrücklicher Aktivierung auf der Profilseite sowie nach Zustimmung über die **Benachrichtigungsabfrage des Browsers**.
+Push-Mitteilungen können von **Vereinsmitgliedern** (Rollen „Mitglied“ oder „Vorstand“) auf der **Profilseite** aktiviert werden, nachdem du dem **Benachrichtigungsdialog des Browsers** zugestimmt hast. Externe Teilnehmer (Rolle „public“) können Push nicht bestellen.
+
+**Hinweis auf der Website:** Der Vorstand kann Mitteilungen versenden. Der **Text der letzten Mitteilung** kann auf der Website angezeigt werden (auch ohne aktives Push-Abo). Die **Zustellung als Push** setzt die Aktivierung auf der Profilseite durch ein Vereinsmitglied voraus.
+
+Auf unterstützten Geräten kann die Website als **Progressive Web App (PWA)** installiert werden; für Push ist die Installation nicht in jedem Browser zwingend erforderlich.
 
 Verarbeitete Daten:
 
@@ -302,11 +363,11 @@ Zur technischen Zustellung kann dein Browser Push-Dienste des jeweiligen Herstel
 
 Dabei können Daten an diese Anbieter übermittelt werden. Welcher Dienst genutzt wird, hängt von Browser und Betriebssystem ab.
 
-Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO (Einwilligung über Browser-Dialog und aktive Aktivierung in der App).
+Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO (Einwilligung über Browser-Dialog und aktive Aktivierung auf der Profilseite).
 
 Die Einwilligung kann jederzeit widerrufen werden:
 
-- über **Push deaktivieren** auf der Profilseite, und/oder
+- über **Push abbestellen** auf der Profilseite, und/oder
 - über die Benachrichtigungseinstellungen des Geräts / Browsers
 
 Push-Daten werden gelöscht, sobald Push deaktiviert wird, das Abonnement ungültig ist oder das Mitglied gelöscht wird.
@@ -323,13 +384,13 @@ Diese Website verwendet:
 - **keine** Analyseplattformen
 - **keine** Social-Media-Plugins mit automatischer Datenübermittlung
 
-Zur technischen Funktion können Informationen **lokal im Browser** gespeichert werden (Local Storage / Session Storage), insbesondere:
+Zur technischen Funktion können Informationen **lokal im Browser** gespeichert werden (Local Storage), insbesondere:
 
 - **Supabase Auth-Session** — damit du eingeloggt bleibst (Magic Link)
-- **lastSeenPush** — welche Push-Mitteilung auf der Startseite bereits gesehen wurde
-- **pushCollapsed** — ob der Push-Hinweis eingeklappt ist
+- **lastSeenPush** — welche Push-Mitteilung auf der Website bereits als gelesen markiert wurde
+- **publicFeedbackEmail** — deine E-Mail-Adresse, damit du bei einer öffentlichen Abstimmung deine bereits abgegebene Antwort wiedererkennen kannst (nur wenn du dich extern angemeldet hast)
 
-Diese Speicherung dient ausschließlich der technischen Funktion der Website und des Mitgliederbereichs.
+Diese Speicherung dient ausschließlich der technischen Funktion der Website und des Mitgliederbereichs. Es werden **keine** Analyse-, Marketing- oder Tracking-Cookies gesetzt.
 
 Rechtsgrundlage:
 
@@ -343,9 +404,13 @@ Es werden keine Cookies zu Werbe- oder Analysezwecken gesetzt.
 ## 15. Speicherdauer
 
 - **Kontaktanfragen per E-Mail:** Löschung nach abschließender Bearbeitung, spätestens nach Ablauf gesetzlicher Aufbewahrungsfristen, sofern keine weitergehende Pflicht besteht.
-- **Mitgliederstammdaten:** für die Dauer der Mitgliedschaft; danach Löschung oder Einschränkung, soweit keine gesetzlichen Aufbewahrungspflichten entgegenstehen.
+- **Mitgliederstammdaten (Mitglied / Vorstand):** für die Dauer der Mitgliedschaft; danach Löschung oder Einschränkung, soweit keine gesetzlichen Aufbewahrungspflichten entgegenstehen.
+- **Externe Teilnehmer (Rolle „public“):** bis zur Löschung durch den Vorstand oder auf Anfrage, spätestens wenn der Zweck der Anmeldung/Abstimmung entfällt, sofern keine Aufbewahrungspflichten entgegenstehen.
+- **Feedback-Antworten:** für die Dauer des jeweiligen Termins/Anlasses und der Auswertung durch den Vorstand; Löschung mit dem zugehörigen Mitgliedsdatensatz oder auf Anfrage.
 - **Auth-Session:** bis zum Logout, Ablauf der Session oder Ungültigkeit des Login-Links.
 - **Push-Abonnements:** bis zur Deaktivierung, Ungültigkeit oder Löschung des Mitglieds.
+- **Push-Verlauf (`PushMessages`):** für die Anzeige auf der Website; technische Löschung durch den Vorstand bei Bedarf.
+- **Local Storage im Browser** (z. B. `publicFeedbackEmail`, `lastSeenPush`): bis du die Website-Daten im Browser löschst oder der Eintrag überschrieben wird.
 - **Server- und Verbindungslogs der Hosting-/Backend-Anbieter:** gemäß deren Richtlinien; auf diese Logs hat der Verein in der Regel keinen direkten Zugriff.
 
 ---
@@ -378,6 +443,6 @@ Zur Ausübung deiner Rechte genügt eine formlose Mitteilung an die unter Abschn
 
 Stand dieser Datenschutzerklärung:
 
-Juni 2026
+Mai 2026
 
 Bei technischen oder rechtlichen Änderungen wird diese Datenschutzerklärung angepasst.

@@ -198,15 +198,16 @@ feedback_answers (member_id, answer, comment?)
 **Frontend** (`assets/js/feedback/`):
 
 ```
-feedback-types.js   → Validierung, poll option_id
-feedback-service.js → Supabase load/upsert
-feedback-render.js  → UI je type (yes_maybe, yes_no_comment, poll)
-feedback-init.js    → initFeedbackModule({ entityType, entityId, container })
+feedback-types.js               → Validierung, poll option_id
+feedback-public-registration.js → E-Mail/Name für externe Abstimmung
+feedback-service.js             → Supabase load/upsert + RPC
+feedback-render.js              → UI je type (yes_maybe, yes_no_comment, poll)
+feedback-init.js                → initFeedbackModule({ entityType, entityId, container })
 ```
 
 Detail-Seiten rufen nur `initFeedbackModule()` auf — kein Feedback-Code in `event-service` / `news-detail-service`.
 
-**Admin:** `admin/js/feedback-module-form.js` in Termin-/News-Bearbeitung (optional, nach erstem Speichern). Auswertung: `admin/feedback.html`, `admin/feedback_results.html?module_id=…` (CSV-Export).
+**Admin:** `admin/js/feedback-module-form.js` in Termin-/News-Bearbeitung (optional, zusammen mit Speichern). Auswertung: `admin/feedback.html`, `admin/feedback_results.html?module_id=…` (CSV-Export).
 
 Typen v1: `yes_maybe`, `yes_no_comment`, `poll` — Poll speichert `option_id` in `answer`, nicht Anzeige-Text.
 

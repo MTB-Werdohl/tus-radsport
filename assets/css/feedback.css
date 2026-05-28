@@ -99,9 +99,11 @@ padding: 14px;
 
 border-radius: 12px;
 
-background: rgba(255, 255, 255, 0.06);
+background: #fff;
 
-border: 1px solid rgba(255, 255, 255, 0.1);
+border: 1px solid rgba(0, 0, 0, 0.1);
+
+color: #1a1a1a;
 
 }
 
@@ -117,6 +119,8 @@ font-weight: 600;
 
 font-size: 0.92rem;
 
+color: #1a1a1a;
+
 }
 
 .feedback-public-registration input {
@@ -125,11 +129,17 @@ padding: 10px 12px;
 
 border-radius: 10px;
 
-border: 1px solid rgba(255, 255, 255, 0.15);
+border: 1px solid rgba(0, 0, 0, 0.18);
 
-background: rgba(255, 255, 255, 0.92);
+background: #fff;
 
-color: inherit;
+color: #1a1a1a;
+
+}
+
+.feedback-public-registration input::placeholder {
+
+color: #666;
 
 }
 
@@ -165,13 +175,19 @@ padding: 10px 12px;
 
 border-radius: 10px;
 
-border: 1px solid rgba(255, 255, 255, 0.15);
+border: 1px solid rgba(0, 0, 0, 0.18);
 
-background: rgba(255, 255, 255, 0.92);
+background: #fff;
 
-color: inherit;
+color: #1a1a1a;
 
 resize: vertical;
+
+}
+
+.feedback-comment::placeholder {
+
+color: #666;
 
 }
 

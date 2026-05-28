@@ -1,6 +1,9 @@
 -- Rolle „public“: externe Teilnehmer (z. B. Trainingslager-Anmeldung)
 -- Voraussetzung: supabase-feedback.sql, supabase-feedback-public-voting.sql (public_voting)
 -- Siehe docs/supabase/RUNBOOK.md
+--
+-- Constraint-Fix für feedback_answers: docs/supabase-feedback-answers-unique-fix.sql
+-- (separat ausführen, falls Abstimmung/Upsert fehlschlägt)
 
 -- Nur Vereinsmitglieder (nicht „public“) für interne Inhalte
 create or replace function public.is_member()
@@ -199,3 +202,6 @@ drop policy if exists feedback_answers_update_anon_public on public.feedback_ans
 
 comment on column public.feedback_modules.public_voting is
   'true = externe Teilnehmer mit Name/E-Mail (members.rolle = public). false = nur Vereinsmitglieder.';
+
+alter table public.feedback_answers
+  drop column if exists client_token;

@@ -67,13 +67,6 @@ async function loadNews() {
 
   }
 
-  await initFeedbackModuleForm({
-    entityType:
-      window.siteConfig.feedback.entityTypes.news,
-    entityId:
-      parseInt(editId, 10)
-  });
-
 }
 
 async function saveNews() {

@@ -23,24 +23,3 @@ async function ensureVorstandSession(
   return member;
 
 }
-
-async function initAdminDashboardPage() {
-
-  const member =
-    await ensureVorstandSession();
-
-  if (!member) {
-
-    window.location.href = '/';
-
-    return;
-
-  }
-
-  if (
-    typeof showAdminDashboard === 'function'
-  ) {
-    showAdminDashboard();
-  }
-
-}

@@ -590,19 +590,11 @@ async function initFeedbackModuleForm(options) {
     options?.mountId
     || 'feedback-admin-form-wrap';
 
-  const hintId =
-    options?.hintId
-    || 'feedback-admin-hint';
-
   feedbackAdminState = {
     module: null,
     entityType,
     entityId
   };
-
-  document
-    .getElementById(hintId)
-    ?.classList.add('hidden');
 
   mountFeedbackAdminForm(mountId);
 

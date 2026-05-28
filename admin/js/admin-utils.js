@@ -81,6 +81,19 @@ function escapeAdminHtml(value) {
 
 }
 
+function normalizeMemberId(value) {
+
+  const trimmed =
+    String(value || '').trim();
+
+  if (/^\d+$/.test(trimmed)) {
+    return Number(trimmed);
+  }
+
+  return trimmed;
+
+}
+
 function extractStoragePath(url) {
 
   const split =
