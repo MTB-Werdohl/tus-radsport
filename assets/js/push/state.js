@@ -119,11 +119,14 @@ async function savePushMessage(
   const { error: stateError } =
     await window.supabaseClient
       .from(window.siteConfig.tables.siteState)
-      .upsert({
-        key:
-          window.siteConfig.siteStateKeys.lastPush,
-        value: payload
-      });
+      .upsert(
+        {
+          key:
+            window.siteConfig.siteStateKeys.lastPush,
+          value: payload
+        },
+        { onConflict: 'key' }
+      );
 
   if (stateError) {
 

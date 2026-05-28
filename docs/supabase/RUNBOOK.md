@@ -15,7 +15,7 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Optional (Mehrtages-Termine):** [`supabase-termine-multiday.sql`](../supabase-termine-multiday.sql) — Spalten `endDate`, `durationDays` auf `Termine`.
 
-**Optional (Push-Verlauf):** [`supabase-push-messages.sql`](../supabase-push-messages.sql) — Tabelle `PushMessages` + RLS (nach #2).
+**Push-Verlauf:** [`supabase-push-messages.sql`](../supabase-push-messages.sql) — Tabelle `PushMessages` + RLS (nach #2). Edge Function `send-push` danach **neu deployen**.
 
 **Wichtig:** Schritt 3 ersetzt die News-SELECT-Policy aus Schritt 2. Ohne Schritt 3 gelten News-Leserechte noch über `published`, nicht `sichtbarkeit`.
 
@@ -35,7 +35,7 @@ Nur ausführen, wenn der Constraint noch fehlt (Edge Function `save-push-subscri
 |----------|----------------------|
 | `save-push-subscription` | [`supabase-edge-save-push-subscription.ts`](../supabase-edge-save-push-subscription.ts) — JWT des Mitglieds, Service Role Upsert |
 | `delete-push-subscription` | Analog zu save — JWT, Endpoint löschen |
-| `send-push` | [`supabase-edge-send-push.ts`](../supabase-edge-send-push.ts) — JWT + Vorstand-Check, dann Service Role |
+| `send-push` | [`supabase-edge-send-push.ts`](../supabase-edge-send-push.ts) — JWT + Vorstand-Check, Push senden, **Verlauf in `PushMessages` + `site_state`** (Service Role) |
 
 ## Policy-Matrix (Kurz)
 

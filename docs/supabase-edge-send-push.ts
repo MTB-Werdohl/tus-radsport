@@ -247,9 +247,46 @@ Deno.serve(async (req) => {
 
     }
 
+    const sentAt =
+      new Date().toISOString();
+
+    const pushRecord = {
+      title,
+      body: pushBody,
+      url,
+      sent_at: sentAt
+    };
+
+    const { error: historyError } =
+      await supabaseAdmin
+        .from('PushMessages')
+        .insert([pushRecord]);
+
+    if (historyError) {
+      console.error(historyError);
+    }
+
+    const { error: stateError } =
+      await supabaseAdmin
+        .from('site_state')
+        .upsert(
+          {
+            key: 'last_push',
+            value: pushRecord
+          },
+          { onConflict: 'key' }
+        );
+
+    if (stateError) {
+      console.error(stateError);
+    }
+
     return jsonResponse({
       success: true,
-      sent
+      sent,
+      historySaved: !historyError,
+      historyError:
+        historyError?.message ?? null
     });
 
   } catch (error) {

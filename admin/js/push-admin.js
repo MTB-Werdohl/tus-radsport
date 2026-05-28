@@ -78,17 +78,15 @@ document
 
       console.log(result);
 
-      const saved =
-        await savePushMessage(
-          title,
-          body,
-          url
-        );
-
       status.innerText =
-        saved
+        result.historySaved !== false
           ? '✅ Push erfolgreich gesendet'
-          : '⚠️ Push gesendet, Verlauf konnte nicht gespeichert werden';
+          : '⚠️ Push gesendet, Verlauf nicht gespeichert'
+            + (
+              result.historyError
+                ? `: ${result.historyError}`
+                : ' (Tabelle PushMessages fehlt?)'
+            );
 
       document
         .getElementById('push-form')
