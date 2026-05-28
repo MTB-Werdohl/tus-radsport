@@ -1,82 +1,97 @@
 ---
 layout: default
 title: "Über uns"
+hide_title: true
 description: "Radsportabteilung TuS Jahn Werdohl — wer wir sind, was uns verbindet und warum bei uns Gemeinschaft vor Leistung steht."
 ---
 
-## Wer wir sind
+<div class="about-page">
 
-Wir sind die **Radsportabteilung des TuS Jahn Werdohl e.V.** – eine bodenständige Gemeinschaft von ambitionierten Hobbyfahrern, die vor allem eines verbindet:  
-die Freude am gemeinsamen Radfahren.
+<header class="about-intro">
+  <h1>Über uns</h1>
+  <p class="about-lead">
+    Wir sind die <strong>Radsportabteilung des TuS Jahn Werdohl e.V.</strong> —
+    eine bodenständige Gemeinschaft, die vor allem eines verbindet: die Freude am
+    gemeinsamen Radfahren.
+  </p>
+</header>
 
-Bei uns stehen keine Rennlizenzen, keine Startnummern und keine Rekordjagd im Vordergrund. Wichtig ist das Miteinander. Wir drehen gemeinsam unsere Runden, genießen die Bewegung an der frischen Luft und die Zeit auf dem Rad – ohne Leistungsdruck, aber mit sportlichem Anspruch.
+<blockquote class="about-quote">
+  Der Schwächste bestimmt das Tempo.
+</blockquote>
 
-Unser Grundsatz ist einfach:
+<section class="home-section">
+  <h2>Was uns ausmacht</h2>
+  <p>
+    Keine Rennlizenzen, keine Startnummern, keine Rekordjagd. Wir drehen gemeinsam
+    unsere Runden — ohne Leistungsdruck, aber mit sportlichem Anspruch. So bleibt
+    die Gruppe zusammen. Niemand wird zurückgelassen.
+  </p>
 
-> **Der Schwächste bestimmt das Tempo.**
+  <div class="about-values home-discover-grid">
 
-So bleibt die Gruppe zusammen. Niemand wird zurückgelassen!
+    <article class="card about-value-card">
+      <h3>Gemeinschaft</h3>
+      <p>Zusammenfahren steht über Vergleich und Bestzeiten.</p>
+    </article>
 
----
+    <article class="card about-value-card">
+      <h3>Offen &amp; ehrlich</h3>
+      <p>Kein Hochglanzverein — dafür eine offene Atmosphäre.</p>
+    </article>
 
-## Unsere Gruppen
+    <article class="card about-value-card">
+      <h3>Gäste willkommen</h3>
+      <p>Einfach mitfahren, unverbindlich kennenlernen — MTB, Gravel oder E-Bike.</p>
+    </article>
 
-### MTB
+  </div>
+</section>
 
-Unsere MTB-Gruppe ist fester Bestandteil des Vereinslebens.  
-Gefahren wird regelmäßig, mit klarer Struktur und einem festen Termin.
+<section class="home-section">
+  <h2>Was wir fahren</h2>
 
-- **Training:** Dienstags um 18:00 Uhr  
-- **Treffpunkt:** vor dem alten WK  
+  <h3 class="home-teaser-heading">MTB &amp; After-Work</h3>
+  <p>
+    Unser fester Termin: <strong>jeden Dienstag 18:00</strong> am Brüninghausplatz.
+    Touren im Sauerland, Tempo nach der Gruppe. Details zu Strecken und Ablauf findest
+    du unter <a href="{{ '/training' | relative_url }}">Trainingszeiten</a>.
+  </p>
 
-Das Tempo wird gemeinsam gefunden. Technik, Ausdauer und Sicherheit entwickeln sich mit der Zeit – aber immer im Sinne der Gruppe.
+  <h3 class="home-teaser-heading">Gravel &amp; Rennrad</h3>
+  <p>
+    Auch auf Gravel und Rennrad sind wir unterwegs — spontan oder in regelmäßigen
+    Ausfahrten, meist in Kolonne. Typische Distanzen liegen zwischen 70 und 100 km.
+    Wichtig ist das gemeinsame Erlebnis, nicht der Ehrgeiz.
+  </p>
+</section>
 
-Gäste sind jederzeit willkommen.
+<section class="home-section">
+  <h2>Im Vereinsjahr</h2>
+  <p>Feste Termine, die uns strukturieren und zusammenhalten:</p>
+  <ul class="about-list">
+    <li>Jahreshauptversammlung im Januar</li>
+    <li>Saisoneröffnung im Frühjahr</li>
+    <li>Trainingslager an wechselnden Orten</li>
+    <li>Saisonabschluss im Herbst</li>
+  </ul>
+  <p>
+    Aktuelle Termine findest du im <a href="{{ '/kalender/' | relative_url }}">Kalender</a>.
+  </p>
+</section>
 
----
+<section class="about-cta home-section">
+  <h2>Neugierig?</h2>
+  <p>Dann fahr einfach mit — eine kurze Nachricht genügt.</p>
+  <div class="cta-row">
+    <a
+      class="cta-btn"
+      href="https://wa.me/491608226897?text=Hallo%2C%20ich%20w%C3%BCrde%20gern%20mal%20bei%20euch%20mitfahren.%20Passt%20Dienstag%2018%3A00%20am%20Br%C3%BCninghausplatz%3F"
+      rel="noopener noreferrer"
+      target="_blank">
+      Jetzt anfragen (WhatsApp)
+    </a>
+  </div>
+</section>
 
-### Rennrad
-
-Auch auf dem Rennrad sind wir unterwegs – nicht nach starrem Trainingsplan, sondern dann, wenn Wetter, Zeit und Gruppe zusammenpassen.
-
-In der Regel entstehen etwa einmal im Monat gemeinsame Ausfahrten. Gefahren wird ruhig und diszipliniert in der Gruppe, meist in Kolonne. Typische Distanzen liegen zwischen 70 und 100 Kilometern.
-
-Auch hier gilt: Das gemeinsame Erlebnis steht über dem sportlichen Ehrgeiz. Wer einmal nicht ganz mithalten kann, wird mitgenommen. Entscheidend ist, dass wir als Gruppe unterwegs sind.
-
----
-
-## Unser Vereinsjahr
-
-Neben den regelmäßigen Ausfahrten gibt es feste Termine, die unser Jahr strukturieren und das Gemeinschaftsgefühl stärken:
-
-- **Jahreshauptversammlung im Januar**
-- **Saisoneröffnung im Frühjahr**
-- **Trainingslager an wechselnden Orten**
-- **Saisonabschluss im Herbst**
-
-Diese Veranstaltungen stehen für Austausch, Planung und gemeinsames Erleben – auf und neben dem Rad.
-
-Weitere Informationen dazu findest du auf der Seite **[„Termine“](/termine)**.
-
----
-
-## Unser Anspruch
-
-Wir sind kein Hochglanzverein und wollen das auch nicht sein.
-
-Bei uns zählt das Zusammenfahren mehr als neue Bestzeiten, das Miteinander mehr als der Vergleich. Wer Lust auf ehrlichen Radsport, entspannte Atmosphäre und eine offene Gemeinschaft hat, ist bei uns genau richtig.
-
----
-
-## Mitfahren?
-
-Neugierig geworden?
-
-Dann fahr einfach mit und lerne uns persönlich kennen.  
-Eine kurze Nachricht genügt – wir freuen uns auf dich.
-
-<div class="cta-row">
-  <a class="cta-btn" href="https://wa.me/491608226897?text=Hallo%2C%20ich%20w%C3%BCrde%20gern%20mal%20bei%20euch%20mitfahren.">
-    Einfach mitfahren
-  </a>
 </div>

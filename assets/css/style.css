@@ -1043,6 +1043,82 @@ body.member-consent-modal-open {
   margin-top: 16px;
 }
 
+/* About */
+
+.about-page {
+  margin: 0 auto;
+  width: 100%;
+}
+
+.about-intro {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.about-intro h1 {
+  margin-top: 0;
+}
+
+.about-lead {
+  max-width: 42ch;
+  margin: 0 auto;
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+.about-quote {
+  margin: 0 auto 32px;
+  padding: 20px 24px;
+  max-width: min(100%, 26rem);
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.4;
+  border: none;
+  border-radius: var(--radius);
+  background: rgba(34, 81, 180, 0.14);
+  color: inherit;
+}
+
+.about-values {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.about-value-card {
+  cursor: default;
+}
+
+.about-value-card:hover {
+  transform: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.about-list {
+  max-width: 36ch;
+  margin: 0 auto 16px;
+  padding-left: 1.25rem;
+}
+
+.about-cta {
+  text-align: center;
+}
+
+.about-cta p {
+  max-width: 32ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.about-cta .cta-btn {
+  max-width: 300px;
+  margin: 0 auto;
+}
+
+.about-page a:not(.cta-btn) {
+  color: var(--header-bg);
+  font-weight: 600;
+}
+
 .quick-facts {
   text-align: center;
   margin: 16px 0 0;
@@ -1166,6 +1242,10 @@ h2 { font-weight: 600; }
     margin-left: auto;
     margin-right: auto;
   }
+
+  .about-values {
+    max-width: none;
+  }
 }
 
 @media (max-width: 1000px) {
@@ -1176,6 +1256,10 @@ h2 { font-weight: 600; }
 
 @media (max-width: 800px) {
   .home-discover-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .about-values {
     grid-template-columns: 1fr;
   }
 
