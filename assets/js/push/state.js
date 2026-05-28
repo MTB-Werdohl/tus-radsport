@@ -180,6 +180,31 @@ async function getLastPush() {
 
 }
 
+function dedupePushMessages(messages) {
+
+  const seen =
+    new Set();
+
+  return messages.filter((message) => {
+
+    const key = [
+      message.title,
+      message.body,
+      message.url || '/'
+    ].join('\0');
+
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+
+    return true;
+
+  });
+
+}
+
 async function getPushMessages(
   limit = PUSH_HISTORY_LIMIT
 ) {
@@ -201,9 +226,11 @@ async function getPushMessages(
 
   }
 
-  return (data || [])
-    .map(normalizePushMessage)
-    .filter(Boolean);
+  return dedupePushMessages(
+    (data || [])
+      .map(normalizePushMessage)
+      .filter(Boolean)
+  );
 
 }
 

@@ -33,6 +33,11 @@ async function initPushWidget() {
     return;
   }
 
+  if (window.location.pathname.startsWith('/mitteilungen')) {
+    widget.classList.add('hidden');
+    return;
+  }
+
   const push =
     await getLastPush();
 
@@ -93,9 +98,11 @@ function renderPush(target, push) {
 
   <p>${escapePushHtml(push.body)}</p>
 
+  <div class="push-widget-links">
+
   ${
     url
-      ? `<a href="${escapePushHtml(url)}">Mehr erfahren</a>`
+      ? `<a class="push-widget-more" href="${escapePushHtml(url)}">Mehr erfahren</a>`
       : ''
   }
 
@@ -105,6 +112,8 @@ function renderPush(target, push) {
     ältere Mitteilungen
 
   </a>
+
+  </div>
 
 </div>
 

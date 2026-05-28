@@ -1188,25 +1188,40 @@ line-height:1.5;
 
 }
 
-.push-widget-card a{
+.push-widget-links{
 
-display:inline-block;
+display:flex;
+
+flex-direction:column;
+
+align-items:flex-start;
+
+gap:8px;
 
 margin-top:10px;
 
+}
+
+.push-widget-more,
+.push-widget-archive{
+
+display:inline-block;
+
 font-weight:600;
+
+text-decoration:none;
+
+}
+
+.push-widget-more{
+
+color:inherit;
 
 }
 
 .push-widget-archive{
 
-display:block;
-
-margin-top:12px;
-
 font-size:0.875rem;
-
-font-weight:600;
 
 color:#444;
 
