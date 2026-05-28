@@ -4,231 +4,107 @@ document.addEventListener(
 );
 
 navigator
-.serviceWorker
-?.addEventListener(
+  .serviceWorker
+  ?.addEventListener(
+    'message',
+    async (event) => {
 
-'message',
+      if (event.data?.type !== 'PUSH_OPENED') {
+        return;
+      }
 
-async event=>{
+      await initPushWidget();
 
-if(
+    }
+  );
 
-event
-.data
-?.type
+async function initPushWidget() {
 
-!==
+  const widget =
+    document.getElementById('push-widget');
 
-'PUSH_OPENED'
+  const content =
+    document.getElementById('push-widget-content');
 
-){
+  const toggle =
+    document.getElementById('push-widget-toggle');
 
-return;
+  if (!widget || !content) {
+    return;
+  }
 
-}
+  const push =
+    await getLastPush();
 
-await initPushWidget();
+  if (!push) {
+    return;
+  }
 
-}
+  const pushId =
+    push.sent_at;
 
-);
+  const stored =
+    getLastSeenPushAt();
 
-async function initPushWidget(){
+  const collapsed =
+    localStorage.getItem('pushCollapsed');
 
-const widget =
+  widget.classList.remove('hidden');
 
-document
-.getElementById(
-'push-widget'
-);
+  renderPush(content, push);
 
-const content =
+  if (stored !== pushId) {
 
-document
-.getElementById(
-'push-widget-content'
-);
+    widget.classList.remove('collapsed');
 
-const toggle =
+  } else if (collapsed === 'true') {
 
-document
-.getElementById(
-'push-widget-toggle'
-);
+    widget.classList.add('collapsed');
 
-if(
+  }
 
-!widget ||
+  toggle.onclick = () => {
 
-!content
+    widget.classList.toggle('collapsed');
 
-){
+    localStorage.setItem(
+      'pushCollapsed',
+      widget.classList.contains('collapsed')
+    );
 
-return;
+    markPushSeen(pushId);
 
-}
-
-const push =
-
-await getLastPush();
-
-if(!push){
-
-return;
-
-}
-
-const pushId =
-
-push.sent_at;
-
-const stored =
-
-localStorage
-.getItem(
-'lastSeenPush'
-);
-
-const collapsed =
-
-localStorage
-.getItem(
-'pushCollapsed'
-);
-
-widget
-.classList
-.remove(
-'hidden'
-);
-
-renderPush(
-
-content,
-
-push
-
-);
-
-if(
-
-stored
-!==
-
-pushId
-
-){
-
-widget
-.classList
-.remove(
-'collapsed'
-);
-
-}else{
-
-if(
-
-collapsed
-===
-
-'true'
-
-){
-
-widget
-.classList
-.add(
-'collapsed'
-);
+  };
 
 }
 
-}
+function renderPush(target, push) {
 
-toggle.onclick=()=>{
+  const url =
+    push.url && push.url !== '/'
+      ? push.url
+      : '';
 
-widget
-.classList
-.toggle(
-'collapsed'
-);
+  target.innerHTML = `
 
-localStorage
-.setItem(
+<div class="push-widget-card">
 
-'pushCollapsed',
+  <h3>${escapePushHtml(push.title)}</h3>
 
-widget
-.classList
-.contains(
-'collapsed'
-)
+  <p>${escapePushHtml(push.body)}</p>
 
-);
+  ${
+    url
+      ? `<a href="${escapePushHtml(url)}">Mehr erfahren</a>`
+      : ''
+  }
 
-localStorage
-.setItem(
+  <a class="push-widget-archive"
+     href="/mitteilungen/">
 
-'lastSeenPush',
+    ältere Mitteilungen
 
-pushId
-
-);
-
-};
-
-}
-
-function renderPush(
-
-target,
-
-push
-
-){
-
-target.innerHTML=`
-
-<div
-class="push-widget-card"
->
-
-<h3>
-
-${push.title}
-
-</h3>
-
-<p>
-
-${push.body}
-
-</p>
-
-${
-
-push.url
-
-?
-
-`
-
-<a
-href="${push.url}"
->
-
-Mehr erfahren
-
-</a>
-
-`
-
-:
-
-''
-
-}
+  </a>
 
 </div>
 
@@ -238,46 +114,34 @@ Mehr erfahren
 
 setupFooterProtection();
 
-function setupFooterProtection(){
+function setupFooterProtection() {
 
-const footer = document.querySelector(
-'.site-footer'
-);
+  const footer =
+    document.querySelector('.site-footer');
 
-const widget = document.getElementById(
-'push-widget'
-);
+  const widget =
+    document.getElementById('push-widget');
 
-if(
-!footer ||
-!widget
-){
-return;
-}
+  if (!footer || !widget) {
+    return;
+  }
 
-const observer =
-new IntersectionObserver(
+  const observer =
+    new IntersectionObserver(
 
-entries=>{
+      (entries) => {
 
-widget.classList.toggle(
+        widget.classList.toggle(
+          'footer-visible',
+          entries[0].isIntersecting
+        );
 
-'footer-visible',
+      },
 
-entries[0].isIntersecting
+      { threshold: 0.05 }
 
-);
+    );
 
-},
-
-{
-threshold:0.05
-}
-
-);
-
-observer.observe(
-footer
-);
+  observer.observe(footer);
 
 }

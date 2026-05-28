@@ -16,7 +16,7 @@ window.requireAdminSession = async function (callback) {
 
   if (typeof callback === 'function') {
 
-    return callback();
+    return await callback();
 
   }
 

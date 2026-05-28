@@ -172,12 +172,11 @@ async function initMemberEdit() {
     .innerText =
       'Mitglied bearbeiten';
 
+  const memberId =
+    normalizeMemberId(editId);
+
   const { data, error } =
-    await window.supabaseClient
-      .from(window.siteConfig.tables.members)
-      .select('*')
-      .eq('id', editId)
-      .single();
+    await fetchMemberById(memberId);
 
   if (error) {
 
@@ -186,6 +185,16 @@ async function initMemberEdit() {
     alert(
       'Mitglied konnte nicht geladen werden: '
       + error.message
+    );
+
+    return;
+
+  }
+
+  if (!data) {
+
+    alert(
+      'Mitglied konnte nicht gefunden werden.'
     );
 
     return;
@@ -203,6 +212,29 @@ async function initMemberEdit() {
   document
     .getElementById('export-member-pdf')
     ?.classList.remove('hidden');
+
+}
+
+function normalizeMemberId(value) {
+
+  const trimmed =
+    String(value || '').trim();
+
+  if (/^\d+$/.test(trimmed)) {
+    return Number(trimmed);
+  }
+
+  return trimmed;
+
+}
+
+async function fetchMemberById(memberId) {
+
+  return window.supabaseClient
+    .from(window.siteConfig.tables.members)
+    .select('*')
+    .eq('id', memberId)
+    .maybeSingle();
 
 }
 
@@ -232,22 +264,19 @@ function exportCurrentMemberPdf() {
     return;
   }
 
-  try {
+  exportMemberPdf(
+    buildMemberExportData()
+  )
+    .catch((error) => {
 
-    exportMemberPdf(
-      buildMemberExportData()
-    );
+      console.error(error);
 
-  } catch (error) {
+      alert(
+        error.message
+        || 'PDF konnte nicht erstellt werden.'
+      );
 
-    console.error(error);
-
-    alert(
-      error.message
-      || 'PDF konnte nicht erstellt werden.'
-    );
-
-  }
+    });
 
 }
 
@@ -296,7 +325,7 @@ async function saveMember() {
       await window.supabaseClient
         .from(window.siteConfig.tables.members)
         .update(payload)
-        .eq('id', editId));
+        .eq('id', normalizeMemberId(editId)));
 
   } else {
 

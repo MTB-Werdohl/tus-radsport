@@ -13,6 +13,10 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 | 4 | [`supabase-members-admin.sql`](../supabase-members-admin.sql) | #2 | Vorstand CRUD auf `members`, Push-Löschen |
 | 5 | [`supabase-push-members.sql`](../supabase-push-members.sql) | #2 | Push RLS, eigene Subscriptions lesen |
 
+**Optional (Mehrtages-Termine):** [`supabase-termine-multiday.sql`](../supabase-termine-multiday.sql) — Spalten `endDate`, `durationDays` auf `Termine`.
+
+**Optional (Push-Verlauf):** [`supabase-push-messages.sql`](../supabase-push-messages.sql) — Tabelle `PushMessages` + RLS (nach #2).
+
 **Wichtig:** Schritt 3 ersetzt die News-SELECT-Policy aus Schritt 2. Ohne Schritt 3 gelten News-Leserechte noch über `published`, nicht `sichtbarkeit`.
 
 ### Einmalig (Push Upsert)
@@ -41,6 +45,7 @@ Nur ausführen, wenn der Constraint noch fehlt (Edge Function `save-push-subscri
 | `members` | — | SELECT/UPDATE eigene Zeile | SELECT alle + CRUD alle |
 | `galleries` / `gallery_images` | SELECT | SELECT | CRUD |
 | `PushSubscriptions` | — | SELECT eigene (`member_id`) | SELECT alle, DELETE (Mitglied löschen) |
+| `PushMessages` | SELECT | SELECT | INSERT |
 | `site_state` | SELECT `last_push` | SELECT `last_push` | ALL |
 | `storage.objects` (media) | SELECT | SELECT | INSERT, DELETE |
 

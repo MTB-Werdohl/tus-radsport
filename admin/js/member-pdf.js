@@ -1,5 +1,95 @@
 const PDF_ORG_NAME = 'MTB Werdohl';
 
+const PDFMAKE_VERSION = '0.2.20';
+const PDFMAKE_BASE =
+  `https://cdn.jsdelivr.net/npm/pdfmake@${PDFMAKE_VERSION}/build`;
+
+let pdfMakeReadyPromise = null;
+
+function loadPdfMake() {
+
+  if (
+    typeof pdfMake !== 'undefined'
+    && pdfMake.createPdf
+    && pdfMake.vfs
+  ) {
+    return Promise.resolve();
+  }
+
+  if (pdfMakeReadyPromise) {
+    return pdfMakeReadyPromise;
+  }
+
+  pdfMakeReadyPromise =
+    new Promise((resolve, reject) => {
+
+      const coreScript =
+        document.createElement('script');
+
+      coreScript.src =
+        `${PDFMAKE_BASE}/pdfmake.min.js`;
+
+      coreScript.onload = () => {
+
+        const fontScript =
+          document.createElement('script');
+
+        fontScript.src =
+          `${PDFMAKE_BASE}/vfs_fonts.min.js`;
+
+        fontScript.onload = () => {
+
+          if (
+            typeof pdfMake !== 'undefined'
+            && pdfMake.createPdf
+          ) {
+            resolve();
+            return;
+          }
+
+          reject(
+            new Error(
+              'PDF-Bibliothek unvollständig geladen.'
+            )
+          );
+
+        };
+
+        fontScript.onerror = () => {
+          reject(
+            new Error(
+              'PDF-Schriftarten konnten nicht geladen werden.'
+            )
+          );
+        };
+
+        document.head.appendChild(fontScript);
+
+      };
+
+      coreScript.onerror = () => {
+        reject(
+          new Error(
+            'PDF-Bibliothek konnte nicht geladen werden.'
+          )
+        );
+      };
+
+      document.head.appendChild(coreScript);
+
+    })
+    .catch((error) => {
+
+      pdfMakeReadyPromise = null;
+
+      throw error;
+
+    });
+
+  return pdfMakeReadyPromise;
+
+}
+
 function ensurePdfMakeReady() {
 
   if (
@@ -355,29 +445,34 @@ function buildMembersListPdfDefinition(members) {
 
 function exportMemberPdf(member) {
 
-  ensurePdfMakeReady();
+  return loadPdfMake()
+    .then(() => {
 
-  const filename =
-    'Mitgliederauszug_'
-    + sanitizePdfFilename(member.nachname)
-    + '_'
-    + sanitizePdfFilename(member.vorname)
-    + '.pdf';
+      ensurePdfMakeReady();
 
-  pdfMake
-    .createPdf(buildMemberPdfDefinition(member))
-    .download(filename);
+      const filename =
+        'Mitgliederauszug_'
+        + sanitizePdfFilename(member.nachname)
+        + '_'
+        + sanitizePdfFilename(member.vorname)
+        + '.pdf';
+
+      pdfMake
+        .createPdf(buildMemberPdfDefinition(member))
+        .download(filename);
+
+    });
 
 }
 
 function exportMembersListPdf(members) {
 
-  ensurePdfMakeReady();
-
   if (!members?.length) {
 
-    throw new Error(
-      'Keine Mitglieder zum Exportieren.'
+    return Promise.reject(
+      new Error(
+        'Keine Mitglieder zum Exportieren.'
+      )
     );
 
   }
@@ -387,8 +482,15 @@ function exportMembersListPdf(members) {
       .toISOString()
       .slice(0, 10);
 
-  pdfMake
-    .createPdf(buildMembersListPdfDefinition(members))
-    .download(`Mitgliederliste_${dateStamp}.pdf`);
+  return loadPdfMake()
+    .then(() => {
+
+      ensurePdfMakeReady();
+
+      pdfMake
+        .createPdf(buildMembersListPdfDefinition(members))
+        .download(`Mitgliederliste_${dateStamp}.pdf`);
+
+    });
 
 }

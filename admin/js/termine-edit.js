@@ -63,8 +63,11 @@ async function loadEvent() {
 
   document.getElementById('date').value =
     data.date
-      ? data.date.substring(0,16)
+      ? data.date.substring(0, 16)
       : '';
+
+  document.getElementById('endDate').value =
+    data.endDate || '';
 
   document.getElementById('location').value =
     data.location || '';
@@ -130,6 +133,12 @@ async function loadEvent() {
   document.getElementById('endRecur').value =
     data.endRecur || '';
 
+  document.getElementById('durationDays').value =
+    data.durationDays
+      && data.durationDays > 1
+      ? data.durationDays
+      : '';
+
   document.getElementById('daysOfWeek').value =
     data.daysOfWeek
       ? data.daysOfWeek[0]
@@ -144,6 +153,71 @@ async function loadEvent() {
 
 }
 
+function validateTerminDates(
+  recurring,
+  date,
+  endDate,
+  durationDays
+) {
+
+  if (recurring) {
+
+    const parsedDuration =
+      parseInt(durationDays, 10);
+
+    if (
+      durationDays
+      && (
+        !Number.isFinite(parsedDuration)
+        || parsedDuration < 1
+        || parsedDuration > 31
+      )
+    ) {
+
+      alert(
+        'Mehrtages-Dauer muss zwischen 1 und 31 liegen.'
+      );
+
+      return false;
+
+    }
+
+    return true;
+
+  }
+
+  if (!date) {
+    return true;
+  }
+
+  if (!endDate) {
+    return true;
+  }
+
+  const startDay =
+    parseTerminDateOnly(date);
+
+  const endDay =
+    parseTerminDateOnly(endDate);
+
+  if (
+    !startDay
+    || !endDay
+    || endDay < startDay
+  ) {
+
+    alert(
+      'Das Enddatum muss am oder nach dem Start liegen.'
+    );
+
+    return false;
+
+  }
+
+  return true;
+
+}
+
 async function saveEvent() {
 
   const title =
@@ -151,6 +225,9 @@ async function saveEvent() {
 
   const date =
     document.getElementById('date').value;
+
+  const endDate =
+    document.getElementById('endDate').value;
 
   const location =
     document.getElementById('location').value;
@@ -175,6 +252,9 @@ async function saveEvent() {
 
   const endRecur =
     document.getElementById('endRecur').value;
+
+  const durationDays =
+    document.getElementById('durationDays').value;
 
   const daysOfWeek =
     document.getElementById('daysOfWeek').value;
@@ -210,6 +290,17 @@ async function saveEvent() {
 
     return;
 
+  }
+
+  if (
+    !validateTerminDates(
+      recurring,
+      date,
+      endDate,
+      durationDays
+    )
+  ) {
+    return;
   }
 
   let image = null;
@@ -281,6 +372,9 @@ async function saveEvent() {
 
   }
 
+  const parsedDuration =
+    parseInt(durationDays, 10);
+
   const payload = {
 
     title,
@@ -289,6 +383,11 @@ async function saveEvent() {
       recurring
         ? null
         : date || null,
+
+    endDate:
+      recurring
+        ? null
+        : endDate || null,
 
     location,
 
@@ -313,6 +412,13 @@ async function saveEvent() {
     endRecur:
       recurring
         ? endRecur || null
+        : null,
+
+    durationDays:
+      recurring
+        && Number.isFinite(parsedDuration)
+        && parsedDuration > 1
+        ? parsedDuration
         : null,
 
     daysOfWeek:

@@ -78,18 +78,17 @@ document
 
       console.log(result);
 
-      await saveLastPush(
-
-        title,
-
-        body,
-
-        url
-
-      );
+      const saved =
+        await savePushMessage(
+          title,
+          body,
+          url
+        );
 
       status.innerText =
-        '✅ Push erfolgreich gesendet';
+        saved
+          ? '✅ Push erfolgreich gesendet'
+          : '⚠️ Push gesendet, Verlauf konnte nicht gespeichert werden';
 
       document
         .getElementById('push-form')

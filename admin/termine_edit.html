@@ -42,10 +42,13 @@ title: Termin bearbeiten
 
   <div class="member-admin-form">
 
-<input id="title"
-       placeholder="Titel">
+<label class="admin-field">
+  Titel
+  <input id="title"
+         placeholder="Titel">
+</label>
 
-<label>
+<label class="admin-field admin-field--inline">
 
   <input id="recurring"
          type="checkbox"
@@ -59,118 +62,167 @@ title: Termin bearbeiten
 
   <div class="row">
 
-    <input id="date"
-           type="datetime-local">
+    <label class="admin-field">
+      Start
+      <input id="date"
+             type="datetime-local">
+    </label>
 
-    <input id="location"
-           placeholder="Ort">
+    <label class="admin-field">
+      Ende (optional)
+      <input id="endDate"
+             type="date">
+    </label>
 
   </div>
+
+  <label class="admin-field">
+    Ort
+    <input id="location"
+           placeholder="Ort">
+  </label>
+
+  <p class="admin-hint">
+    Enddatum leer lassen für eintägige Termine.
+    Für Mehrtages-Termine z.&nbsp;B. 23.05.–28.05. Enddatum setzen.
+  </p>
 
 </div>
 
 <div class="row">
 
-  <input id="category"
-         placeholder="Kategorie">
+  <label class="admin-field">
+    Kategorie
+    <input id="category"
+           placeholder="Kategorie">
+  </label>
 
-  <div>
-
+  <label class="admin-field">
+    Bild
     <input id="imageFile"
            type="file"
            accept="image/*">
-
     <div id="currentImage"></div>
-
-  </div>
+  </label>
 
 </div>
 
 <div class="row">
 
-  <input id="komoot"
-         placeholder="Komoot Link">
+  <label class="admin-field">
+    Komoot Link
+    <input id="komoot"
+           placeholder="Komoot Link">
+  </label>
 
-  <div>
-
+  <label class="admin-field">
+    GPX
     <input id="gpxFile"
            type="file"
            accept=".gpx">
-
     <div id="currentGpx"></div>
-
-  </div>
+  </label>
 
 </div>
 
 <div id="recurringFields"
      class="hidden">
 
-<div class="row">
+  <div class="row">
 
-  <select id="daysOfWeek">
-
-    <option value="">
+    <label class="admin-field">
       Wochentag
-    </option>
+      <select id="daysOfWeek">
 
-    <option value="1">
-      Montag
-    </option>
+        <option value="">
+          Wochentag
+        </option>
 
-    <option value="2">
-      Dienstag
-    </option>
+        <option value="1">
+          Montag
+        </option>
 
-    <option value="3">
-      Mittwoch
-    </option>
+        <option value="2">
+          Dienstag
+        </option>
 
-    <option value="4">
-      Donnerstag
-    </option>
+        <option value="3">
+          Mittwoch
+        </option>
 
-    <option value="5">
-      Freitag
-    </option>
+        <option value="4">
+          Donnerstag
+        </option>
 
-    <option value="6">
-      Samstag
-    </option>
+        <option value="5">
+          Freitag
+        </option>
 
-    <option value="0">
-      Sonntag
-    </option>
+        <option value="6">
+          Samstag
+        </option>
 
-  </select>
+        <option value="0">
+          Sonntag
+        </option>
 
-  <input id="startTime"
-         type="time">
+      </select>
+    </label>
+
+    <label class="admin-field">
+      Uhrzeit
+      <input id="startTime"
+             type="time">
+    </label>
+
+  </div>
+
+  <div class="row">
+
+    <label class="admin-field">
+      Serie ab
+      <input id="startRecur"
+             type="date">
+    </label>
+
+    <label class="admin-field">
+      Serie bis
+      <input id="endRecur"
+             type="date">
+    </label>
+
+  </div>
+
+  <label class="admin-field">
+    Mehrtages-Dauer (Tage)
+    <input id="durationDays"
+           type="number"
+           min="1"
+           max="31"
+           placeholder="1">
+  </label>
+
+  <p class="admin-hint">
+    Optional: Anzahl aufeinanderfolgender Tage pro Termin
+    (z.&nbsp;B. 3 = Starttag plus 2 weitere Tage).
+  </p>
+
+  <label class="admin-field admin-field--spaced">
+    Ausnahmen (JSON)
+    <textarea id="exclude"
+              placeholder='["2026-05-26"]'></textarea>
+  </label>
 
 </div>
 
-<div class="row">
+<label class="admin-field">
+  Inhalt
+  <textarea id="content"
+            placeholder="Inhalt"></textarea>
+</label>
 
-  <input id="startRecur"
-         type="date">
-
-  <input id="endRecur"
-         type="date">
-
-</div>
-
-<textarea id="exclude"
-          placeholder='["2026-05-26"]'></textarea>
-
-</div>
-
-<textarea id="content"
-          placeholder="Inhalt"></textarea>
-
-<label>
-
+<label class="admin-field">
   Sichtbarkeit
-
   <select id="sichtbarkeit">
 
     <option value="public">
@@ -186,7 +238,6 @@ title: Termin bearbeiten
     </option>
 
   </select>
-
 </label>
 
 <button id="save-event" type="button">
@@ -197,6 +248,7 @@ title: Termin bearbeiten
 
 </div>
 
+<script src="/assets/js/core/termin-dates.js"></script>
 <script src="/admin/js/termine-edit.js"></script>
 <script>
 requireAdminSession(initTerminEdit);

@@ -9,8 +9,6 @@ function termineToCalendarEvents(termine) {
 
       title: item.title,
 
-      description: item.description,
-
       location: item.location,
 
       url: '/kalender/' + item.slug + '/',
@@ -27,7 +25,7 @@ function termineToCalendarEvents(termine) {
 
     if (item.recurring) {
 
-      return {
+      const recurringEvent = {
 
         ...baseEvent,
 
@@ -38,6 +36,43 @@ function termineToCalendarEvents(termine) {
         startRecur: item.startRecur,
 
         endRecur: item.endRecur
+
+      };
+
+      const durationDays =
+        getRecurringDurationDays(item);
+
+      if (durationDays > 1) {
+
+        recurringEvent.duration = {
+          days: durationDays
+        };
+
+      }
+
+      return recurringEvent;
+
+    }
+
+    const startDay =
+      getSingleTerminStartDay(item);
+
+    const endDay =
+      getSingleTerminEndDay(item);
+
+    if (
+      startDay
+      && endDay
+      && endDay.getTime() > startDay.getTime()
+    ) {
+
+      return {
+
+        ...baseEvent,
+
+        start: item.date,
+
+        end: toFullCalendarExclusiveEnd(endDay)
 
       };
 

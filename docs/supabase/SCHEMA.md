@@ -29,8 +29,13 @@ Stand: Projekt MTB Werdohl. Spalten aus Code + Supabase; bei Abweichungen Dashbo
 
 ## `Termine`
 
-Wiederkehrende Felder: `recurring`, `daysOfWeek`, `startRecur`, `endRecur`, `startTime`, `exclude`, …  
-`sichtbarkeit` wie News.
+| Spalte | Hinweis |
+|--------|---------|
+| `date` | Einzeltermin: Start (Datum/Zeit) |
+| `endDate` | Einzeltermin: optionales Enddatum (Mehrtages-Termin, inklusive) |
+| `recurring`, `daysOfWeek`, `startTime`, `startRecur`, `endRecur`, `exclude` | Wiederkehrend |
+| `durationDays` | Wiederkehrend: aufeinanderfolgende Tage pro Termin (optional, >1) |
+| `sichtbarkeit` | `public` \| `members` \| `draft` |
 
 ## `galleries` / `gallery_images`
 
@@ -45,9 +50,19 @@ Metadaten + `image_path` (öffentliche Storage-URL).
 | `p256dh`, `auth`, `active` | Web Push |
 | `device_name`, `user_agent` | Profil-Anzeige |
 
+## `PushMessages`
+
+| Spalte | Hinweis |
+|--------|---------|
+| `id` | bigint PK |
+| `title`, `body`, `url` | Mitteilungsinhalt |
+| `sent_at` | Zeitstempel (neueste zuerst) |
+
+Verlauf wird beim Senden **append-only** gespeichert (kein Löschen). Widget + `/mitteilungen/` lesen daraus.
+
 ## `site_state`
 
-Key-Value (JSONB), z. B. `last_push` für Push-Widget.
+Key-Value (JSONB), z. B. `last_push` für Push-Widget (Spiegel der letzten Mitteilung).
 
 ## Storage `media`
 

@@ -1,14 +1,16 @@
 async function loadCards(
   start,
   end
-){
+) {
 
   const wrapper =
     document.getElementById(
       'event-cards'
     );
 
-  if (!wrapper) return;
+  if (!wrapper) {
+    return;
+  }
 
   let data;
 
@@ -24,101 +26,73 @@ async function loadCards(
 
   }
 
-  wrapper.innerHTML='';
+  wrapper.innerHTML = '';
 
-  const cards=[];
+  const cards = [];
 
-  data.forEach(item=>{
+  data.forEach(item => {
 
-    if(item.recurring){
+    if (item.recurring) {
 
       const recurringEnd =
+        item.endRecur
+          ? parseTerminDateOnly(item.endRecur)
+          : null;
 
-  item.endRecur
+      const recurringStart =
+        item.startRecur
+          ? parseTerminDateOnly(item.startRecur)
+          : null;
 
-  ?
-
-  new Date(
-    item.endRecur
-  )
-
-  :
-
-  null;
-
-      const current=
+      const current =
         new Date(start);
 
-      while(current<end){
+      while (current < end) {
 
-        const date=
+        const date =
+          `${current.getFullYear()}-${
+            String(current.getMonth() + 1)
+              .padStart(2, '0')
+          }-${
+            String(current.getDate())
+              .padStart(2, '0')
+          }`;
 
-`${
+        const excluded =
+          item.exclude?.includes(date);
 
-current.getFullYear()
-
-}-${
-String(
-current.getMonth()+1
-).padStart(
-2,
-'0'
-)
-
-}-${
-String(
-current.getDate()
-).padStart(
-2,
-'0'
-)
-
-}`;
-
-        const excluded=
-
-          item.exclude
-          ?.includes(date);
-
-        const validDay=
-
+        const validDay =
           item.daysOfWeek
-          ?.includes(
-            current.getDay()
-          );
+            ?.includes(current.getDay());
 
-        if(
+        const afterStart =
+          !recurringStart
+          || current >= recurringStart;
 
- validDay &&
+        const beforeEnd =
+          !recurringEnd
+          || current <= recurringEnd;
 
- !excluded &&
-
- (
-
-   !recurringEnd ||
-
-   current <= recurringEnd
-
- )
-
-){
+        if (
+          validDay
+          && !excluded
+          && afterStart
+          && beforeEnd
+        ) {
 
           cards.push({
 
             ...item,
 
             generatedDate:
-
-            new Date(current)
+              new Date(current)
 
           });
 
         }
 
         current.setDate(
-
-          current.getDate()+1
-
+          current.getDate() + 1
         );
 
       }
@@ -127,17 +101,13 @@ current.getDate()
 
     }
 
-    const eventDate=
-
-      new Date(item.date);
-
-    if(
-
-      eventDate>=start &&
-
-      eventDate<end
-
-    ){
+    if (
+      singleTerminOverlapsRange(
+        item,
+        start,
+        end
+      )
+    ) {
 
       cards.push(item);
 
@@ -145,80 +115,46 @@ current.getDate()
 
   });
 
-  cards.sort(
+  cards.sort((a, b) => {
 
-    (a,b)=>{
-
-      const first=
-
-        a.generatedDate ||
-
-        new Date(a.date);
-
-      const second=
-
-        b.generatedDate ||
-
-        new Date(b.date);
-
-      return first-second;
-
-    }
-
-  );
-
-  const now=
-    new Date();
-
-  now.setHours(
-  0,
-  0,
-  0,
-  0
-  );
-
-  const visibleCards=
-
-    cards.filter(
-
-      event=>{
-
-        const date=
-
-          event.generatedDate ||
-
-          new Date(
-            event.date
-          );
-
-        return date>=now;
-
-      }
-
+    return (
+      getTerminSortDate(a)
+      - getTerminSortDate(b)
     );
 
-  visibleCards.forEach(event=>{
+  });
 
-    const card=
+  const now = new Date();
 
-      document.createElement(
-        'article'
-      );
+  now.setHours(0, 0, 0, 0);
 
-    card.className=
+  const visibleCards =
+    cards.filter((event) => {
 
-      'calendar-card';
+      const endDay =
+        getTerminVisibilityEndDay(event);
 
-    const category=
+      if (!endDay) {
+        return false;
+      }
+
+      return endDay >= now;
+
+    });
+
+  visibleCards.forEach(event => {
+
+    const card =
+      document.createElement('article');
+
+    card.className = 'calendar-card';
+
+    const category =
       getTerminCategory(event.category);
 
-    card.innerHTML=`
+    card.innerHTML = `
 
-<a
-
-href="/kalender/${event.slug}/"
-
->
+<a href="/kalender/${event.slug}/">
 
 <div>
 
@@ -237,15 +173,9 @@ ${event.title}
 ${formatCardDate(event)}
 
 ${
-
-event.location
-
-?
-
-` · 📍 ${event.location}`
-
-:''
-
+  event.location
+    ? ` · 📍 ${event.location}`
+    : ''
 }
 
 </p>
@@ -256,9 +186,7 @@ event.location
 
 `;
 
-    wrapper.appendChild(
-      card
-    );
+    wrapper.appendChild(card);
 
   });
 

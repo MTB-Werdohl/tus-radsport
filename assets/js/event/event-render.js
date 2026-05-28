@@ -41,17 +41,21 @@ event
 
 </h2>
 
+${
+  formatEventTime(event)
+    ? `
 <p class="event-time">
 
 🕒
 
-${formatEventTime(
-event
-)}
+${formatEventTime(event)}
 
 Uhr
 
 </p>
+`
+    : ''
+}
 
 ${
 

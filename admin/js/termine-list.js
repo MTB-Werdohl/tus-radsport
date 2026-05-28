@@ -72,17 +72,29 @@ async function loadEvents() {
 
       const now = new Date();
 
+      now.setHours(0, 0, 0, 0);
+
       const aDate =
-        new Date(a.date);
+        getSingleTerminStartDay(a)
+        || new Date(0);
 
       const bDate =
-        new Date(b.date);
+        getSingleTerminStartDay(b)
+        || new Date(0);
+
+      const aEnd =
+        getTerminVisibilityEndDay(a)
+        || aDate;
+
+      const bEnd =
+        getTerminVisibilityEndDay(b)
+        || bDate;
 
       const aPast =
-        aDate < now;
+        aEnd < now;
 
       const bPast =
-        bDate < now;
+        bEnd < now;
 
       if (!aPast && bPast) {
         return -1;
@@ -107,20 +119,27 @@ async function loadEvents() {
       const now =
         new Date();
 
+      now.setHours(0, 0, 0, 0);
+
       const eventDate =
-        event.date
-          ? new Date(event.date)
-          : null;
+        getSingleTerminStartDay(event);
+
+      const eventEnd =
+        getTerminVisibilityEndDay(event);
 
       const isPast =
-        eventDate && eventDate < now;
+        eventEnd
+        && eventEnd < now;
 
       const previous =
         array[index - 1];
 
       const previousPast =
-        previous?.date
-          ? new Date(previous.date) < now
+        previous
+          ? (
+            getTerminVisibilityEndDay(previous)
+            || getSingleTerminStartDay(previous)
+          ) < now
           : false;
 
       if (
@@ -157,29 +176,7 @@ async function loadEvents() {
 
               <div class="event-meta">
 
-                ${event.recurring
-                  ? '🔁 Wiederkehrend'
-                  : `
-                    📅 ${
-                      new Date(event.date)
-                        .toLocaleDateString('de-DE', {
-                          day: '2-digit',
-                          month: '2-digit',
-                          year: 'numeric'
-                        })
-                    }
-
-                    ·
-
-                    🕒 ${
-                      new Date(event.date)
-                        .toLocaleTimeString('de-DE', {
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })
-                    } Uhr
-                  `
-                }
+                ${formatAdminTerminMeta(event)}
 
                 ${event.location
                   ? ' · 📍 ' + escapeAdminHtml(event.location)

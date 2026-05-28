@@ -13,6 +13,8 @@ load_events_css: true
 
 <script src="/assets/js/fullcalendar/index.global.min.js"></script>
 
+<script src="/assets/js/core/termin-dates.js"></script>
+
 <script src="/assets/js/calendar/card-dates.js"></script>
 
 <script src="/assets/js/calendar/categories.js"></script>

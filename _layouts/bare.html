@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="{{ site.lang | default: 'de' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>{{ page.title }} · {{ site.title }}</title>
+
+  <link rel="icon"
+        href="{{ '/assets/images/fav.png' | relative_url }}"
+        type="image/png">
+
+  <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#ed1c24">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/js/core/site-config.js"></script>
+  <script src="/assets/js/core/supabase.js"></script>
+  <script src="/assets/js/push/state.js"></script>
+</head>
+
+<body class="bare-page">
+
+<main class="bare-main">
+
+  {{ content }}
+
+</main>
+
+<script src="/assets/js/core/service-worker.js"></script>
+<script>
+registerServiceWorker();
+</script>
+
+</body>
+</html>

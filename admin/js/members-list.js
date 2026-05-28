@@ -59,6 +59,19 @@ function filterMembersBySearch(members) {
 
 }
 
+function normalizeMemberId(value) {
+
+  const trimmed =
+    String(value || '').trim();
+
+  if (/^\d+$/.test(trimmed)) {
+    return Number(trimmed);
+  }
+
+  return trimmed;
+
+}
+
 async function loadMembers() {
 
   const { data, error } =
@@ -141,11 +154,11 @@ function renderMembersList(members) {
 
             <div class="actions">
 
-              <button type="button" data-open-id="${item.id}">
+              <button type="button" data-open-id="${encodeURIComponent(String(item.id))}">
                 ✏
               </button>
 
-              <button type="button" class="delete-button" data-delete-id="${item.id}">
+              <button type="button" class="delete-button" data-delete-id="${encodeURIComponent(String(item.id))}">
                 🗑
               </button>
 
@@ -192,11 +205,16 @@ async function deleteMember(id) {
     return;
   }
 
+  const memberId =
+    normalizeMemberId(
+      decodeURIComponent(String(id))
+    );
+
   const { error: pushError } =
     await window.supabaseClient
       .from(window.siteConfig.tables.pushSubscriptions)
       .delete()
-      .eq('member_id', id);
+      .eq('member_id', memberId);
 
   if (pushError) {
 
@@ -212,7 +230,7 @@ async function deleteMember(id) {
     await window.supabaseClient
       .from(window.siteConfig.tables.members)
       .delete()
-      .eq('id', id);
+      .eq('id', memberId);
 
   if (error) {
 
@@ -238,7 +256,8 @@ function newMember() {
 function openMember(id) {
 
   window.location.href =
-    '/admin/mitglieder_edit.html?id=' + id;
+    '/admin/mitglieder_edit.html?id='
+    + encodeURIComponent(String(id));
 
 }
 
@@ -247,20 +266,17 @@ function exportMembersPdf() {
   const filtered =
     filterMembersBySearch(allMembers);
 
-  try {
+  exportMembersListPdf(filtered)
+    .catch((error) => {
 
-    exportMembersListPdf(filtered);
+      console.error(error);
 
-  } catch (error) {
+      alert(
+        error.message
+        || 'PDF konnte nicht erstellt werden.'
+      );
 
-    console.error(error);
-
-    alert(
-      error.message
-      || 'PDF konnte nicht erstellt werden.'
-    );
-
-  }
+    });
 
 }
 

@@ -70,7 +70,14 @@ h3 {
   background: #222;
   padding: 12px 15px;
   border-radius: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 0;
+}
+
+#events,
+#members {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .event-header {
@@ -400,10 +407,52 @@ h3 {
   box-sizing: border-box;
 }
 
-.member-admin-hint {
-  margin: -5px 0 15px;
+.member-admin-hint,
+.admin-hint {
+  margin: -4px 0 15px;
   font-size: 14px;
   opacity: 0.75;
+}
+
+.admin-field {
+  display: block;
+  margin-bottom: 15px;
+}
+
+.admin-field input,
+.admin-field select,
+.admin-field textarea {
+  width: 100%;
+  margin-top: 6px;
+  margin-bottom: 0;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.admin-field--inline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-field--inline input {
+  width: auto;
+  margin-top: 0;
+}
+
+.admin-field--spaced {
+  margin-top: 18px;
+}
+
+.member-admin-form > .row {
+  margin-bottom: 0;
+}
+
+.member-admin-form > .row .admin-field {
+  margin-bottom: 15px;
 }
 
 .member-consent-readonly {

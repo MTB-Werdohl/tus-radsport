@@ -1,36 +1,133 @@
-async function saveLastPush(
+const PUSH_SEEN_STORAGE_KEY = 'lastSeenPush';
+
+const PUSH_HISTORY_LIMIT = 15;
+
+function escapePushHtml(value) {
+
+  if (value === null || value === undefined) {
+    return '';
+  }
+
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
+}
+
+function normalizePushMessage(row) {
+
+  if (!row) {
+    return null;
+  }
+
+  return {
+    id: row.id,
+    title: row.title || '',
+    body: row.body || '',
+    url: row.url || '/',
+    sent_at: row.sent_at || ''
+  };
+
+}
+
+function getLastSeenPushAt() {
+
+  return localStorage.getItem(
+    PUSH_SEEN_STORAGE_KEY
+  ) || '';
+
+}
+
+function isPushUnread(push) {
+
+  if (!push?.sent_at) {
+    return false;
+  }
+
+  const lastSeen =
+    getLastSeenPushAt();
+
+  if (!lastSeen) {
+    return true;
+  }
+
+  return push.sent_at > lastSeen;
+
+}
+
+function markPushSeen(sentAt) {
+
+  if (!sentAt) {
+    return;
+  }
+
+  const current =
+    getLastSeenPushAt();
+
+  if (!current || sentAt > current) {
+    localStorage.setItem(
+      PUSH_SEEN_STORAGE_KEY,
+      sentAt
+    );
+  }
+
+}
+
+function markAllPushesSeen(messages) {
+
+  if (!messages?.length) {
+    return;
+  }
+
+  markPushSeen(messages[0].sent_at);
+
+}
+
+async function savePushMessage(
   title,
   body,
   url
 ) {
 
+  const sentAt =
+    new Date().toISOString();
+
   const payload = {
-
     title,
-
     body,
-
-    url,
-
-    sent_at:
-      new Date()
-      .toISOString()
-
+    url: url || '/',
+    sent_at: sentAt
   };
 
-  const { error } =
+  const { error: insertError } =
+    await window.supabaseClient
+      .from(
+        window.siteConfig.tables.pushMessages
+      )
+      .insert([payload]);
+
+  if (insertError) {
+
+    console.error(insertError);
+
+    return false;
+
+  }
+
+  const { error: stateError } =
     await window.supabaseClient
       .from(window.siteConfig.tables.siteState)
       .upsert({
-        key: window.siteConfig.siteStateKeys.lastPush,
+        key:
+          window.siteConfig.siteStateKeys.lastPush,
         value: payload
       });
 
-  if (error) {
+  if (stateError) {
 
-    console.error(error);
-
-    return false;
+    console.error(stateError);
 
   }
 
@@ -42,22 +139,81 @@ async function getLastPush() {
 
   const { data, error } =
     await window.supabaseClient
+      .from(
+        window.siteConfig.tables.pushMessages
+      )
+      .select('id, title, body, url, sent_at')
+      .order('sent_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+  if (!error && data) {
+    return normalizePushMessage(data);
+  }
+
+  if (error) {
+    console.error(error);
+  }
+
+  const { data: legacy, error: legacyError } =
+    await window.supabaseClient
       .from(window.siteConfig.tables.siteState)
       .select('value')
       .eq(
         'key',
         window.siteConfig.siteStateKeys.lastPush
       )
-      .single();
+      .maybeSingle();
 
-  if (error) {
+  if (legacyError) {
 
-    console.error(error);
+    console.error(legacyError);
 
     return null;
 
   }
 
-  return data?.value;
+  return normalizePushMessage(legacy?.value);
+
+}
+
+async function getPushMessages(
+  limit = PUSH_HISTORY_LIMIT
+) {
+
+  const { data, error } =
+    await window.supabaseClient
+      .from(
+        window.siteConfig.tables.pushMessages
+      )
+      .select('id, title, body, url, sent_at')
+      .order('sent_at', { ascending: false })
+      .limit(limit);
+
+  if (error) {
+
+    console.error(error);
+
+    return [];
+
+  }
+
+  return (data || [])
+    .map(normalizePushMessage)
+    .filter(Boolean);
+
+}
+
+async function saveLastPush(
+  title,
+  body,
+  url
+) {
+
+  return savePushMessage(
+    title,
+    body,
+    url
+  );
 
 }
