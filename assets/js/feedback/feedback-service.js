@@ -58,14 +58,21 @@ async function fetchOwnFeedbackAnswer(
 
 async function saveFeedbackAnswer(
   moduleId,
-  memberId,
+  identity,
   answer,
   comment
 ) {
 
+  const memberId =
+    identity?.memberId
+    || null;
+
+  const clientToken =
+    identity?.clientToken
+    || null;
+
   const payload = {
     module_id: moduleId,
-    member_id: memberId,
     answer,
     comment:
       comment
@@ -75,6 +82,19 @@ async function saveFeedbackAnswer(
       new Date().toISOString()
   };
 
+  if (memberId) {
+    payload.member_id = memberId;
+  }
+
+  if (clientToken) {
+    payload.client_token = clientToken;
+  }
+
+  const onConflict =
+    memberId
+      ? 'module_id,member_id'
+      : 'module_id,client_token';
+
   const { data, error } =
     await window.supabaseClient
       .from(
@@ -82,7 +102,7 @@ async function saveFeedbackAnswer(
       )
       .upsert(
         payload,
-        { onConflict: 'module_id,member_id' }
+        { onConflict }
       )
       .select('*')
       .single();

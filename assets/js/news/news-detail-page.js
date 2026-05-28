@@ -59,7 +59,7 @@ await initFeedbackModule({
 window.history.replaceState(
   {},
   '',
-  `/news-detail.html?slug=${encodeURIComponent(data.slug)}`
+  getNewsUrl(data.slug)
 );
 
 }

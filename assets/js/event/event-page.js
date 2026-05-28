@@ -50,7 +50,7 @@ async function loadEvent() {
 window.history.replaceState(
   {},
   '',
-  `/event.html?slug=${encodeURIComponent(event.slug)}`
+  getEventUrl(event.slug)
 );
 
 }

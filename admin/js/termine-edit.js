@@ -447,6 +447,10 @@ async function saveEvent() {
   }
 
   let error;
+  let savedId =
+    editId
+      ? parseInt(editId, 10)
+      : null;
 
   if (editId) {
 
@@ -458,10 +462,15 @@ async function saveEvent() {
 
   } else {
 
-    ({ error } =
+    const { data: inserted, error: insertError } =
       await window.supabaseClient
         .from(window.siteConfig.tables.termine)
-        .insert([payload]));
+        .insert([payload])
+        .select('id')
+        .single();
+
+    error = insertError;
+    savedId = inserted?.id;
 
   }
 
@@ -475,8 +484,30 @@ async function saveEvent() {
 
   }
 
+  const feedbackResult =
+    await saveFeedbackAdminForEntity(
+      window.siteConfig.feedback.entityTypes.event,
+      savedId,
+      { silent: true }
+    );
+
+  if (feedbackResult?.error) {
+
+    alert(
+      'Termin gespeichert, Feedback fehlgeschlagen: '
+      + feedbackResult.error.message
+    );
+
+    return;
+
+  }
+
+  if (window.adminUnsavedGuard) {
+    window.adminUnsavedGuard.markClean();
+  }
+
   window.location.href =
-    '/admin/termine.html';
+    '/admin/';
 
 }
 
@@ -491,6 +522,12 @@ document
 function initTerminEdit() {
 
   toggleRecurring();
+
+  window.adminUnsavedGuard =
+    initAdminUnsavedGuard({
+      message:
+        'Sicher, dass du ohne Speichern zurück willst?'
+    });
 
   loadEvent()
     .then(() => {

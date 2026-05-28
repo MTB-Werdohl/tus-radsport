@@ -1,3 +1,71 @@
+function initAdminUnsavedGuard(options = {}) {
+
+  let dirty = false;
+
+  const root =
+    document.querySelector(
+      options.rootSelector
+      || '#admin'
+    );
+
+  if (!root) {
+    return { markClean() {} };
+  }
+
+  function markDirty() {
+    dirty = true;
+  }
+
+  root.addEventListener('input', markDirty);
+  root.addEventListener('change', markDirty);
+
+  window.addEventListener('beforeunload', (event) => {
+
+    if (!dirty) {
+      return;
+    }
+
+    event.preventDefault();
+    event.returnValue = '';
+
+  });
+
+  root
+    .querySelectorAll(
+      options.linkSelector
+      || 'a.back-button, a[href^="/admin/"]'
+    )
+    .forEach((link) => {
+
+      link.addEventListener('click', (event) => {
+
+        if (!dirty) {
+          return;
+        }
+
+        const message =
+          options.message
+          || 'Ohne Speichern verlassen?';
+
+        if (!window.confirm(message)) {
+          event.preventDefault();
+        }
+
+      });
+
+    });
+
+  return {
+    markClean() {
+      dirty = false;
+    }
+  };
+
+}
+
+window.initAdminUnsavedGuard =
+  initAdminUnsavedGuard;
+
 function escapeAdminHtml(value) {
 
   if (value === null || value === undefined) {

@@ -72,3 +72,23 @@ window.getFunctionUrl = function (name) {
   return `${window.siteConfig.functionsUrl}/${window.siteConfig.functions[name]}`;
 
 };
+
+window.getEventUrl = function (slug) {
+
+  if (!slug) {
+    return '/kalender/';
+  }
+
+  return `/kalender/${encodeURIComponent(slug)}/`;
+
+};
+
+window.getNewsUrl = function (slug) {
+
+  if (!slug) {
+    return '/news/';
+  }
+
+  return `/news/${encodeURIComponent(slug)}/`;
+
+};

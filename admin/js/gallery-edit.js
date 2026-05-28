@@ -296,12 +296,22 @@ form.addEventListener('submit', async (event) => {
 
   }
 
+  if (window.adminUnsavedGuard) {
+    window.adminUnsavedGuard.markClean();
+  }
+
   window.location.href =
     '/admin/galerie_edit.html?id=' + savedGalleryId;
 
 });
 
 async function initGalleryEdit() {
+
+  window.adminUnsavedGuard =
+    initAdminUnsavedGuard({
+      message:
+        'Sicher, dass du ohne Speichern zurück willst?'
+    });
 
   await loadGallery();
 

@@ -163,6 +163,12 @@ function showConsentInfo(member) {
 
 async function initMemberEdit() {
 
+  window.adminUnsavedGuard =
+    initAdminUnsavedGuard({
+      message:
+        'Sicher, dass du ohne Speichern zurück willst?'
+    });
+
   if (!editId) {
     return;
   }
@@ -175,43 +181,55 @@ async function initMemberEdit() {
   const memberId =
     normalizeMemberId(editId);
 
-  const { data, error } =
-    await fetchMemberById(memberId);
+  try {
 
-  if (error) {
+    const { data, error } =
+      await fetchMemberById(memberId);
+
+    if (error) {
+
+      console.error(error);
+
+      alert(
+        'Mitglied konnte nicht geladen werden: '
+        + error.message
+      );
+
+      return;
+
+    }
+
+    if (!data) {
+
+      alert(
+        'Mitglied konnte nicht gefunden werden.'
+      );
+
+      return;
+
+    }
+
+    originalEmail =
+      data.email || '';
+
+    currentMember = data;
+
+    fillMemberForm(data);
+    showConsentInfo(data);
+
+    document
+      .getElementById('export-member-pdf')
+      ?.classList.remove('hidden');
+
+  } catch (error) {
 
     console.error(error);
 
     alert(
-      'Mitglied konnte nicht geladen werden: '
-      + error.message
+      'Mitglied konnte nicht geladen werden.'
     );
 
-    return;
-
   }
-
-  if (!data) {
-
-    alert(
-      'Mitglied konnte nicht gefunden werden.'
-    );
-
-    return;
-
-  }
-
-  originalEmail =
-    data.email || '';
-
-  currentMember = data;
-
-  fillMemberForm(data);
-  showConsentInfo(data);
-
-  document
-    .getElementById('export-member-pdf')
-    ?.classList.remove('hidden');
 
 }
 
@@ -264,9 +282,12 @@ function exportCurrentMemberPdf() {
     return;
   }
 
-  exportMemberPdf(
-    buildMemberExportData()
-  )
+  loadMemberPdfScripts()
+    .then(() => {
+      return exportMemberPdf(
+        buildMemberExportData()
+      );
+    })
     .catch((error) => {
 
       console.error(error);
@@ -277,6 +298,59 @@ function exportCurrentMemberPdf() {
       );
 
     });
+
+}
+
+function loadMemberPdfScripts() {
+
+  if (
+    typeof exportMemberPdf === 'function'
+    && typeof loadPdfMake === 'function'
+  ) {
+    return loadPdfMake();
+  }
+
+  return new Promise((resolve, reject) => {
+
+    const script =
+      document.createElement('script');
+
+    script.src =
+      '/admin/js/member-pdf.js';
+
+    script.onload = () => {
+
+      if (typeof loadPdfMake !== 'function') {
+
+        reject(
+          new Error(
+            'PDF-Bibliothek konnte nicht geladen werden.'
+          )
+        );
+
+        return;
+
+      }
+
+      loadPdfMake()
+        .then(resolve)
+        .catch(reject);
+
+    };
+
+    script.onerror = () => {
+
+      reject(
+        new Error(
+          'PDF-Skript konnte nicht geladen werden.'
+        )
+      );
+
+    };
+
+    document.head.appendChild(script);
+
+  });
 
 }
 
@@ -358,6 +432,10 @@ async function saveMember() {
       'E-Mail geändert. Das Mitglied muss sich mit der neuen Adresse neu anmelden.'
     );
 
+  }
+
+  if (window.adminUnsavedGuard) {
+    window.adminUnsavedGuard.markClean();
   }
 
   window.location.href =

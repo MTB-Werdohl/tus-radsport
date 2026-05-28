@@ -68,6 +68,13 @@ async function initFeedbackModule(options) {
         member.id
       );
 
+  } else if (module.public_voting) {
+
+    ownAnswer =
+      getFeedbackClientAnswerCache(
+        module.id
+      );
+
   }
 
   renderFeedbackModule(

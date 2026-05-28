@@ -204,6 +204,12 @@ function fillFeedbackAdminForm(module) {
     typeSelect.value =
       window.siteConfig.feedback.types.yesMaybe;
     questionInput.value = '';
+
+    document
+      .getElementById(
+        'feedback-admin-public-voting'
+      ).checked = false;
+
     renderFeedbackAdminPollOptions();
     toggleFeedbackAdminPollFields();
     return;
@@ -213,6 +219,12 @@ function fillFeedbackAdminForm(module) {
   enabled.checked = true;
   typeSelect.value = module.type;
   questionInput.value = module.question || '';
+
+  document
+    .getElementById(
+      'feedback-admin-public-voting'
+    ).checked =
+      module.public_voting === true;
 
   const config =
     normalizeFeedbackPollConfig(
@@ -286,12 +298,36 @@ async function loadFeedbackAdminModule() {
 
 }
 
-async function saveFeedbackAdminModule() {
+async function saveFeedbackAdminForEntity(
+  entityType,
+  entityId,
+  options = {}
+) {
 
-  const enabled =
+  const silent =
+    options.silent === true;
+
+  const enabledEl =
     document.getElementById(
       'feedback-admin-enabled'
-    )?.checked;
+    );
+
+  if (!enabledEl) {
+    return { ok: true };
+  }
+
+  if (!entityType || !entityId) {
+    return { ok: true };
+  }
+
+  feedbackAdminState.entityType =
+    entityType;
+
+  feedbackAdminState.entityId =
+    entityId;
+
+  const enabled =
+    enabledEl.checked;
 
   if (!enabled) {
 
@@ -303,19 +339,15 @@ async function saveFeedbackAdminModule() {
         );
 
       if (result?.error) {
-        alert(result.error.message);
-        return;
+        return result;
       }
 
     }
 
     feedbackAdminState.module = null;
-
     updateFeedbackAdminResultsLink();
 
-    alert('Feedback entfernt.');
-
-    return;
+    return { ok: true };
 
   }
 
@@ -331,8 +363,18 @@ async function saveFeedbackAdminModule() {
       .trim();
 
   if (!question) {
-    alert('Bitte eine Frage eingeben.');
-    return;
+
+    const message =
+      'Bitte eine Feedback-Frage angeben.';
+
+    if (!silent) {
+      alert(message);
+    }
+
+    return {
+      error: { message }
+    };
+
   }
 
   let config = {};
@@ -349,28 +391,44 @@ async function saveFeedbackAdminModule() {
       validateFeedbackPollConfig(config);
 
     if (configError) {
-      alert(configError);
-      return;
+
+      if (!silent) {
+        alert(configError);
+      }
+
+      return {
+        error: { message: configError }
+      };
+
     }
 
   }
 
+  const publicVoting =
+    document.getElementById(
+      'feedback-admin-public-voting'
+    )?.checked === true;
+
   const payload = {
     type,
-    entity_type:
-      feedbackAdminState.entityType,
-    entity_id:
-      feedbackAdminState.entityId,
+    entity_type: entityType,
+    entity_id: entityId,
     question,
-    config
+    config,
+    public_voting: publicVoting
   };
 
   const result =
     await saveFeedbackModule(payload);
 
   if (result?.error) {
-    alert(result.error.message);
-    return;
+
+    if (!silent) {
+      alert(result.error.message);
+    }
+
+    return result;
+
   }
 
   feedbackAdminState.module =
@@ -378,7 +436,7 @@ async function saveFeedbackAdminModule() {
 
   updateFeedbackAdminResultsLink();
 
-  alert('Feedback gespeichert.');
+  return { ok: true, data: result.data };
 
 }
 
@@ -403,10 +461,6 @@ function bindFeedbackAdminEvents() {
         );
 
     });
-
-  document
-    .getElementById('feedback-admin-save')
-    ?.addEventListener('click', saveFeedbackAdminModule);
 
 }
 
@@ -459,6 +513,21 @@ function mountFeedbackAdminForm(mountId) {
     placeholder="z. B. Wer fährt mit?">
 </label>
 
+<label class="admin-field admin-field--inline">
+
+  <input
+    id="feedback-admin-public-voting"
+    type="checkbox"
+    class="checkbox">
+
+  Öffentliche Abstimmung (ohne Login)
+
+</label>
+
+<p class="admin-hint">
+  Standard: nur Vereinsmitglieder. Öffentlich z. B. für Trainingslager nach einiger Zeit.
+</p>
+
 <div
   id="feedback-admin-poll-wrap"
   class="hidden">
@@ -483,13 +552,9 @@ function mountFeedbackAdminForm(mountId) {
 
 </div>
 
-<button
-  id="feedback-admin-save"
-  type="button">
-
-  Feedback speichern
-
-</button>
+<p class="admin-hint">
+  Wird zusammen mit „Speichern“ oben gesichert.
+</p>
 
 <p
   id="feedback-admin-results-link"
@@ -535,22 +600,14 @@ async function initFeedbackModuleForm(options) {
     entityId
   };
 
-  if (!entityId) {
-
-    document
-      .getElementById(hintId)
-      ?.classList.remove('hidden');
-
-    return;
-
-  }
-
   document
     .getElementById(hintId)
     ?.classList.add('hidden');
 
   mountFeedbackAdminForm(mountId);
 
-  await loadFeedbackAdminModule();
+  if (entityId) {
+    await loadFeedbackAdminModule();
+  }
 
 }

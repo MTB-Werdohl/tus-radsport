@@ -12,13 +12,23 @@ function escapeFeedbackHtml(value) {
 
 }
 
-function renderFeedbackLoginHint() {
+function renderFeedbackMembersOnlyHint() {
 
   return `
 <p class="feedback-hint">
-  Bitte
-  <a href="/profil/">einloggen</a>,
-  um abzustimmen.
+  Zur Abstimmung berechtigt sind nur
+  <strong>Vereinsmitglieder</strong>.
+  <a href="/profil/">Als Mitglied anmelden</a>
+</p>
+`;
+
+}
+
+function renderFeedbackPublicHint() {
+
+  return `
+<p class="feedback-hint feedback-hint--public">
+  Öffentliche Abstimmung — ohne Anmeldung.
 </p>
 `;
 
@@ -200,6 +210,19 @@ Speichern
 
 }
 
+function canVoteOnFeedbackModule(
+  module,
+  member
+) {
+
+  if (member?.id) {
+    return true;
+  }
+
+  return module?.public_voting === true;
+
+}
+
 function renderFeedbackModule(
   container,
   module,
@@ -211,43 +234,53 @@ function renderFeedbackModule(
     return;
   }
 
+  const canVote =
+    canVoteOnFeedbackModule(
+      module,
+      member
+    );
+
   const type =
     module.type;
 
   let body = '';
 
-  if (
-    type
-    === window.siteConfig.feedback.types.yesMaybe
-  ) {
+  if (canVote) {
 
-    body =
-      renderFeedbackYesMaybe(
-        module,
-        ownAnswer
-      );
+    if (
+      type
+      === window.siteConfig.feedback.types.yesMaybe
+    ) {
 
-  } else if (
-    type
-    === window.siteConfig.feedback.types.yesNoComment
-  ) {
+      body =
+        renderFeedbackYesMaybe(
+          module,
+          ownAnswer
+        );
 
-    body =
-      renderFeedbackYesNoComment(
-        module,
-        ownAnswer
-      );
+    } else if (
+      type
+      === window.siteConfig.feedback.types.yesNoComment
+    ) {
 
-  } else if (
-    type
-    === window.siteConfig.feedback.types.poll
-  ) {
+      body =
+        renderFeedbackYesNoComment(
+          module,
+          ownAnswer
+        );
 
-    body =
-      renderFeedbackPoll(
-        module,
-        ownAnswer
-      );
+    } else if (
+      type
+      === window.siteConfig.feedback.types.poll
+    ) {
+
+      body =
+        renderFeedbackPoll(
+          module,
+          ownAnswer
+        );
+
+    }
 
   }
 
@@ -262,9 +295,14 @@ ${escapeFeedbackHtml(module.question)}
 </h2>
 
 ${
-  member
-    ? body
-    : renderFeedbackLoginHint()
+  canVote
+    ? (
+      member
+        ? ''
+        : renderFeedbackPublicHint()
+    )
+    + body
+    : renderFeedbackMembersOnlyHint()
 }
 
 <div id="feedback-status"></div>
@@ -273,7 +311,7 @@ ${
 
 `;
 
-  if (member) {
+  if (canVote) {
     bindFeedbackModuleEvents(
       container,
       module,
@@ -292,7 +330,45 @@ function bindFeedbackModuleEvents(
   const statusEl =
     container.querySelector('#feedback-status');
 
-  async function showResult(result, successText) {
+  const identity =
+    member?.id
+      ? { memberId: member.id }
+      : {
+          clientToken:
+            getFeedbackClientToken(module.id)
+        };
+
+  async function persistAnswer(
+    answer,
+    comment
+  ) {
+
+    const validationError =
+      validateFeedbackAnswer(
+        module,
+        answer,
+        comment
+      );
+
+    if (validationError) {
+
+      statusEl.innerHTML =
+        renderFeedbackStatus(
+          validationError,
+          true
+        );
+
+      return;
+
+    }
+
+    const result =
+      await saveFeedbackAnswer(
+        module.id,
+        identity,
+        answer,
+        comment
+      );
 
     if (result?.error) {
 
@@ -307,9 +383,19 @@ function bindFeedbackModuleEvents(
 
     }
 
+    if (identity.clientToken) {
+
+      setFeedbackClientAnswerCache(
+        module.id,
+        answer,
+        comment
+      );
+
+    }
+
     statusEl.innerHTML =
       renderFeedbackStatus(
-        successText,
+        'Antwort gespeichert.',
         false
       );
 
@@ -324,55 +410,6 @@ function bindFeedbackModuleEvents(
         const answer =
           button.dataset.feedbackAnswer;
 
-        if (
-          module.type
-          === window.siteConfig.feedback.types.yesMaybe
-        ) {
-
-          container
-            .querySelectorAll('[data-feedback-answer]')
-            .forEach((item) => {
-              item.classList.remove('is-active');
-            });
-
-          button.classList.add('is-active');
-
-          const validationError =
-            validateFeedbackAnswer(
-              module,
-              answer,
-              null
-            );
-
-          if (validationError) {
-
-            statusEl.innerHTML =
-              renderFeedbackStatus(
-                validationError,
-                true
-              );
-
-            return;
-
-          }
-
-          const result =
-            await saveFeedbackAnswer(
-              module.id,
-              member.id,
-              answer,
-              null
-            );
-
-          await showResult(
-            result,
-            'Antwort gespeichert.'
-          );
-
-          return;
-
-        }
-
         container
           .querySelectorAll('[data-feedback-answer]')
           .forEach((item) => {
@@ -380,6 +417,13 @@ function bindFeedbackModuleEvents(
           });
 
         button.classList.add('is-active');
+
+        if (
+          module.type
+          === window.siteConfig.feedback.types.yesMaybe
+        ) {
+          await persistAnswer(answer, null);
+        }
 
       });
 
@@ -424,36 +468,9 @@ function bindFeedbackModuleEvents(
 
       }
 
-      const validationError =
-        validateFeedbackAnswer(
-          module,
-          answer,
-          comment
-        );
-
-      if (validationError) {
-
-        statusEl.innerHTML =
-          renderFeedbackStatus(
-            validationError,
-            true
-          );
-
-        return;
-
-      }
-
-      const result =
-        await saveFeedbackAnswer(
-          module.id,
-          member.id,
-          answer,
-          comment
-        );
-
-      await showResult(
-        result,
-        'Antwort gespeichert.'
+      await persistAnswer(
+        answer,
+        comment
       );
 
     });

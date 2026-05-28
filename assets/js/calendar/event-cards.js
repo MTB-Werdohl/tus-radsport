@@ -154,7 +154,7 @@ async function loadCards(
 
     card.innerHTML = `
 
-<a href="/event.html?slug=${encodeURIComponent(event.slug)}">
+<a href="${getEventUrl(event.slug)}">
 
 <div>
 

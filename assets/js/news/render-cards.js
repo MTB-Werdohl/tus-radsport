@@ -53,7 +53,7 @@ function renderNewsCards(news){
     card.innerHTML=`
 
 <a
-href="/news-detail.html?slug=${encodeURIComponent(item.slug)}"
+href="${getNewsUrl(item.slug)}"
 >
 
 <div>

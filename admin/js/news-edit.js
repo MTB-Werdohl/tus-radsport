@@ -186,6 +186,10 @@ async function saveNews() {
   }
 
   let error;
+  let savedId =
+    editId
+      ? parseInt(editId, 10)
+      : null;
 
   if (editId) {
 
@@ -197,10 +201,15 @@ async function saveNews() {
 
   } else {
 
-    ({ error } =
+    const { data: inserted, error: insertError } =
       await window.supabaseClient
         .from(window.siteConfig.tables.news)
-        .insert([payload]));
+        .insert([payload])
+        .select('id')
+        .single();
+
+    error = insertError;
+    savedId = inserted?.id;
 
   }
 
@@ -214,8 +223,30 @@ async function saveNews() {
 
   }
 
+  const feedbackResult =
+    await saveFeedbackAdminForEntity(
+      window.siteConfig.feedback.entityTypes.news,
+      savedId,
+      { silent: true }
+    );
+
+  if (feedbackResult?.error) {
+
+    alert(
+      'News gespeichert, Feedback fehlgeschlagen: '
+      + feedbackResult.error.message
+    );
+
+    return;
+
+  }
+
+  if (window.adminUnsavedGuard) {
+    window.adminUnsavedGuard.markClean();
+  }
+
   window.location.href =
-    '/admin/news.html';
+    '/admin/';
 
 }
 
@@ -225,15 +256,23 @@ document
 
 async function initNewsEdit() {
 
+  window.adminUnsavedGuard =
+    initAdminUnsavedGuard({
+      message:
+        'Sicher, dass du ohne Speichern zurück willst?'
+    });
+
   if (editId) {
     await loadNews();
-    return;
   }
 
   initFeedbackModuleForm({
     entityType:
       window.siteConfig.feedback.entityTypes.news,
-    entityId: null
+    entityId:
+      editId
+        ? parseInt(editId, 10)
+        : null
   });
 
 }

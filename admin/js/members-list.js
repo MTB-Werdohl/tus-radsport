@@ -154,7 +154,7 @@ function renderMembersList(members) {
 
             <div class="actions">
 
-              <button type="button" data-open-id="${encodeURIComponent(String(item.id))}">
+              <button type="button" data-open-id="${String(item.id)}">
                 ✏
               </button>
 
