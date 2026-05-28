@@ -874,7 +874,20 @@ body.member-consent-modal-open {
   margin-top: 0;
 }
 
+.home-section-intro {
+  text-align: center;
+}
+
+.home-section-intro p {
+  max-width: 38ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .home-steps {
+  display: inline-block;
+  text-align: left;
+  margin: 0 auto 16px;
   padding-left: 1.25rem;
 }
 
@@ -883,6 +896,7 @@ body.member-consent-modal-open {
   font-size: 1rem;
   font-weight: 600;
   opacity: 0.9;
+  text-align: center;
 }
 
 .home-teaser-heading:first-of-type {
@@ -893,6 +907,9 @@ body.member-consent-modal-open {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  max-width: min(100%, 440px);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .home-discover h2 {

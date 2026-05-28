@@ -18,7 +18,7 @@ load_calendar_css: true
 
     <p class="home-lead">
       Radsportabteilung TuS Jahn Werdohl — gemeinsam fahren, niemand bleibt zurück.
-      MTB, Rennrad oder E-Bike: Gäste sind willkommen.
+      MTB, Gravel oder E-Bike: Gäste sind willkommen.
     </p>
 
     <a
@@ -30,12 +30,12 @@ load_calendar_css: true
     </a>
 
     <p class="home-quick-facts">
-      <strong>Dienstag 18:00</strong> · Brüninghausplatz, Werdohl
+      <strong>After-Work Tour · jeden Dienstag 18:00 · Brüninghausplatz, Werdohl</strong>
     </p>
   </div>
 </section>
 
-<section class="home-section">
+<section class="home-section home-section-intro">
   <h2>Neu dabei?</h2>
   <ol class="home-steps">
     <li>Kurz per WhatsApp melden</li>
