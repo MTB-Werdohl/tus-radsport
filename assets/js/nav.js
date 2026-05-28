@@ -29,6 +29,19 @@ function markActiveNavLinks() {
   const path =
     window.location.pathname;
 
+  const brand =
+    document.querySelector('.brand');
+
+  if (brand) {
+
+    brand.classList.toggle(
+      'is-active',
+      path === '/'
+      || path === '/index.html'
+    );
+
+  }
+
   nav.querySelectorAll('a').forEach((link) => {
 
     const href =
