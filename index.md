@@ -8,10 +8,18 @@ load_calendar_css: true
 <div class="home-page">
 
 <section class="home-hero">
-  <img
-    class="home-hero-image"
-    src="{{ '/assets/images/hero.jpeg' | relative_url }}"
-    alt="Gemeinsam auf dem Rad">
+  <picture class="home-hero-picture">
+    <source
+      media="(max-width: 800px)"
+      srcset="{{ '/assets/images/hero-mobile.jpeg' | relative_url }}">
+    <img
+      class="home-hero-image"
+      src="{{ '/assets/images/hero.jpeg' | relative_url }}"
+      alt="Gemeinsam auf dem Rad"
+      width="1793"
+      height="762"
+      fetchpriority="high">
+  </picture>
 
   <div class="home-hero-overlay">
     <h1 class="home-title">Fahr nicht allein. Fahr mit uns.</h1>
@@ -39,11 +47,11 @@ load_calendar_css: true
   <h2>Neu dabei?</h2>
   <ol class="home-steps">
     <li>Kurz per WhatsApp melden</li>
-    <li>Einmal mitfahren — unverbindlich</li>
+    <li>Unverbindlich mitfahren</li>
     <li>Passt's? Komm wieder.</li>
   </ol>
   <p>
-    Touren im Sauerland, Tempo nach der Gruppe, <strong>Helm Pflicht</strong>,
+    Touren im Sauerland, Tempo nach der Gruppe, <strong>Helm Pflicht</strong> und
     Ersatzschlauch empfohlen.
   </p>
 </section>
