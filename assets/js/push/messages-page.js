@@ -129,6 +129,8 @@ async function loadPushMessagesPage() {
 
   }
 
+  markAllPushesSeen(messages);
+
   messages.forEach((message) => {
 
     wrapper.appendChild(
@@ -136,8 +138,6 @@ async function loadPushMessagesPage() {
     );
 
   });
-
-  markAllPushesSeen(messages);
 
 }
 

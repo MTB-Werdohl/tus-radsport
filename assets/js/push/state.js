@@ -68,17 +68,6 @@ function isPushUnread(push) {
     return true;
   }
 
-  const seenId =
-    localStorage.getItem('lastSeenPushId');
-
-  if (
-    push.id
-    && seenId
-    && String(push.id) === seenId
-  ) {
-    return false;
-  }
-
   return normalizePushTimestamp(push.sent_at)
     > normalizePushTimestamp(lastSeen);
 
@@ -94,26 +83,19 @@ function markPushSeen(pushOrSentAt) {
   const sentAt =
     push?.sent_at;
 
-  const id =
-    push?.id;
-
-  if (!sentAt && !id) {
-    return;
-  }
-
-  if (id) {
-    localStorage.setItem(
-      'lastSeenPushId',
-      String(id)
-    );
-  }
-
   if (!sentAt) {
     return;
   }
 
+  const date =
+    new Date(sentAt);
+
+  if (Number.isNaN(date.getTime())) {
+    return;
+  }
+
   const normalizedSentAt =
-    new Date(sentAt).toISOString();
+    date.toISOString();
 
   const current =
     getLastSeenPushAt();

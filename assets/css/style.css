@@ -1168,6 +1168,13 @@ rgba(
 border-top:
 
 4px solid
+transparent;
+
+}
+
+.push-widget-card--unread{
+
+border-top-color:
 #ed1c24;
 
 }

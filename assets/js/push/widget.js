@@ -49,7 +49,41 @@ async function initPushWidget() {
 
   renderPush(content, push);
 
-  if (isPushUnread(push)) {
+  applyPushWidgetReadState(widget, push);
+
+  toggle.onclick = () => {
+
+    widget.classList.toggle('collapsed');
+
+    if (widget.classList.contains('collapsed')) {
+      markPushSeen(push);
+      applyPushWidgetReadState(widget, push);
+    }
+
+  };
+
+}
+
+function applyPushWidgetReadState(widget, push) {
+
+  if (!widget) {
+    return;
+  }
+
+  const unread =
+    isPushUnread(push);
+
+  const card =
+    document
+      .getElementById('push-widget-content')
+      ?.querySelector('.push-widget-card');
+
+  card?.classList.toggle(
+    'push-widget-card--unread',
+    unread
+  );
+
+  if (unread) {
 
     widget.classList.remove('collapsed');
 
@@ -59,19 +93,12 @@ async function initPushWidget() {
 
   }
 
-  toggle.onclick = () => {
-
-    widget.classList.toggle('collapsed');
-
-    if (widget.classList.contains('collapsed')) {
-      markPushSeen(push);
-    }
-
-  };
-
 }
 
 function renderPush(target, push) {
+
+  const unread =
+    isPushUnread(push);
 
   const url =
     push.url && push.url !== '/'
@@ -80,7 +107,9 @@ function renderPush(target, push) {
 
   target.innerHTML = `
 
-<div class="push-widget-card">
+<div class="push-widget-card${
+  unread ? ' push-widget-card--unread' : ''
+}">
 
   <h3>${escapePushHtml(push.title)}</h3>
 
@@ -106,6 +135,20 @@ function renderPush(target, push) {
 </div>
 
 `;
+
+  target
+    .querySelectorAll('.push-widget-links a')
+    .forEach((link) => {
+
+      link.addEventListener('click', () => {
+        markPushSeen(push);
+        applyPushWidgetReadState(
+          document.getElementById('push-widget'),
+          push
+        );
+      });
+
+    });
 
 }
 
