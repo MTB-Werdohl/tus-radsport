@@ -244,11 +244,30 @@ title: Termin bearbeiten
   Speichern
 </button>
 
+<section class="admin-feedback-section">
+
+  <h2>Feedback (optional)</h2>
+
+  <p
+    id="feedback-admin-hint"
+    class="admin-hint">
+
+    Nach dem ersten Speichern können Sie hier Feedback hinzufügen.
+
+  </p>
+
+  <div id="feedback-admin-form-wrap"></div>
+
+</section>
+
   </div>
 
 </div>
 
 <script src="/assets/js/core/termin-dates.js"></script>
+<script src="/assets/js/feedback/feedback-types.js"></script>
+<script src="/assets/js/feedback/feedback-service.js"></script>
+<script src="/admin/js/feedback-module-form.js"></script>
 <script src="/admin/js/termine-edit.js"></script>
 <script>
 requireAdminSession(initTerminEdit);

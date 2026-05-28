@@ -492,6 +492,18 @@ function initTerminEdit() {
 
   toggleRecurring();
 
-  loadEvent();
+  loadEvent()
+    .then(() => {
+
+      initFeedbackModuleForm({
+        entityType:
+          window.siteConfig.feedback.entityTypes.event,
+        entityId:
+          editId
+            ? parseInt(editId, 10)
+            : null
+      });
+
+    });
 
 }

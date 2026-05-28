@@ -38,9 +38,9 @@ Beispiele: `about.md`, `training.md`, `kodex.md`
 | Seite | Container | Skript-Kette |
 |-------|-----------|----------------|
 | Kalender | `#calendar`, `#event-cards` | FullCalendar + `calendar/*` |
-| Termin-Detail | `#event` | `event-service` → `event-render` → `event-page` |
+| Termin-Detail | `#event`, `#event-feedback` | `event-service` → `event-render` → `event-page` + `feedback/*` |
 | News-Liste | `#news-cards` | `news-service` → `render-cards` → `news-page` |
-| News-Detail | `#news` | `news-detail-service` → `news-detail-render` → `news-detail-page` |
+| News-Detail | `#news`, `#news-feedback` | `news-detail-service` → `news-detail-render` → `news-detail-page` + `feedback/*` |
 | Galerie | `#gallery-grid` | `gallery-service` → `gallery-render` → `gallery-page` |
 | Galerie-Detail | `#gallery-images` | `gallery-service` → `gallery-render` → `gallery-detail-page` |
 
@@ -98,7 +98,7 @@ Ausführliche Einrichtung: [`docs/supabase-members-setup.md`](supabase-members-s
 - Kein separates Admin-Login: Vorstand meldet sich in der Website-Navigation per Magic Link an
 - `/admin/` und Unterseiten: ohne Vorstand-Session → Redirect nach `/` (Mitglied bleibt eingeloggt)
 - Session-Prüfung: `requireAdminSession(callback)` in `admin/js/auth-guard.js`
-- Admin-Module: Termine, News, Galerien, Mitglieder, Push (`admin/js/*-list.js`, `*-edit.js`)
+- Admin-Module: Termine, News, Galerien, Mitglieder, Push, Feedback (`admin/js/*-list.js`, `*-edit.js`, `feedback-module-form.js`)
 - HTML-Escaping: `escapeAdminHtml()` in `admin/js/admin-utils.js`
 
 SQL für Rollen und RLS: [`docs/supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql)
@@ -124,8 +124,12 @@ SQL: [`docs/supabase-content-visibility.sql`](supabase-content-visibility.sql) �
 | `PushSubscriptions` | Web-Push-Endpunkte (verknüpft mit `members` über `member_id`) |
 | `site_state` | z. B. letzte Push-Nachricht (`last_push`) |
 | `members` | Vereinsmitglieder (`rolle`, Profil, Einwilligungen) |
+| `feedback_modules` | Universelles Feedback (polymorph: `entity_type` + `entity_id`, kein FK) |
+| `feedback_answers` | Antworten pro Modul und Mitglied (`answer` = Code/`option_id`) |
 
 **Storage-Bucket:** `media` (Bilder, GPX)
+
+SQL Feedback: [`supabase-feedback.sql`](supabase-feedback.sql)
 
 **Edge Functions** (URLs in `site-config.js` → `functionsUrl`):
 
@@ -179,6 +183,31 @@ fetchTermine()  (termine-loader.js, ein Fetch pro Seitenaufruf)
 
 Kategorien/Farben: categories.js (getTerminCategory)
 ```
+
+## Feedback — Datenfluss
+
+```
+Content (Termin.id / News.id)
+        ↕ entity_type + entity_id (polymorph, kein DB-FK)
+feedback_modules (type, question, config)
+        ↕ module_id
+feedback_answers (member_id, answer, comment?)
+```
+
+**Frontend** (`assets/js/feedback/`):
+
+```
+feedback-types.js   → Validierung, poll option_id
+feedback-service.js → Supabase load/upsert
+feedback-render.js  → UI je type (yes_maybe, yes_no_comment, poll)
+feedback-init.js    → initFeedbackModule({ entityType, entityId, container })
+```
+
+Detail-Seiten rufen nur `initFeedbackModule()` auf — kein Feedback-Code in `event-service` / `news-detail-service`.
+
+**Admin:** `admin/js/feedback-module-form.js` in Termin-/News-Bearbeitung (optional, nach erstem Speichern). Auswertung: `admin/feedback.html`, `admin/feedback_results.html?module_id=…` (CSV-Export).
+
+Typen v1: `yes_maybe`, `yes_no_comment`, `poll` — Poll speichert `option_id` in `answer`, nicht Anzeige-Text.
 
 ## Wartung
 

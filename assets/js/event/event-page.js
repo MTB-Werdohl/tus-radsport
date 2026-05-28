@@ -40,6 +40,13 @@ async function loadEvent() {
     event
   );
 
+  await initFeedbackModule({
+    entityType:
+      window.siteConfig.feedback.entityTypes.event,
+    entityId: event.id,
+    container: 'event-feedback'
+  });
+
 window.history.replaceState(
   {},
   '',

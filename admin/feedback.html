@@ -1,0 +1,71 @@
+---
+layout: null
+title: Feedback Übersicht
+---
+
+<!doctype html>
+
+<html lang="de">
+
+<head>
+
+{% include admin-head.html %}
+
+<link rel="stylesheet" href="/assets/css/feedback.css">
+
+</head>
+
+<body>
+
+<div id="admin">
+
+  <div class="page-header">
+
+    <div>
+
+      <h1>
+        Feedback
+      </h1>
+
+      <p>
+        Module und Rückmeldungen im Überblick
+      </p>
+
+    </div>
+
+    <a href="/admin/"
+       class="back-button">
+
+      ← Dashboard
+
+    </a>
+
+  </div>
+
+  <div class="admin-topbar">
+
+    <input
+      id="feedback-search"
+      placeholder="Frage oder Inhalt suchen…"
+    >
+
+  </div>
+
+  <div
+    id="feedback-list"
+    class="feedback-admin-list">
+
+  </div>
+
+</div>
+
+<script src="/assets/js/feedback/feedback-types.js"></script>
+<script src="/assets/js/feedback/feedback-service.js"></script>
+<script src="/admin/js/feedback-list.js"></script>
+<script>
+requireAdminSession(loadFeedbackList);
+</script>
+
+</body>
+
+</html>

@@ -67,6 +67,13 @@ async function loadNews() {
 
   }
 
+  await initFeedbackModuleForm({
+    entityType:
+      window.siteConfig.feedback.entityTypes.news,
+    entityId:
+      parseInt(editId, 10)
+  });
+
 }
 
 async function saveNews() {
@@ -215,3 +222,18 @@ async function saveNews() {
 document
   .getElementById('save-news')
   ?.addEventListener('click', saveNews);
+
+async function initNewsEdit() {
+
+  if (editId) {
+    await loadNews();
+    return;
+  }
+
+  initFeedbackModuleForm({
+    entityType:
+      window.siteConfig.feedback.entityTypes.news,
+    entityId: null
+  });
+
+}

@@ -17,6 +17,8 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Push-Verlauf:** [`supabase-push-messages.sql`](../supabase-push-messages.sql) — Tabelle `PushMessages` + RLS (nach #2). Edge Function `send-push` danach **neu deployen**.
 
+**Feedback:** [`supabase-feedback.sql`](../supabase-feedback.sql) — `feedback_modules` + `feedback_answers` (nach #2). Polymorphe `entity_type`/`entity_id` **ohne FK**; Poll-Antworten speichern `option_id` in `answer`.
+
 **Wichtig:** Schritt 3 ersetzt die News-SELECT-Policy aus Schritt 2. Ohne Schritt 3 gelten News-Leserechte noch über `published`, nicht `sichtbarkeit`.
 
 ### Einmalig (Push Upsert)
@@ -46,6 +48,8 @@ Nur ausführen, wenn der Constraint noch fehlt (Edge Function `save-push-subscri
 | `galleries` / `gallery_images` | SELECT | SELECT | CRUD |
 | `PushSubscriptions` | — | SELECT eigene (`member_id`) | SELECT alle, DELETE (Mitglied löschen) |
 | `PushMessages` | SELECT | SELECT | INSERT |
+| `feedback_modules` | SELECT | SELECT | ALL |
+| `feedback_answers` | — | SELECT/INSERT/UPDATE eigene | SELECT alle + (später Auswertung) |
 | `site_state` | SELECT `last_push` | SELECT `last_push` | ALL |
 | `storage.objects` (media) | SELECT | SELECT | INSERT, DELETE |
 

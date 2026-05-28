@@ -49,6 +49,13 @@ renderNewsDetail(
 data
 );
 
+await initFeedbackModule({
+  entityType:
+    window.siteConfig.feedback.entityTypes.news,
+  entityId: data.id,
+  container: 'news-feedback'
+});
+
 window.history.replaceState(
   {},
   '',

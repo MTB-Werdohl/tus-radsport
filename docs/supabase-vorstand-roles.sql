@@ -43,6 +43,9 @@ grant execute on function public.check_vorstand_email(text) to anon, authenticat
 drop policy if exists "Authenticated insert Termine" on "Termine";
 drop policy if exists "Authenticated update Termine" on "Termine";
 drop policy if exists "Authenticated delete Termine" on "Termine";
+drop policy if exists termine_insert_vorstand on "Termine";
+drop policy if exists termine_update_vorstand on "Termine";
+drop policy if exists termine_delete_vorstand on "Termine";
 
 create policy termine_insert_vorstand
   on "Termine"
@@ -65,6 +68,10 @@ create policy termine_delete_vorstand
 
 -- News: nur Vorstand schreiben; Mitglieder lesen veröffentlichte
 drop policy if exists "Authenticated full access News" on "News";
+drop policy if exists news_select_authenticated on "News";
+drop policy if exists news_insert_vorstand on "News";
+drop policy if exists news_update_vorstand on "News";
+drop policy if exists news_delete_vorstand on "News";
 
 create policy news_select_authenticated
   on "News"
@@ -98,6 +105,9 @@ create policy news_delete_vorstand
 drop policy if exists "Authenticated insert galleries" on galleries;
 drop policy if exists "Authenticated update galleries" on galleries;
 drop policy if exists "Authenticated delete galleries" on galleries;
+drop policy if exists galleries_insert_vorstand on galleries;
+drop policy if exists galleries_update_vorstand on galleries;
+drop policy if exists galleries_delete_vorstand on galleries;
 
 create policy galleries_insert_vorstand
   on galleries
@@ -121,6 +131,9 @@ create policy galleries_delete_vorstand
 drop policy if exists "Authenticated insert gallery images" on gallery_images;
 drop policy if exists "Authenticated update gallery images" on gallery_images;
 drop policy if exists "Authenticated delete gallery images" on gallery_images;
+drop policy if exists gallery_images_insert_vorstand on gallery_images;
+drop policy if exists gallery_images_update_vorstand on gallery_images;
+drop policy if exists gallery_images_delete_vorstand on gallery_images;
 
 create policy gallery_images_insert_vorstand
   on gallery_images
@@ -143,6 +156,7 @@ create policy gallery_images_delete_vorstand
 
 -- site_state: nur Vorstand schreiben
 drop policy if exists admin_can_write_site_state on site_state;
+drop policy if exists site_state_write_vorstand on site_state;
 
 create policy site_state_write_vorstand
   on site_state
@@ -153,6 +167,7 @@ create policy site_state_write_vorstand
 
 -- PushSubscriptions: Vorstand sieht alle (Dashboard)
 drop policy if exists push_subscriptions_admin_select on "PushSubscriptions";
+drop policy if exists "PushSubscriptions Admin Select" on "PushSubscriptions";
 
 create policy push_subscriptions_admin_select
   on "PushSubscriptions"
@@ -163,6 +178,8 @@ create policy push_subscriptions_admin_select
 -- Storage media: nur Vorstand hochladen/löschen
 drop policy if exists "Authenticated upload" on storage.objects;
 drop policy if exists "Authenticated delete media" on storage.objects;
+drop policy if exists media_insert_vorstand on storage.objects;
+drop policy if exists media_delete_vorstand on storage.objects;
 
 create policy media_insert_vorstand
   on storage.objects

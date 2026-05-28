@@ -64,6 +64,84 @@ Verlauf wird beim Senden **append-only** gespeichert (kein Löschen). Widget + `
 
 Key-Value (JSONB), z. B. `last_push` für Push-Widget (Spiegel der letzten Mitteilung).
 
+## `feedback_modules` / `feedback_answers`
+
+Universelles Feedback-System — **keine** RSVP-/Poll-Spalten in `Termine` oder `News`.
+
+```
+Content (Termin / News / …)
+        ↕  entity_type + entity_id
+feedback_modules
+        ↕  module_id
+feedback_answers
+```
+
+### Polymorphe Zuordnung (`entity_type` + `entity_id`)
+
+`feedback_modules` verweist **bewusst ohne Foreign Key** auf unterschiedliche Tabellen:
+
+| `entity_type` | Ziel (logisch) | `entity_id` |
+|---------------|----------------|-------------|
+| `event` | `Termine.id` | bigint |
+| `news` | `News.id` | bigint |
+| *(später)* `poll`, `organization`, … | eigene / andere Tabellen | bigint |
+
+**Warum kein FK?** PostgreSQL erlaubt keine Spalte, die je nach Zeile auf `Termine`, `News` oder künftige Tabellen zeigt. Stattdessen:
+
+- Integrität in **App-Logik** (Admin legt Modul nur an, wenn Entity existiert)
+- `entity_type` per CHECK-Constraint auf erlaubte Werte
+- optional `UNIQUE (entity_type, entity_id)` — max. ein Modul pro Inhalt (v1)
+
+### `feedback_modules`
+
+| Spalte | Typ | Hinweis |
+|--------|-----|---------|
+| `id` | bigint PK | |
+| `type` | text | `yes_maybe` \| `yes_no_comment` \| `poll` |
+| `entity_type` | text | siehe Tabelle oben |
+| `entity_id` | bigint | polymorph, **kein FK** |
+| `question` | text | Anzeige-Frage |
+| `config` | jsonb | typ-spezifisch, default `{}` |
+| `created_at` | timestamptz | |
+
+**Poll-`config`** — Labels änderbar, IDs stabil:
+
+```json
+{
+  "options": [
+    { "id": "18uhr", "label": "18 Uhr" },
+    { "id": "19uhr", "label": "19 Uhr" },
+    { "id": "20uhr", "label": "20 Uhr" }
+  ]
+}
+```
+
+- `id`: slug-artig, unveränderlich nach erster Antwort (Admin-Validierung)
+- `label`: Anzeige im Frontend, darf später angepasst werden
+
+### `feedback_answers`
+
+| Spalte | Typ | Hinweis |
+|--------|-----|---------|
+| `id` | bigint PK | |
+| `module_id` | bigint | → `feedback_modules.id` (FK) |
+| `member_id` | bigint | → `members.id` (FK) |
+| `answer` | text | **Codierter Wert**, nicht Anzeige-Text |
+| `comment` | text | optional (`yes_no_comment`) |
+| `created_at`, `updated_at` | timestamptz | |
+
+**Semantik von `answer` je Modul-Typ:**
+
+| `type` | `answer` speichert | Beispiel |
+|--------|-------------------|----------|
+| `yes_maybe` | `yes` \| `maybe` | `yes` |
+| `yes_no_comment` | `yes` \| `no` | `no` |
+| `poll` | **`option_id`** aus `config.options[]` | `18uhr` — **nicht** `"18 Uhr"` |
+
+Alte Poll-Antworten bleiben gültig, wenn Labels geändert werden; unbekannte `option_id` in Auswertung als „(Option entfernt)“ behandeln.
+
+**Unique:** `(module_id, member_id)` — eine Antwort pro Mitglied, Upsert zum Ändern.
+
 ## Storage `media`
 
 Pfade z. B. `galleries/{jahr}/{slug}/…`, News/Termin-Uploads.

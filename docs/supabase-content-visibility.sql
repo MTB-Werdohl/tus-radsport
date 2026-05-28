@@ -48,6 +48,7 @@ alter table "Termine"
 -- News SELECT
 drop policy if exists "Public News lesen" on "News";
 drop policy if exists news_select_authenticated on "News";
+drop policy if exists news_select_anon on "News";
 
 create policy news_select_anon
   on "News"
@@ -70,6 +71,8 @@ create policy news_select_authenticated
 
 -- Termine SELECT
 drop policy if exists "Public Termine lesen" on "Termine";
+drop policy if exists termine_select_anon on "Termine";
+drop policy if exists termine_select_authenticated on "Termine";
 
 create policy termine_select_anon
   on "Termine"

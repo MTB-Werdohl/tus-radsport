@@ -23,7 +23,26 @@ window.siteConfig = {
     pushSubscriptions: 'PushSubscriptions',
     pushMessages: 'PushMessages',
     siteState: 'site_state',
-    members: 'members'
+    members: 'members',
+    feedbackModules: 'feedback_modules',
+    feedbackAnswers: 'feedback_answers'
+  },
+
+  feedback: {
+    entityTypes: {
+      event: 'event',
+      news: 'news'
+    },
+    types: {
+      yesMaybe: 'yes_maybe',
+      yesNoComment: 'yes_no_comment',
+      poll: 'poll'
+    },
+    answers: {
+      yes: 'yes',
+      maybe: 'maybe',
+      no: 'no'
+    }
   },
 
   storage: {
