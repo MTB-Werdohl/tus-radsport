@@ -1486,6 +1486,14 @@ h2 { font-weight: 600; }
   border-bottom: none;
 }
 
+.news-body iframe {
+  max-width: 100%;
+  border: none;
+  border-radius: var(--radius);
+  display: block;
+  margin: 16px auto;
+}
+
 .push-button {
 
   width: 100%;
