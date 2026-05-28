@@ -35,7 +35,7 @@ load_calendar_css: true
   </div>
 </section>
 
-<article class="home-panel">
+<section class="home-section">
   <h2>Neu dabei?</h2>
   <ol class="home-steps">
     <li>Kurz per WhatsApp melden</li>
@@ -46,9 +46,9 @@ load_calendar_css: true
     Touren im Sauerland, Tempo nach der Gruppe, <strong>Helm Pflicht</strong>,
     Ersatzschlauch empfohlen.
   </p>
-</article>
+</section>
 
-<article class="home-panel">
+<section class="home-section">
   <h2>Aktuell im Verein</h2>
 
   <h3 class="home-teaser-heading">News</h3>
@@ -56,7 +56,7 @@ load_calendar_css: true
 
   <h3 class="home-teaser-heading">Termine</h3>
   <div id="home-termine-teaser" class="home-teaser-stack"></div>
-</article>
+</section>
 
 <section class="home-discover">
   <h2>Mehr entdecken</h2>

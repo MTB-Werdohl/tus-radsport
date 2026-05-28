@@ -865,25 +865,13 @@ body.member-consent-modal-open {
   max-width: none;
 }
 
-/* Inhalts-Cards */
-
-.home-panel {
-  background: #fff;
-  color: #222;
-  border-radius: var(--radius);
-  padding: 24px;
-  margin-bottom: 20px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+.home-section {
+  margin-bottom: 28px;
 }
 
-.home-panel h2 {
-  margin-top: 0;
+.home-section h2 {
   text-align: center;
-}
-
-.home-panel p,
-.home-panel ol {
-  text-align: left;
+  margin-top: 0;
 }
 
 .home-steps {
