@@ -15,137 +15,6 @@ function escapeHomeHtml(value) {
 
 }
 
-function collectUpcomingTermine(
-  data,
-  limit
-) {
-
-  const start =
-    new Date();
-
-  start.setHours(0, 0, 0, 0);
-
-  const end =
-    new Date(start);
-
-  end.setFullYear(
-    end.getFullYear() + 1
-  );
-
-  const cards = [];
-
-  (data || []).forEach((item) => {
-
-    if (item.recurring) {
-
-      const recurringEnd =
-        item.endRecur
-          ? parseTerminDateOnly(item.endRecur)
-          : null;
-
-      const recurringStart =
-        item.startRecur
-          ? parseTerminDateOnly(item.startRecur)
-          : null;
-
-      const current =
-        new Date(start);
-
-      while (current < end) {
-
-        const date =
-          `${current.getFullYear()}-${
-            String(current.getMonth() + 1)
-              .padStart(2, '0')
-          }-${
-            String(current.getDate())
-              .padStart(2, '0')
-          }`;
-
-        const excluded =
-          item.exclude?.includes(date);
-
-        const validDay =
-          item.daysOfWeek
-            ?.includes(current.getDay());
-
-        const afterStart =
-          !recurringStart
-          || current >= recurringStart;
-
-        const beforeEnd =
-          !recurringEnd
-          || current <= recurringEnd;
-
-        if (
-          validDay
-          && !excluded
-          && afterStart
-          && beforeEnd
-        ) {
-
-          cards.push({
-            ...item,
-            generatedDate: date
-          });
-
-        }
-
-        current.setDate(
-          current.getDate() + 1
-        );
-
-      }
-
-      return;
-
-    }
-
-    if (
-      singleTerminOverlapsRange(
-        item,
-        start,
-        end
-      )
-    ) {
-
-      cards.push(item);
-
-    }
-
-  });
-
-  cards.sort((a, b) => {
-
-    return (
-      getTerminSortDate(a)
-      - getTerminSortDate(b)
-    );
-
-  });
-
-  const now =
-    new Date();
-
-  now.setHours(0, 0, 0, 0);
-
-  return cards
-    .filter((event) => {
-
-      const endDay =
-        getTerminVisibilityEndDay(event);
-
-      if (!endDay) {
-        return false;
-      }
-
-      return endDay >= now;
-
-    })
-    .slice(0, limit);
-
-}
-
 function renderHomeNewsTeaser(news) {
 
   const wrapper =
@@ -203,65 +72,30 @@ function renderHomeNewsTeaser(news) {
 
 }
 
-function renderHomeTermineTeaser(termine) {
+async function loadHomeTermineTeaser() {
 
-  const wrapper =
-    document.getElementById(
-      'home-termine-teaser'
-    );
+  const start =
+    new Date();
 
-  if (!wrapper) {
-    return;
-  }
+  start.setHours(0, 0, 0, 0);
 
-  const items =
-    collectUpcomingTermine(
-      termine,
-      HOME_TERMINE_LIMIT
-    );
+  const end =
+    new Date(start);
 
-  if (!items.length) {
+  end.setFullYear(
+    end.getFullYear() + 1
+  );
 
-    wrapper.innerHTML = `
-<article class="calendar-card">
-  <div>
-    <h3>Keine Termine</h3>
-    <p>Derzeit nichts Geplantes.</p>
-  </div>
-</article>
-`;
-
-    return;
-
-  }
-
-  wrapper.innerHTML =
-    items
-      .map((event) => {
-
-        const category =
-          getTerminCategory(
-            event.category
-          );
-
-        const location =
-          event.location
-            ? ` · 📍 ${escapeHomeHtml(event.location)}`
-            : '';
-
-        return `
-<article class="calendar-card">
-  <a href="${getEventUrl(event.slug)}">
-    <div>
-      <h3>${category.icon} ${escapeHomeHtml(event.title)}</h3>
-      <p>🗓️ ${formatCardDate(event)}${location}</p>
-    </div>
-  </a>
-</article>
-`;
-
-      })
-      .join('');
+  await loadCards(
+    start,
+    end,
+    {
+      wrapperId:
+        'home-termine-teaser',
+      limit:
+        HOME_TERMINE_LIMIT
+    }
+  );
 
 }
 
@@ -269,14 +103,11 @@ async function loadHomeTeasers() {
 
   try {
 
-    const [news, termine] =
-      await Promise.all([
-        fetchPublishedNews(),
-        fetchTermine()
-      ]);
+    const news =
+      await fetchPublishedNews();
 
     renderHomeNewsTeaser(news);
-    renderHomeTermineTeaser(termine);
+    await loadHomeTermineTeaser();
 
   } catch (error) {
 

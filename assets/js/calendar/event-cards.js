@@ -1,11 +1,19 @@
 async function loadCards(
   start,
-  end
+  end,
+  options = {}
 ) {
+
+  const wrapperId =
+    options.wrapperId
+    || 'event-cards';
+
+  const limit =
+    options.limit;
 
   const wrapper =
     document.getElementById(
-      'event-cards'
+      wrapperId
     );
 
   if (!wrapper) {
@@ -142,7 +150,27 @@ async function loadCards(
 
     });
 
-  visibleCards.forEach(event => {
+  const toRender =
+    typeof limit === 'number'
+      ? visibleCards.slice(0, limit)
+      : visibleCards;
+
+  if (!toRender.length) {
+
+    wrapper.innerHTML = `
+<article class="calendar-card">
+  <div>
+    <h3>Keine Termine</h3>
+    <p>Derzeit nichts Geplantes.</p>
+  </div>
+</article>
+`;
+
+    return;
+
+  }
+
+  toRender.forEach(event => {
 
     const card =
       document.createElement('article');
