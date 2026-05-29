@@ -89,6 +89,7 @@ feedback_answers
 **Warum kein FK?** PostgreSQL erlaubt keine Spalte, die je nach Zeile auf `Termine`, `News` oder künftige Tabellen zeigt. Stattdessen:
 
 - Integrität in **App-Logik** (Admin legt Modul nur an, wenn Entity existiert)
+- Beim Löschen von Termin/News: Modul + Antworten entfernen (Admin-JS + DB-Trigger, siehe `supabase-feedback-cascade-delete.sql`)
 - `entity_type` per CHECK-Constraint auf erlaubte Werte
 - optional `UNIQUE (entity_type, entity_id)` — max. ein Modul pro Inhalt (v1)
 
@@ -102,6 +103,8 @@ feedback_answers
 | `entity_id` | bigint | polymorph, **kein FK** |
 | `question` | text | Anzeige-Frage |
 | `config` | jsonb | typ-spezifisch, default `{}` |
+| `public_voting` | boolean | optional öffentliche Abstimmung |
+| `enabled` | boolean | `false` = öffentlich ausgeblendet, Daten bleiben |
 | `created_at` | timestamptz | |
 
 **Poll-`config`** — Labels änderbar, IDs stabil:

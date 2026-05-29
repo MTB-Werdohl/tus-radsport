@@ -237,6 +237,39 @@ async function deleteFeedbackModule(moduleId) {
 
 }
 
+async function deleteFeedbackForEntity(
+  entityType,
+  entityId
+) {
+
+  const id =
+    normalizeFeedbackEntityId(entityId);
+
+  if (!entityType || !id) {
+    return { ok: true };
+  }
+
+  const { error } =
+    await window.supabaseClient
+      .from(
+        window.siteConfig.tables.feedbackModules
+      )
+      .delete()
+      .eq('entity_type', entityType)
+      .eq('entity_id', id);
+
+  if (error) {
+
+    console.error(error);
+
+    return { error };
+
+  }
+
+  return { ok: true };
+
+}
+
 async function fetchFeedbackModuleById(moduleId) {
 
   const { data, error } =
@@ -320,22 +353,63 @@ async function fetchFeedbackAnswersForModule(
 
 }
 
+function normalizeFeedbackEntityId(entityId) {
+
+  const value =
+    parseInt(entityId, 10);
+
+  if (!Number.isFinite(value)) {
+    return null;
+  }
+
+  return value;
+
+}
+
+function getFeedbackEntityMapKey(
+  entityType,
+  entityId
+) {
+
+  const id =
+    normalizeFeedbackEntityId(entityId);
+
+  if (!id) {
+    return null;
+  }
+
+  return `${entityType}:${id}`;
+
+}
+
 async function fetchFeedbackEntityTitle(
   entityType,
   entityId
 ) {
+
+  const id =
+    normalizeFeedbackEntityId(entityId);
+
+  if (!id) {
+    return null;
+  }
 
   if (
     entityType
     === window.siteConfig.feedback.entityTypes.event
   ) {
 
-    const { data } =
+    const { data, error } =
       await window.supabaseClient
         .from(window.siteConfig.tables.termine)
         .select('title, slug')
-        .eq('id', entityId)
+        .eq('id', id)
         .maybeSingle();
+
+    if (error) {
+      console.error(error);
+      return null;
+    }
 
     return data;
 
@@ -346,18 +420,135 @@ async function fetchFeedbackEntityTitle(
     === window.siteConfig.feedback.entityTypes.news
   ) {
 
-    const { data } =
+    const { data, error } =
       await window.supabaseClient
         .from(window.siteConfig.tables.news)
         .select('title, slug')
-        .eq('id', entityId)
+        .eq('id', id)
         .maybeSingle();
+
+    if (error) {
+      console.error(error);
+      return null;
+    }
 
     return data;
 
   }
 
   return null;
+
+}
+
+async function fetchFeedbackEntityTitlesForModules(
+  modules
+) {
+
+  const map =
+    new Map();
+
+  const eventIds =
+    [
+      ...new Set(
+        (modules || [])
+          .filter((module) =>
+            module.entity_type
+            === window.siteConfig.feedback.entityTypes.event
+          )
+          .map((module) =>
+            normalizeFeedbackEntityId(
+              module.entity_id
+            )
+          )
+          .filter(Boolean)
+      )
+    ];
+
+  const newsIds =
+    [
+      ...new Set(
+        (modules || [])
+          .filter((module) =>
+            module.entity_type
+            === window.siteConfig.feedback.entityTypes.news
+          )
+          .map((module) =>
+            normalizeFeedbackEntityId(
+              module.entity_id
+            )
+          )
+          .filter(Boolean)
+      )
+    ];
+
+  if (eventIds.length) {
+
+    const { data, error } =
+      await window.supabaseClient
+        .from(window.siteConfig.tables.termine)
+        .select('id, title, slug')
+        .in('id', eventIds);
+
+    if (error) {
+      console.error(error);
+    } else {
+      (data || []).forEach((row) => {
+        map.set(
+          getFeedbackEntityMapKey(
+            window.siteConfig.feedback.entityTypes.event,
+            row.id
+          ),
+          row
+        );
+      });
+    }
+
+  }
+
+  if (newsIds.length) {
+
+    const { data, error } =
+      await window.supabaseClient
+        .from(window.siteConfig.tables.news)
+        .select('id, title, slug')
+        .in('id', newsIds);
+
+    if (error) {
+      console.error(error);
+    } else {
+      (data || []).forEach((row) => {
+        map.set(
+          getFeedbackEntityMapKey(
+            window.siteConfig.feedback.entityTypes.news,
+            row.id
+          ),
+          row
+        );
+      });
+    }
+
+  }
+
+  return map;
+
+}
+
+function getFeedbackEntityFromMap(
+  entityMap,
+  module
+) {
+
+  const key =
+    getFeedbackEntityMapKey(
+      module.entity_type,
+      module.entity_id
+    );
+
+  if (!key) {
+    return null;
+  }
+
+  return entityMap.get(key) || null;
 
 }
 

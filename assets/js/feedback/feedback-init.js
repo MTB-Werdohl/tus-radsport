@@ -25,7 +25,7 @@ async function initFeedbackModule(options) {
       entityId
     );
 
-  if (!module) {
+  if (!module || module.enabled === false) {
     container.innerHTML = '';
     return;
   }

@@ -327,6 +327,22 @@ margin: 0;
   line-height: 1.3;
 }
 
+.feedback-card-disabled {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  vertical-align: middle;
+  background: rgba(255, 193, 7, 0.18);
+  color: #856404;
+}
+
+.feedback-admin-card--disabled {
+  opacity: 0.88;
+}
+
 .feedback-card-question {
   font-size: 0.875rem;
   opacity: 0.82;

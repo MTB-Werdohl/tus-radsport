@@ -127,6 +127,23 @@ async function deleteNews(id) {
     return;
   }
 
+  const feedbackResult =
+    await deleteFeedbackForEntity(
+      window.siteConfig.feedback.entityTypes.news,
+      id
+    );
+
+  if (feedbackResult?.error) {
+
+    alert(
+      'News konnte nicht gelöscht werden: ' +
+      'Das zugehörige Feedback-Modul konnte nicht entfernt werden.'
+    );
+
+    return;
+
+  }
+
   const { error } =
     await window.supabaseClient
       .from(window.siteConfig.tables.news)

@@ -127,6 +127,24 @@ function renderFeedbackSummaryLines(
 
 }
 
+function formatFeedbackEntityTitle(
+  module,
+  entity
+) {
+
+  if (entity?.title) {
+    return entity.title;
+  }
+
+  const typeLabel =
+    getFeedbackEntityTypeLabel(
+      module.entity_type
+    );
+
+  return `${typeLabel} nicht gefunden`;
+
+}
+
 async function loadFeedbackList() {
 
   const container =
@@ -151,14 +169,60 @@ async function loadFeedbackList() {
 
   }
 
+  const entityMap =
+    await fetchFeedbackEntityTitlesForModules(
+      modules
+    );
+
+  const validModules = [];
+  const orphanedModules = [];
+
+  modules.forEach((module) => {
+
+    const entity =
+      getFeedbackEntityFromMap(
+        entityMap,
+        module
+      );
+
+    if (entity) {
+      validModules.push(module);
+    } else {
+      orphanedModules.push(module);
+    }
+
+  });
+
+  if (orphanedModules.length) {
+
+    await Promise.all(
+      orphanedModules.map((module) =>
+        deleteFeedbackForEntity(
+          module.entity_type,
+          module.entity_id
+        )
+      )
+    );
+
+  }
+
+  if (!validModules.length) {
+
+    container.innerHTML =
+      '<p class="admin-hint">Noch keine Feedback-Module angelegt.</p>';
+
+    return;
+
+  }
+
   const enriched =
     await Promise.all(
-      modules.map(async (module) => {
+      validModules.map(async (module) => {
 
         const entity =
-          await fetchFeedbackEntityTitle(
-            module.entity_type,
-            module.entity_id
+          getFeedbackEntityFromMap(
+            entityMap,
+            module
           );
 
         const answers =
@@ -262,8 +326,10 @@ function renderFeedbackList(
 
         const entityTitle =
           escapeAdminHtml(
-            row.entity?.title
-              || `ID ${module.entity_id}`
+            formatFeedbackEntityTitle(
+              module,
+              row.entity
+            )
           );
 
         const question =
@@ -277,9 +343,14 @@ function renderFeedbackList(
             module.entity_id
           );
 
+        const disabledBadge =
+          module.enabled === false
+            ? '<span class="feedback-card-disabled">Deaktiviert</span>'
+            : '';
+
         return `
 
-<article class="event-card feedback-admin-card">
+<article class="event-card feedback-admin-card${module.enabled === false ? ' feedback-admin-card--disabled' : ''}">
 
   <div class="event-header">
 
@@ -287,6 +358,7 @@ function renderFeedbackList(
 
       <div class="feedback-card-title">
         ${entityTitle}
+        ${disabledBadge}
       </div>
 
       <div class="feedback-card-question">

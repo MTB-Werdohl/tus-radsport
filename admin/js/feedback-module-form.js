@@ -216,7 +216,8 @@ function fillFeedbackAdminForm(module) {
 
   }
 
-  enabled.checked = true;
+  enabled.checked =
+    module.enabled !== false;
   typeSelect.value = module.type;
   questionInput.value = module.question || '';
 
@@ -331,23 +332,78 @@ async function saveFeedbackAdminForEntity(
 
   if (!enabled) {
 
-    if (feedbackAdminState.module?.id) {
+    if (!feedbackAdminState.module?.id) {
+      return { ok: true };
+    }
 
-      const result =
-        await deleteFeedbackModule(
-          feedbackAdminState.module.id
-        );
+    const existing =
+      feedbackAdminState.module;
 
-      if (result?.error) {
-        return result;
+    const type =
+      document.getElementById(
+        'feedback-admin-type'
+      )?.value
+      || existing.type;
+
+    const question =
+      document.getElementById(
+        'feedback-admin-question'
+      )?.value
+        .trim()
+      || existing.question
+      || '';
+
+    let config =
+      existing.config || {};
+
+    if (
+      type
+      === window.siteConfig.feedback.types.poll
+    ) {
+
+      const readConfig =
+        readFeedbackAdminPollConfig();
+
+      if (readConfig.options?.length) {
+        config = readConfig;
       }
 
     }
 
-    feedbackAdminState.module = null;
+    const publicVoting =
+      document.getElementById(
+        'feedback-admin-public-voting'
+      )?.checked === true;
+
+    const payload = {
+      type,
+      entity_type: entityType,
+      entity_id: entityId,
+      question,
+      config,
+      public_voting: publicVoting,
+      enabled: false
+    };
+
+    const result =
+      await saveFeedbackModule(payload);
+
+    if (result?.error) {
+
+      if (!silent) {
+        alert(result.error.message);
+      }
+
+      return result;
+
+    }
+
+    feedbackAdminState.module =
+      result.data;
+
     updateFeedbackAdminResultsLink();
 
-    return { ok: true };
+    return { ok: true, data: result.data };
 
   }
 
@@ -415,7 +471,8 @@ async function saveFeedbackAdminForEntity(
     entity_id: entityId,
     question,
     config,
-    public_voting: publicVoting
+    public_voting: publicVoting,
+    enabled: true
   };
 
   const result =
@@ -551,6 +608,10 @@ function mountFeedbackAdminForm(mountId) {
   </button>
 
 </div>
+
+<p class="admin-hint">
+  Deaktivieren blendet das Feedback auf der Website aus. Antworten bleiben gespeichert und werden erst beim Löschen des Termins bzw. der News entfernt.
+</p>
 
 <p class="admin-hint">
   Wird zusammen mit „Speichern“ oben gesichert.
