@@ -41,6 +41,92 @@ function getFeedbackEntityTypeLabel(entityType) {
 
 }
 
+function renderFeedbackSummaryLines(
+  module,
+  summary
+) {
+
+  const counts =
+    summary?.counts || {};
+
+  let keys = [];
+
+  if (
+    module.type
+    === window.siteConfig.feedback.types.yesMaybe
+  ) {
+
+    keys = [
+      window.siteConfig.feedback.answers.yes,
+      window.siteConfig.feedback.answers.maybe
+    ];
+
+  } else if (
+    module.type
+    === window.siteConfig.feedback.types.yesNoComment
+  ) {
+
+    keys = [
+      window.siteConfig.feedback.answers.yes,
+      window.siteConfig.feedback.answers.no
+    ];
+
+  } else if (
+    module.type
+    === window.siteConfig.feedback.types.poll
+  ) {
+
+    const config =
+      normalizeFeedbackPollConfig(
+        module.config
+      );
+
+    keys =
+      config.options.map(
+        (option) => option.id
+      );
+
+  } else {
+
+    keys =
+      Object.keys(counts);
+
+  }
+
+  const lines =
+    keys.map((key) => {
+
+      const label =
+        formatFeedbackAnswerLabel(
+          module,
+          key
+        );
+
+      const count =
+        counts[key] || 0;
+
+      return `
+        <div class="feedback-card-answer-row">
+          ${escapeAdminHtml(label)}:
+          <strong>${count}</strong>
+        </div>
+      `;
+
+    })
+      .join('');
+
+  if (!lines) {
+    return `
+      <div class="feedback-card-answer-row">
+        Keine Antworten
+      </div>
+    `;
+  }
+
+  return lines;
+
+}
+
 async function loadFeedbackList() {
 
   const container =
@@ -75,15 +161,21 @@ async function loadFeedbackList() {
             module.entity_id
           );
 
-        const answerCount =
-          await countFeedbackAnswers(
+        const answers =
+          await fetchFeedbackAnswersForModule(
             module.id
+          );
+
+        const summary =
+          buildFeedbackSummary(
+            module,
+            answers
           );
 
         return {
           module,
           entity,
-          answerCount
+          summary
         };
 
       })
@@ -174,9 +266,15 @@ function renderFeedbackList(
               || `ID ${module.entity_id}`
           );
 
-        const entityTypeLabel =
-          getFeedbackEntityTypeLabel(
-            module.entity_type
+        const question =
+          escapeAdminHtml(
+            module.question || '—'
+          );
+
+        const editUrl =
+          getFeedbackEntityEditUrl(
+            module.entity_type,
+            module.entity_id
           );
 
         return `
@@ -185,47 +283,47 @@ function renderFeedbackList(
 
   <div class="event-header">
 
-    <h2>
-      ${escapeAdminHtml(module.question)}
-    </h2>
+    <div class="feedback-card-body">
 
-    <span class="feedback-admin-badge">
-      ${escapeAdminHtml(
-        getFeedbackTypeLabel(module.type)
-      )}
-    </span>
+      <div class="feedback-card-title">
+        ${entityTitle}
+      </div>
 
-  </div>
+      <div class="feedback-card-question">
+        ${question}
+      </div>
 
-  <p>
-    ${escapeAdminHtml(entityTypeLabel)}:
-    <strong>${entityTitle}</strong>
-  </p>
+      <div class="feedback-card-answers">
+        <div class="feedback-card-answers-label">
+          Antworten:
+        </div>
+        ${renderFeedbackSummaryLines(
+          module,
+          row.summary
+        )}
+      </div>
 
-  <p>
-    Antworten:
-    <strong>${row.answerCount}</strong>
-  </p>
+    </div>
 
-  <div class="feedback-admin-card-actions">
+    <div class="actions feedback-card-actions">
 
-    <a
-      href="/admin/feedback_results.html?module_id=${module.id}"
-      class="new-button">
+      <a
+        href="/admin/feedback_results.html?module_id=${module.id}"
+        class="new-button">
 
-      Auswertung
+        Auswertung
 
-    </a>
+      </a>
 
-    <a
-      href="${getFeedbackEntityEditUrl(
-        module.entity_type,
-        module.entity_id
-      )}">
+      <a
+        href="${editUrl}"
+        class="secondary-button">
 
-      Inhalt bearbeiten
+        Bearbeiten
 
-    </a>
+      </a>
+
+    </div>
 
   </div>
 
