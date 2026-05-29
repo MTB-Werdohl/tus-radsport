@@ -16,6 +16,8 @@ function formatFeedbackResultsEntityTitle(
 
 }
 
+function formatFeedbackMemberName(memberRow) {
+
   const member =
     memberRow?.members;
 

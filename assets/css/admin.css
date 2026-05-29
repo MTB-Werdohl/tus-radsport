@@ -74,7 +74,8 @@ h3 {
 }
 
 #events,
-#members {
+#members,
+#galleries {
   display: flex;
   flex-direction: column;
   gap: 12px;
