@@ -16,6 +16,13 @@ window.requireAdminSession = async function (callback) {
 
   if (typeof callback === 'function') {
 
+    const adminRoot =
+      document.getElementById('admin');
+
+    if (adminRoot) {
+      adminRoot.dataset.sessionReady = 'true';
+    }
+
     return await callback();
 
   }

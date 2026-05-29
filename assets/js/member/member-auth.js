@@ -180,23 +180,22 @@ async function waitForAuthSession(
   timeoutMs
 ) {
 
-  const limit =
+  const callbackTimeout =
     timeoutMs || 12000;
 
-  const { data: { session: initial } } =
-    await window.supabaseClient.auth.getSession();
+  const hydrateTimeout =
+    3000;
 
-  if (initial?.user) {
-    return initial;
-  }
-
-  if (!isAuthCallback()) {
-    return null;
-  }
+  const waitMs =
+    isAuthCallback()
+      ? callbackTimeout
+      : hydrateTimeout;
 
   return new Promise((resolve) => {
 
     let settled = false;
+
+    let subscription = null;
 
     const finish = (session) => {
 
@@ -208,9 +207,13 @@ async function waitForAuthSession(
 
       window.clearTimeout(timer);
 
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
 
-      resolve(session);
+      resolve(
+        session?.user
+          ? session
+          : null
+      );
 
     };
 
@@ -219,12 +222,33 @@ async function waitForAuthSession(
 
         finish(null);
 
-      }, limit);
+      }, waitMs);
 
-    const { data: { subscription } } =
+    const { data } =
       window.supabaseClient.auth.onAuthStateChange(
 
         (event, session) => {
+
+          if (
+            event === 'INITIAL_SESSION'
+          ) {
+
+            if (
+              session?.user
+              || !isAuthCallback()
+            ) {
+              finish(session);
+            }
+
+            return;
+
+          }
+
+          if (
+            !isAuthCallback()
+          ) {
+            return;
+          }
 
           if (
             !session?.user
@@ -233,9 +257,8 @@ async function waitForAuthSession(
           }
 
           if (
-            event === 'SIGNED_IN' ||
-            event === 'INITIAL_SESSION' ||
-            event === 'TOKEN_REFRESHED'
+            event === 'SIGNED_IN'
+            || event === 'TOKEN_REFRESHED'
           ) {
             finish(session);
           }
@@ -243,6 +266,9 @@ async function waitForAuthSession(
         }
 
       );
+
+    subscription =
+      data.subscription;
 
   });
 
@@ -438,6 +464,41 @@ async function initMemberAuth() {
       }
 
       if (event === 'SIGNED_OUT') {
+
+        currentMember = null;
+
+      }
+
+      refreshMemberNav();
+
+    }
+
+  );
+
+  window.addEventListener(
+
+    'storage',
+
+    async (event) => {
+
+      if (
+        !event.key
+        || !event.key.includes('auth-token')
+      ) {
+        return;
+      }
+
+      const { data: { session } } =
+        await window.supabaseClient.auth.getSession();
+
+      if (session?.user) {
+
+        await validateMemberSession(
+          session,
+          { strict: false }
+        );
+
+      } else {
 
         currentMember = null;
 
