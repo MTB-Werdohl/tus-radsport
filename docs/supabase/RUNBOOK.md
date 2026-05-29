@@ -59,21 +59,30 @@ Nur ausführen, wenn der Constraint noch fehlt (Edge Function `save-push-subscri
 ### Edge Function `anonymize-member-account` deployen
 
 1. Zuerst SQL: [`supabase-members-anonymize.sql`](../supabase-members-anonymize.sql) im **SQL Editor** ausführen.
-2. **Edge Functions** → **Deploy a new function** (oder bestehende bearbeiten).
-3. Funktionsname exakt: `anonymize-member-account`
-4. Code aus [`supabase-edge-anonymize-member-account.ts`](../supabase-edge-anonymize-member-account.ts) einfügen (die `.ts`-Datei **nicht** im SQL Editor öffnen).
-5. **Deploy** — Env-Variablen (`SUPABASE_URL`, Keys) setzt Supabase automatisch.
+2. **Edge Functions** → **Deploy a new function** (oder CLI, siehe unten).
+3. **Slug / Name exakt:** `anonymize-member-account` — die Website ruft `/functions/v1/anonymize-member-account` auf. Ein auto-generierter Slug wie `bright-function` führt zu **404/CORS**.
+4. Code aus [`supabase-edge-anonymize-member-account.ts`](../supabase-edge-anonymize-member-account.ts) oder [`supabase/functions/anonymize-member-account/index.ts`](../../supabase/functions/anonymize-member-account/index.ts).
+5. **Deploy**
+6. **Verify JWT deaktivieren** (sonst CORS-Fehler im Browser):
+   - Function → **Details** → **Enforce JWT Verification** → **OFF**
+   - Oder CLI: `supabase/config.toml` → `[functions.anonymize-member-account] verify_jwt = false`
+   - JWT wird intern per `auth.getUser()` geprüft.
 
-Test (optional, mit gültigem JWT in der Browser-Konsole nach Login):
+**CLI (optional):**
 
-```javascript
-const { data: { session } } = await supabaseClient.auth.getSession();
-await fetch('https://DEIN-PROJECT.supabase.co/functions/v1/anonymize-member-account', {
-  method: 'POST',
-  headers: { Authorization: 'Bearer ' + session.access_token, 'Content-Type': 'application/json' },
-  body: '{}'
-});
+```bash
+supabase functions deploy anonymize-member-account --project-ref eazizesytrnknbgrnggj
 ```
+
+Prüfen:
+
+```bash
+curl -i -X OPTIONS "https://eazizesytrnknbgrnggj.supabase.co/functions/v1/anonymize-member-account"
+```
+
+Erwartung: **HTTP 200**, Body `ok`, Header `Access-Control-Allow-Origin: *`.
+
+Falscher Slug (404): alte Test-Function im Dashboard löschen.
 
 ## Policy-Matrix (Kurz)
 

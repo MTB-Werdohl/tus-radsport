@@ -1,23 +1,3 @@
-// @ts-nocheck
-// ============================================================================
-// NICHT im SQL Editor ausführen — das ist TypeScript für eine Edge Function!
-//
-// Deploy:
-//   Supabase Dashboard → Edge Functions → Create function
-//   Slug exakt: anonymize-member-account  (URL-Pfad, siehe site-config.js)
-//   NICHT auto-generierten Slug wie „bright-function“ verwenden!
-//   Code: gesamten Inhalt dieser Datei einfügen → Deploy
-//
-// WICHTIG (Browser/CORS): Unter Function Details → Verify JWT = AUS
-//   Sonst scheitert der OPTIONS-Preflight mit CORS-Fehler im Browser.
-//   JWT wird in der Function per auth.getUser() geprüft.
-//
-// Voraussetzung: docs/supabase-members-anonymize.sql im SQL Editor ausgeführt
-// ============================================================================
-//
-// Self-Service (public): POST {} mit JWT → DB anonymisieren + auth.users löschen
-// Vorstand: POST { "member_id": 123 } → gleiche Anonymisierung für beliebiges Mitglied
-
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
 import { createClient } from 'npm:@supabase/supabase-js@2';

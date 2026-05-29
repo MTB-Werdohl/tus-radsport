@@ -1,0 +1,5 @@
+# Supabase CLI — optional für Edge-Function-Deploys
+# Primäre Referenz bleibt docs/supabase-edge-*.ts + RUNBOOK
+
+[functions.anonymize-member-account]
+verify_jwt = false
