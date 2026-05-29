@@ -142,9 +142,35 @@ href="${SITE_URL}/${folder}/${slug}/">
 
 <script>
 
-window.location.replace(
-'${target}'
-);
+(function () {
+
+  var target =
+    new URL(
+      '${target}',
+      window.location.origin
+    );
+
+  var incoming =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  incoming.forEach(function (value, key) {
+
+    target.searchParams.set(
+      key,
+      value
+    );
+
+  });
+
+  window.location.replace(
+    target.pathname
+    + target.search
+    + window.location.hash
+  );
+
+})();
 
 </script>
 

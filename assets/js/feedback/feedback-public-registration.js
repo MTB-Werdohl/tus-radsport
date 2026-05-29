@@ -1,14 +1,31 @@
 const PUBLIC_FEEDBACK_RETURN_KEY =
   'publicFeedbackReturnUrl';
 
+const PUBLIC_REGISTRATION_PENDING_KEY =
+  'publicRegistrationPending';
+
 function getPublicFeedbackReturnUrl() {
 
-  return (
+  const canonical =
+    getPublicFeedbackRedirectUrl();
+
+  const stored =
     sessionStorage.getItem(
       PUBLIC_FEEDBACK_RETURN_KEY
-    )
-    || getPublicFeedbackRedirectUrl()
-  );
+    );
+
+  if (!stored) {
+    return canonical;
+  }
+
+  if (
+    canonical.includes('event.html')
+    || canonical.includes('news-detail.html')
+  ) {
+    return canonical;
+  }
+
+  return stored;
 
 }
 
@@ -30,10 +47,152 @@ function setPublicFeedbackReturnUrl(url) {
 
 function getPublicFeedbackRedirectUrl() {
 
-  const href =
-    window.location.href.split('#')[0];
+  const origin =
+    window.location.origin;
 
-  return href;
+  const path =
+    window.location.pathname;
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  let slug =
+    params.get('slug');
+
+  if (
+    !slug
+    && path.includes('/kalender/')
+  ) {
+
+    const parts =
+      path.split('/').filter(Boolean);
+
+    if (
+      parts[0] === 'kalender'
+      && parts.length >= 2
+    ) {
+      slug = parts[parts.length - 1];
+    }
+
+  }
+
+  if (
+    slug
+    && (
+      path.includes('event.html')
+      || path.includes('/kalender/')
+    )
+  ) {
+
+    return (
+      `${origin}/event.html?slug=${encodeURIComponent(slug)}`
+    );
+
+  }
+
+  if (
+    !slug
+    && path.includes('/news/')
+  ) {
+
+    const parts =
+      path.split('/').filter(Boolean);
+
+    if (
+      parts[0] === 'news'
+      && parts.length >= 2
+    ) {
+      slug = parts[parts.length - 1];
+    }
+
+  }
+
+  if (
+    slug
+    && (
+      path.includes('news-detail.html')
+      || path.includes('/news/')
+    )
+  ) {
+
+    return (
+      `${origin}/news-detail.html?slug=${encodeURIComponent(slug)}`
+    );
+
+  }
+
+  return (
+    window.location.href.split('#')[0]
+  );
+
+}
+
+function savePublicRegistrationPending(
+  registration
+) {
+
+  if (!registration?.email) {
+    return;
+  }
+
+  sessionStorage.setItem(
+    PUBLIC_REGISTRATION_PENDING_KEY,
+    JSON.stringify({
+      email: registration.email,
+      vorname: registration.vorname || '',
+      nachname: registration.nachname || '',
+      telefon: registration.telefon || '',
+      savedAt: Date.now()
+    })
+  );
+
+}
+
+function readPublicRegistrationPending(
+  email
+) {
+
+  const raw =
+    sessionStorage.getItem(
+      PUBLIC_REGISTRATION_PENDING_KEY
+    );
+
+  if (!raw) {
+    return null;
+  }
+
+  try {
+
+    const data =
+      JSON.parse(raw);
+
+    if (
+      !data?.email
+      || data.email
+        !== String(email || '')
+          .trim()
+          .toLowerCase()
+    ) {
+      return null;
+    }
+
+    return data;
+
+  } catch (error) {
+
+    return null;
+
+  }
+
+}
+
+function clearPublicRegistrationPending() {
+
+  sessionStorage.removeItem(
+    PUBLIC_REGISTRATION_PENDING_KEY
+  );
 
 }
 
@@ -423,6 +582,10 @@ async function sendPublicParticipantRegistrationMagicLink(
   if (error) {
     return { error };
   }
+
+  savePublicRegistrationPending(
+    registration
+  );
 
   return { ok: true };
 

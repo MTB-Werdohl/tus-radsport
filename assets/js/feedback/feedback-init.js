@@ -1,3 +1,6 @@
+let activeFeedbackModuleOptions =
+  null;
+
 async function initFeedbackModule(options) {
 
   const entityType =
@@ -18,6 +21,16 @@ async function initFeedbackModule(options) {
   ) {
     return;
   }
+
+  activeFeedbackModuleOptions =
+    {
+      entityType,
+      entityId,
+      container:
+        typeof options?.container === 'string'
+          ? options.container
+          : container.id
+    };
 
   const module =
     await fetchFeedbackModule(
@@ -78,3 +91,18 @@ async function initFeedbackModule(options) {
   );
 
 }
+
+window.addEventListener(
+  'member-session-ready',
+  () => {
+
+    if (
+      activeFeedbackModuleOptions
+    ) {
+      initFeedbackModule(
+        activeFeedbackModuleOptions
+      );
+    }
+
+  }
+);

@@ -156,9 +156,49 @@ async function ensurePublicParticipantFromSession(
     session.user.user_metadata
     || {};
 
-  if (
+  const pending =
+    typeof readPublicRegistrationPending
+      === 'function'
+      ? readPublicRegistrationPending(
+          session.user.email
+        )
+      : null;
+
+  const isPublicRegistration =
     meta.public_registration
-    !== true
+    === true
+    || !!pending;
+
+  if (!isPublicRegistration) {
+    return null;
+  }
+
+  const vorname =
+    String(
+      meta.vorname
+      || pending?.vorname
+      || ''
+    ).trim();
+
+  const nachname =
+    String(
+      meta.nachname
+      || pending?.nachname
+      || ''
+    ).trim();
+
+  const telefon =
+    meta.telefon
+      ? String(meta.telefon).trim()
+      : (
+          pending?.telefon
+            ? String(pending.telefon).trim()
+            : null
+        );
+
+  if (
+    !vorname
+    && !nachname
   ) {
     return null;
   }
@@ -167,16 +207,9 @@ async function ensurePublicParticipantFromSession(
     await window.supabaseClient.rpc(
       'complete_public_participant_registration',
       {
-        p_vorname:
-          String(meta.vorname || '')
-            .trim(),
-        p_nachname:
-          String(meta.nachname || '')
-            .trim(),
-        p_telefon:
-          meta.telefon
-            ? String(meta.telefon).trim()
-            : null
+        p_vorname: vorname,
+        p_nachname: nachname,
+        p_telefon: telefon
       }
     );
 
@@ -188,12 +221,34 @@ async function ensurePublicParticipantFromSession(
 
   }
 
+  if (
+    typeof clearPublicRegistrationPending
+      === 'function'
+  ) {
+    clearPublicRegistrationPending();
+  }
+
   member =
     await fetchMemberByEmail(
       session.user.email
     );
 
   return member;
+
+}
+
+function notifyMemberSessionReady() {
+
+  window.dispatchEvent(
+    new CustomEvent(
+      'member-session-ready',
+      {
+        detail: {
+          member: currentMember
+        }
+      }
+    )
+  );
 
 }
 
@@ -237,9 +292,18 @@ async function validateMemberSession(
         session.user.user_metadata
         || {};
 
+      const pending =
+        typeof readPublicRegistrationPending
+          === 'function'
+          ? readPublicRegistrationPending(
+              session.user.email
+            )
+          : null;
+
       if (
         meta.public_registration
         === true
+        || pending
       ) {
 
         showMemberToast(
@@ -263,17 +327,134 @@ async function validateMemberSession(
 
   }
 
+  const previousMember =
+    currentMember;
+
   currentMember = member;
 
   refreshMemberNav();
 
+  if (
+    !previousMember?.id
+    && member?.id
+  ) {
+    notifyMemberSessionReady();
+  }
+
   return member;
+
+}
+
+async function recoverAuthSessionFromUrl() {
+
+  if (!isAuthCallback()) {
+    return null;
+  }
+
+  const { data: existing } =
+    await window.supabaseClient.auth.getSession();
+
+  if (existing.session?.user) {
+    return existing.session;
+  }
+
+  const searchParams =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const code =
+    searchParams.get('code');
+
+  if (code) {
+
+    const { data, error } =
+      await window.supabaseClient.auth.exchangeCodeForSession(
+        code
+      );
+
+    if (
+      !error
+      && data?.session?.user
+    ) {
+      return data.session;
+    }
+
+    if (error) {
+      console.error(
+        'Auth code exchange:',
+        error
+      );
+    }
+
+  }
+
+  const hash =
+    window.location.hash.replace(
+      /^#/,
+      ''
+    );
+
+  if (
+    hash.includes('access_token=')
+  ) {
+
+    const hashParams =
+      new URLSearchParams(hash);
+
+    const accessToken =
+      hashParams.get('access_token');
+
+    const refreshToken =
+      hashParams.get('refresh_token');
+
+    if (
+      accessToken
+      && refreshToken
+    ) {
+
+      const { data, error } =
+        await window.supabaseClient.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken
+        });
+
+      if (
+        !error
+        && data?.session?.user
+      ) {
+        return data.session;
+      }
+
+      if (error) {
+        console.error(
+          'Auth hash session:',
+          error
+        );
+      }
+
+    }
+
+  }
+
+  return null;
 
 }
 
 async function waitForAuthSession(
   timeoutMs
 ) {
+
+  if (isAuthCallback()) {
+
+    const recovered =
+      await recoverAuthSessionFromUrl();
+
+    if (recovered?.user) {
+      return recovered;
+    }
+
+  }
 
   const callbackTimeout =
     timeoutMs || 12000;
