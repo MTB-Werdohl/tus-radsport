@@ -336,7 +336,7 @@ function renderMemberProfile(
 
   <p class="member-public-hint">
     Du bist als externer Teilnehmer registriert — kein Vereinsmitglied.
-    Du kannst an öffentlichen Abstimmungen teilnehmen und dich per Magic Link anmelden.
+    Du kannst dich an Veranstaltungen anmelden und teilnehmen.
   </p>
 
   <dl class="member-profile-list">
@@ -388,7 +388,7 @@ function renderMemberProfile(
     id="member-delete-account-btn"
     class="member-delete-account-btn">
 
-    Account endgültig löschen
+    Account löschen
 
   </button>
 

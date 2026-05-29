@@ -24,44 +24,100 @@ async function anonymizeMemberAccount(
     body.member_id = options.memberId;
   }
 
-  const response =
-    await fetch(
-      getFunctionUrl(
-        'anonymizeMemberAccount'
-      ),
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization:
-            `Bearer ${session.access_token}`
-        },
-        body: JSON.stringify(body)
-      }
-    );
-
-  let result = {};
+  const functionName =
+    window.siteConfig.functions
+      .anonymizeMemberAccount;
 
   try {
-    result = await response.json();
-  } catch (error) {
-    result = {};
-  }
 
-  if (!response.ok) {
+    const { data, error } =
+      await window.supabaseClient.functions.invoke(
+        functionName,
+        { body }
+      );
+
+    if (error) {
+
+      let message =
+        error.message
+        || 'Account konnte nicht gelöscht werden.';
+
+      if (error.context) {
+
+        try {
+
+          const payload =
+            await error.context.json();
+
+          if (payload?.error) {
+            message = payload.error;
+          }
+
+        } catch (parseError) {
+
+          console.warn(parseError);
+
+        }
+
+      }
+
+      if (
+        /failed to fetch|networkerror|load failed/i
+          .test(message)
+      ) {
+
+        message =
+          'Verbindung zur Server-Funktion fehlgeschlagen. '
+          + 'Ist die Edge Function „'
+          + functionName
+          + '“ deployt?';
+
+      }
+
+      return {
+        error: new Error(message)
+      };
+
+    }
+
+    if (data?.error) {
+
+      return {
+        error: new Error(data.error)
+      };
+
+    }
 
     return {
-      error: new Error(
-        result.error
-          || 'Account konnte nicht gelöscht werden.'
-      )
+      ok: true,
+      data
+    };
+
+  } catch (error) {
+
+    console.error(error);
+
+    let message =
+      error?.message
+      || 'Account konnte nicht gelöscht werden.';
+
+    if (
+      /failed to fetch|networkerror|load failed/i
+        .test(message)
+    ) {
+
+      message =
+        'Verbindung zur Server-Funktion fehlgeschlagen. '
+        + 'Ist die Edge Function „'
+        + functionName
+        + '“ deployt?';
+
+    }
+
+    return {
+      error: new Error(message)
     };
 
   }
-
-  return {
-    ok: true,
-    data: result
-  };
 
 }
