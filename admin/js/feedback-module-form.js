@@ -718,7 +718,7 @@ function mountFeedbackAdminForm(mountId) {
 </label>
 
 <p class="admin-hint">
-  Standard: nur Vereinsmitglieder. Öffentlich: Registrierung im Pop-up, Bestätigung per Magic Link — abstimmen erst nach E-Mail-Link.
+  Standard: nur Vereinsmitglieder. Öffentlich: Pop-up → Bestätigungs-Link per E-Mail → erst nach Klick Eintrag in der DB, dann abstimmen.
 </p>
 
 <div

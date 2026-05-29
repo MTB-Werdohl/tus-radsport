@@ -135,6 +135,68 @@ async function rejectInvalidMemberSession() {
 
 }
 
+async function ensurePublicParticipantFromSession(
+  session
+) {
+
+  if (!session?.user?.email) {
+    return null;
+  }
+
+  let member =
+    await fetchMemberByEmail(
+      session.user.email
+    );
+
+  if (member) {
+    return member;
+  }
+
+  const meta =
+    session.user.user_metadata
+    || {};
+
+  if (
+    meta.public_registration
+    !== true
+  ) {
+    return null;
+  }
+
+  const { error } =
+    await window.supabaseClient.rpc(
+      'complete_public_participant_registration',
+      {
+        p_vorname:
+          String(meta.vorname || '')
+            .trim(),
+        p_nachname:
+          String(meta.nachname || '')
+            .trim(),
+        p_telefon:
+          meta.telefon
+            ? String(meta.telefon).trim()
+            : null
+      }
+    );
+
+  if (error) {
+
+    console.error(error);
+
+    return null;
+
+  }
+
+  member =
+    await fetchMemberByEmail(
+      session.user.email
+    );
+
+  return member;
+
+}
+
 async function validateMemberSession(
   session,
   options
@@ -151,17 +213,50 @@ async function validateMemberSession(
 
   }
 
-  const member =
+  let member =
     await fetchMemberByEmail(
       session.user.email
     );
 
   if (!member) {
 
+    member =
+      await ensurePublicParticipantFromSession(
+        session
+      );
+
+  }
+
+  if (!member) {
+
     currentMember = null;
 
     if (strict) {
-      await rejectInvalidMemberSession();
+
+      const meta =
+        session.user.user_metadata
+        || {};
+
+      if (
+        meta.public_registration
+        === true
+      ) {
+
+        showMemberToast(
+          'Registrierung konnte nicht abgeschlossen werden. Bitte Formular erneut ausfüllen.',
+          'error'
+        );
+
+        await window.supabaseClient.auth.signOut({
+          scope: 'local'
+        });
+
+      } else {
+
+        await rejectInvalidMemberSession();
+
+      }
+
     }
 
     return null;

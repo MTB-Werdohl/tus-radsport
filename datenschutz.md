@@ -283,7 +283,7 @@ Rechtsgrundlage: Art. 6 Abs. 1 lit. b DSGVO und Art. 6 Abs. 1 lit. f DSGVO.
 
 ### 12.5 Externe Teilnehmer (Rolle „public“)
 
-Bei **öffentlichen Abstimmungen** (z. B. Anmeldung zum Trainingslager) kannst du dich ohne Vereinsmitgliedschaft mit Name und E-Mail anmelden.
+Bei **öffentlichen Abstimmungen** (z. B. Anmeldung zum Trainingslager) kannst du dich ohne Vereinsmitgliedschaft mit Name und E-Mail anmelden. Deine Angaben werden **erst in unserer Datenbank gespeichert, wenn du den Bestätigungs-Link in der E-Mail anklickst** (Magic Link). Vorher werden Name und Telefon nur vorübergehend bei Supabase Auth hinterlegt, bis du die E-Mail bestätigst.
 
 Verarbeitete Daten:
 

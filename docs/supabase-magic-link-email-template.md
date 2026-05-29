@@ -13,7 +13,7 @@ Rechtliche Einordnung (Website): [Datenschutzerklärung § 12.1](https://www.mtb
 ## Betreff
 
 ```
-Dein Anmeldelink — MTB Werdohl (TuS Jahn Werdohl e.V.)
+Dein Anmeldelink — MTB Werdohl
 ```
 
 Alternativ (kürzer):
@@ -155,12 +155,14 @@ Automatische System-E-Mail — bitte nicht antworten.
 
 ## Hinweise
 
-| Thema | Empfehlung |
-|--------|------------|
-| **Absender-Name** | `MTB Werdohl` oder `TuS Jahn Werdohl e.V.` |
-| **Reply-To** | erreichbare Vereinsadresse (z. B. schlotmann@t-online.de) |
-| **Link-Gültigkeit** | in Supabase unter Auth-Einstellungen prüfen; im Text bewusst nur „zeitlich begrenzt“ |
-| **Test** | Magic Link an eigene Adresse senden — Darstellung in Gmail, Outlook, Handy prüfen |
-| **Confirm email** | bei Magic Link in der Regel deaktiviert lassen (Link = Bestätigung) |
+
+| Thema               | Empfehlung                                                                                 |
+| ------------------- | ------------------------------------------------------------------------------------------ |
+| **Absender-Name**   | `MTB Werdohl` oder `TuS Jahn Werdohl e.V.`                                                 |
+| **Reply-To**        | erreichbare Vereinsadresse (z. B. [schlotmann@t-online.de](mailto:schlotmann@t-online.de)) |
+| **Link-Gültigkeit** | in Supabase unter Auth-Einstellungen prüfen; im Text bewusst nur „zeitlich begrenzt“       |
+| **Test**            | Magic Link an eigene Adresse senden — Darstellung in Gmail, Outlook, Handy prüfen          |
+| **Confirm email**   | bei Magic Link in der Regel deaktiviert lassen (Link = Bestätigung)                        |
+
 
 Nach dem Speichern: einmal als Vereinsmitglied und einmal als externer Teilnehmer (public) testen.

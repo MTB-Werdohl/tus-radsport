@@ -49,6 +49,13 @@ function validatePublicFeedbackRegistration(
   }
 
   if (
+    registration.email
+    !== registration.emailConfirm
+  ) {
+    return 'Die E-Mail-Adressen stimmen nicht überein.';
+  }
+
+  if (
     !registration.vorname?.trim()
     && !registration.nachname?.trim()
   ) {
@@ -110,8 +117,8 @@ function ensurePublicFeedbackModal() {
 
   <p class="feedback-public-modal__intro">
 
-    Kurz registrieren — du erhältst einen Bestätigungs-Link per E-Mail.
-    Erst danach kannst du abstimmen.
+    Deine Angaben werden erst gespeichert, wenn du den Link in der E-Mail
+    bestätigst. Erst danach kannst du abstimmen.
 
   </p>
 
@@ -159,6 +166,15 @@ function ensurePublicFeedbackModal() {
     </label>
 
     <label>
+      E-Mail bestätigen
+      <input
+        type="email"
+        name="email_confirm"
+        autocomplete="off"
+        required>
+    </label>
+
+    <label>
       Telefon (optional)
       <input
         type="tel"
@@ -170,7 +186,7 @@ function ensurePublicFeedbackModal() {
       type="submit"
       class="feedback-public-modal__submit">
 
-      Registrieren &amp; Link senden
+      Registrieren &amp; Bestätigungs-Link senden
 
     </button>
 
@@ -317,6 +333,10 @@ function readPublicFeedbackModalRegistration(
       String(formData.get('email') || '')
         .trim()
         .toLowerCase(),
+    emailConfirm:
+      String(formData.get('email_confirm') || '')
+        .trim()
+        .toLowerCase(),
     vorname:
       String(formData.get('vorname') || '')
         .trim(),
@@ -327,6 +347,84 @@ function readPublicFeedbackModalRegistration(
       String(formData.get('telefon') || '')
         .trim()
   };
+
+}
+
+async function sendPublicParticipantRegistrationMagicLink(
+  registration,
+  redirectTo
+) {
+
+  const normalized =
+    registration.email
+      .trim()
+      .toLowerCase();
+
+  const checkResult =
+    await canRegisterPublicParticipant(
+      normalized
+    );
+
+  if (checkResult?.error) {
+    return { error: checkResult.error };
+  }
+
+  if (
+    checkResult.status
+    === 'club_member'
+  ) {
+
+    return {
+      error: new Error(
+        'Bitte als Vereinsmitglied anmelden.'
+      )
+    };
+
+  }
+
+  if (
+    checkResult.status
+    === 'already_public'
+  ) {
+
+    return {
+      error: new Error(
+        'Diese E-Mail ist bereits registriert. Bitte unten „Anmelde-Link senden“ nutzen.'
+      )
+    };
+
+  }
+
+  const returnUrl =
+    redirectTo
+    || getPublicFeedbackReturnUrl()
+    || getPublicFeedbackRedirectUrl();
+
+  const { error } =
+    await window.supabaseClient.auth.signInWithOtp({
+
+      email: normalized,
+
+      options: {
+        shouldCreateUser: true,
+        emailRedirectTo: returnUrl,
+        data: {
+          public_registration: true,
+          vorname: registration.vorname,
+          nachname: registration.nachname,
+          telefon:
+            registration.telefon
+            || null
+        }
+      }
+
+    });
+
+  if (error) {
+    return { error };
+  }
+
+  return { ok: true };
 
 }
 
@@ -463,36 +561,15 @@ function bindPublicFeedbackModalEvents(modal) {
       setPublicFeedbackModalStatus('', false);
 
       const registerResult =
-        await registerPublicParticipant(
-          registration
+        await sendPublicParticipantRegistrationMagicLink(
+          registration,
+          getPublicFeedbackReturnUrl()
         );
 
       if (registerResult?.error) {
 
         setPublicFeedbackModalStatus(
           registerResult.error.message
-            || 'Registrierung fehlgeschlagen.',
-          true
-        );
-
-        if (submitBtn) {
-          submitBtn.disabled = false;
-        }
-
-        return;
-
-      }
-
-      const loginResult =
-        await sendPublicParticipantMagicLink(
-          registration.email,
-          getPublicFeedbackReturnUrl()
-        );
-
-      if (loginResult?.error) {
-
-        setPublicFeedbackModalStatus(
-          loginResult.error.message
             || 'E-Mail konnte nicht gesendet werden.',
           true
         );
@@ -506,7 +583,7 @@ function bindPublicFeedbackModalEvents(modal) {
       }
 
       setPublicFeedbackModalStatus(
-        'Registrierung gespeichert. Bitte E-Mail öffnen, Link klicken und danach hier abstimmen.',
+        'Bestätigungs-Link gesendet. Bitte E-Mail öffnen und Link klicken — erst dann wirst du registriert und kannst abstimmen.',
         false
       );
 

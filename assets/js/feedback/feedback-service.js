@@ -112,20 +112,15 @@ async function saveFeedbackAnswer(
 
 }
 
-async function registerPublicParticipant(
-  registration
+async function submitPublicFeedbackAnswer(
+  email
 ) {
 
   const { data, error } =
     await window.supabaseClient.rpc(
-      'register_public_participant',
+      'can_register_public_participant',
       {
-        p_email: registration.email,
-        p_vorname: registration.vorname,
-        p_nachname: registration.nachname,
-        p_telefon:
-          registration.telefon
-          || null
+        p_email: email
       }
     );
 
@@ -137,7 +132,7 @@ async function registerPublicParticipant(
 
   }
 
-  return { data };
+  return { status: data };
 
 }
 
