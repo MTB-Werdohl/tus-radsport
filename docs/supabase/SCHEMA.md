@@ -19,6 +19,7 @@ Stand: Projekt MTB Werdohl. Spalten aus Code + Supabase; bei Abweichungen Dashbo
 | `kontakt_eingewilligt_am` | date | |
 | `einwilligung_bilder` | boolean | Profil: nur Erteilen |
 | `bilder_eingewilligt_am` | date | |
+| `anonymized_at` | timestamptz | gesetzt nach Account-Löschung; `id` bleibt für `feedback_answers` |
 
 ## `News`
 

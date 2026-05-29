@@ -309,6 +309,25 @@ async function initMemberEdit() {
 
     }
 
+    if (data.anonymized_at) {
+
+      setMemberEditStatus(
+        'Dieses Mitglied wurde anonymisiert und kann nicht bearbeitet werden.',
+        true
+      );
+
+      alert(
+        'Dieses Mitglied wurde anonymisiert. '
+        + 'Abstimmungen bleiben anonym gezählt.'
+      );
+
+      window.location.href =
+        '/admin/mitglieder.html';
+
+      return;
+
+    }
+
     originalEmail =
       data.email || '';
 

@@ -1,5 +1,9 @@
 function formatMemberListName(member) {
 
+  if (member?.anonymized_at) {
+    return 'Anonym (gelöscht)';
+  }
+
   const parts = [
     member.vorname,
     member.nachname
@@ -60,6 +64,9 @@ function renderMemberCard(item) {
           .trim()
           .toLowerCase() === 'public';
 
+  const isAnonymized =
+    !!item.anonymized_at;
+
   const publicLabel =
     isPublic
       ? `
@@ -69,30 +76,32 @@ function renderMemberCard(item) {
         `
       : '';
 
-  return `
-    <div class="event-card member-list-card">
+  const anonymizedLabel =
+    isAnonymized
+      ? `
+          <span class="member-role-anonymized">
+            (anonymisiert)
+          </span>
+        `
+      : '';
 
-      <div class="event-header">
-
-        <div class="member-card-body">
-
-          <div class="member-card-name">
-            ${name}${publicLabel}
+  const contactLine =
+    isAnonymized
+      ? `
+          <div class="member-card-contact member-card-contact--anonymized">
+            Personenbezogene Daten entfernt · Abstimmungen bleiben anonym gezählt
           </div>
-
+        `
+      : `
           <div class="member-card-contact">
             ${telefon}, ${email}
           </div>
+        `;
 
-          <div class="member-card-consents">
-            Kontakt:
-            ${renderConsentValue(item.einwilligung_kontakt)}
-            · Bilder:
-            ${renderConsentValue(item.einwilligung_bilder)}
-          </div>
-
-        </div>
-
+  const actions =
+    isAnonymized
+      ? ''
+      : `
         <div class="actions">
 
           <button type="button" data-open-id="${String(item.id)}">
@@ -104,6 +113,31 @@ function renderMemberCard(item) {
           </button>
 
         </div>
+      `;
+
+  return `
+    <div class="event-card member-list-card${isAnonymized ? ' member-list-card--anonymized' : ''}">
+
+      <div class="event-header">
+
+        <div class="member-card-body">
+
+          <div class="member-card-name">
+            ${name}${publicLabel}${anonymizedLabel}
+          </div>
+
+          ${contactLine}
+
+          <div class="member-card-consents">
+            Kontakt:
+            ${renderConsentValue(item.einwilligung_kontakt)}
+            · Bilder:
+            ${renderConsentValue(item.einwilligung_bilder)}
+          </div>
+
+        </div>
+
+        ${actions}
 
       </div>
 
@@ -224,7 +258,10 @@ async function deleteMember(id) {
 
   const confirmDelete =
     confirm(
-      'Mitglied wirklich löschen? Push-Abos werden ebenfalls entfernt.'
+      'Mitglied wirklich löschen?\n\n'
+      + 'Personenbezogene Daten werden entfernt. '
+      + 'Abstimmungen bleiben anonym gezählt. '
+      + 'Push-Abos werden entfernt.'
     );
 
   if (!confirmDelete) {
@@ -236,33 +273,33 @@ async function deleteMember(id) {
       decodeURIComponent(String(id))
     );
 
-  const { error: pushError } =
-    await window.supabaseClient
-      .from(window.siteConfig.tables.pushSubscriptions)
-      .delete()
-      .eq('member_id', memberId);
+  if (
+    typeof anonymizeMemberAccount
+      !== 'function'
+  ) {
 
-  if (pushError) {
-
-    console.error(pushError);
-
-    alert(pushError.message);
+    alert(
+      'Account-Löschung ist nicht verfügbar '
+      + '(member-account.js fehlt).'
+    );
 
     return;
 
   }
 
-  const { error } =
-    await window.supabaseClient
-      .from(window.siteConfig.tables.members)
-      .delete()
-      .eq('id', memberId);
+  const result =
+    await anonymizeMemberAccount({
+      memberId
+    });
 
-  if (error) {
+  if (result?.error) {
 
-    console.error(error);
+    console.error(result.error);
 
-    alert(error.message);
+    alert(
+      result.error.message
+        || 'Löschen fehlgeschlagen.'
+    );
 
     return;
 

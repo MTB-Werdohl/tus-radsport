@@ -52,7 +52,8 @@ window.siteConfig = {
   functions: {
     savePushSubscription: 'save-push-subscription',
     deletePushSubscription: 'delete-push-subscription',
-    sendPush: 'send-push'
+    sendPush: 'send-push',
+    anonymizeMemberAccount: 'anonymize-member-account'
   },
 
   siteStateKeys: {

@@ -373,6 +373,27 @@ function renderMemberProfile(
 
 </section>
 
+<section class="member-profile-section-block member-profile-delete">
+
+  <h2>Account löschen</h2>
+
+  <p class="member-delete-hint">
+    Deine personenbezogenen Daten (Name, E-Mail, Telefon) werden entfernt.
+    Bereits abgegebene Abstimmungen bleiben <strong>anonym</strong> gezählt,
+    damit Auswertungen korrekt bleiben (z.&nbsp;B. Teilnehmerzahl einer Tour).
+  </p>
+
+  <button
+    type="button"
+    id="member-delete-account-btn"
+    class="member-delete-account-btn">
+
+    Account endgültig löschen
+
+  </button>
+
+</section>
+
     `;
 
     return;

@@ -544,6 +544,52 @@ a:hover {
   border: var(--border-soft);
 }
 
+.member-delete-hint {
+
+  margin: 0 0 16px;
+
+  line-height: 1.45;
+
+  opacity: 0.92;
+
+  font-size: 0.9375rem;
+
+}
+
+.member-delete-account-btn {
+
+  padding: 10px 16px;
+
+  border-radius: 8px;
+
+  border: 1px solid rgba(237, 28, 36, 0.45);
+
+  background: rgba(237, 28, 36, 0.12);
+
+  color: #ffb4b4;
+
+  cursor: pointer;
+
+  font-weight: 600;
+
+  font-size: 0.9375rem;
+
+}
+
+.member-delete-account-btn:hover {
+
+  background: rgba(237, 28, 36, 0.2);
+
+}
+
+.member-delete-account-btn:disabled {
+
+  opacity: 0.55;
+
+  cursor: not-allowed;
+
+}
+
 .member-public-hint {
 
 margin: 0 0 16px;

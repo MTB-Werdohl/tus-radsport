@@ -247,9 +247,9 @@ Dies können insbesondere sein:
 - Rolle (z. B. **Mitglied**, **Vorstand** oder **public** — externer Teilnehmer)
 - Datenschutz-Einwilligungen (siehe Abschnitt 12.3; nur bei Vereinsmitgliedern)
 
-**Rolle „public“:** Es wird eine **eingeschränkte Profilansicht** angezeigt (Name, E-Mail, Telefon, Logout). Push-Mitteilungen und Datenschutz-Einwilligungen auf der Profilseite stehen externen Teilnehmern nicht zur Verfügung.
+**Rolle „public“:** Es wird eine **eingeschränkte Profilansicht** angezeigt (Name, E-Mail, Telefon, Logout, **Account löschen**). Push-Mitteilungen und Datenschutz-Einwilligungen auf der Profilseite stehen externen Teilnehmern nicht zur Verfügung.
 
-Der Vorstand kann Mitgliederdaten zur Vereinsverwaltung pflegen (Anlegen, Bearbeiten, Löschen). Beim Löschen eines Datensatzes werden auch zugehörige Push-Abonnements und Feedback-Antworten entfernt, soweit technisch verknüpft.
+Der Vorstand kann Mitgliederdaten zur Vereinsverwaltung pflegen (Anlegen, Bearbeiten). **Löschen** entfernt personenbezogene Daten (**Anonymisierung**); technische IDs und anonyme Abstimmungen bleiben für Auswertungen erhalten. Push-Abonnements werden entfernt.
 
 Rechtsgrundlagen:
 
@@ -298,6 +298,8 @@ Zweck:
 - optional späterer Login per Magic Link (siehe Abschnitt 12.1)
 
 Externe Teilnehmer sind **keine** Vereinsmitglieder: kein Zugang zu internen Inhalten, kein Admin-Bereich, keine Push-Bestellung.
+
+**Account löschen:** Auf der Profilseite kannst du deinen externen Account löschen. Dabei werden Name, E-Mail, Telefon und dein Login-Konto entfernt. Bereits abgegebene **Abstimmungen bleiben anonym gezählt** (ohne Zuordnung zu deinem Namen), damit Auswertungen wie Teilnehmerzahlen korrekt bleiben. Freitext-Kommentare in Abstimmungen werden gelöscht.
 
 Rechtsgrundlagen:
 
@@ -407,8 +409,8 @@ Es werden keine Cookies zu Werbe- oder Analysezwecken gesetzt.
 
 - **Kontaktanfragen per E-Mail:** Löschung nach abschließender Bearbeitung, spätestens nach Ablauf gesetzlicher Aufbewahrungsfristen, sofern keine weitergehende Pflicht besteht.
 - **Mitgliederstammdaten (Mitglied / Vorstand):** für die Dauer der Mitgliedschaft; danach Löschung oder Einschränkung, soweit keine gesetzlichen Aufbewahrungspflichten entgegenstehen.
-- **Externe Teilnehmer (Rolle „public“):** bis zur Löschung durch den Vorstand oder auf Anfrage, spätestens wenn der Zweck der Anmeldung/Abstimmung entfällt, sofern keine Aufbewahrungspflichten entgegenstehen.
-- **Feedback-Antworten:** für die Dauer des jeweiligen Termins/Anlasses und der Auswertung durch den Vorstand; Löschung mit dem zugehörigen Mitgliedsdatensatz oder auf Anfrage.
+- **Externe Teilnehmer (Rolle „public“):** bis zur Löschung durch dich (Profil), den Vorstand oder auf Anfrage; nach Löschung nur noch anonyme technische ID ohne Personenbezug, soweit Abstimmungen ausgewertet werden.
+- **Feedback-Antworten:** für die Dauer des jeweiligen Termins/Anlasses und der Auswertung durch den Vorstand; bei Account-Löschung bleiben Antworten **anonym** erhalten (ohne Name/Kommentar), Löschung auf Anfrage möglich.
 - **Auth-Session:** bis zum Logout, Ablauf der Session oder Ungültigkeit des Login-Links.
 - **Push-Abonnements:** bis zur Deaktivierung, Ungültigkeit oder Löschung des Mitglieds.
 - **Push-Verlauf (`PushMessages`):** für die Anzeige auf der Website; technische Löschung durch den Vorstand bei Bedarf.

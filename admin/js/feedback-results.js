@@ -25,6 +25,10 @@ function formatFeedbackMemberName(memberRow) {
     return 'Mitglied';
   }
 
+  if (member.anonymized_at) {
+    return 'Anonym (Account gelöscht)';
+  }
+
   const name =
     [
       member.vorname,

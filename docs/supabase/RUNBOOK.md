@@ -29,6 +29,8 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Feedback Public E-Mail zuerst:** [`supabase-feedback-public-email-verify.sql`](../supabase-feedback-public-email-verify.sql) — `members`-Eintrag erst nach Magic-Link-Klick (`complete_public_participant_registration`); Name vorher nur in Auth-Metadaten.
 
+**Mitglieder anonymisieren:** [`supabase-members-anonymize.sql`](../supabase-members-anonymize.sql) — Account-Löschung entfernt personenbezogene Daten, `member_id` und `feedback_answers` bleiben; Edge Function `anonymize-member-account` löscht zusätzlich `auth.users`.
+
 **Rolle „public“ (externe Teilnehmer):** [`supabase-members-public-role.sql`](../supabase-members-public-role.sql) — `is_member()` ohne public, RPC `submit_public_feedback` / `get_public_feedback_answer`.
 
 **Falls Abstimmung fehlschlägt mit „no unique or exclusion constraint“:** [`supabase-feedback-answers-unique-fix.sql`](../supabase-feedback-answers-unique-fix.sql) — stellt `UNIQUE (module_id, member_id)` wieder her (nach alter public-voting-Migration).
@@ -52,6 +54,26 @@ Nur ausführen, wenn der Constraint noch fehlt (Edge Function `save-push-subscri
 | `save-push-subscription` | [`supabase-edge-save-push-subscription.ts`](../supabase-edge-save-push-subscription.ts) — JWT des Mitglieds, Service Role Upsert |
 | `delete-push-subscription` | Analog zu save — JWT, Endpoint löschen |
 | `send-push` | [`supabase-edge-send-push.ts`](../supabase-edge-send-push.ts) — JWT + Vorstand-Check, Push senden, **Verlauf in `PushMessages` + `site_state`** (Service Role) |
+| `anonymize-member-account` | [`supabase-edge-anonymize-member-account.ts`](../supabase-edge-anonymize-member-account.ts) — **Edge Function deployen, nicht SQL!** JWT; Self (public) oder Vorstand `{ member_id }`; ruft `anonymize_member()` + löscht Auth-User |
+
+### Edge Function `anonymize-member-account` deployen
+
+1. Zuerst SQL: [`supabase-members-anonymize.sql`](../supabase-members-anonymize.sql) im **SQL Editor** ausführen.
+2. **Edge Functions** → **Deploy a new function** (oder bestehende bearbeiten).
+3. Funktionsname exakt: `anonymize-member-account`
+4. Code aus [`supabase-edge-anonymize-member-account.ts`](../supabase-edge-anonymize-member-account.ts) einfügen (die `.ts`-Datei **nicht** im SQL Editor öffnen).
+5. **Deploy** — Env-Variablen (`SUPABASE_URL`, Keys) setzt Supabase automatisch.
+
+Test (optional, mit gültigem JWT in der Browser-Konsole nach Login):
+
+```javascript
+const { data: { session } } = await supabaseClient.auth.getSession();
+await fetch('https://DEIN-PROJECT.supabase.co/functions/v1/anonymize-member-account', {
+  method: 'POST',
+  headers: { Authorization: 'Bearer ' + session.access_token, 'Content-Type': 'application/json' },
+  body: '{}'
+});
+```
 
 ## Policy-Matrix (Kurz)
 

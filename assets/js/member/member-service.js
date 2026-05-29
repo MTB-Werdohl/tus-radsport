@@ -44,8 +44,18 @@ function isPublicParticipant(member) {
     return false;
   }
 
+  if (isAnonymizedMember(member)) {
+    return false;
+  }
+
   return member.rolle.trim().toLowerCase()
     === MEMBER_ROLE_PUBLIC;
+
+}
+
+function isAnonymizedMember(member) {
+
+  return !!member?.anonymized_at;
 
 }
 
@@ -172,7 +182,10 @@ function normalizeMemberRow(row) {
       row.bilder_eingewilligt_am || '',
 
     rolle:
-      row.rolle || MEMBER_ROLE_MITGLIED
+      row.rolle || MEMBER_ROLE_MITGLIED,
+
+    anonymized_at:
+      row.anonymized_at || null
 
   };
 

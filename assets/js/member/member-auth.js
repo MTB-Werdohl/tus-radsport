@@ -273,6 +273,13 @@ async function validateMemberSession(
       session.user.email
     );
 
+  if (
+    member
+    && isAnonymizedMember(member)
+  ) {
+    member = null;
+  }
+
   if (!member) {
 
     member =

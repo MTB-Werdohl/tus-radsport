@@ -379,7 +379,8 @@ async function fetchFeedbackAnswersForModule(
           vorname,
           nachname,
           email,
-          rolle
+          rolle,
+          anonymized_at
         )
       `)
       .eq('module_id', moduleId)

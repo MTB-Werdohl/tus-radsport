@@ -19,6 +19,7 @@ member_profile: true
 {% if page.member_profile %}
 <script src="/assets/js/core/dates.js"></script>
 <script src="/assets/js/member/member-render.js"></script>
+<script src="/assets/js/member/member-account.js"></script>
 <script src="/assets/js/push/push-subscription-service.js"></script>
 <script src="/assets/js/member/member-page.js"></script>
 {% endif %}

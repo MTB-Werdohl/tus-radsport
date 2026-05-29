@@ -563,6 +563,82 @@ function bindMemberProfileEvents(
 
   }
 
+  const deleteAccountBtn =
+    document.getElementById(
+      'member-delete-account-btn'
+    );
+
+  if (deleteAccountBtn) {
+
+    deleteAccountBtn.addEventListener(
+      'click',
+      async () => {
+
+        const confirmed =
+          confirm(
+            'Account wirklich löschen?\n\n'
+            + 'Name, E-Mail und Telefon werden entfernt. '
+            + 'Abstimmungen bleiben anonym gezählt. '
+            + 'Du wirst abgemeldet.'
+          );
+
+        if (!confirmed) {
+          return;
+        }
+
+        deleteAccountBtn.disabled = true;
+
+        try {
+
+          if (
+            typeof anonymizeMemberAccount
+              !== 'function'
+          ) {
+            throw new Error(
+              'Account-Löschung ist nicht verfügbar.'
+            );
+          }
+
+          const result =
+            await anonymizeMemberAccount();
+
+          if (result?.error) {
+            throw result.error;
+          }
+
+          await logoutMember();
+
+          showMemberToast(
+            'Account gelöscht.',
+            'success',
+            4000
+          );
+
+          window.setTimeout(() => {
+
+            window.location.href = '/';
+
+          }, 800);
+
+        } catch (error) {
+
+          console.error(error);
+
+          showMemberToast(
+            error.message
+              || 'Account konnte nicht gelöscht werden.',
+            'error'
+          );
+
+          deleteAccountBtn.disabled = false;
+
+        }
+
+      }
+    );
+
+  }
+
 }
 
 async function loadMemberProfilePage() {
