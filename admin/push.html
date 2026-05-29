@@ -11,7 +11,7 @@ title: Push-Mitteilungen
 
 {% include admin-head.html %}
 
-  <script src="/assets/js/push/state.js"></script>
+  <script src="/assets/js/push/state.js?v={{ site.admin_js_version }}"></script>
 
 </head>
 
@@ -88,7 +88,7 @@ title: Push-Mitteilungen
 
 </div>
 
-<script src="/admin/js/push-admin.js"></script>
+<script src="/admin/js/push-admin.js?v={{ site.admin_js_version }}"></script>
 <script>
 requireAdminSession();
 </script>
