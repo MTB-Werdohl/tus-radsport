@@ -13,6 +13,89 @@ function formatMemberListName(member) {
 
 }
 
+function renderConsentValue(value) {
+
+  const isYes =
+    value === true;
+
+  const label =
+    isYes
+      ? 'Ja'
+      : 'Nein';
+
+  const className =
+    isYes
+      ? 'member-consent-yes'
+      : 'member-consent-no';
+
+  return `
+    <strong class="${className}">
+      ${label}
+    </strong>
+  `;
+
+}
+
+function renderMemberCard(item) {
+
+  const name =
+    escapeAdminHtml(
+      formatMemberListName(item)
+    );
+
+  const telefon =
+    escapeAdminHtml(
+      item.telefonnummer || '—'
+    );
+
+  const email =
+    escapeAdminHtml(
+      item.email || '—'
+    );
+
+  return `
+    <div class="event-card member-list-card">
+
+      <div class="event-header">
+
+        <div class="member-card-body">
+
+          <div class="member-card-name">
+            ${name}
+          </div>
+
+          <div class="member-card-contact">
+            ${telefon}, ${email}
+          </div>
+
+          <div class="member-card-consents">
+            Kontakt:
+            ${renderConsentValue(item.einwilligung_kontakt)}
+            · Bilder:
+            ${renderConsentValue(item.einwilligung_bilder)}
+          </div>
+
+        </div>
+
+        <div class="actions">
+
+          <button type="button" data-open-id="${String(item.id)}">
+            ✏
+          </button>
+
+          <button type="button" class="delete-button" data-delete-id="${encodeURIComponent(String(item.id))}">
+            🗑
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+  `;
+
+}
+
 function showMembersLoadError(error) {
 
   console.error(error);
@@ -94,70 +177,10 @@ function renderMembersList(members) {
 
   filtered.forEach(item => {
 
-      const name =
-        escapeAdminHtml(
-          formatMemberListName(item)
-        );
+    container.innerHTML +=
+      renderMemberCard(item);
 
-      const email =
-        escapeAdminHtml(item.email || '—');
-
-      const rolle =
-        escapeAdminHtml(item.rolle || 'Mitglied');
-
-      const nummer =
-        escapeAdminHtml(
-          item.mitgliedsnummer || '—'
-        );
-
-      const abteilung =
-        escapeAdminHtml(item.abteilung || '—');
-
-      container.innerHTML += `
-
-        <div class="event-card">
-
-          <div class="event-header">
-
-            <div>
-
-              <strong>
-                ${name}
-              </strong>
-
-              <div class="event-meta">
-
-                ${rolle}
-
-                · Nr. ${nummer}
-
-                · ${abteilung}
-
-                · ${email}
-
-              </div>
-
-            </div>
-
-            <div class="actions">
-
-              <button type="button" data-open-id="${String(item.id)}">
-                ✏
-              </button>
-
-              <button type="button" class="delete-button" data-delete-id="${encodeURIComponent(String(item.id))}">
-                🗑
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      `;
-
-    });
+  });
 
   container.querySelectorAll('[data-open-id]').forEach(button => {
 
