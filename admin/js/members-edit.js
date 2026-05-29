@@ -4,7 +4,7 @@ const params =
   );
 
 let originalEmail = '';
-let currentMember = null;
+let editingMember = null;
 
 function getEditMemberId() {
 
@@ -312,7 +312,7 @@ async function initMemberEdit() {
     originalEmail =
       data.email || '';
 
-    currentMember = data;
+    editingMember = data;
 
     fillMemberForm(data);
     showConsentInfo(data);
@@ -430,23 +430,23 @@ function buildMemberExportData() {
     readMemberFormFields();
 
   return {
-    ...currentMember,
+    ...editingMember,
     ...buildMemberPayload(fields),
     einwilligung_kontakt:
-      currentMember?.einwilligung_kontakt,
+      editingMember?.einwilligung_kontakt,
     kontakt_eingewilligt_am:
-      currentMember?.kontakt_eingewilligt_am,
+      editingMember?.kontakt_eingewilligt_am,
     einwilligung_bilder:
-      currentMember?.einwilligung_bilder,
+      editingMember?.einwilligung_bilder,
     bilder_eingewilligt_am:
-      currentMember?.bilder_eingewilligt_am
+      editingMember?.bilder_eingewilligt_am
   };
 
 }
 
 function exportCurrentMemberPdf() {
 
-  if (!currentMember) {
+  if (!editingMember) {
     return;
   }
 
@@ -567,7 +567,7 @@ async function saveMember() {
   if (editId) {
 
     const memberId =
-      currentMember?.id
+      editingMember?.id
       ?? normalizeMemberId(editId);
 
     ({ error } =
