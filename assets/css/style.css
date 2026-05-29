@@ -424,6 +424,42 @@ a:hover {
   margin-top: 0;
 }
 
+.member-profile-section h1 {
+  margin-bottom: 1rem;
+}
+
+.member-login-callback-banner {
+  margin: 0 0 1.25rem;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: rgba(46, 139, 87, 0.15);
+  border: 1px solid rgba(46, 139, 87, 0.35);
+  line-height: 1.5;
+}
+
+.member-login-callback-banner p {
+  margin: 0 0 0.5rem;
+}
+
+.member-login-callback-banner p:last-child {
+  margin-bottom: 0;
+}
+
+.member-login-callback-admin {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: #2e8b57;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.member-login-callback-admin:hover {
+  background: #3aa86a;
+}
+
 .member-profile-list {
   margin: 0;
 }

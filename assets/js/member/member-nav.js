@@ -101,6 +101,93 @@ function closeMemberAuthPanel() {
 
 }
 
+function openMemberAuthPanel() {
+
+  const dropdown =
+    document.getElementById(
+      'member-auth-dropdown'
+    );
+
+  const trigger =
+    document.getElementById(
+      'member-auth-trigger'
+    );
+
+  if (!dropdown || !trigger) {
+    return;
+  }
+
+  dropdown.classList.add('is-open');
+
+  trigger.setAttribute(
+    'aria-expanded',
+    'true'
+  );
+
+  const emailInput =
+    document.getElementById(
+      'member-email'
+    );
+
+  if (emailInput) {
+    window.setTimeout(
+      () => emailInput.focus(),
+      0
+    );
+  }
+
+}
+
+function handleAdminLoginIntent() {
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  if (params.get('login') !== 'admin') {
+    return;
+  }
+
+  const member =
+    typeof getCurrentMember === 'function'
+      ? getCurrentMember()
+      : null;
+
+  if (
+    member
+    && typeof isVorstand === 'function'
+    && isVorstand(member)
+  ) {
+
+    const returnUrl =
+      sessionStorage.getItem('adminReturnUrl')
+      || '/admin/';
+
+    sessionStorage.removeItem('adminReturnUrl');
+
+    window.location.replace(returnUrl);
+
+    return;
+
+  }
+
+  openMemberAuthPanel();
+
+  if (
+    typeof showMemberToast === 'function'
+  ) {
+
+    showMemberToast(
+      'Bitte anmelden, um den Admin-Bereich zu öffnen.',
+      'success',
+      5000
+    );
+
+  }
+
+}
+
 function setupMemberAuthDropdown() {
 
   const dropdown =
@@ -254,6 +341,8 @@ document.addEventListener(
     setupMemberAuthDropdown();
 
     await initMemberAuth();
+
+    handleAdminLoginIntent();
 
   }
 );

@@ -38,52 +38,13 @@ function startAdminAuthSync() {
 
   adminAuthSyncStarted = true;
 
-  window.supabaseClient.auth.onAuthStateChange(
-
-    async (event, session) => {
-
-      if (
-        event === 'SIGNED_OUT'
-      ) {
-
-        window.location.href = '/';
-
-        return;
-
-      }
-
-      if (
-        event === 'SIGNED_IN'
-        && session?.user
-      ) {
-
-        const member =
-          await ensureVorstandSession({
-            timeoutMs: 5000
-          });
-
-        if (
-          member
-          && document.getElementById('admin')
-            ?.dataset.sessionReady
-            !== 'true'
-        ) {
-
-          window.location.reload();
-
-        }
-
-      }
-
-    }
-
-  );
+  let signOutTimer = null;
 
   window.addEventListener(
 
     'storage',
 
-    async (event) => {
+    (event) => {
 
       if (
         !event.key
@@ -92,7 +53,35 @@ function startAdminAuthSync() {
         return;
       }
 
-      await window.supabaseClient.auth.getSession();
+      window.clearTimeout(signOutTimer);
+
+      if (event.newValue) {
+
+        window.supabaseClient.auth.getSession();
+
+        return;
+
+      }
+
+      if (
+        document.getElementById('admin')
+          ?.dataset.sessionReady
+          !== 'true'
+      ) {
+        return;
+      }
+
+      signOutTimer =
+        window.setTimeout(async () => {
+
+          const { data: { session } } =
+            await window.supabaseClient.auth.getSession();
+
+          if (!session?.user) {
+            window.location.href = '/';
+          }
+
+        }, 500);
 
     }
 

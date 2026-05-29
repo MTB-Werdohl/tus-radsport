@@ -342,6 +342,22 @@ async function sendMemberMagicLink(email) {
 
   }
 
+  const adminReturn =
+    sessionStorage.getItem('adminReturnUrl');
+
+  let emailRedirectTo =
+    `${window.siteConfig.siteUrl}/profil/`;
+
+  if (
+    adminReturn
+    && adminReturn.startsWith('/admin')
+  ) {
+
+    emailRedirectTo +=
+      `?next=${encodeURIComponent(adminReturn)}`;
+
+  }
+
   const { error } =
     await window.supabaseClient.auth.signInWithOtp({
 
@@ -351,8 +367,7 @@ async function sendMemberMagicLink(email) {
 
         shouldCreateUser: true,
 
-        emailRedirectTo:
-          `${window.siteConfig.siteUrl}/profil/`
+        emailRedirectTo
 
       }
 
@@ -372,8 +387,9 @@ async function sendMemberMagicLink(email) {
   }
 
   showMemberToast(
-    'Login-Link wurde an deine E-Mail gesendet.',
-    'success'
+    'Login-Link wurde an deine E-Mail gesendet. Den Link im gleichen Browser öffnen — ein zweiter Tab ist normal und kann danach geschlossen werden.',
+    'success',
+    7000
   );
 
   return true;
@@ -397,6 +413,11 @@ function cleanAuthCallbackUrl() {
   if (!isAuthCallback()) {
     return;
   }
+
+  sessionStorage.setItem(
+    'memberLoginCallback',
+    '1'
+  );
 
   const path =
     window.location.pathname.endsWith('/')
@@ -471,6 +492,13 @@ async function initMemberAuth() {
 
       refreshMemberNav();
 
+      if (
+        typeof handleAdminLoginIntent
+          === 'function'
+      ) {
+        handleAdminLoginIntent();
+      }
+
     }
 
   );
@@ -505,6 +533,13 @@ async function initMemberAuth() {
       }
 
       refreshMemberNav();
+
+      if (
+        typeof handleAdminLoginIntent
+          === 'function'
+      ) {
+        handleAdminLoginIntent();
+      }
 
     }
 

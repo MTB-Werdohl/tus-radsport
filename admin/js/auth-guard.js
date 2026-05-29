@@ -1,4 +1,4 @@
-const ADMIN_HOME_URL = '/';
+const ADMIN_HOME_URL = '/?login=admin';
 
 window.requireAdminSession = async function (callback) {
 
@@ -6,6 +6,12 @@ window.requireAdminSession = async function (callback) {
     await ensureVorstandSession();
 
   if (!member) {
+
+    sessionStorage.setItem(
+      'adminReturnUrl',
+      window.location.pathname
+      + window.location.search
+    );
 
     window.location.href =
       ADMIN_HOME_URL;

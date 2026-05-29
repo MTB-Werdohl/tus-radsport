@@ -40,6 +40,113 @@ function closeMemberConsentModal(modal) {
 
 }
 
+function showLoginCallbackNotice(member) {
+
+  const section =
+    document.querySelector(
+      '.member-profile-section'
+    );
+
+  const heading =
+    section?.querySelector('h1');
+
+  if (
+    !section
+    || !heading
+    || section.querySelector(
+      '.member-login-callback-banner'
+    )
+  ) {
+    return;
+  }
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const fromCallback =
+    sessionStorage.getItem(
+      'memberLoginCallback'
+    ) === '1'
+    || params.has('next');
+
+  if (!fromCallback) {
+    return;
+  }
+
+  sessionStorage.removeItem(
+    'memberLoginCallback'
+  );
+
+  const nextUrl =
+    params.get('next')
+    || sessionStorage.getItem('adminReturnUrl');
+
+  const adminLink =
+    nextUrl
+    && nextUrl.startsWith('/admin')
+    && typeof isVorstand === 'function'
+    && isVorstand(member)
+      ? `
+        <p>
+          <a
+            href="${nextUrl}"
+            class="member-login-callback-admin">
+
+            Zum Admin-Bereich
+
+          </a>
+        </p>
+      `
+      : (
+        typeof isVorstand === 'function'
+        && isVorstand(member)
+          ? `
+            <p>
+              <a
+                href="/admin/"
+                class="member-login-callback-admin">
+
+                Zum Admin-Bereich
+
+              </a>
+            </p>
+          `
+          : ''
+      );
+
+  const banner =
+    document.createElement('div');
+
+  banner.className =
+    'member-login-callback-banner';
+
+  banner.innerHTML = `
+
+<p>
+  <strong>Login erfolgreich.</strong>
+  Du kannst diesen Tab schließen und im ursprünglichen Tab weiterarbeiten.
+</p>
+
+${adminLink}
+
+`;
+
+  heading.insertAdjacentElement(
+    'afterend',
+    banner
+  );
+
+  if (
+    nextUrl
+    && nextUrl.startsWith('/admin')
+  ) {
+    sessionStorage.removeItem('adminReturnUrl');
+  }
+
+}
+
 function setupConsentInfoDialogs() {
 
   const root =
@@ -496,6 +603,8 @@ async function loadMemberProfilePage() {
   );
 
   setupConsentInfoDialogs();
+
+  showLoginCallbackNotice(member);
 
 }
 
