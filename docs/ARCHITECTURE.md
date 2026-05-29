@@ -57,7 +57,7 @@ page.js      → slug aus URL lesen, service + render aufrufen
 Lädt global:
 
 - Supabase-Client (`site-config` → `core/supabase.js`)
-- Push/PWA-Skripte
+- Push-Skripte
 - Navigation, Sidebar, Footer, Service Worker
 
 Optionale Frontmatter-Flags:
@@ -149,7 +149,8 @@ Push-Aktivierung nur auf `/profil/` für eingeloggte Mitglieder (Magic Link).
 | `push/push-subscription-service.js` | Profil-Status: Browser-Endpoint + DB-Abfrage |
 | `push/utils.js` | VAPID-Hilfe, `getDeviceName()` |
 | `push/widget.js` | Anzeige letzter Push (unabhängig von Aktivierung) |
-| `sw.js` | Service Worker |
+| `push/sw-register.js` | Registriert `sw.js` nur für Push (nicht site-weit) |
+| `sw.js` | Service Worker (Push-Empfang, kein Caching) |
 
 Ablauf: Profil → „Push-Mitteilungen aktivieren“ → Upsert in `PushSubscriptions` nach `endpoint` (keine Duplikate).
 

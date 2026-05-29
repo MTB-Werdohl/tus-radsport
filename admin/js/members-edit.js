@@ -3,11 +3,77 @@ const params =
     window.location.search
   );
 
-const editId =
-  params.get('id');
-
 let originalEmail = '';
 let currentMember = null;
+
+function getEditMemberId() {
+
+  const fromUrl =
+    params.get('id');
+
+  if (fromUrl) {
+    return fromUrl;
+  }
+
+  return sessionStorage.getItem(
+    'adminMemberEditId'
+  );
+
+}
+
+function formatDateInputValue(value) {
+
+  if (!value) {
+    return '';
+  }
+
+  return String(value).slice(0, 10);
+
+}
+
+function setMemberEditStatus(message, isError) {
+
+  const el =
+    document.getElementById(
+      'member-edit-status'
+    );
+
+  if (!el) {
+    return;
+  }
+
+  if (!message) {
+
+    el.classList.add('hidden');
+    el.textContent = '';
+    el.classList.remove(
+      'member-edit-status--error'
+    );
+
+    return;
+
+  }
+
+  el.classList.remove('hidden');
+  el.textContent = message;
+  el.classList.toggle(
+    'member-edit-status--error',
+    isError === true
+  );
+
+}
+
+function showMemberEditForm() {
+
+  document
+    .getElementById('member-edit-loading')
+    ?.classList.add('hidden');
+
+  document
+    .getElementById('member-edit-form')
+    ?.classList.remove('hidden');
+
+}
 
 function emptyToNull(value) {
 
@@ -110,7 +176,7 @@ function fillMemberForm(member) {
     member.wohnort || '';
 
   document.getElementById('geburtsdatum').value =
-    member.geburtsdatum || '';
+    formatDateInputValue(member.geburtsdatum);
 
   document.getElementById('telefonnummer').value =
     member.telefonnummer || '';
@@ -171,9 +237,26 @@ async function initMemberEdit() {
         'Sicher, dass du ohne Speichern zurück willst?'
     });
 
+  const editId =
+    getEditMemberId();
+
   if (!editId) {
+    showMemberEditForm();
     return;
   }
+
+  document
+    .getElementById('member-edit-loading')
+    ?.classList.remove('hidden');
+
+  document
+    .getElementById('member-edit-form')
+    ?.classList.add('hidden');
+
+  sessionStorage.setItem(
+    'adminMemberEditId',
+    String(editId)
+  );
 
   document
     .getElementById('form-title')
@@ -192,10 +275,18 @@ async function initMemberEdit() {
 
       console.error(error);
 
+      setMemberEditStatus(
+        'Mitglied konnte nicht geladen werden: '
+        + error.message,
+        true
+      );
+
       alert(
         'Mitglied konnte nicht geladen werden: '
         + error.message
       );
+
+      showMemberEditForm();
 
       return;
 
@@ -203,9 +294,16 @@ async function initMemberEdit() {
 
     if (!data) {
 
+      setMemberEditStatus(
+        'Mitglied konnte nicht gefunden werden.',
+        true
+      );
+
       alert(
         'Mitglied konnte nicht gefunden werden.'
       );
+
+      showMemberEditForm();
 
       return;
 
@@ -223,13 +321,23 @@ async function initMemberEdit() {
       .getElementById('export-member-pdf')
       ?.classList.remove('hidden');
 
+    setMemberEditStatus('', false);
+    showMemberEditForm();
+
   } catch (error) {
 
     console.error(error);
 
+    setMemberEditStatus(
+      'Mitglied konnte nicht geladen werden.',
+      true
+    );
+
     alert(
       'Mitglied konnte nicht geladen werden.'
     );
+
+    showMemberEditForm();
 
   }
 
@@ -237,11 +345,82 @@ async function initMemberEdit() {
 
 async function fetchMemberById(memberId) {
 
-  return window.supabaseClient
-    .from(window.siteConfig.tables.members)
-    .select('*')
-    .eq('id', memberId)
-    .maybeSingle();
+  const table =
+    window.siteConfig.tables.members;
+
+  const idCandidates =
+    buildMemberIdCandidates(memberId);
+
+  for (const candidate of idCandidates) {
+
+    const { data, error } =
+      await window.supabaseClient
+        .from(table)
+        .select('*')
+        .eq('id', candidate)
+        .maybeSingle();
+
+    if (error) {
+      return { data: null, error };
+    }
+
+    if (data) {
+      return { data, error: null };
+    }
+
+  }
+
+  const { data: allMembers, error: listError } =
+    await window.supabaseClient
+      .from(table)
+      .select('*');
+
+  if (listError) {
+    return { data: null, error: listError };
+  }
+
+  const normalizedTarget =
+    String(memberId).trim();
+
+  const found =
+    (allMembers || []).find((row) =>
+      String(row.id).trim()
+        === normalizedTarget
+    ) || null;
+
+  return {
+    data: found,
+    error: null
+  };
+
+}
+
+function buildMemberIdCandidates(memberId) {
+
+  const trimmed =
+    String(memberId ?? '').trim();
+
+  if (!trimmed) {
+    return [];
+  }
+
+  const candidates = [trimmed];
+
+  if (/^\d+$/.test(trimmed)) {
+
+    const asNumber =
+      Number(trimmed);
+
+    if (
+      !Number.isNaN(asNumber)
+      && !candidates.includes(asNumber)
+    ) {
+      candidates.push(asNumber);
+    }
+
+  }
+
+  return candidates;
 
 }
 
@@ -345,6 +524,9 @@ function loadMemberPdfScripts() {
 
 async function saveMember() {
 
+  const editId =
+    getEditMemberId();
+
   const fields =
     readMemberFormFields();
 
@@ -384,11 +566,15 @@ async function saveMember() {
 
   if (editId) {
 
+    const memberId =
+      currentMember?.id
+      ?? normalizeMemberId(editId);
+
     ({ error } =
       await window.supabaseClient
         .from(window.siteConfig.tables.members)
         .update(payload)
-        .eq('id', normalizeMemberId(editId)));
+        .eq('id', memberId));
 
   } else {
 
@@ -426,6 +612,10 @@ async function saveMember() {
   if (window.adminUnsavedGuard) {
     window.adminUnsavedGuard.markClean();
   }
+
+  sessionStorage.removeItem(
+    'adminMemberEditId'
+  );
 
   window.location.href =
     '/admin/mitglieder.html';

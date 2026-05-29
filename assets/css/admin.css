@@ -414,6 +414,16 @@ h3 {
   opacity: 0.75;
 }
 
+.member-edit-loading,
+.member-edit-status {
+  margin: 0 0 16px;
+  font-size: 15px;
+}
+
+.member-edit-status--error {
+  color: #ffb4b4;
+}
+
 .admin-field {
   display: block;
   margin-bottom: 15px;

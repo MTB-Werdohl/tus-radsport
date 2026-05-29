@@ -19,7 +19,8 @@ async function unsubscribeUserFromPush() {
   }
 
   const registration =
-    await navigator.serviceWorker.ready;
+    await ensurePushServiceWorker()
+      .then(() => navigator.serviceWorker.ready);
 
   const subscription =
     await registration.pushManager.getSubscription();

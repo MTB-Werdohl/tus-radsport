@@ -235,12 +235,21 @@ async function deleteMember(id) {
 
 function newMember() {
 
+  sessionStorage.removeItem(
+    'adminMemberEditId'
+  );
+
   window.location.href =
     '/admin/mitglieder_edit.html';
 
 }
 
 function openMember(id) {
+
+  sessionStorage.setItem(
+    'adminMemberEditId',
+    String(id)
+  );
 
   window.location.href =
     '/admin/mitglieder_edit.html?id='

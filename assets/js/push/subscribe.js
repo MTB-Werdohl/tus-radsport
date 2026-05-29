@@ -31,7 +31,8 @@ async function subscribeUserToPush(options = {}) {
   }
 
   const registration =
-    await navigator.serviceWorker.ready;
+    await ensurePushServiceWorker()
+      .then(() => navigator.serviceWorker.ready);
 
   const permission =
     await Notification.requestPermission();

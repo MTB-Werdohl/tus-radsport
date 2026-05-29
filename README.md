@@ -17,7 +17,7 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Push
 | Kalender | FullCalendar (lokal unter `assets/js/fullcalendar/`) |
 | Markdown (Inhalte) | [marked](https://marked.js.org/) |
 | Lightbox | GLightbox |
-| PWA / Push | Service Worker (`sw.js`), Web Push + VAPID |
+| Push | Service Worker (`sw.js`) nur bei Push-Aktivierung, Web Push + VAPID |
 
 ---
 
@@ -33,7 +33,7 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Push
 ├── assets/
 │   ├── css/             # Styles (global, Kalender, News, Admin, …)
 │   └── js/
-│       ├── core/        # site-config, supabase, dates, share, service-worker
+│       ├── core/        # site-config, supabase, dates, share
 │       ├── calendar/    # Kalender (loader, categories, FullCalendar)
 │       ├── event/       # Termin-Detailseite
 │       ├── news/        # News-Liste & Detail
@@ -44,7 +44,7 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Push
 ├── scripts/
 │   └── generate-pages.js   # OG-Seiten für WhatsApp (CI)
 ├── .github/workflows/   # Deploy-Pipeline
-├── sw.js, manifest.json # PWA
+├── sw.js                # Service Worker (nur Push, kein Seiten-Cache)
 └── docs/
     ├── README.md           # Doku-Index
     ├── ARCHITECTURE.md     # Datenfluss & Muster
@@ -160,7 +160,7 @@ Diese Pfade werden referenziert und müssen für einen vollständigen lokalen Bu
 |------|--------|
 | `assets/js/fullcalendar/` | FullCalendar-Bundle |
 | `assets/js/glightbox/` | Lightbox CSS/JS |
-| `assets/images/` | Logo, Favicon, Hero, PWA-Icons |
+| `assets/images/` | Logo, Favicon, Hero, Push-Benachrichtigungs-Icons |
 
 Fehlen sie lokal, funktionieren Kalender oder Bilder erst nach Ergänzen der Dateien.
 

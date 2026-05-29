@@ -8,6 +8,16 @@ async function getBrowserPushEndpoint() {
     return null;
   }
 
+  try {
+
+    await ensurePushServiceWorker();
+
+  } catch (error) {
+
+    return null;
+
+  }
+
   const registration =
     await navigator.serviceWorker.ready;
 

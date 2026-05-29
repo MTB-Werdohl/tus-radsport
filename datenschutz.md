@@ -330,21 +330,23 @@ Rechtsgrundlagen:
 
 ---
 
-## 13. Progressive Web App (PWA), Service Worker und Push-Mitteilungen
+## 13. Service Worker und Push-Mitteilungen
 
-### 13.1 Installation als App (PWA)
+### 13.1 Service Worker (nur für Push)
 
-Diese Website kann auf unterstützten Geräten als Progressive Web App auf den Homescreen installiert werden. Dazu wird ein **Service Worker** (`sw.js`) im Browser registriert, der für Push-Empfang und die App-Funktion technisch erforderlich ist.
+Für **Web-Push** wird ein **Service Worker** (`sw.js`) registriert — **nur** wenn du auf der Profilseite Push aktivierst oder der Browser bereits ein Push-Abo für diese Website hat.
 
-Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO.
+Der Service Worker **cached keine Seiteninhalte**. Er dient ausschließlich dem Empfang und der Anzeige von Push-Mitteilungen.
+
+Es gibt **keine** installierbare App und **kein** „Zum Home-Bildschirm hinzufügen“ als offizielles Angebot. Die Website wird im **Browser** genutzt.
+
+Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (technisch erforderliche Funktion für Push).
 
 ### 13.2 Push-Mitteilungen
 
-Push-Mitteilungen können von **Vereinsmitgliedern** (Rollen „Mitglied“ oder „Vorstand“) auf der **Profilseite** aktiviert werden, nachdem du dem **Benachrichtigungsdialog des Browsers** zugestimmt hast. Externe Teilnehmer (Rolle „public“) können Push nicht bestellen.
+Push-Mitteilungen können von **Vereinsmitgliedern** (Rollen „Mitglied“ oder „Vorstand“) auf der **Profilseite** im **Browser** aktiviert werden, nachdem du dem **Benachrichtigungsdialog des Browsers** zugestimmt hast. Externe Teilnehmer (Rolle „public“) können Push nicht bestellen.
 
-**Hinweis auf der Website:** Der Vorstand kann Mitteilungen versenden. Der **Text der letzten Mitteilung** kann auf der Website angezeigt werden (auch ohne aktives Push-Abo). Die **Zustellung als Push** setzt die Aktivierung auf der Profilseite durch ein Vereinsmitglied voraus.
-
-Auf unterstützten Geräten kann die Website als **Progressive Web App (PWA)** installiert werden; für Push ist die Installation nicht in jedem Browser zwingend erforderlich.
+**Hinweis auf der Website:** Der Vorstand kann Mitteilungen versenden. Der **Text der letzten Mitteilung** kann auf der Website angezeigt werden (auch ohne aktives Push-Abo). Die **Zustellung als Push** setzt die Aktivierung auf der Profilseite im Browser voraus.
 
 Verarbeitete Daten:
 
