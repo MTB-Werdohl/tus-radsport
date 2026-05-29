@@ -53,6 +53,22 @@ function renderMemberCard(item) {
       item.email || '—'
     );
 
+  const isPublic =
+    typeof isPublicParticipant === 'function'
+      ? isPublicParticipant(item)
+      : String(item.rolle || '')
+          .trim()
+          .toLowerCase() === 'public';
+
+  const publicLabel =
+    isPublic
+      ? `
+          <span class="member-role-public">
+            (Nichtmitglied)
+          </span>
+        `
+      : '';
+
   return `
     <div class="event-card member-list-card">
 
@@ -61,7 +77,7 @@ function renderMemberCard(item) {
         <div class="member-card-body">
 
           <div class="member-card-name">
-            ${name}
+            ${name}${publicLabel}
           </div>
 
           <div class="member-card-contact">
