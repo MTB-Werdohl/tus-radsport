@@ -32,6 +32,113 @@ function renderFeedbackAdminPollOptions(options) {
 
 }
 
+function isFeedbackOptionIdCustom(
+  label,
+  id
+) {
+
+  const normalizedId =
+    String(id || '').trim();
+
+  if (!normalizedId) {
+    return false;
+  }
+
+  return normalizedId
+    !== slugifyFeedbackOptionId(label);
+
+}
+
+function syncFeedbackOptionIdFromLabel(
+  row,
+  force
+) {
+
+  if (
+    row.dataset.idLocked === 'true'
+    && !force
+  ) {
+    return;
+  }
+
+  const labelInput =
+    row.querySelector('.feedback-option-label');
+
+  const idInput =
+    row.querySelector('.feedback-option-id');
+
+  if (!labelInput || !idInput) {
+    return;
+  }
+
+  const slug =
+    slugifyFeedbackOptionId(
+      labelInput.value
+    );
+
+  if (slug) {
+    idInput.value = slug;
+  }
+
+  updateFeedbackOptionIdToggleLabel(row);
+
+}
+
+function updateFeedbackOptionIdToggleLabel(row) {
+
+  const toggle =
+    row.querySelector(
+      '.feedback-option-id-toggle'
+    );
+
+  const idInput =
+    row.querySelector('.feedback-option-id');
+
+  if (!toggle || !idInput) {
+    return;
+  }
+
+  const id =
+    idInput.value.trim();
+
+  toggle.textContent =
+    id
+      ? `Interne ID: ${id}`
+      : 'Interne ID …';
+
+}
+
+function setFeedbackOptionIdExpanded(
+  row,
+  expanded
+) {
+
+  const wrap =
+    row.querySelector(
+      '.admin-feedback-option-id-wrap'
+    );
+
+  const toggle =
+    row.querySelector(
+      '.feedback-option-id-toggle'
+    );
+
+  if (!wrap || !toggle) {
+    return;
+  }
+
+  wrap.classList.toggle(
+    'hidden',
+    !expanded
+  );
+
+  toggle.setAttribute(
+    'aria-expanded',
+    String(expanded)
+  );
+
+}
+
 function createFeedbackAdminOptionRow(option = {}) {
 
   const row =
@@ -40,36 +147,72 @@ function createFeedbackAdminOptionRow(option = {}) {
   row.className =
     'admin-feedback-option-row';
 
+  const showIdAdvanced =
+    isFeedbackOptionIdCustom(
+      option.label,
+      option.id
+    );
+
   row.innerHTML = `
 
-<label>
-  Anzeige
-  <input
-    type="text"
-    class="feedback-option-label"
-    value="${escapeAdminHtml(option.label || '')}"
-    placeholder="18 Uhr">
-</label>
+<div class="admin-feedback-option-main">
 
-<label>
-  ID
-  <input
-    type="text"
-    class="feedback-option-id"
-    value="${escapeAdminHtml(option.id || '')}"
-    placeholder="18uhr"
-    pattern="[a-z0-9_-]+">
-</label>
+  <label>
+    Antwort
+    <input
+      type="text"
+      class="feedback-option-label"
+      value="${escapeAdminHtml(option.label || '')}"
+      placeholder="z. B. Waldtour, gemütlich">
+  </label>
 
-<button
-  type="button"
-  class="feedback-option-remove">
+  <div class="admin-feedback-option-actions">
 
-  Entfernen
+    <button
+      type="button"
+      class="feedback-option-id-toggle"
+      aria-expanded="${showIdAdvanced ? 'true' : 'false'}">
 
-</button>
+      Interne ID …
+
+    </button>
+
+    <button
+      type="button"
+      class="feedback-option-remove secondary-button">
+
+      Entfernen
+
+    </button>
+
+  </div>
+
+</div>
+
+<div class="admin-feedback-option-id-wrap${showIdAdvanced ? '' : ' hidden'}">
+
+  <label>
+    Interne ID
+    <input
+      type="text"
+      class="feedback-option-id"
+      value="${escapeAdminHtml(option.id || '')}"
+      placeholder="wird automatisch erzeugt"
+      pattern="[a-z0-9_-]+"
+      autocomplete="off">
+  </label>
+
+  <p class="admin-hint admin-feedback-option-id-hint">
+    Normalerweise leer lassen. Nur anpassen, wenn sich die Anzeige später ändert und alte Stimmen zusammenbleiben sollen.
+  </p>
+
+</div>
 
 `;
+
+  if (showIdAdvanced) {
+    row.dataset.idLocked = 'true';
+  }
 
   const labelInput =
     row.querySelector('.feedback-option-label');
@@ -79,20 +222,43 @@ function createFeedbackAdminOptionRow(option = {}) {
 
   labelInput.addEventListener('blur', () => {
 
-    if (idInput.value.trim()) {
-      return;
-    }
+    syncFeedbackOptionIdFromLabel(row);
 
-    idInput.value =
-      slugifyFeedbackOptionId(
-        labelInput.value
-      );
+  });
+
+  idInput.addEventListener('input', () => {
+
+    row.dataset.idLocked = 'true';
+    updateFeedbackOptionIdToggleLabel(row);
 
   });
 
   row
+    .querySelector('.feedback-option-id-toggle')
+    ?.addEventListener('click', () => {
+
+      const wrap =
+        row.querySelector(
+          '.admin-feedback-option-id-wrap'
+        );
+
+      const expanded =
+        wrap?.classList.contains('hidden');
+
+      setFeedbackOptionIdExpanded(
+        row,
+        expanded
+      );
+
+      if (expanded) {
+        idInput.focus();
+      }
+
+    });
+
+  row
     .querySelector('.feedback-option-remove')
-    .addEventListener('click', () => {
+    ?.addEventListener('click', () => {
 
       row.remove();
 
@@ -111,6 +277,10 @@ function createFeedbackAdminOptionRow(option = {}) {
       }
 
     });
+
+  if (option.id) {
+    updateFeedbackOptionIdToggleLabel(row);
+  }
 
   return row;
 
@@ -153,11 +323,19 @@ function readFeedbackAdminPollConfig() {
 
   rows.forEach((row) => {
 
+    syncFeedbackOptionIdFromLabel(row);
+
     const id =
       row
         .querySelector('.feedback-option-id')
         ?.value
-        .trim();
+        .trim()
+      || slugifyFeedbackOptionId(
+        row
+          .querySelector('.feedback-option-label')
+          ?.value
+          .trim()
+      );
 
     const label =
       row
@@ -240,42 +418,6 @@ function fillFeedbackAdminForm(module) {
 
 }
 
-function updateFeedbackAdminResultsLink() {
-
-  const wrap =
-    document.getElementById(
-      'feedback-admin-results-link'
-    );
-
-  const anchor =
-    document.getElementById(
-      'feedback-admin-results-anchor'
-    );
-
-  if (
-    !wrap
-    || !anchor
-  ) {
-    return;
-  }
-
-  if (!feedbackAdminState.module?.id) {
-
-    wrap.classList.add('hidden');
-
-    return;
-
-  }
-
-  anchor.href =
-    `/admin/feedback_results.html?module_id=${
-      feedbackAdminState.module.id
-    }`;
-
-  wrap.classList.remove('hidden');
-
-}
-
 async function loadFeedbackAdminModule() {
 
   if (
@@ -294,8 +436,6 @@ async function loadFeedbackAdminModule() {
   feedbackAdminState.module = module;
 
   fillFeedbackAdminForm(module);
-
-  updateFeedbackAdminResultsLink();
 
 }
 
@@ -401,8 +541,6 @@ async function saveFeedbackAdminForEntity(
     feedbackAdminState.module =
       result.data;
 
-    updateFeedbackAdminResultsLink();
-
     return { ok: true, data: result.data };
 
   }
@@ -490,8 +628,6 @@ async function saveFeedbackAdminForEntity(
 
   feedbackAdminState.module =
     result.data;
-
-  updateFeedbackAdminResultsLink();
 
   return { ok: true, data: result.data };
 
@@ -582,7 +718,7 @@ function mountFeedbackAdminForm(mountId) {
 </label>
 
 <p class="admin-hint">
-  Standard: nur Vereinsmitglieder. Öffentlich: externe Anmeldung (Trainingslager etc.) — Daten landen in members mit Rolle public.
+  Standard: nur Vereinsmitglieder. Öffentlich: Registrierung im Pop-up, Bestätigung per Magic Link — abstimmen erst nach E-Mail-Link.
 </p>
 
 <div
@@ -590,7 +726,7 @@ function mountFeedbackAdminForm(mountId) {
   class="hidden">
 
   <p class="admin-hint">
-    Poll-Optionen: stabile ID (z. B. 18uhr) und Anzeige-Text getrennt.
+    Antworten, die Mitglieder auf der Website sehen. Die interne ID wird automatisch erzeugt.
   </p>
 
   <div
@@ -601,7 +737,8 @@ function mountFeedbackAdminForm(mountId) {
 
   <button
     id="feedback-admin-add-option"
-    type="button">
+    type="button"
+    class="secondary-button">
 
     Option hinzufügen
 
@@ -615,20 +752,6 @@ function mountFeedbackAdminForm(mountId) {
 
 <p class="admin-hint">
   Wird zusammen mit „Speichern“ oben gesichert.
-</p>
-
-<p
-  id="feedback-admin-results-link"
-  class="admin-hint hidden">
-
-  <a
-    id="feedback-admin-results-anchor"
-    href="#">
-
-    Antworten anzeigen
-
-  </a>
-
 </p>
 
 `;

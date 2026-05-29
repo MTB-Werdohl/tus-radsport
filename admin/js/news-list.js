@@ -1,98 +1,27 @@
-async function loadNews() {
+let newsListPage = 1;
 
-  const { data, error } =
-    await window.supabaseClient
-      .from(window.siteConfig.tables.news)
-      .select('*')
-      .order(
-        'created_at',
-        { ascending: false }
-      );
+function formatNewsCreatedAt(value) {
 
-  if (error) {
-
-    console.error(error);
-
-    return;
-
+  if (!value) {
+    return '—';
   }
 
-  const search =
-    document
-      .getElementById('search')
-      .value
-      .toLowerCase();
+  const date =
+    new Date(value);
 
-  const container =
-    document.getElementById('news');
+  if (Number.isNaN(date.getTime())) {
+    return '—';
+  }
 
-  container.innerHTML = '';
+  return date.toLocaleDateString('de-DE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
 
-  data
+}
 
-    .filter(item => {
-
-      return (
-
-        item.title
-          ?.toLowerCase()
-          .includes(search)
-
-        ||
-
-        item.excerpt
-          ?.toLowerCase()
-          .includes(search)
-
-      );
-
-    })
-
-    .forEach(item => {
-
-      container.innerHTML += `
-
-        <div class="event-card">
-
-          <div class="event-header">
-
-            <div>
-
-              <strong>
-                ${escapeAdminHtml(item.title)}
-              </strong>
-
-              <div class="event-meta">
-
-                ${escapeAdminHtml(visibilityListLabel(item.sichtbarkeit))}
-
-                ·
-
-                /news/${escapeAdminHtml(item.slug)}
-
-              </div>
-
-            </div>
-
-            <div class="actions">
-
-              <button type="button" data-open-id="${item.id}">
-                ✏
-              </button>
-
-              <button type="button" class="delete-button" data-delete-id="${item.id}">
-                🗑
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      `;
-
-    });
+function bindNewsListActions(container) {
 
   container.querySelectorAll('[data-open-id]').forEach(button => {
 
@@ -112,6 +41,160 @@ async function loadNews() {
 
     });
 
+  });
+
+}
+
+async function loadNews() {
+
+  const { data, error } =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.news)
+      .select('*')
+      .order(
+        'created_at',
+        { ascending: false, nullsFirst: false }
+      )
+      .order(
+        'id',
+        { ascending: false }
+      );
+
+  if (error) {
+
+    console.error(error);
+
+    return;
+
+  }
+
+  const search =
+    document
+      .getElementById('search')
+      ?.value
+      .toLowerCase()
+      .trim()
+      || '';
+
+  const filtered =
+    (data || [])
+      .filter(item => {
+
+        if (!search) {
+          return true;
+        }
+
+        return (
+          item.title
+            ?.toLowerCase()
+            .includes(search)
+          ||
+          item.excerpt
+            ?.toLowerCase()
+            .includes(search)
+        );
+
+      })
+      .sort(compareByCreatedDesc);
+
+  const paged =
+    paginateAdminListItems(
+      filtered,
+      newsListPage
+    );
+
+  newsListPage = paged.page;
+
+  const container =
+    document.getElementById('news');
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = '';
+
+  if (!paged.items.length) {
+
+    container.innerHTML =
+      paged.totalItems
+        ? '<p class="admin-hint">Keine Treffer auf dieser Seite.</p>'
+        : '<p class="admin-hint">Noch keine News angelegt.</p>';
+
+    renderAdminPagination({
+      containerId: 'news-pagination',
+      totalItems: paged.totalItems,
+      currentPage: paged.page,
+      onPageChange(page) {
+        newsListPage = page;
+        loadNews();
+      }
+    });
+
+    return;
+
+  }
+
+  paged.items.forEach(item => {
+
+    container.innerHTML += `
+
+      <div class="event-card">
+
+        <div class="event-header">
+
+          <div>
+
+            <strong>
+              ${escapeAdminHtml(item.title)}
+            </strong>
+
+            <div class="event-meta">
+
+              ${escapeAdminHtml(formatNewsCreatedAt(item.created_at))}
+
+              ·
+
+              ${escapeAdminHtml(visibilityListLabel(item.sichtbarkeit))}
+
+              ·
+
+              /news/${escapeAdminHtml(item.slug)}
+
+            </div>
+
+          </div>
+
+          <div class="actions">
+
+            <button type="button" data-open-id="${item.id}">
+              ✏
+            </button>
+
+            <button type="button" class="delete-button" data-delete-id="${item.id}">
+              🗑
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+  bindNewsListActions(container);
+
+  renderAdminPagination({
+    containerId: 'news-pagination',
+    totalItems: paged.totalItems,
+    currentPage: paged.page,
+    onPageChange(page) {
+      newsListPage = page;
+      loadNews();
+    }
   });
 
 }
@@ -178,7 +261,12 @@ function openNews(id) {
 
 document
   .getElementById('search')
-  ?.addEventListener('input', loadNews);
+  ?.addEventListener('input', () => {
+
+    newsListPage = 1;
+    loadNews();
+
+  });
 
 document
   .getElementById('new-news')

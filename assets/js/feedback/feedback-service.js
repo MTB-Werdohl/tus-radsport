@@ -112,6 +112,35 @@ async function saveFeedbackAnswer(
 
 }
 
+async function registerPublicParticipant(
+  registration
+) {
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'register_public_participant',
+      {
+        p_email: registration.email,
+        p_vorname: registration.vorname,
+        p_nachname: registration.nachname,
+        p_telefon:
+          registration.telefon
+          || null
+      }
+    );
+
+  if (error) {
+
+    console.error(error);
+
+    return { error };
+
+  }
+
+  return { data };
+
+}
+
 async function submitPublicFeedbackAnswer(
   moduleId,
   registration,
@@ -301,7 +330,8 @@ async function fetchAllFeedbackModules() {
         window.siteConfig.tables.feedbackModules
       )
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .order('id', { ascending: false });
 
   if (error) {
 

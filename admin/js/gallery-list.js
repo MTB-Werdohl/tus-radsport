@@ -1,3 +1,5 @@
+let galleriesListPage = 1;
+
 function formatGalleryDate(dateString) {
 
   if (!dateString) {
@@ -15,113 +17,27 @@ function formatGalleryDate(dateString) {
 
 }
 
-async function loadGalleries() {
+function compareGalleriesByDateDesc(a, b) {
 
-  const { data, error } =
-    await window.supabaseClient
-      .from(window.siteConfig.tables.galleries)
-      .select('*')
-      .order('event_date', { ascending: false });
+  const aTime =
+    a.event_date
+      ? new Date(a.event_date).getTime()
+      : 0;
 
-  if (error) {
+  const bTime =
+    b.event_date
+      ? new Date(b.event_date).getTime()
+      : 0;
 
-    console.error(error);
-
-    alert(
-      'Galerien konnten nicht geladen werden: '
-      + error.message
-    );
-
-    return;
-
+  if (bTime !== aTime) {
+    return bTime - aTime;
   }
 
-  const search =
-    document
-      .getElementById('search')
-      .value
-      .toLowerCase()
-      .trim();
+  return (b.id || 0) - (a.id || 0);
 
-  const container =
-    document.getElementById('galleries');
+}
 
-  container.innerHTML = '';
-
-  (data || [])
-
-    .filter(item => {
-
-      if (!search) {
-        return true;
-      }
-
-      return item.title
-        ?.toLowerCase()
-        .includes(search)
-
-        ||
-
-        item.slug
-          ?.toLowerCase()
-          .includes(search);
-
-    })
-
-    .forEach(item => {
-
-      const title =
-        escapeAdminHtml(item.title || '—');
-
-      const slug =
-        escapeAdminHtml(item.slug || '—');
-
-      const date =
-        escapeAdminHtml(
-          formatGalleryDate(item.event_date)
-        );
-
-      container.innerHTML += `
-
-        <div class="event-card">
-
-          <div class="event-header">
-
-            <div>
-
-              <strong>
-                ${title}
-              </strong>
-
-              <div class="event-meta">
-
-                ${date}
-
-                · /galerie/${slug}
-
-              </div>
-
-            </div>
-
-            <div class="actions">
-
-              <button type="button" data-open-id="${item.id}">
-                ✏
-              </button>
-
-              <button type="button" class="delete-button" data-delete-id="${item.id}">
-                🗑
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      `;
-
-    });
+function bindGalleryListActions(container) {
 
   container.querySelectorAll('[data-open-id]').forEach(button => {
 
@@ -141,6 +57,160 @@ async function loadGalleries() {
 
     });
 
+  });
+
+}
+
+async function loadGalleries() {
+
+  const { data, error } =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.galleries)
+      .select('*')
+      .order('event_date', { ascending: false })
+      .order('id', { ascending: false });
+
+  if (error) {
+
+    console.error(error);
+
+    alert(
+      'Galerien konnten nicht geladen werden: '
+      + error.message
+    );
+
+    return;
+
+  }
+
+  const search =
+    document
+      .getElementById('search')
+      ?.value
+      .toLowerCase()
+      .trim()
+      || '';
+
+  const filtered =
+    (data || [])
+      .filter(item => {
+
+        if (!search) {
+          return true;
+        }
+
+        return item.title
+          ?.toLowerCase()
+          .includes(search)
+
+          ||
+
+          item.slug
+            ?.toLowerCase()
+            .includes(search);
+
+      })
+      .sort(compareGalleriesByDateDesc);
+
+  const paged =
+    paginateAdminListItems(
+      filtered,
+      galleriesListPage
+    );
+
+  galleriesListPage = paged.page;
+
+  const container =
+    document.getElementById('galleries');
+
+  container.innerHTML = '';
+
+  if (!paged.items.length) {
+
+    container.innerHTML =
+      paged.totalItems
+        ? '<p class="admin-hint">Keine Treffer auf dieser Seite.</p>'
+        : '<p class="admin-hint">Noch keine Galerien angelegt.</p>';
+
+    renderAdminPagination({
+      containerId: 'galleries-pagination',
+      totalItems: paged.totalItems,
+      currentPage: paged.page,
+      onPageChange(page) {
+        galleriesListPage = page;
+        loadGalleries();
+      }
+    });
+
+    return;
+
+  }
+
+  paged.items.forEach(item => {
+
+    const title =
+      escapeAdminHtml(item.title || '—');
+
+    const slug =
+      escapeAdminHtml(item.slug || '—');
+
+    const date =
+      escapeAdminHtml(
+        formatGalleryDate(item.event_date)
+      );
+
+    container.innerHTML += `
+
+      <div class="event-card">
+
+        <div class="event-header">
+
+          <div>
+
+            <strong>
+              ${title}
+            </strong>
+
+            <div class="event-meta">
+
+              ${date}
+
+              · /galerie/${slug}
+
+            </div>
+
+          </div>
+
+          <div class="actions">
+
+            <button type="button" data-open-id="${item.id}">
+              ✏
+            </button>
+
+            <button type="button" class="delete-button" data-delete-id="${item.id}">
+              🗑
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+  bindGalleryListActions(container);
+
+  renderAdminPagination({
+    containerId: 'galleries-pagination',
+    totalItems: paged.totalItems,
+    currentPage: paged.page,
+    onPageChange(page) {
+      galleriesListPage = page;
+      loadGalleries();
+    }
   });
 
 }
@@ -249,7 +319,12 @@ function openGallery(id) {
 
 document
   .getElementById('search')
-  ?.addEventListener('input', loadGalleries);
+  ?.addEventListener('input', () => {
+
+    galleriesListPage = 1;
+    loadGalleries();
+
+  });
 
 document
   .getElementById('new-gallery')

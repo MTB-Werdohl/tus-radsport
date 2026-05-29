@@ -171,6 +171,18 @@ function renderFeedbackVotingScopeLabel(module) {
 
 }
 
+let feedbackListPage = 1;
+let feedbackSearchBound = false;
+
+function compareFeedbackRowsByCreatedDesc(a, b) {
+
+  return compareByCreatedDesc(
+    a.module,
+    b.module
+  );
+
+}
+
 async function loadFeedbackList() {
 
   const container =
@@ -272,26 +284,36 @@ async function loadFeedbackList() {
     );
 
   window.__feedbackListRows =
-    enriched;
+    enriched.sort(compareFeedbackRowsByCreatedDesc);
+
+  feedbackListPage = 1;
 
   renderFeedbackList(
-    enriched,
+    window.__feedbackListRows,
     document
       .getElementById('feedback-search')
       ?.value
       || ''
   );
 
-  document
-    .getElementById('feedback-search')
-    ?.addEventListener('input', (event) => {
+  if (!feedbackSearchBound) {
 
-      renderFeedbackList(
-        window.__feedbackListRows,
-        event.target.value
-      );
+    feedbackSearchBound = true;
 
-    });
+    document
+      .getElementById('feedback-search')
+      ?.addEventListener('input', (event) => {
+
+        feedbackListPage = 1;
+
+        renderFeedbackList(
+          window.__feedbackListRows,
+          event.target.value
+        );
+
+      });
+
+  }
 
 }
 
@@ -335,19 +357,43 @@ function renderFeedbackList(
 
       return haystack.includes(query);
 
-    });
+    })
+      .sort(compareFeedbackRowsByCreatedDesc);
 
-  if (!filtered.length) {
+  const paged =
+    paginateAdminListItems(
+      filtered,
+      feedbackListPage
+    );
+
+  feedbackListPage = paged.page;
+
+  if (!paged.items.length) {
 
     container.innerHTML =
-      '<p class="admin-hint">Keine Treffer.</p>';
+      paged.totalItems
+        ? '<p class="admin-hint">Keine Treffer auf dieser Seite.</p>'
+        : '<p class="admin-hint">Keine Treffer.</p>';
+
+    renderAdminPagination({
+      containerId: 'feedback-pagination',
+      totalItems: paged.totalItems,
+      currentPage: paged.page,
+      onPageChange(page) {
+        feedbackListPage = page;
+        renderFeedbackList(
+          rows,
+          searchValue
+        );
+      }
+    });
 
     return;
 
   }
 
   container.innerHTML =
-    filtered
+    paged.items
       .map((row) => {
 
         const module =
@@ -435,5 +481,18 @@ function renderFeedbackList(
 
       })
       .join('');
+
+  renderAdminPagination({
+    containerId: 'feedback-pagination',
+    totalItems: paged.totalItems,
+    currentPage: paged.page,
+    onPageChange(page) {
+      feedbackListPage = page;
+      renderFeedbackList(
+        rows,
+        searchValue
+      );
+    }
+  });
 
 }

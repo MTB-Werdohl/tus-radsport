@@ -25,6 +25,8 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Feedback Deaktivieren (ohne Löschen):** [`supabase-feedback-enabled.sql`](../supabase-feedback-enabled.sql) — Spalte `enabled`; deaktiviertes Modul ist öffentlich ausgeblendet, Antworten bleiben bis Entity-Löschung.
 
+**Feedback Public-Registrierung (Magic Link):** [`supabase-feedback-public-registration.sql`](../supabase-feedback-public-registration.sql) — externe Teilnehmer registrieren sich im Pop-up, erhalten Magic Link, abstimmen erst nach Login; `submit_public_feedback` für anonym nicht mehr.
+
 **Rolle „public“ (externe Teilnehmer):** [`supabase-members-public-role.sql`](../supabase-members-public-role.sql) — `is_member()` ohne public, RPC `submit_public_feedback` / `get_public_feedback_answer`.
 
 **Falls Abstimmung fehlschlägt mit „no unique or exclusion constraint“:** [`supabase-feedback-answers-unique-fix.sql`](../supabase-feedback-answers-unique-fix.sql) — stellt `UNIQUE (module_id, member_id)` wieder her (nach alter public-voting-Migration).

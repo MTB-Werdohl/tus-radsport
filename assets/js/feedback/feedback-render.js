@@ -24,70 +24,25 @@ function renderFeedbackMembersOnlyHint() {
 
 }
 
-function renderFeedbackPublicHint() {
+function renderFeedbackPublicGate() {
 
   return `
-<p class="feedback-hint feedback-hint--public">
-  Bitte Name und E-Mail angeben — du wirst als externer Teilnehmer erfasst,
-  kein Vereinsmitglied. Später kannst du dich per E-Mail-Link anmelden.
-</p>
-`;
+<div class="feedback-public-gate">
 
-}
+  <p class="feedback-hint feedback-hint--public">
+    Externe Teilnahme: Bitte kurz registrieren.
+    Du erhältst einen Bestätigungs-Link per E-Mail — erst danach kannst du abstimmen.
+  </p>
 
-function renderFeedbackPublicRegistrationForm(
-  storedEmail
-) {
+  <button
+    type="button"
+    class="feedback-public-gate__register feedback-save">
 
-  const email =
-    storedEmail || getPublicFeedbackEmail();
+    Als externer Teilnehmer teilnehmen
 
-  return `
-<form
-  class="feedback-public-registration"
-  novalidate>
+  </button>
 
-  <div class="feedback-public-registration__row">
-
-    <label>
-      Vorname
-      <input
-        type="text"
-        class="feedback-public-vorname"
-        autocomplete="given-name"
-        required>
-    </label>
-
-    <label>
-      Nachname
-      <input
-        type="text"
-        class="feedback-public-nachname"
-        autocomplete="family-name"
-        required>
-    </label>
-
-  </div>
-
-  <label>
-    E-Mail
-    <input
-      type="email"
-      class="feedback-public-email"
-      value="${escapeFeedbackHtml(email)}"
-      autocomplete="email"
-      required>
-  </label>
-
-  <label>
-    Telefon (optional)
-    <input
-      type="tel"
-      class="feedback-public-telefon"
-      autocomplete="tel">
-  </label>
-
-</form>
+</div>
 `;
 
 }
@@ -273,22 +228,32 @@ function canVoteOnFeedbackModule(
   member
 ) {
 
-  if (module?.public_voting === true) {
-    return true;
+  if (
+    module?.public_voting === true
+  ) {
+
+    return (
+      isClubMember(member)
+      || isPublicParticipant(member)
+    );
+
   }
 
   return isClubMember(member);
 
 }
 
-function shouldShowPublicRegistration(
+function shouldShowPublicGate(
   module,
   member
 ) {
 
   return (
     module?.public_voting === true
-    && !member?.id
+    && !canVoteOnFeedbackModule(
+      module,
+      member
+    )
   );
 
 }
@@ -304,8 +269,16 @@ function renderFeedbackModule(
     return;
   }
 
+  ensurePublicFeedbackModal();
+
   const canVote =
     canVoteOnFeedbackModule(
+      module,
+      member
+    );
+
+  const showPublicGate =
+    shouldShowPublicGate(
       module,
       member
     );
@@ -354,12 +327,6 @@ function renderFeedbackModule(
 
   }
 
-  const showRegistration =
-    shouldShowPublicRegistration(
-      module,
-      member
-    );
-
   container.innerHTML = `
 
 <section class="feedback-module">
@@ -372,16 +339,12 @@ ${escapeFeedbackHtml(module.question)}
 
 ${
   canVote
-    ? (
-      showRegistration
-        ? renderFeedbackPublicHint()
-        + renderFeedbackPublicRegistrationForm(
-          getPublicFeedbackEmail()
-        )
-        : ''
+    ? body
+    : (
+      showPublicGate
+        ? renderFeedbackPublicGate()
+        : renderFeedbackMembersOnlyHint()
     )
-    + body
-    : renderFeedbackMembersOnlyHint()
 }
 
 <div id="feedback-status"></div>
@@ -396,7 +359,21 @@ ${
       module,
       member
     );
+  } else if (showPublicGate) {
+    bindFeedbackPublicGateEvents(container);
   }
+
+}
+
+function bindFeedbackPublicGateEvents(container) {
+
+  container
+    .querySelector('.feedback-public-gate__register')
+    ?.addEventListener('click', () => {
+
+      openPublicFeedbackModal();
+
+    });
 
 }
 
@@ -413,12 +390,6 @@ function bindFeedbackModuleEvents(
     member?.id
       ? { memberId: member.id }
       : null;
-
-  const usesPublicRegistration =
-    shouldShowPublicRegistration(
-      module,
-      member
-    );
 
   async function persistAnswer(
     answer,
@@ -444,51 +415,25 @@ function bindFeedbackModuleEvents(
 
     }
 
-    let result;
+    if (!identity?.memberId) {
 
-    if (usesPublicRegistration) {
-
-      const registration =
-        readPublicFeedbackRegistration(
-          container
+      statusEl.innerHTML =
+        renderFeedbackStatus(
+          'Bitte zuerst per E-Mail-Link anmelden.',
+          true
         );
 
-      const registrationError =
-        validatePublicFeedbackRegistration(
-          registration
-        );
-
-      if (registrationError) {
-
-        statusEl.innerHTML =
-          renderFeedbackStatus(
-            registrationError,
-            true
-          );
-
-        return;
-
-      }
-
-      result =
-        await submitPublicFeedbackAnswer(
-          module.id,
-          registration,
-          answer,
-          comment
-        );
-
-    } else {
-
-      result =
-        await saveFeedbackAnswer(
-          module.id,
-          identity,
-          answer,
-          comment
-        );
+      return;
 
     }
+
+    const result =
+      await saveFeedbackAnswer(
+        module.id,
+        identity,
+        answer,
+        comment
+      );
 
     if (result?.error) {
 

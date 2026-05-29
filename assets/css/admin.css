@@ -75,10 +75,35 @@ h3 {
 
 #events,
 #members,
-#galleries {
+#galleries,
+#news {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.admin-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.admin-pagination-info {
+  font-size: 0.9375rem;
+  opacity: 0.85;
+}
+
+.admin-pagination .secondary-button {
+  margin-bottom: 0;
+  min-width: 110px;
+}
+
+.admin-pagination .secondary-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .event-header {

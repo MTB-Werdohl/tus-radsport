@@ -96,8 +96,10 @@ Vollständige SQL-Reihenfolge: [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md)
 
 **Dashboard → Authentication → Email Templates → Magic Link**
 
-- Betreff/Text nach Wunsch anpassen (z. B. „Dein Login für MTB Werdohl“)
-- Link in der Vorlage zeigt auf Supabase; nach Klick leitet die Website auf `/profil/` weiter
+- Fertige, rechtsichere Vorlage (Betreff + HTML + Plain-Text): [`supabase-magic-link-email-template.md`](supabase-magic-link-email-template.md)
+- Kurz: Betreff z. B. „Dein Anmeldelink — MTB Werdohl (TuS Jahn Werdohl e.V.)“
+- Link-Variable in Supabase: `{{ .ConfirmationURL }}`
+- Nach dem Speichern: Test-Mail an dich selbst (Desktop + Handy)
 
 ---
 

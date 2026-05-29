@@ -68,21 +68,6 @@ async function initFeedbackModule(options) {
         member.id
       );
 
-  } else if (module.public_voting) {
-
-    const storedEmail =
-      getPublicFeedbackEmail();
-
-    if (storedEmail) {
-
-      ownAnswer =
-        await fetchPublicFeedbackAnswerByEmail(
-          module.id,
-          storedEmail
-        );
-
-    }
-
   }
 
   renderFeedbackModule(
