@@ -112,7 +112,7 @@ async function saveFeedbackAnswer(
 
 }
 
-async function submitPublicFeedbackAnswer(
+async function canRegisterPublicParticipant(
   email
 ) {
 
