@@ -220,7 +220,7 @@ Du kannst dich mit deiner **E-Mail-Adresse** anmelden. Es wird kein Passwort ges
 
 **Vereinsmitglieder** (Rolle „Mitglied“ oder „Vorstand“): Die E-Mail muss in der Mitgliederliste des Vereins hinterlegt sein. Andernfalls wird kein Login-Link versendet.
 
-**Externe Teilnehmer** (Rolle „public“, siehe Abschnitt 12.5): Nach einer Anmeldung über eine öffentliche Abstimmung ist die E-Mail in unserer Datenbank gespeichert; anschließend ist auch hier ein Login per Magic Link möglich.
+**Externe Teilnehmer** (Rolle „public“, siehe Abschnitt 12.5): Registrierung über öffentliche Abstimmung; Eintrag in der Mitgliederdatenbank **erst nach Klick auf den Bestätigungs-Link**. Anschließend Login und Abstimmung per Magic Link.
 
 Verarbeitete Daten:
 
@@ -306,11 +306,11 @@ Rechtsgrundlagen:
 - Art. 6 Abs. 1 lit. b DSGVO — Durchführung der von dir gewünschten Anmeldung/Teilnahme
 - Art. 6 Abs. 1 lit. f DSGVO — Organisation des Radsportbetriebs und Auswertung durch den Vorstand
 
-Speicherdauer: bis zur Löschung durch den Vorstand oder auf deine Anfrage hin (siehe Abschnitt 15), sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen.
+Speicherdauer: bis zur Löschung durch dich (Profil), den Vorstand oder auf Anfrage (siehe Abschnitt 15), sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen.
 
 ### 12.6 Feedback und Abstimmungen
 
-An Terminen und News kann optional ein **Feedback-Modul** eingerichtet sein (z. B. „Wer fährt mit?“ / Ja–Vielleicht, Ja–Nein mit Kommentar, Umfrage).
+An Terminen und News kann optional ein **Feedback-Modul** eingerichtet sein (z. B. „Wer fährt mit?“ / Ja–Vielleicht, Ja–Nein mit Kommentar, Umfrage). Der Vorstand kann das Modul aktivieren oder deaktivieren.
 
 Verarbeitete Daten:
 
@@ -319,11 +319,19 @@ Verarbeitete Daten:
 - Zuordnung zu deinem Datensatz in der Mitgliederdatenbank (`member_id`)
 - Zeitpunkt der Abgabe bzw. Änderung
 
-**Nur für Vereinsmitglieder:** Abstimmung ist nur nach Anmeldung als Mitglied oder Vorstand möglich.
+**Standard (nur Vereinsmitglieder):** Abstimmung ist nur nach Anmeldung als **Mitglied** oder **Vorstand** möglich (Magic Link über die Website-Navigation).
 
-**Öffentliche Abstimmung:** Auch ohne Login — dafür ist eine kurze Anmeldung mit Name und E-Mail erforderlich (Abschnitt 12.5). Bereits Vereinsmitglieder sollen sich für die Abstimmung anmelden, statt die externe Anmeldung zu nutzen.
+**Öffentliche Abstimmung** (optional, vom Vorstand freigegeben): Externe können teilnehmen, wenn das Modul dafür explizit freigegeben ist. Ablauf:
 
-Der Vorstand kann Antworten in der Verwaltung einsehen und exportieren (Name/E-Mail der Teilnehmer sind für den Vorstand sichtbar).
+1. Kurze Registrierung mit Name und E-Mail (Abschnitt 12.5)
+2. Bestätigung per Magic Link in der E-Mail
+3. **Erst danach** Abstimmung — ohne gültige Anmeldung ist keine Teilnahme möglich
+
+Bereits Vereinsmitglieder sollen sich über den normalen Mitglieder-Login anmelden, nicht über die externe Registrierung.
+
+Der Vorstand kann Antworten in der Verwaltung einsehen und exportieren (Name/E-Mail der Teilnehmer sind für den Vorstand sichtbar, bei gelöschten Accounts: „Anonym“).
+
+Bei **Account-Löschung** durch externe Teilnehmer bleiben Abstimmungen anonym gezählt; Kommentare werden entfernt (Abschnitt 12.5).
 
 Rechtsgrundlagen:
 
@@ -392,7 +400,8 @@ Zur technischen Funktion können Informationen **lokal im Browser** gespeichert 
 
 - **Supabase Auth-Session** — damit du eingeloggt bleibst (Magic Link)
 - **lastSeenPush** — welche Push-Mitteilung auf der Website bereits als gelesen markiert wurde
-- **publicFeedbackEmail** — deine E-Mail-Adresse, damit du bei einer öffentlichen Abstimmung deine bereits abgegebene Antwort wiedererkennen kannst (nur wenn du dich extern angemeldet hast)
+- **publicFeedbackReturnUrl** — Rückkehr-Adresse nach Magic Link bei externer Abstimmung (Session Storage, bis Tab geschlossen oder überschrieben)
+- **publicRegistrationPending** — vorübergehend Name/Telefon bis E-Mail bestätigt ist (Session Storage, bis Registrierung abgeschlossen oder Account gelöscht)
 
 Diese Speicherung dient ausschließlich der technischen Funktion der Website und des Mitgliederbereichs. Es werden **keine** Analyse-, Marketing- oder Tracking-Cookies gesetzt.
 
@@ -414,7 +423,7 @@ Es werden keine Cookies zu Werbe- oder Analysezwecken gesetzt.
 - **Auth-Session:** bis zum Logout, Ablauf der Session oder Ungültigkeit des Login-Links.
 - **Push-Abonnements:** bis zur Deaktivierung, Ungültigkeit oder Löschung des Mitglieds.
 - **Push-Verlauf (`PushMessages`):** für die Anzeige auf der Website; technische Löschung durch den Vorstand bei Bedarf.
-- **Local Storage im Browser** (z. B. `publicFeedbackEmail`, `lastSeenPush`): bis du die Website-Daten im Browser löschst oder der Eintrag überschrieben wird.
+- **Local Storage im Browser** (z. B. `lastSeenPush`) und **Session Storage** (z. B. `publicFeedbackReturnUrl`, `publicRegistrationPending`): bis du die Website-Daten im Browser löschst, der Tab geschlossen wird oder der Eintrag überschrieben wird.
 - **Server- und Verbindungslogs der Hosting-/Backend-Anbieter:** gemäß deren Richtlinien; auf diese Logs hat der Verein in der Regel keinen direkten Zugriff.
 
 ---

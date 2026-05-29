@@ -7,6 +7,7 @@
 | [supabase-members-setup.md](supabase-members-setup.md) | Betreiber | Magic Link, SMTP, Redirect URLs |
 | [supabase/RUNBOOK.md](supabase/RUNBOOK.md) | Betreiber / DevOps | **SQL-Reihenfolge**, Policy-Matrix, Edge Functions |
 | [supabase/SCHEMA.md](supabase/SCHEMA.md) | Entwickler | Tabellen & Spalten |
+| [../datenschutz.md](../datenschutz.md) | Öffentlich | Datenschutzerklärung (Login, public, Feedback, Löschung) |
 
 ## SQL-Skripte (`docs/`)
 

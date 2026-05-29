@@ -71,13 +71,16 @@ Optionale Frontmatter-Flags:
 
 | Datei | Aufgabe |
 |-------|---------|
-| `member-service.js` | Abfrage Tabelle `members` |
-| `member-auth.js` | Session, Magic Link, Logout, Validierung |
+| `member-service.js` | Abfrage Tabelle `members`, Rollen-Hilfen |
+| `member-auth.js` | Session, Magic Link, Logout, Validierung; externe Registrierung nach Magic Link |
+| `member-account.js` | Account-Löschung (Anonymisierung) via Edge Function |
 | `member-nav.js` | Header-UI (Login / Profil / Logout) |
-| `member-render.js` | Profilseite rendern |
+| `member-render.js` | Profilseite rendern (Mitglied + public) |
 | `member-page.js` | Profilseite initialisieren |
 
-Ablauf: E-Mail in `members` → Magic Link → Session → E-Mail-Abgleich → Profil unter `/profil/`.
+Ablauf Vereinsmitglied: E-Mail in `members` → Magic Link → Session → E-Mail-Abgleich → Profil unter `/profil/`.
+
+Ablauf extern (`public`): Registrierung im Feedback-Pop-up → Magic Link → DB-Eintrag → Abstimmung. Account-Löschung auf `/profil/` (Anonymisierung, siehe `anonymize-member-account`).
 
 **Rollen** (`members.rolle`):
 
@@ -85,9 +88,9 @@ Ablauf: E-Mail in `members` → Magic Link → Session → E-Mail-Abgleich → P
 |-------|--------|-----------------|------------------------------------------|
 | `Mitglied` | ja | nein | ja |
 | `Vorstand` | ja | ja (voller CMS-Zugriff) | ja |
-| `public` | ja (eingeschränkt) | nein | nein — nur öffentliche Abstimmungen |
+| `public` | ja (eingeschränkt, inkl. Account löschen) | nein | nein — nur öffentliche Abstimmungen (`public_voting`) |
 
-Ausführliche Einrichtung: [`docs/supabase-members-setup.md`](supabase-members-setup.md) · SQL: [`docs/supabase-members-auth.sql`](supabase-members-auth.sql) · Rollen/RLS: [`docs/supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql)
+Ausführliche Einrichtung: [`docs/supabase-members-setup.md`](supabase-members-setup.md) · SQL: [`docs/supabase-members-auth.sql`](supabase-members-auth.sql) · Rollen/RLS: [`docs/supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql) · Public/Anonymisierung: [`docs/supabase/RUNBOOK.md`](supabase/RUNBOOK.md)
 
 ---
 
@@ -137,6 +140,7 @@ SQL Feedback: [`supabase-feedback.sql`](supabase-feedback.sql)
 - `save-push-subscription` — JWT des Mitglieds (Referenz: `docs/supabase-edge-save-push-subscription.ts`)
 - `delete-push-subscription` — JWT des Mitglieds
 - `send-push` — JWT + Vorstand-Check serverseitig; Referenz: [`supabase-edge-send-push.ts`](supabase-edge-send-push.ts)
+- `anonymize-member-account` — Account-Löschung (public Self-Service / Vorstand); Referenz: [`supabase-edge-anonymize-member-account.ts`](supabase-edge-anonymize-member-account.ts), **Verify JWT OFF**
 
 ## Web Push (Mitglieder)
 
@@ -191,26 +195,38 @@ Kategorien/Farben: categories.js (getTerminCategory)
 ```
 Content (Termin.id / News.id)
         ↕ entity_type + entity_id (polymorph, kein DB-FK)
-feedback_modules (type, question, config)
+feedback_modules (type, question, config, enabled, public_voting)
         ↕ module_id
 feedback_answers (member_id, answer, comment?)
 ```
+
+**Öffentliche Abstimmung** (`public_voting=true`, `enabled=true`):
+
+```
+Gast → Pop-up (Name, E-Mail 2×) → Magic Link
+     → Klick → complete_public_participant_registration (RPC)
+     → Session → saveFeedbackAnswer (authenticated)
+```
+
+Kein anonymes Abstimmen; DB-Eintrag erst nach E-Mail-Bestätigung.
 
 **Frontend** (`assets/js/feedback/`):
 
 ```
 feedback-types.js               → Validierung, poll option_id
-feedback-public-registration.js → E-Mail/Name für externe Abstimmung
+feedback-public-registration.js → Externe Registrierung, Magic Link, sessionStorage
 feedback-service.js             → Supabase load/upsert + RPC
-feedback-render.js              → UI je type (yes_maybe, yes_no_comment, poll)
+feedback-render.js              → UI je type; Gate für public_voting
 feedback-init.js                → initFeedbackModule({ entityType, entityId, container })
 ```
 
 Detail-Seiten rufen nur `initFeedbackModule()` auf — kein Feedback-Code in `event-service` / `news-detail-service`.
 
-**Admin:** `admin/js/feedback-module-form.js` in Termin-/News-Bearbeitung (optional, zusammen mit Speichern). Auswertung: `admin/feedback.html`, `admin/feedback_results.html?module_id=…` (CSV-Export).
+**Admin:** `admin/js/feedback-module-form.js` in Termin-/News-Bearbeitung (optional, zusammen mit Speichern). Schalter **Öffentliche Abstimmung** (`public_voting`). Auswertung: `admin/feedback.html`, `admin/feedback_results.html?module_id=…` (CSV-Export). Mitglieder-Löschung = Anonymisierung (`anonymize_member` + Edge Function).
 
 Typen v1: `yes_maybe`, `yes_no_comment`, `poll` — Poll speichert `option_id` in `answer`, nicht Anzeige-Text.
+
+SQL-Reihenfolge: [`docs/supabase/RUNBOOK.md`](supabase/RUNBOOK.md) (Feedback + public + email-verify + anonymize).
 
 ## Wartung
 

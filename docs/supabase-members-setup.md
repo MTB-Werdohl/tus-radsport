@@ -190,6 +190,21 @@ Im Admin beim Anlegen/Bearbeiten von News und Terminen auswählen. Bestehende Ne
 
 ---
 
+## Schritt 10 — Externe Abstimmung & Account-Löschung (optional)
+
+Für **öffentliche Feedback-Abstimmungen** (externe Teilnehmer, Rolle `public`):
+
+1. SQL gemäß [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md): Feedback-Basis → `public_voting` → Public-Registrierung → **E-Mail zuerst** (`supabase-feedback-public-email-verify.sql`) → **Anonymisierung** (`supabase-members-anonymize.sql`)
+2. **Redirect URLs** für Magic Link: `/news/**`, `/kalender/**`, `/event.html`, `/news-detail.html` (siehe Schritt 3)
+3. E-Mail-Vorlage: [`supabase-magic-link-email-template.md`](supabase-magic-link-email-template.md)
+4. Edge Function **`anonymize-member-account`** deployen (Slug exakt, **Verify JWT OFF**) — siehe RUNBOOK
+
+Ablauf für Gäste: Registrierung im Pop-up → E-Mail bestätigen → abstimmen. Account-Löschung auf `/profil/`.
+
+Datenschutz: [`../datenschutz.md`](../datenschutz.md) §12.5 / §12.6
+
+---
+
 ## Checkliste
 
 - [ ] `members.email` für alle Mitglieder gesetzt
@@ -203,6 +218,7 @@ Im Admin beim Anlegen/Bearbeiten von News und Terminen auswählen. Bestehende Ne
 - [ ] Magic Link kommt an und `/profil/` funktioniert
 - [ ] Vorstand: `/admin/` nach Magic Link erreichbar
 - [ ] Mitglied ohne Vorstand-Rolle: kein Admin-Zugang
+- [ ] *(optional Feedback public)* RUNBOOK-Feedback-Skripte + `anonymize-member-account` deployt, Test Registrierung → Abstimmung → Account löschen
 
 ---
 
