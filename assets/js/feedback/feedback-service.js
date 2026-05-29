@@ -128,6 +128,25 @@ async function canRegisterPublicParticipant(
 
     console.error(error);
 
+    const message =
+      String(error.message || '');
+
+    if (
+      message.includes(
+        'Could not find the function'
+      )
+      || error.code === 'PGRST202'
+    ) {
+
+      return {
+        error: new Error(
+          'Registrierung ist serverseitig noch nicht eingerichtet. '
+          + 'Im Supabase SQL Editor docs/supabase-feedback-public-email-verify.sql ausführen.'
+        )
+      };
+
+    }
+
     return { error };
 
   }

@@ -30,8 +30,9 @@ function renderFeedbackPublicGate() {
 <div class="feedback-public-gate">
 
   <p class="feedback-hint feedback-hint--public">
-    Externe Teilnahme: Bitte kurz registrieren.
-    Du erhältst einen Bestätigungs-Link per E-Mail — erst danach kannst du abstimmen.
+    Auch als Nichtmitglied kannst du Teilnehmen. Wir bitten um kurze Registrierung,
+    damit wir wissen wer du bist und wie wir dich erreichen können.
+    Du erhältst einen Bestätigungs-Link per E-Mail - danach kannst du deine Teilnahme anmelden.
   </p>
 
   <button
