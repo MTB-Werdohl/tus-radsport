@@ -145,6 +145,32 @@ function formatFeedbackEntityTitle(
 
 }
 
+function getFeedbackVotingScopeLabel(module) {
+
+  return module?.public_voting === true
+    ? 'Public'
+    : 'Intern';
+
+}
+
+function renderFeedbackVotingScopeLabel(module) {
+
+  const scope =
+    getFeedbackVotingScopeLabel(module);
+
+  const scopeClass =
+    scope === 'Public'
+      ? 'feedback-card-scope--public'
+      : 'feedback-card-scope--intern';
+
+  return `
+    <span class="feedback-card-scope ${scopeClass}">
+      (${scope})
+    </span>
+  `;
+
+}
+
 async function loadFeedbackList() {
 
   const container =
@@ -299,6 +325,9 @@ function renderFeedbackList(
         getFeedbackTypeLabel(row.module.type),
         getFeedbackEntityTypeLabel(
           row.module.entity_type
+        ),
+        getFeedbackVotingScopeLabel(
+          row.module
         )
       ]
         .join(' ')
@@ -358,6 +387,7 @@ function renderFeedbackList(
 
       <div class="feedback-card-title">
         ${entityTitle}
+        ${renderFeedbackVotingScopeLabel(module)}
         ${disabledBadge}
       </div>
 
@@ -381,7 +411,7 @@ function renderFeedbackList(
 
       <a
         href="/admin/feedback_results.html?module_id=${module.id}"
-        class="new-button">
+        class="feedback-card-btn feedback-card-btn--primary">
 
         Auswertung
 
@@ -389,7 +419,7 @@ function renderFeedbackList(
 
       <a
         href="${editUrl}"
-        class="secondary-button">
+        class="feedback-card-btn feedback-card-btn--secondary">
 
         Bearbeiten
 

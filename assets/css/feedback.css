@@ -327,6 +327,20 @@ margin: 0;
   line-height: 1.3;
 }
 
+.feedback-card-scope {
+  margin-left: 0.35em;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.feedback-card-scope--intern {
+  color: #b0bec5;
+}
+
+.feedback-card-scope--public {
+  color: #81d4fa;
+}
+
 .feedback-card-disabled {
   display: inline-block;
   margin-left: 8px;
@@ -371,15 +385,45 @@ margin: 0;
   flex-shrink: 0;
 }
 
-.feedback-card-actions a {
-  display: block;
-  width: auto;
-  min-width: 120px;
+.feedback-card-actions .feedback-card-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 132px;
+  padding: 10px 16px;
   margin: 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.2;
   text-align: center;
   text-decoration: none;
-  font-weight: 600;
+  color: #fff;
   white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.feedback-card-actions .feedback-card-btn:hover {
+  transform: translateY(-1px);
+}
+
+.feedback-card-actions .feedback-card-btn--primary {
+  background: #2e8b57;
+}
+
+.feedback-card-actions .feedback-card-btn--primary:hover {
+  background: #3aa86a;
+}
+
+.feedback-card-actions .feedback-card-btn--secondary {
+  background: #444;
+}
+
+.feedback-card-actions .feedback-card-btn--secondary:hover {
+  background: #555;
 }
 
 .feedback-admin-badge {
