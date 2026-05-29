@@ -1,4 +1,20 @@
-function formatFeedbackMemberName(memberRow) {
+function formatFeedbackResultsEntityTitle(
+  module,
+  entity
+) {
+
+  if (entity?.title) {
+    return entity.title;
+  }
+
+  const typeLabel =
+    getFeedbackEntityTypeLabel(
+      module.entity_type
+    );
+
+  return `${typeLabel} nicht gefunden`;
+
+}
 
   const member =
     memberRow?.members;
@@ -355,37 +371,10 @@ async function loadFeedbackResults() {
   document
     .getElementById('feedback-results-title')
     .textContent =
-      module.question;
-
-  document
-    .getElementById('feedback-results-meta')
-    .innerHTML = `
-
-${escapeAdminHtml(
-  getFeedbackTypeLabel(module.type)
-)}
-
-·
-
-${escapeAdminHtml(
-  getFeedbackEntityTypeLabel(
-    module.entity_type
-  )
-)}:
-
-<a href="${getFeedbackEntityEditUrl(
-  module.entity_type,
-  module.entity_id
-)}">
-
-${escapeAdminHtml(
-  entity?.title
-    || `ID ${module.entity_id}`
-)}
-
-</a>
-
-`;
+      formatFeedbackResultsEntityTitle(
+        module,
+        entity
+      );
 
   container.innerHTML = `
 
@@ -428,29 +417,6 @@ ${renderFeedbackAnswersTable(
       );
 
     });
-
-}
-
-function getFeedbackEntityEditUrl(
-  entityType,
-  entityId
-) {
-
-  if (
-    entityType
-    === window.siteConfig.feedback.entityTypes.event
-  ) {
-    return `/admin/termine_edit.html?id=${entityId}`;
-  }
-
-  if (
-    entityType
-    === window.siteConfig.feedback.entityTypes.news
-  ) {
-    return `/admin/news_edit.html?id=${entityId}`;
-  }
-
-  return '#';
 
 }
 
