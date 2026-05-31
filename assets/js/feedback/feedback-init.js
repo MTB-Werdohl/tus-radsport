@@ -71,6 +71,16 @@ async function initFeedbackModule(options) {
 
   }
 
+  if (
+    !shouldShowFeedbackToViewer(
+      module,
+      member
+    )
+  ) {
+    container.innerHTML = '';
+    return;
+  }
+
   let ownAnswer = null;
 
   if (member?.id) {

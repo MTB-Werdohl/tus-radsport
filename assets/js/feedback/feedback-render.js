@@ -12,6 +12,30 @@ function escapeFeedbackHtml(value) {
 
 }
 
+function shouldShowFeedbackToViewer(
+  module,
+  member
+) {
+
+  if (
+    !module
+    || module.enabled === false
+  ) {
+    return false;
+  }
+
+  if (
+    module.public_voting !== true
+    && typeof isPublicParticipant === 'function'
+    && isPublicParticipant(member)
+  ) {
+    return false;
+  }
+
+  return true;
+
+}
+
 function renderFeedbackMembersOnlyHint() {
 
   return `
@@ -267,6 +291,16 @@ function renderFeedbackModule(
 ) {
 
   if (!container || !module) {
+    return;
+  }
+
+  if (
+    !shouldShowFeedbackToViewer(
+      module,
+      member
+    )
+  ) {
+    container.innerHTML = '';
     return;
   }
 
