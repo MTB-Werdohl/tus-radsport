@@ -56,11 +56,22 @@ function renderHomeNewsTeaser(news) {
             item.excerpt || ''
           );
 
+        const cardClass =
+          contentVisibilityCardClass(
+            item.sichtbarkeit
+          );
+
+        const title =
+          formatContentCardTitle(
+            escapeHomeHtml(item.title),
+            item.sichtbarkeit
+          );
+
         return `
-<article class="calendar-card">
+<article class="${cardClass}">
   <a href="${getNewsUrl(item.slug)}">
     <div>
-      <h3>${escapeHomeHtml(item.title)}</h3>
+      <h3>${title}</h3>
       <p>${excerpt}</p>
     </div>
   </a>
@@ -103,8 +114,13 @@ async function loadHomeTeasers() {
 
   try {
 
+    const member =
+      typeof getCurrentMember === 'function'
+        ? getCurrentMember()
+        : null;
+
     const news =
-      await fetchPublishedNews();
+      await fetchNewsForViewer(member);
 
     renderHomeNewsTeaser(news);
     await loadHomeTermineTeaser();

@@ -9,7 +9,13 @@ const eventSources = [
         await fetchTermine();
 
       successCallback(
-        termineToCalendarEvents(termine)
+        termineToCalendarEvents(
+          termine,
+          {
+            member:
+              window.contentViewerMember
+          }
+        )
       );
 
     } catch (error) {

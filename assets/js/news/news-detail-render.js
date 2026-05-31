@@ -18,7 +18,10 @@ class="news-page"
 class="news-title"
 >
 
-${data.title}
+${formatContentCardTitle(
+  data.title,
+  data.sichtbarkeit
+)}
 
 </h1>
 

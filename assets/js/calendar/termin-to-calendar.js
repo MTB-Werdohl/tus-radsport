@@ -1,9 +1,36 @@
-function termineToCalendarEvents(termine) {
+function termineToCalendarEvents(
+  termine,
+  options = {}
+) {
+
+  const member =
+    options.member || null;
+
+  const showDraftStyle =
+    viewerIncludesDrafts(member);
 
   return termine.map(item => {
 
     const category =
       getTerminCategory(item.category);
+
+    let backgroundColor =
+      category.color;
+
+    let borderColor =
+      category.color;
+
+    if (
+      showDraftStyle
+      && normalizeContentVisibility(
+        item.sichtbarkeit
+      ) === CONTENT_VISIBILITY.draft
+    ) {
+
+      backgroundColor = '#b42230';
+      borderColor = '#b42230';
+
+    }
 
     const baseEvent = {
 
@@ -14,9 +41,9 @@ function termineToCalendarEvents(termine) {
       url:
         getEventUrl(item.slug),
 
-      backgroundColor: category.color,
+      backgroundColor,
 
-      borderColor: category.color,
+      borderColor,
 
       extendedProps: {
         exclude: item.exclude || []

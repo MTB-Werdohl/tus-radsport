@@ -1,15 +1,28 @@
-async function getEvent(slug) {
+async function getEvent(
+  slug,
+  member
+) {
 
-  const { data, error } =
-    await window.supabaseClient
+  let query =
+    window.supabaseClient
       .from(window.siteConfig.tables.termine)
       .select('*')
-      .eq('slug', slug)
-      .neq(
+      .eq('slug', slug);
+
+  if (
+    !viewerIncludesDrafts(member)
+  ) {
+
+    query =
+      query.neq(
         'sichtbarkeit',
         window.siteConfig.visibility.draft
-      )
-      .maybeSingle();
+      );
+
+  }
+
+  const { data, error } =
+    await query.maybeSingle();
 
   if (error) {
 

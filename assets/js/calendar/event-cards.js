@@ -175,7 +175,10 @@ async function loadCards(
     const card =
       document.createElement('article');
 
-    card.className = 'calendar-card';
+    card.className =
+      contentVisibilityCardClass(
+        event.sichtbarkeit
+      );
 
     const category =
       getTerminCategory(event.category);
@@ -187,6 +190,10 @@ async function loadCards(
 <div>
 
 <h3>
+
+${contentVisibilityIcon(
+  event.sichtbarkeit
+)}
 
 ${category.icon}
 

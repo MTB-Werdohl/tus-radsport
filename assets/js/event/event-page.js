@@ -27,10 +27,14 @@ async function loadEvent() {
   if (!slug)
     return;
 
+  const member =
+    await ensureContentViewerMember();
+
   const event =
 
     await getEvent(
-      slug
+      slug,
+      member
     );
 
   if (!event)
@@ -55,4 +59,7 @@ window.history.replaceState(
 
 }
 
-loadEvent();
+document.addEventListener(
+  'DOMContentLoaded',
+  loadEvent
+);

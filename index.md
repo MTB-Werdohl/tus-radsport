@@ -92,5 +92,6 @@ description: Radsportabteilung TuS Jahn Werdohl — gemeinsam MTB, Gravel & E-Bi
 <script src="/assets/js/calendar/card-dates.js"></script>
 <script src="/assets/js/calendar/termine-loader.js"></script>
 <script src="/assets/js/calendar/event-cards.js"></script>
+<script src="/assets/js/core/visibility.js"></script>
 <script src="/assets/js/news/news-service.js"></script>
 <script src="/assets/js/home/home-page.js"></script>

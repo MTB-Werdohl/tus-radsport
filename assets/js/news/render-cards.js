@@ -48,7 +48,9 @@ function renderNewsCards(news){
       );
 
     card.className=
-      'calendar-card';
+      contentVisibilityCardClass(
+        item.sichtbarkeit
+      );
 
     card.innerHTML=`
 
@@ -60,7 +62,10 @@ href="${getNewsUrl(item.slug)}"
 
 <h3>
 
-${item.title}
+${formatContentCardTitle(
+  item.title,
+  item.sichtbarkeit
+)}
 
 </h3>
 

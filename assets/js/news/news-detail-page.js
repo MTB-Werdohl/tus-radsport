@@ -1,5 +1,8 @@
 async function initNews(){
 
+const member =
+  await ensureContentViewerMember();
+
 let slug=
 
 new URLSearchParams(
@@ -32,8 +35,9 @@ return;
 
 const data=
 
-await fetchNews(
-slug
+await fetchNewsBySlug(
+  slug,
+  member
 );
 
 if(!data){
@@ -64,4 +68,7 @@ window.history.replaceState(
 
 }
 
-initNews();
+document.addEventListener(
+  'DOMContentLoaded',
+  initNews
+);

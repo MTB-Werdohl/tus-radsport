@@ -25,7 +25,10 @@ function renderEvent(
 
 <h1 class="event-title">
 
-${event.title}
+${formatContentCardTitle(
+  event.title,
+  event.sichtbarkeit
+)}
 
 </h1>
 

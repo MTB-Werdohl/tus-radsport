@@ -2,8 +2,11 @@ async function loadNews() {
 
   try {
 
+    const member =
+      await ensureContentViewerMember();
+
     const data =
-      await fetchPublishedNews();
+      await fetchNewsForViewer(member);
 
     renderNewsCards(data);
 
@@ -15,4 +18,7 @@ async function loadNews() {
 
 }
 
-loadNews();
+document.addEventListener(
+  'DOMContentLoaded',
+  loadNews
+);

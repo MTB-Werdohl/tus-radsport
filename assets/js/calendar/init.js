@@ -1,7 +1,7 @@
 document.addEventListener(
   'DOMContentLoaded',
 
-  function(){
+  async function(){
 
     const calendarEl=
 
@@ -10,6 +10,9 @@ document.addEventListener(
       );
 
     if (!calendarEl) return;
+
+    window.contentViewerMember =
+      await ensureContentViewerMember();
 
     const calendar=
 

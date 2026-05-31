@@ -11,6 +11,7 @@ description: "News und Aktuelles aus der Radsportabteilung TuS Jahn Werdohl."
 
   <div id="news-cards"></div>
 
+<script src="/assets/js/core/visibility.js"></script>
 <script src="/assets/js/news/render-cards.js"></script>
 <script src="/assets/js/news/news-service.js"></script>
 <script src="/assets/js/news/news-page.js"></script>
