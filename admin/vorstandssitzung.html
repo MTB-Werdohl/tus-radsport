@@ -1,0 +1,63 @@
+---
+layout: null
+title: Vorstandssitzung
+---
+
+<!doctype html>
+
+<html lang="de">
+
+<head>
+
+{% include admin-head.html %}
+
+</head>
+
+<body class="admin-jitsi-page">
+
+<div id="admin">
+
+  <div class="page-header">
+
+    <div>
+
+      <h1>
+        Vorstandssitzung
+      </h1>
+
+      <p>
+        Videokonferenz für den Vorstand
+      </p>
+
+    </div>
+
+    <a href="/admin/"
+       class="back-button">
+
+      ← Dashboard
+
+    </a>
+
+  </div>
+
+  <div class="admin-jitsi-embed">
+
+    <iframe
+      title="Vorstandssitzung — Jitsi Meet"
+      src="https://meet.jit.si/radsportvorstandmtbwerdohl"
+      allow="camera; microphone; fullscreen; display-capture; autoplay"
+      allowfullscreen>
+
+    </iframe>
+
+  </div>
+
+</div>
+
+<script>
+requireAdminSession();
+</script>
+
+</body>
+
+</html>
