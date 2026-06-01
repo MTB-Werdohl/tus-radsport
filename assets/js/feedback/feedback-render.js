@@ -26,10 +26,13 @@ function shouldShowFeedbackToViewer(
 
   if (
     module.public_voting !== true
-    && typeof isPublicParticipant === 'function'
-    && isPublicParticipant(member)
   ) {
-    return false;
+
+    return (
+      typeof isClubMember === 'function'
+      && isClubMember(member)
+    );
+
   }
 
   return true;
