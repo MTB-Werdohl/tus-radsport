@@ -1,330 +1,195 @@
 .netzwerk-page {
-
-  max-width: 960px;
-
-  margin: 0 auto;
-
+  width: 100%;
 }
 
 .netzwerk-intro {
-
-  margin-bottom: 32px;
-
-}
-
-.netzwerk-intro h1 {
-
-  margin: 0 0 12px;
-
+  margin-bottom: 28px;
 }
 
 .netzwerk-lead {
-
-  margin: 0;
-
+  margin: 0 0 18px;
   font-size: 1.05rem;
-
   line-height: 1.55;
-
   opacity: 0.92;
-
-  max-width: 52ch;
-
 }
 
 .netzwerk-grid-2 {
-
   display: grid;
-
   grid-template-columns: repeat(2, minmax(0, 1fr));
-
   gap: 24px;
-
   margin-bottom: 28px;
-
 }
 
 .netzwerk-section {
-
-  background: var(--bg-card);
-
-  border-radius: var(--radius);
-
-  box-shadow: var(--shadow);
-
-  padding: 20px 18px;
-
-  border: var(--border-soft);
-
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
 }
 
 .netzwerk-section h2 {
-
   margin: 0 0 16px;
-
   font-size: 1.15rem;
-
+  text-align: left;
 }
 
 .netzwerk-card-list {
-
   display: flex;
-
   flex-direction: column;
-
   gap: 10px;
-
 }
 
 .netzwerk-card {
-
   display: flex;
-
   align-items: center;
-
   gap: 14px;
-
   padding: 12px 14px;
-
   border-radius: 8px;
-
   background: rgba(0, 0, 0, 0.18);
-
   border: 1px solid rgba(255, 255, 255, 0.08);
-
   transition: background 0.2s ease;
-
 }
 
 .netzwerk-card:hover {
-
   background: rgba(0, 0, 0, 0.28);
-
 }
 
 .netzwerk-card__media {
-
   flex-shrink: 0;
-
   width: 52px;
-
   height: 52px;
-
   border-radius: 8px;
-
   overflow: hidden;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   background: rgba(255, 255, 255, 0.1);
-
 }
 
 .netzwerk-card__logo {
-
   display: block;
-
   width: 100%;
-
   height: 100%;
-
   object-fit: contain;
-
 }
 
 .netzwerk-card__media--fallback span {
-
   font-size: 1.25rem;
-
   font-weight: 700;
-
   opacity: 0.85;
-
 }
 
 .netzwerk-card__body {
-
   min-width: 0;
-
 }
 
 .netzwerk-card__title {
-
   margin: 0;
-
   font-size: 0.98rem;
-
   font-weight: 600;
-
   line-height: 1.3;
-
 }
 
 .netzwerk-card__title a {
-
   color: inherit;
-
   text-decoration: none;
-
 }
 
 .netzwerk-card__title a:hover {
-
   text-decoration: underline;
-
   text-underline-offset: 2px;
-
 }
 
 .netzwerk-card__meta {
-
   margin: 4px 0 0;
-
   font-size: 0.82rem;
-
   opacity: 0.75;
-
 }
 
 .netzwerk-link-list {
-
   list-style: none;
-
   margin: 0;
-
   padding: 0;
-
   display: flex;
-
   flex-direction: column;
-
   gap: 8px;
-
 }
 
 .netzwerk-link-list__item {
-
   margin: 0;
-
 }
 
 .netzwerk-link-list__link,
 .netzwerk-link-list__text {
-
   display: block;
-
   padding: 10px 12px;
-
   border-radius: 8px;
-
   background: rgba(0, 0, 0, 0.18);
-
   border: 1px solid rgba(255, 255, 255, 0.08);
-
 }
 
 .netzwerk-link-list__link {
-
   color: inherit;
-
   text-decoration: none;
-
   transition: background 0.2s ease;
-
 }
 
 .netzwerk-link-list__link:hover {
-
   background: rgba(0, 0, 0, 0.28);
-
   text-decoration: underline;
-
   text-underline-offset: 2px;
-
 }
 
 .netzwerk-link-list__text {
-
   opacity: 0.92;
-
 }
 
 .netzwerk-instagram {
-
-  margin-bottom: 8px;
-
+  margin-bottom: 0;
+  padding: 20px 18px;
+  border-radius: var(--radius);
   background:
-
     linear-gradient(
       135deg,
       rgba(34, 81, 169, 0.75),
       rgba(180, 34, 48, 0.55)
     );
-
 }
 
 .netzwerk-instagram__card {
-
   display: block;
-
   color: inherit;
-
   text-decoration: none;
-
   transition: opacity 0.2s ease;
-
 }
 
 .netzwerk-instagram__card:hover {
-
   opacity: 0.92;
-
 }
 
 .netzwerk-instagram__card:focus-visible {
-
   outline: 2px solid #fff;
-
   outline-offset: 4px;
-
   border-radius: 6px;
-
 }
 
 .netzwerk-instagram__heading {
-
   margin: 0 0 12px;
-
   font-size: 1.15rem;
-
   font-weight: 600;
-
+  text-align: left;
 }
 
 .netzwerk-instagram__body {
-
   margin: 0;
-
-  max-width: 52ch;
-
   font-size: 0.98rem;
-
   line-height: 1.55;
-
   opacity: 0.92;
-
 }
 
 @media (max-width: 800px) {
-
   .netzwerk-grid-2 {
-
     grid-template-columns: 1fr;
-
   }
-
 }

@@ -21,7 +21,7 @@ description: "Radsportabteilung TuS Jahn Werdohl — wer wir sind, was uns verbi
   Der Schwächste bestimmt das Tempo.
 </blockquote>
 
-<section class="home-section">
+<section class="about-section">
   <h2>Was uns ausmacht</h2>
   <p>
     Keine Rennlizenzen, keine Startnummern, keine Rekordjagd. Wir drehen gemeinsam
@@ -29,37 +29,27 @@ description: "Radsportabteilung TuS Jahn Werdohl — wer wir sind, was uns verbi
     die Gruppe zusammen. Niemand wird zurückgelassen.
   </p>
 
-  <div class="about-values home-discover-grid">
+  <h3>Gemeinschaft</h3>
+  <p>Zusammenfahren steht über Vergleich und Bestzeiten.</p>
 
-    <article class="card about-value-card">
-      <h3>Gemeinschaft</h3>
-      <p>Zusammenfahren steht über Vergleich und Bestzeiten.</p>
-    </article>
+  <h3>Offen &amp; ehrlich</h3>
+  <p>Kein Hochglanzverein — dafür eine offene Atmosphäre.</p>
 
-    <article class="card about-value-card">
-      <h3>Offen &amp; ehrlich</h3>
-      <p>Kein Hochglanzverein — dafür eine offene Atmosphäre.</p>
-    </article>
-
-    <article class="card about-value-card">
-      <h3>Gäste willkommen</h3>
-      <p>Einfach mitfahren, unverbindlich kennenlernen — MTB, Gravel oder E-Bike.</p>
-    </article>
-
-  </div>
+  <h3>Gäste willkommen</h3>
+  <p>Einfach mitfahren, unverbindlich kennenlernen — MTB, Gravel oder E-Bike.</p>
 </section>
 
-<section class="home-section">
+<section class="about-section">
   <h2>Was wir fahren</h2>
 
-  <h3 class="home-teaser-heading">MTB &amp; After-Work</h3>
+  <h3>MTB &amp; After-Work</h3>
   <p>
     Unser fester Termin: <strong>jeden Dienstag 18:00</strong> am Brüninghausplatz.
     Touren im Sauerland, Tempo nach der Gruppe. Details zu Strecken und Ablauf findest
     du unter <a href="{{ '/ausfahrt' | relative_url }}">Ausfahrt</a>.
   </p>
 
-  <h3 class="home-teaser-heading">Gravel &amp; Rennrad</h3>
+  <h3>Gravel &amp; Rennrad</h3>
   <p>
     Auch auf Gravel und Rennrad sind wir unterwegs — spontan oder in regelmäßigen
     Ausfahrten, meist in Kolonne. Typische Distanzen liegen zwischen 50 und 70 km.
@@ -67,10 +57,10 @@ description: "Radsportabteilung TuS Jahn Werdohl — wer wir sind, was uns verbi
   </p>
 </section>
 
-<section class="home-section">
+<section class="about-section">
   <h2>Im Vereinsjahr</h2>
   <p>Feste Termine, die uns strukturieren und zusammenhalten:</p>
-  <ul class="about-list">
+  <ul>
     <li>Jahreshauptversammlung im Januar</li>
     <li>Saisoneröffnung im Frühjahr</li>
     <li>Trainingslager an wechselnden Orten</li>
@@ -81,7 +71,7 @@ description: "Radsportabteilung TuS Jahn Werdohl — wer wir sind, was uns verbi
   </p>
 </section>
 
-<section class="about-cta home-section">
+<section class="about-section about-cta">
   <h2>Neugierig?</h2>
   <p>Dann fahr einfach mit — eine kurze Nachricht genügt.</p>
   <div class="cta-row">
