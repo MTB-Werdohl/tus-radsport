@@ -95,11 +95,12 @@ datesSet(info){
     );
 
   loadCards(
-
     start,
-
-    end
-
+    end,
+    {
+      autoAdvanceMonth: true,
+      calendar
+    }
   );
 
 }

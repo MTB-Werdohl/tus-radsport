@@ -1,40 +1,8 @@
-async function loadCards(
+function buildTerminCardsForRange(
+  data,
   start,
-  end,
-  options = {}
+  end
 ) {
-
-  const wrapperId =
-    options.wrapperId
-    || 'event-cards';
-
-  const limit =
-    options.limit;
-
-  const wrapper =
-    document.getElementById(
-      wrapperId
-    );
-
-  if (!wrapper) {
-    return;
-  }
-
-  let data;
-
-  try {
-
-    data = await fetchTermine();
-
-  } catch (error) {
-
-    console.error(error);
-
-    return;
-
-  }
-
-  wrapper.innerHTML = '';
 
   const cards = [];
 
@@ -132,32 +100,126 @@ async function loadCards(
 
   });
 
+  return cards;
+
+}
+
+function filterUpcomingTerminCards(cards) {
+
   const now = new Date();
 
   now.setHours(0, 0, 0, 0);
 
-  const visibleCards =
-    cards.filter((event) => {
+  return cards.filter((event) => {
 
-      const endDay =
-        getTerminVisibilityEndDay(event);
+    const endDay =
+      getTerminVisibilityEndDay(event);
 
-      if (!endDay) {
-        return false;
-      }
+    if (!endDay) {
+      return false;
+    }
 
-      return endDay >= now;
+    return endDay >= now;
 
-    });
+  });
 
-  const toRender =
-    typeof limit === 'number'
-      ? visibleCards.slice(0, limit)
-      : visibleCards;
+}
 
-  if (!toRender.length) {
+function getUpcomingTerminCardsForRange(
+  data,
+  start,
+  end
+) {
 
-    wrapper.innerHTML = `
+  return filterUpcomingTerminCards(
+    buildTerminCardsForRange(
+      data,
+      start,
+      end
+    )
+  );
+
+}
+
+function monthStartFromDate(date) {
+
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    1
+  );
+
+}
+
+function addCalendarMonths(
+  monthStart,
+  count
+) {
+
+  const next =
+    new Date(monthStart);
+
+  next.setMonth(
+    next.getMonth() + count
+  );
+
+  return new Date(
+    next.getFullYear(),
+    next.getMonth(),
+    1
+  );
+
+}
+
+function findNextMonthStartWithUpcomingTermine(
+  data,
+  fromMonthStart
+) {
+
+  const maxMonths = 36;
+
+  for (
+    let offset = 1;
+    offset <= maxMonths;
+    offset += 1
+  ) {
+
+    const monthStart =
+      addCalendarMonths(
+        fromMonthStart,
+        offset
+      );
+
+    const rangeEnd =
+      addCalendarMonths(
+        monthStart,
+        1
+      );
+
+    const visible =
+      getUpcomingTerminCardsForRange(
+        data,
+        monthStart,
+        rangeEnd
+      );
+
+    if (visible.length > 0) {
+      return monthStart;
+    }
+
+  }
+
+  return null;
+
+}
+
+let calendarAutoAdvanceDepth = 0;
+
+function renderEmptyTerminCards(
+  wrapper
+) {
+
+  wrapper.innerHTML = `
 <article class="calendar-card">
   <div>
     <h3>Keine Termine</h3>
@@ -166,24 +228,25 @@ async function loadCards(
 </article>
 `;
 
-    return;
+}
 
-  }
+function renderTerminCard(
+  wrapper,
+  event
+) {
 
-  toRender.forEach(event => {
+  const card =
+    document.createElement('article');
 
-    const card =
-      document.createElement('article');
+  card.className =
+    contentVisibilityCardClass(
+      event.sichtbarkeit
+    );
 
-    card.className =
-      contentVisibilityCardClass(
-        event.sichtbarkeit
-      );
+  const category =
+    getTerminCategory(event.category);
 
-    const category =
-      getTerminCategory(event.category);
-
-    card.innerHTML = `
+  card.innerHTML = `
 
 <a href="${getEventUrl(event.slug)}">
 
@@ -221,7 +284,114 @@ ${
 
 `;
 
-    wrapper.appendChild(card);
+  wrapper.appendChild(card);
+
+}
+
+async function loadCards(
+  start,
+  end,
+  options = {}
+) {
+
+  const wrapperId =
+    options.wrapperId
+    || 'event-cards';
+
+  const limit =
+    options.limit;
+
+  const wrapper =
+    document.getElementById(
+      wrapperId
+    );
+
+  if (!wrapper) {
+    return;
+  }
+
+  let data;
+
+  try {
+
+    data = await fetchTermine();
+
+  } catch (error) {
+
+    console.error(error);
+
+    return;
+
+  }
+
+  wrapper.innerHTML = '';
+
+  const visibleCards =
+    getUpcomingTerminCardsForRange(
+      data,
+      start,
+      end
+    );
+
+  const toRender =
+    typeof limit === 'number'
+      ? visibleCards.slice(0, limit)
+      : visibleCards;
+
+  const shouldAutoAdvanceMonth =
+    options.autoAdvanceMonth === true
+    && wrapperId === 'event-cards'
+    && options.calendar;
+
+  if (
+    !toRender.length
+    && shouldAutoAdvanceMonth
+    && calendarAutoAdvanceDepth < 12
+  ) {
+
+    const viewedMonth =
+      monthStartFromDate(start);
+
+    const nextMonth =
+      findNextMonthStartWithUpcomingTermine(
+        data,
+        viewedMonth
+      );
+
+    if (
+      nextMonth
+      && nextMonth.getTime()
+        !== viewedMonth.getTime()
+    ) {
+
+      calendarAutoAdvanceDepth += 1;
+
+      options.calendar.gotoDate(
+        nextMonth
+      );
+
+      return;
+
+    }
+
+  }
+
+  calendarAutoAdvanceDepth = 0;
+
+  if (!toRender.length) {
+
+    renderEmptyTerminCards(wrapper);
+
+    return;
+
+  }
+
+  toRender.forEach((event) => {
+
+    renderTerminCard(
+      wrapper,
+      event
+    );
 
   });
 
