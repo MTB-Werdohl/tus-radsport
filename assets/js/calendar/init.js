@@ -14,6 +14,9 @@ document.addEventListener(
     window.contentViewerMember =
       await ensureContentViewerMember();
 
+    let lastCalendarMonthStart =
+      null;
+
     const calendar=
 
       new FullCalendar.Calendar(
@@ -94,12 +97,50 @@ datesSet(info){
 
     );
 
+  const currentMonthStart=
+
+    new Date(
+
+      start.getFullYear(),
+
+      start.getMonth(),
+
+      1
+
+    );
+
+  let advanceDirection=
+
+    'forward';
+
+  if (lastCalendarMonthStart) {
+
+    if (
+      currentMonthStart
+      < lastCalendarMonthStart
+    ) {
+      advanceDirection=
+        'backward';
+    } else if (
+      currentMonthStart
+      > lastCalendarMonthStart
+    ) {
+      advanceDirection=
+        'forward';
+    }
+
+  }
+
+  lastCalendarMonthStart=
+    currentMonthStart;
+
   loadCards(
     start,
     end,
     {
       autoAdvanceMonth: true,
-      calendar
+      calendar,
+      advanceDirection
     }
   );
 

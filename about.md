@@ -55,7 +55,7 @@ description: "Radsportabteilung TuS Jahn Werdohl — wer wir sind, was uns verbi
   <p>
     Unser fester Termin: <strong>jeden Dienstag 18:00</strong> am Brüninghausplatz.
     Touren im Sauerland, Tempo nach der Gruppe. Details zu Strecken und Ablauf findest
-    du unter <a href="{{ '/training' | relative_url }}">Trainingszeiten</a>.
+    du unter <a href="{{ '/ausfahrt' | relative_url }}">Ausfahrt</a>.
   </p>
 
   <h3 class="home-teaser-heading">Gravel &amp; Rennrad</h3>

@@ -3,7 +3,7 @@ layout: default
 title: "Kodex"
 ---
 
-Dieser Kodex wurde von der Abteilungsversammlung verabschiedet und bildet die Grundlage für unser gemeinsames Auftreten und Verhalten im Trainings- und Vereinsbetrieb.
+Dieser Kodex wurde von der Abteilungsversammlung verabschiedet und bildet die Grundlage für unser gemeinsames Auftreten und Verhalten bei Ausfahrten und im Vereinsbetrieb.
 
 Er steht für Sicherheit, Verantwortung und ein respektvolles Miteinander – auf und neben dem Rad.
 
@@ -11,7 +11,7 @@ Er steht für Sicherheit, Verantwortung und ein respektvolles Miteinander – au
 
 ## 1. Sicherheit hat oberste Priorität
 
-Bei allen Trainingsfahrten tragen wir selbstverständlich einen Helm.  
+Bei allen Ausfahrten tragen wir selbstverständlich einen Helm.  
 Unser Bike ist technisch einwandfrei – insbesondere Bremsen, Reifen und Antrieb.
 
 Sicherheit geht immer vor Tempo oder Ehrgeiz.  

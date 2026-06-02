@@ -190,26 +190,95 @@ function findNextMonthStartWithUpcomingTermine(
         offset
       );
 
-    const rangeEnd =
-      addCalendarMonths(
-        monthStart,
-        1
-      );
-
-    const visible =
-      getUpcomingTerminCardsForRange(
+    if (
+      monthHasUpcomingTermine(
         data,
-        monthStart,
-        rangeEnd
-      );
-
-    if (visible.length > 0) {
+        monthStart
+      )
+    ) {
       return monthStart;
     }
 
   }
 
   return null;
+
+}
+
+function findPreviousMonthStartWithUpcomingTermine(
+  data,
+  fromMonthStart
+) {
+
+  const maxMonths = 36;
+
+  for (
+    let offset = 1;
+    offset <= maxMonths;
+    offset += 1
+  ) {
+
+    const monthStart =
+      addCalendarMonths(
+        fromMonthStart,
+        -offset
+      );
+
+    if (
+      monthHasUpcomingTermine(
+        data,
+        monthStart
+      )
+    ) {
+      return monthStart;
+    }
+
+  }
+
+  return null;
+
+}
+
+function monthHasUpcomingTermine(
+  data,
+  monthStart
+) {
+
+  const rangeEnd =
+    addCalendarMonths(
+      monthStart,
+      1
+    );
+
+  return (
+    getUpcomingTerminCardsForRange(
+      data,
+      monthStart,
+      rangeEnd
+    ).length > 0
+  );
+
+}
+
+function findAdjacentMonthStartWithUpcomingTermine(
+  data,
+  fromMonthStart,
+  direction
+) {
+
+  if (direction === 'backward') {
+
+    return findPreviousMonthStartWithUpcomingTermine(
+      data,
+      fromMonthStart
+    );
+
+  }
+
+  return findNextMonthStartWithUpcomingTermine(
+    data,
+    fromMonthStart
+  );
 
 }
 
@@ -352,22 +421,23 @@ async function loadCards(
     const viewedMonth =
       monthStartFromDate(start);
 
-    const nextMonth =
-      findNextMonthStartWithUpcomingTermine(
+    const targetMonth =
+      findAdjacentMonthStartWithUpcomingTermine(
         data,
-        viewedMonth
+        viewedMonth,
+        options.advanceDirection
       );
 
     if (
-      nextMonth
-      && nextMonth.getTime()
+      targetMonth
+      && targetMonth.getTime()
         !== viewedMonth.getTime()
     ) {
 
       calendarAutoAdvanceDepth += 1;
 
       options.calendar.gotoDate(
-        nextMonth
+        targetMonth
       );
 
       return;

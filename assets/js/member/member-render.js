@@ -58,7 +58,7 @@ const MEMBER_CONSENT_TEXTS = {
     label: 'Einwilligung Kontakt',
     body:
       'Ich willige ein, dass meine oben angegebenen Kontaktdaten durch die Abteilung zur '
-      + 'Organisation des Trainings- und Wettkampfbetriebs, zur Weitergabe von Terminen und '
+      + 'Organisation des Ausfahrts- und Wettkampfbetriebs, zur Weitergabe von Terminen und '
       + 'Informationen sowie zur internen Abstimmung innerhalb der Abteilung genutzt werden '
       + 'dürfen. Eine Weitergabe an Dritte außerhalb des Vereins erfolgt nicht.'
   },
@@ -66,7 +66,7 @@ const MEMBER_CONSENT_TEXTS = {
   bilder: {
     label: 'Einwilligung Bilder',
     body:
-      'Ich willige ein, dass Fotos und Videos meiner Person, die im Rahmen von Training, '
+      'Ich willige ein, dass Fotos und Videos meiner Person, die im Rahmen von Ausfahrten, '
       + 'Wettkämpfen oder Vereinsveranstaltungen entstehen, für Zwecke der '
       + 'Öffentlichkeitsarbeit der Abteilung veröffentlicht werden dürfen (insbesondere auf der '
       + 'Vereinswebsite, in sozialen Medien sowie in Presseveröffentlichungen). '
