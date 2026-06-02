@@ -1,6 +1,7 @@
 ---
 layout: default
 title: "Kodex"
+center_prose: true
 ---
 
 Dieser Kodex wurde von der Abteilungsversammlung verabschiedet und bildet die Grundlage für unser gemeinsames Auftreten und Verhalten bei Ausfahrten und im Vereinsbetrieb.
