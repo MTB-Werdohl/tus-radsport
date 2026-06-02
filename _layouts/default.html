@@ -26,6 +26,9 @@
   {% if page.load_news_css %}
   <link rel="stylesheet" href="/assets/css/news.css">
   {% endif %}
+  {% if page.load_mitfahren_css %}
+  <link rel="stylesheet" href="/assets/css/mitfahren.css">
+  {% endif %}
 
   <link rel="stylesheet" href="{{ '/assets/css/style.css' | relative_url }}">
   <meta name="theme-color" content="#ed1c24">
@@ -127,7 +130,7 @@
 
   <main class="site-main">
     <div class="wrap layout-single">
-      <section class="content{% if page.center_prose %} content--prose-centered{% endif %}">
+      <section class="content{% if page.center_prose %} content--prose-centered{% endif %}{% if page.mitfahren_layout %} content--mitfahren{% endif %}">
         {% if page.header_image %}
           {% include page-header-image.html %}
         {% elsif page.hide_title != true %}

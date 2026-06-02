@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800" role="img" aria-label="Platzhalter: Freundliche Radgruppe">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#243b55"/>
+      <stop offset="100%" stop-color="#3d5a80"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <ellipse cx="600" cy="680" rx="480" ry="40" fill="rgba(0,0,0,0.2)"/>
+  <circle cx="350" cy="420" r="48" fill="rgba(255,255,255,0.2)"/>
+  <circle cx="520" cy="380" r="48" fill="rgba(255,255,255,0.25)"/>
+  <circle cx="680" cy="380" r="48" fill="rgba(255,255,255,0.25)"/>
+  <circle cx="850" cy="420" r="48" fill="rgba(255,255,255,0.2)"/>
+  <text x="600" y="560" fill="rgba(255,255,255,0.35)" font-family="system-ui,sans-serif" font-size="24" font-weight="600" text-anchor="middle">Gruppenbild · Platzhalter</text>
+</svg>

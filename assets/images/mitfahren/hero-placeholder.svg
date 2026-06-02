@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1792" height="768" viewBox="0 0 1792 768" role="img" aria-label="Platzhalter: Gruppe auf dem Mountainbike">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a5f"/>
+      <stop offset="50%" stop-color="#2d4a6e"/>
+      <stop offset="100%" stop-color="#1a2332"/>
+    </linearGradient>
+  </defs>
+  <rect width="1792" height="768" fill="url(#bg)"/>
+  <circle cx="420" cy="520" r="90" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="8"/>
+  <circle cx="420" cy="520" r="18" fill="rgba(255,255,255,0.2)"/>
+  <circle cx="900" cy="480" r="90" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="8"/>
+  <circle cx="900" cy="480" r="18" fill="rgba(255,255,255,0.18)"/>
+  <circle cx="1320" cy="540" r="90" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="8"/>
+  <circle cx="1320" cy="540" r="18" fill="rgba(255,255,255,0.15)"/>
+  <text x="896" y="380" fill="rgba(255,255,255,0.35)" font-family="system-ui,sans-serif" font-size="28" font-weight="600" text-anchor="middle">Headerbild · Platzhalter</text>
+</svg>

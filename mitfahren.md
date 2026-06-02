@@ -1,81 +1,176 @@
 ---
 layout: default
-title: "MTB Werdohl – Mitfahren"
+title: Mitfahren
 permalink: /mitfahren/
+hide_title: true
+mitfahren_layout: true
+load_mitfahren_css: true
+description: "Unverbindlich mitfahren — jeden Dienstag 18:00 am Brüninghausplatz, Werdohl. MTB, Gravel oder E-Bike. Kostenlos ausprobieren, keine Mitgliedschaft nötig."
 ---
 
-## Fahr nicht allein. Fahr mit uns.
+{% assign wa = "https://wa.me/491608226897?text=Hallo%2C%20ich%20w%C3%BCrde%20gern%20mal%20bei%20euch%20mitfahren.%20Passt%20Dienstag%2018%3A00%20am%20Br%C3%BCninghausplatz%3F" %}
 
-Du möchtest nicht allein durch den Wald fahren, sondern in der Gruppe unterwegs sein?  
-Dann bist du bei uns genau richtig.
+<div class="mitfahren-page">
 
-Wir sind die MTB-Gruppe des TuS „Jahn“ Werdohl 1874 e.V.  
-Gefahren wird gemeinsam, in ruhigem Tempo und ohne Leistungsdruck.
+<section class="mitfahren-hero" aria-labelledby="mitfahren-hero-title">
+  <div class="mitfahren-hero__media">
+    <img
+      class="mitfahren-hero__image"
+      src="{{ '/assets/images/mitfahren/hero-placeholder.svg' | relative_url }}"
+      alt=""
+      width="1792"
+      height="768"
+      fetchpriority="high">
+  </div>
 
----
+  <div class="mitfahren-hero__overlay">
+    <h1 class="mitfahren-hero__title" id="mitfahren-hero-title">
+      Fahr nicht allein. Fahr mit uns.
+    </h1>
 
-## Der Termin
+    <p class="mitfahren-hero__lead">
+      Mountainbike, Gravel oder E-Bike. Komm einfach vorbei und fahr eine Runde mit.
+    </p>
 
-Unsere Ausfahrten finden regelmäßig statt.
+    <ul class="mitfahren-hero__perks">
+      <li>
+        <span aria-hidden="true">✅</span>
+        Kostenlos ausprobieren
+      </li>
+      <li>
+        <span aria-hidden="true">✅</span>
+        Keine Vereinsmitgliedschaft nötig
+      </li>
+      <li>
+        <span aria-hidden="true">✅</span>
+        Niemand bleibt zurück
+      </li>
+    </ul>
 
-- **Tag:** Dienstag  
-- **Uhrzeit:** 18:00 Uhr  
-- **Treffpunkt:** Brüninghausplatz in Werdohl  
+    <a
+      class="cta-btn mitfahren-hero__cta"
+      href="{{ wa }}"
+      rel="noopener noreferrer"
+      target="_blank">
+      Per WhatsApp melden
+    </a>
 
-Von dort starten wir unsere After-Work-Runde in die umliegenden Trails.
+    <p class="mitfahren-hero__hint">
+      Eine Anmeldung ist nicht erforderlich. Wenn du uns vorher kurz schreibst, freuen wir uns.
+    </p>
+  </div>
+</section>
 
----
+<section class="mitfahren-cards" aria-label="So einfach geht's">
+  <div class="mitfahren-cards__grid">
 
-## Die Ausfahrt
+    <article class="mitfahren-card">
+      <span class="mitfahren-card__icon" aria-hidden="true">🚴</span>
+      <h2 class="mitfahren-card__title">Einfach mitfahren</h2>
+      <p class="mitfahren-card__text">
+        Dienstags um 18:00 Uhr am Brüninghausplatz in Werdohl.
+      </p>
+    </article>
 
-Die Touren dauern in der Regel etwa 2  Stunden.
+    <article class="mitfahren-card">
+      <span class="mitfahren-card__icon" aria-hidden="true">🤝</span>
+      <h2 class="mitfahren-card__title">Für jedes Niveau</h2>
+      <p class="mitfahren-card__text">
+        Wir fahren gemeinsam. Tempo und Strecke richten sich nach der Gruppe.
+      </p>
+    </article>
 
-Gefahren wird im angemessenen Tempo der Gruppe.  
-Niemand wird zurückgelassen.
+    <article class="mitfahren-card">
+      <span class="mitfahren-card__icon" aria-hidden="true">📱</span>
+      <h2 class="mitfahren-card__title">Kurz Bescheid geben</h2>
+      <p class="mitfahren-card__text">
+        Nicht notwendig, hilft uns aber bei der Planung.
+      </p>
+    </article>
 
-> **Der Schwächste bestimmt das Tempo.**
+  </div>
+</section>
 
----
+<section class="mitfahren-emotion">
+  <figure class="mitfahren-emotion__figure">
+    <img
+      class="mitfahren-emotion__image"
+      src="{{ '/assets/images/mitfahren/group-placeholder.svg' | relative_url }}"
+      alt=""
+      width="1200"
+      height="800"
+      loading="lazy">
+  </figure>
 
-## Mitfahren
+  <div class="mitfahren-emotion__body">
+    <p class="mitfahren-emotion__quote">
+      Bei uns geht es nicht um Bestzeiten. Sondern um gemeinsame Touren, neue Leute und Spaß auf dem Rad.
+    </p>
 
-Eine Anmeldung ist nicht erforderlich.
+    <a
+      class="cta-btn cta-btn--secondary mitfahren-emotion__cta"
+      href="{{ wa }}"
+      rel="noopener noreferrer"
+      target="_blank">
+      Kurz per WhatsApp melden
+    </a>
+  </div>
+</section>
 
-Du kannst einfach vorbeikommen und mitfahren – auch ohne Vereinsmitgliedschaft.  
-So lernst du die Gruppe am besten kennen.
+<section class="mitfahren-faq" aria-labelledby="mitfahren-faq-title">
+  <h2 class="mitfahren-faq__title" id="mitfahren-faq-title">
+    Kurz gefragt
+  </h2>
 
----
+  <div class="mitfahren-faq__list">
 
-## Was du mitbringen solltest
+    <details class="mitfahren-faq__item">
+      <summary>Muss ich Vereinsmitglied sein?</summary>
+      <p class="mitfahren-faq__answer">
+        Nein. Du kannst jederzeit unverbindlich mitfahren.
+      </p>
+    </details>
 
-- Ein fahrbereites Mountainbike  
-- Einen Helm  
-- Etwas zu trinken  
+    <details class="mitfahren-faq__item">
+      <summary>Kann ich einfach kommen?</summary>
+      <p class="mitfahren-faq__answer">
+        Ja. Komm einfach vorbei und fahr mit.
+      </p>
+    </details>
 
-Mehr braucht es nicht.
+    <details class="mitfahren-faq__item">
+      <summary>Welches Fahrrad brauche ich?</summary>
+      <p class="mitfahren-faq__answer">
+        Mountainbike, Gravelbike oder E-Bike.
+      </p>
+    </details>
 
----
+    <details class="mitfahren-faq__item">
+      <summary>Wie fit muss ich sein?</summary>
+      <p class="mitfahren-faq__answer">
+        Keine Sorge. Niemand wird stehen gelassen.
+      </p>
+    </details>
 
-## Für wen das gedacht ist
+  </div>
+</section>
 
-Für alle, die Freude am Mountainbiken haben.  
-Ob du regelmäßig fährst oder nach längerer Zeit wieder einsteigen möchtest, spielt keine Rolle.
+<section class="mitfahren-cta" aria-labelledby="mitfahren-cta-title">
+  <h2 class="mitfahren-cta__title" id="mitfahren-cta-title">
+    Du hast Fragen oder möchtest beim nächsten Mal dabei sein?
+  </h2>
 
-Entscheidend ist nicht die Leistung, sondern dass wir gemeinsam unterwegs sind.
+  <p class="mitfahren-cta__text">
+    Schreib uns einfach per WhatsApp.
+  </p>
 
----
-
-## Einfach vorbeikommen
-
-Dienstag, 18:00 Uhr.  
-Brüninghausplatz.
-
-Steig auf und fahr mit.
-
-Und Falls du Fragen hast oder dich einfach vorher anmelden möchtest dann klick einfach.
-
-<div class="cta-row">
-  <a class="cta-btn" href="https://wa.me/491608226897?text=Hallo%2C%20ich%20w%C3%BCrde%20gern%20mal%20bei%20euch%20mitfahren.">
-    Kurz melden
+  <a
+    class="cta-btn mitfahren-cta__btn"
+    href="{{ wa }}"
+    rel="noopener noreferrer"
+    target="_blank">
+    Jetzt WhatsApp öffnen
   </a>
+</section>
+
 </div>
