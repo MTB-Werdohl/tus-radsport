@@ -1,5 +1,5 @@
 {% assign entry = include.entry %}
-{% assign show_kind = include.show_kind | default: false %}
+{% assign card_meta = entry.description | default: entry.kind %}
 
 <article class="netzwerk-card">
 
@@ -38,9 +38,9 @@
       </h3>
     {% endif %}
 
-    {% if show_kind and entry.kind %}
+    {% if card_meta %}
       <p class="netzwerk-card__meta">
-        {{ entry.kind }}
+        {{ card_meta }}
       </p>
     {% endif %}
 
