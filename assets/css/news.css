@@ -22,3 +22,22 @@ Layout / Spacing.
   gap:12px;
 
 }
+
+#news-cards .calendar-card--members {
+
+  background:
+
+    rgba(34, 81, 180, 0.80);
+
+  border:
+
+    1px solid
+
+    rgba(
+      255,
+      255,
+      255,
+      .05
+    );
+
+}

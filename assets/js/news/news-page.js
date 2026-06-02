@@ -2,11 +2,29 @@ async function loadNews() {
 
   try {
 
-    const member =
-      await ensureContentViewerMember();
+    if (
+      typeof waitForAuthSession === 'function'
+    ) {
+
+      const session =
+        await waitForAuthSession();
+
+      if (
+        session
+        && typeof validateMemberSession === 'function'
+      ) {
+
+        await validateMemberSession(
+          session,
+          { strict: false }
+        );
+
+      }
+
+    }
 
     const data =
-      await fetchNewsForViewer(member);
+      await fetchNewsList();
 
     renderNewsCards(data);
 

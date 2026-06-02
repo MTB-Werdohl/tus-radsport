@@ -1,5 +1,6 @@
 async function fetchNewsForViewer(
-  member
+  member,
+  options = {}
 ) {
 
   let query =
@@ -11,9 +12,11 @@ async function fetchNewsForViewer(
         { ascending: false }
       );
 
-  if (
-    !viewerIncludesDrafts(member)
-  ) {
+  const includeDrafts =
+    options.includeDrafts === true
+    && viewerIncludesDrafts(member);
+
+  if (!includeDrafts) {
 
     query =
       query.neq(
@@ -25,6 +28,29 @@ async function fetchNewsForViewer(
 
   const { data, error } =
     await query;
+
+  if (error) {
+    throw error;
+  }
+
+  return data || [];
+
+}
+
+async function fetchNewsList() {
+
+  const { data, error } =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.news)
+      .select('*')
+      .neq(
+        'sichtbarkeit',
+        window.siteConfig.visibility.draft
+      )
+      .order(
+        'created_at',
+        { ascending: false }
+      );
 
   if (error) {
     throw error;
