@@ -31,7 +31,7 @@ sponsors:
   - name: "HSU von Patrick Gering"
     url: "https://share.google/v08HeX79UwLleoOQ0"
     logo: /assets/images/sponsoren/gering.png
-    kind: "Heizung, solarthermie, Badplanung"
+    kind: "Heizung, Solarthermie, Badplanung"
 
 neighbor_clubs:
 
@@ -47,6 +47,10 @@ dealers_workshops:
     url: "https://www.bike-galerie.de/"
     kind: "CUBE Händler und Werkstatt"
 
+  - name: "Jan´s Radland"
+    url: "https://www.jansradland.de/"
+    kind: "CUBE Händler und Werkstatt"
+
 
 associations:
 
@@ -58,8 +62,3 @@ associations:
 
   - name: "DIMB - Deutscher Intressenverband Mountainbike e.V."
     url: "https://www.dimb.de/"
-
-instagram:
-
-  handle: "@mtb_werdohl"
-  show_feed_placeholder: false
