@@ -1,0 +1,59 @@
+# Netzwerk-Seite — Einträge hier ergänzen oder anpassen.
+# logo: optional, Pfad ab /assets/images/…
+
+sponsors:
+
+  - name: "Niggemann Formenbau"
+    url: "https://www.niggemann-formenbau.de"
+    logo: null
+
+  - name: "Bike Galerie"
+    url: ""
+    logo: null
+
+  - name: "Mertens"
+    url: ""
+    logo: null
+
+  - name: "Elektrotechnik Gabel"
+    url: ""
+    logo: null
+
+  - name: "Malermeister Pierre Schwark"
+    url: ""
+    logo: null
+
+  - name: "HSU von Patrick Gering"
+    url: ""
+    logo: null
+
+neighbor_clubs:
+
+  - name: "TuS Neuenrade — Radsport"
+    url: ""
+
+  - name: "TuS Jahn Werdohl e.V."
+    url: "https://www.tusjahnwerdohl.de"
+
+dealers_workshops:
+
+  - name: "Bike Galerie"
+    url: ""
+    kind: "Händler"
+
+  - name: "Radwerkstatt"
+    url: ""
+    kind: "Werkstatt"
+
+associations:
+
+  - name: "Bund Deutscher Radfahrer (BDR)"
+    url: "https://www.bunddeutscherradfahrer.de"
+
+  - name: "Landesverband Radsport NRW"
+    url: "https://www.radsport-nrw.de"
+
+instagram:
+
+  handle: "@mtb_werdohl"
+  show_feed_placeholder: true

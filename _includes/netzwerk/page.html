@@ -1,0 +1,147 @@
+{% assign netzwerk = site.data.netzwerk %}
+{% assign instagram_url = site.data.social.instagram.url %}
+
+<div class="netzwerk-page">
+
+  <header class="netzwerk-intro">
+    <h1>Netzwerk</h1>
+    <p class="netzwerk-lead">
+      Partner, Vereine, Händler, Werkstätten und Verbände —
+      unsere Anlaufstellen rund um den Radsport in der Region.
+    </p>
+  </header>
+
+  <div class="netzwerk-grid-2">
+
+    <section
+      class="netzwerk-section"
+      aria-labelledby="netzwerk-sponsors-heading">
+
+      <h2 id="netzwerk-sponsors-heading">
+        Sponsoren
+      </h2>
+
+      <div class="netzwerk-card-list">
+
+        {% for entry in netzwerk.sponsors %}
+          {% assign initial = entry.name | slice: 0 %}
+          {% include netzwerk/entry-card.html
+            entry=entry
+            fallback_initial=initial %}
+        {% endfor %}
+
+      </div>
+
+    </section>
+
+    <section
+      class="netzwerk-section"
+      aria-labelledby="netzwerk-clubs-heading">
+
+      <h2 id="netzwerk-clubs-heading">
+        Nachbarvereine
+      </h2>
+
+      {% include netzwerk/link-list.html
+        items=netzwerk.neighbor_clubs %}
+
+    </section>
+
+  </div>
+
+  <div class="netzwerk-grid-2">
+
+    <section
+      class="netzwerk-section"
+      aria-labelledby="netzwerk-dealers-heading">
+
+      <h2 id="netzwerk-dealers-heading">
+        Fahrradhändler &amp; Fahrradwerkstätten
+      </h2>
+
+      <div class="netzwerk-card-list">
+
+        {% for entry in netzwerk.dealers_workshops %}
+          {% include netzwerk/entry-card.html
+            entry=entry
+            show_kind=true %}
+        {% endfor %}
+
+      </div>
+
+    </section>
+
+    <section
+      class="netzwerk-section"
+      aria-labelledby="netzwerk-associations-heading">
+
+      <h2 id="netzwerk-associations-heading">
+        Verbände
+      </h2>
+
+      {% include netzwerk/link-list.html
+        items=netzwerk.associations %}
+
+    </section>
+
+  </div>
+
+  <section
+    class="netzwerk-section netzwerk-instagram"
+    aria-labelledby="netzwerk-instagram-heading">
+
+    <h2 id="netzwerk-instagram-heading">
+      Instagram
+    </h2>
+
+    <div class="netzwerk-instagram__inner">
+
+      <div class="netzwerk-instagram__brand">
+
+        <span
+          class="netzwerk-instagram__icon"
+          aria-hidden="true">
+
+          📷
+
+        </span>
+
+        <div>
+
+          <p class="netzwerk-instagram__handle">
+            {{ netzwerk.instagram.handle }}
+          </p>
+
+          {% if instagram_url %}
+            <a
+              class="netzwerk-instagram__link cta-btn"
+              href="{{ instagram_url }}"
+              target="_blank"
+              rel="noopener noreferrer">
+              Profil auf Instagram öffnen
+            </a>
+          {% endif %}
+
+        </div>
+
+      </div>
+
+      {% if netzwerk.instagram.show_feed_placeholder %}
+        <div
+          class="netzwerk-instagram__feed-placeholder"
+          role="status"
+          aria-label="Platzhalter für Instagram-Feed">
+
+          <p>
+            Hier folgt demnächst ein Einblick in unsere
+            Instagram-Beiträge.
+          </p>
+
+        </div>
+      {% endif %}
+
+    </div>
+
+  </section>
+
+</div>

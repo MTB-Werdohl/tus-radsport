@@ -1,0 +1,27 @@
+{% assign items = include.items %}
+
+<ul class="netzwerk-link-list">
+
+  {% for entry in items %}
+
+    <li class="netzwerk-link-list__item">
+
+      {% if entry.url and entry.url != "" %}
+        <a
+          href="{{ entry.url }}"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="netzwerk-link-list__link">
+          {{ entry.name }}
+        </a>
+      {% else %}
+        <span class="netzwerk-link-list__text">
+          {{ entry.name }}
+        </span>
+      {% endif %}
+
+    </li>
+
+  {% endfor %}
+
+</ul>

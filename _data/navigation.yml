@@ -6,3 +6,7 @@
     url: "/about"
   - title: "Training"
     url: "/training"
+  - title: "Netzwerk"
+    url: "/netzwerk"
+  - title: "Kodex"
+    url: "/kodex"

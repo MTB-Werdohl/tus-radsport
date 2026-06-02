@@ -1,0 +1,49 @@
+{% assign entry = include.entry %}
+{% assign show_kind = include.show_kind | default: false %}
+
+<article class="netzwerk-card">
+
+  {% if entry.logo %}
+    <div class="netzwerk-card__media">
+      <img
+        class="netzwerk-card__logo"
+        src="{{ entry.logo | relative_url }}"
+        alt=""
+        loading="lazy"
+        width="64"
+        height="64">
+    </div>
+  {% elsif include.fallback_initial %}
+    <div
+      class="netzwerk-card__media netzwerk-card__media--fallback"
+      aria-hidden="true">
+      <span>{{ include.fallback_initial }}</span>
+    </div>
+  {% endif %}
+
+  <div class="netzwerk-card__body">
+
+    {% if entry.url and entry.url != "" %}
+      <h3 class="netzwerk-card__title">
+        <a
+          href="{{ entry.url }}"
+          target="_blank"
+          rel="noopener noreferrer">
+          {{ entry.name }}
+        </a>
+      </h3>
+    {% else %}
+      <h3 class="netzwerk-card__title">
+        {{ entry.name }}
+      </h3>
+    {% endif %}
+
+    {% if show_kind and entry.kind %}
+      <p class="netzwerk-card__meta">
+        {{ entry.kind }}
+      </p>
+    {% endif %}
+
+  </div>
+
+</article>
