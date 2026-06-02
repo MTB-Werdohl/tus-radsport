@@ -6,33 +6,39 @@ sponsors:
   - name: "Niggemann Formenbau"
     url: "https://www.niggemann.net"
     logo: /assets/images/sponsoren/niggemann.png
+    kind: "Experten im Bereich Formenbau"
 
   - name: "Bike Galerie"
     url: "https://www.bike-galerie.de/"
     logo: /assets/images/sponsoren/bikegalerie.png
+    kind: "Deine Leidenschaft. Dein Bike. Deine Bike Galerie."
 
   - name: "Mertens"
     url: "https://www.stahlservice-mertens.de/"
     logo: /assets/images/sponsoren/mertens.png
+    kind: "Kaltwalz & Spaltbetrieb"
 
   - name: "Elektrotechnik Gabel"
     url: "https://www.elektrotechnik-gabel.de/"
     logo: /assets/images/sponsoren/gabel.png
+    kind: "Qualität, die überzeugt."
 
   - name: "Malermeister Pierre Schwark"
     url: "https://www.malermeister-schwark.de/"
     logo: /assets/images/sponsoren/schwark.png
+    kind: "Malermeister"
 
   - name: "HSU von Patrick Gering"
     url: "https://share.google/v08HeX79UwLleoOQ0"
     logo: /assets/images/sponsoren/gering.png
+    kind: "Heizung, solarthermie, Badplanung"
 
 neighbor_clubs:
 
   - name: "TuS Neuenrade — Radsport"
     url: "https://www.tus-neuenrade-radsport.de"
 
-  - name: "Radsport – Club Lüdenscheid von 1998 e.V."
+  - name: "Radsportclub Lüdenscheid 1998 e.V."
     url: "https://www.rcl-98.de/"
 
 dealers_workshops:
