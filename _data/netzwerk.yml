@@ -8,42 +8,39 @@ sponsors:
     logo: null
 
   - name: "Bike Galerie"
-    url: ""
+    url: "https://www.bike-galerie.de/"
     logo: null
 
   - name: "Mertens"
-    url: ""
+    url: "https://www.stahlservice-mertens.de/"
     logo: null
 
   - name: "Elektrotechnik Gabel"
-    url: ""
+    url: "https://www.elektrotechnik-gabel.de/"
     logo: null
 
   - name: "Malermeister Pierre Schwark"
-    url: ""
+    url: "https://www.malermeister-schwark.de/"
     logo: null
 
   - name: "HSU von Patrick Gering"
-    url: ""
+    url: "https://share.google/v08HeX79UwLleoOQ0"
     logo: null
 
 neighbor_clubs:
 
   - name: "TuS Neuenrade — Radsport"
-    url: ""
+    url: "https://www.tus-neuenrade-radsport.de"
 
-  - name: "TuS Jahn Werdohl e.V."
-    url: "https://www.tusjahnwerdohl.de"
+  - name: "Radsport – Club Lüdenscheid von 1998 e.V."
+    url: "https://www.rcl-98.de/"
 
 dealers_workshops:
 
   - name: "Bike Galerie"
-    url: ""
-    kind: "Händler"
+    url: "https://www.bike-galerie.de/"
+    kind: "CUBE Händler und Werkstatt"
 
-  - name: "Radwerkstatt"
-    url: ""
-    kind: "Werkstatt"
 
 associations:
 
@@ -53,7 +50,10 @@ associations:
   - name: "Landesverband Radsport NRW"
     url: "https://www.radsport-nrw.de"
 
+  - name: "DIMB - Deutscher Intressenverband Mountainbike e.V."
+    url: "https://www.dimb.de/"
+
 instagram:
 
   handle: "@mtb_werdohl"
-  show_feed_placeholder: true
+  show_feed_placeholder: false
