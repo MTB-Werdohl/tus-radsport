@@ -95,7 +95,7 @@ description: "Unverbindlich mitfahren — jeden Dienstag 18:00 am Brüninghauspl
   <figure class="mitfahren-emotion__figure">
     <img
       class="mitfahren-emotion__image"
-      src="{{ '/assets/images/mitfahren/group-placeholder.svg' | relative_url }}"
+      src="{{ '/assets/images/mitfahren/emotion.png' | relative_url }}"
       alt=""
       width="1200"
       height="800"
