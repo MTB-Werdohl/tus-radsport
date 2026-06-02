@@ -2,6 +2,8 @@
 layout: default
 title: Kalender
 permalink: /kalender/
+header_image: /assets/images/header/kalender.png
+hide_title: true
 load_calendar_css: true
 load_events_css: true
 description: "Termine, Touren und Veranstaltungen der Radsportabteilung TuS Jahn Werdohl."

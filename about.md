@@ -2,6 +2,7 @@
 layout: default
 title: "Über uns"
 hide_title: true
+header_image: /assets/images/header/ueberuns.png
 center_prose: true
 description: "Radsportabteilung TuS Jahn Werdohl — wer wir sind, was uns verbindet und warum bei uns Gemeinschaft vor Leistung steht."
 ---
@@ -9,7 +10,6 @@ description: "Radsportabteilung TuS Jahn Werdohl — wer wir sind, was uns verbi
 <div class="about-page">
 
 <header class="about-intro">
-  <h1>Über uns</h1>
   <p class="about-lead">
     Wir sind die <strong>Radsportabteilung des TuS Jahn Werdohl e.V.</strong> —
     eine bodenständige Gemeinschaft, die vor allem eines verbindet: die Freude am

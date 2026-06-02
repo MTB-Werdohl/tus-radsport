@@ -1,6 +1,8 @@
 ---
 layout: default
 title: "Kodex"
+header_image: /assets/images/header/kodex.png
+hide_title: true
 center_prose: true
 ---
 

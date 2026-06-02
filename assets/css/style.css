@@ -1228,6 +1228,18 @@ body.member-consent-modal-open {
   border-radius: var(--radius) var(--radius) 0 0;
 }
 
+.page-header-image {
+  margin: -24px -16px 24px;
+}
+
+.page-header-image img {
+  width: 100%;
+  max-width: none;
+  height: auto;
+  display: block;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
 /* Cards (Startseite + allgemein) */
 
 .card-grid {
@@ -1342,6 +1354,13 @@ h2 { font-weight: 600; }
     width: auto;
     margin-left: 0;
     margin-right: 0;
+  }
+
+  .site-main .content.content--prose-centered > .page-header-image {
+    grid-column: 1 / -1;
+    width: calc(100% + 32px);
+    max-width: none;
+    margin: -24px -16px 24px;
   }
 
   .site-main .content.content--prose-centered > ul,

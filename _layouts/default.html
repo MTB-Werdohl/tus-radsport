@@ -125,9 +125,11 @@
   <main class="site-main">
     <div class="wrap layout-single">
       <section class="content{% if page.center_prose %} content--prose-centered{% endif %}">
-        {% unless page.hide_title %}
+        {% if page.header_image %}
+          {% include page-header-image.html %}
+        {% elsif page.hide_title != true %}
           <h1>{{ page.title }}</h1>
-        {% endunless %}
+        {% endif %}
 
         {{ content }}
       </section>

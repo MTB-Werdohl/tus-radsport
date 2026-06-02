@@ -2,6 +2,8 @@
 layout: default
 title: "Ausfahrt"
 permalink: /ausfahrt/
+header_image: /assets/images/header/ausfahrt.png
+hide_title: true
 center_prose: true
 description: "Regelmäßige Ausfahrten der Radsportabteilung MTB Werdohl — jeden Dienstag 18:00 am Brüninghausplatz. Touren im Sauerland, Gäste willkommen."
 ---
