@@ -9,23 +9,23 @@ sponsors:
 
   - name: "Bike Galerie"
     url: "https://www.bike-galerie.de/"
-    logo: null
+    logo: /assets/images/sponsoren/bikegalerie.png
 
   - name: "Mertens"
     url: "https://www.stahlservice-mertens.de/"
-    logo: null
+    logo: /assets/images/sponsoren/mertens.png
 
   - name: "Elektrotechnik Gabel"
     url: "https://www.elektrotechnik-gabel.de/"
-    logo: null
+    logo: /assets/images/sponsoren/gabel.png
 
   - name: "Malermeister Pierre Schwark"
     url: "https://www.malermeister-schwark.de/"
-    logo: null
+    logo: /assets/images/sponsoren/schwark.png
 
   - name: "HSU von Patrick Gering"
     url: "https://share.google/v08HeX79UwLleoOQ0"
-    logo: null
+    logo: /assets/images/sponsoren/gering.png
 
 neighbor_clubs:
 
