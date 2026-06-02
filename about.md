@@ -62,7 +62,7 @@ description: "Radsportabteilung TuS Jahn Werdohl — wer wir sind, was uns verbi
   <h3 class="home-teaser-heading">Gravel &amp; Rennrad</h3>
   <p>
     Auch auf Gravel und Rennrad sind wir unterwegs — spontan oder in regelmäßigen
-    Ausfahrten, meist in Kolonne. Typische Distanzen liegen zwischen 70 und 100 km.
+    Ausfahrten, meist in Kolonne. Typische Distanzen liegen zwischen 50 und 70 km.
     Wichtig ist das gemeinsame Erlebnis, nicht der Ehrgeiz.
   </p>
 </section>
