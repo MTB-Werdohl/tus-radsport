@@ -16,7 +16,7 @@ description: "Unverbindlich mitfahren — jeden Dienstag 18:00 am Brüninghauspl
   <div class="mitfahren-hero__media">
     <img
       class="mitfahren-hero__image"
-      src="{{ '/assets/images/mitfahren/hero-placeholder.svg' | relative_url }}"
+      src="{{ '/assets/images/mitfahren/header.png' | relative_url }}"
       alt=""
       width="1792"
       height="768"
@@ -155,22 +155,3 @@ description: "Unverbindlich mitfahren — jeden Dienstag 18:00 am Brüninghauspl
   </div>
 </section>
 
-<section class="mitfahren-cta" aria-labelledby="mitfahren-cta-title">
-  <h2 class="mitfahren-cta__title" id="mitfahren-cta-title">
-    Du hast Fragen oder möchtest beim nächsten Mal dabei sein?
-  </h2>
-
-  <p class="mitfahren-cta__text">
-    Schreib uns einfach per WhatsApp.
-  </p>
-
-  <a
-    class="cta-btn mitfahren-cta__btn"
-    href="{{ wa }}"
-    rel="noopener noreferrer"
-    target="_blank">
-    Jetzt WhatsApp öffnen
-  </a>
-</section>
-
-</div>
