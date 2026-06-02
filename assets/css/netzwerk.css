@@ -273,37 +273,29 @@
 
   flex-direction: column;
 
-  gap: 16px;
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 8px 0 4px;
 
 }
 
-.netzwerk-instagram__tagline {
-
-  margin: 0;
-
-  max-width: 42ch;
-
-  font-size: 0.98rem;
-
-  line-height: 1.5;
-
-  opacity: 0.92;
-
-}
-
-.netzwerk-instagram__profile {
+.netzwerk-instagram__tile {
 
   display: flex;
 
+  flex-direction: column;
+
   align-items: center;
 
-  gap: 16px;
+  gap: 14px;
 
-  padding: 16px 18px;
+  padding: 24px 28px;
 
-  border-radius: 10px;
+  border-radius: 12px;
 
-  background: rgba(0, 0, 0, 0.18);
+  background: rgba(0, 0, 0, 0.16);
 
   border: 1px solid rgba(255, 255, 255, 0.22);
 
@@ -318,17 +310,17 @@
 
 }
 
-.netzwerk-instagram__profile:hover {
+.netzwerk-instagram__tile:hover {
 
-  background: rgba(0, 0, 0, 0.28);
+  background: rgba(0, 0, 0, 0.26);
 
   border-color: rgba(255, 255, 255, 0.38);
 
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 
 }
 
-.netzwerk-instagram__profile:focus-visible {
+.netzwerk-instagram__tile:focus-visible {
 
   outline: 2px solid #fff;
 
@@ -336,13 +328,7 @@
 
 }
 
-.netzwerk-instagram__glyph {
-
-  flex-shrink: 0;
-
-  width: 44px;
-
-  height: 44px;
+.netzwerk-instagram__badge {
 
   display: flex;
 
@@ -350,65 +336,44 @@
 
   justify-content: center;
 
-  border-radius: 50%;
+  width: 72px;
 
-  background: rgba(255, 255, 255, 0.14);
+  height: 72px;
 
-  font-size: 1.35rem;
+  border-radius: 18px;
 
-  line-height: 1;
+  background:
+
+    linear-gradient(
+      45deg,
+      #f09433,
+      #e6683c,
+      #dc2743,
+      #cc2366,
+      #bc1888
+    );
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
 
 }
 
-.netzwerk-instagram__profile-text {
+.netzwerk-instagram__icon {
 
-  display: flex;
+  width: 40px;
 
-  flex-direction: column;
+  height: 40px;
 
-  gap: 2px;
-
-  min-width: 0;
+  color: #fff;
 
 }
 
 .netzwerk-instagram__handle {
 
-  font-size: 1.15rem;
+  font-size: 1.2rem;
 
   font-weight: 700;
 
   letter-spacing: -0.01em;
-
-}
-
-.netzwerk-instagram__domain {
-
-  font-size: 0.82rem;
-
-  opacity: 0.78;
-
-}
-
-.netzwerk-instagram__external {
-
-  margin-left: auto;
-
-  flex-shrink: 0;
-
-  font-size: 1.1rem;
-
-  opacity: 0.85;
-
-}
-
-.netzwerk-instagram__note {
-
-  margin: 0;
-
-  font-size: 0.8rem;
-
-  opacity: 0.72;
 
 }
 
