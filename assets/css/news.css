@@ -23,7 +23,8 @@ Layout / Spacing.
 
 }
 
-#news-cards .calendar-card--members {
+#news-cards .calendar-card--members,
+#home-news-teaser .calendar-card--members {
 
   background:
 
