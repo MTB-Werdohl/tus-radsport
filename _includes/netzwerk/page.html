@@ -95,35 +95,53 @@
 
     <div class="netzwerk-instagram__inner">
 
-      <div class="netzwerk-instagram__brand">
+      {% if netzwerk.instagram.description %}
+        <p class="netzwerk-instagram__tagline">
+          {{ netzwerk.instagram.description }}
+        </p>
+      {% endif %}
 
-        <span
-          class="netzwerk-instagram__icon"
-          aria-hidden="true">
+      {% if instagram_url %}
+        <a
+          class="netzwerk-instagram__profile"
+          href="{{ instagram_url }}"
+          target="_blank"
+          rel="noopener noreferrer">
 
-          📷
+          <span
+            class="netzwerk-instagram__glyph"
+            aria-hidden="true">
 
-        </span>
+            @
 
-        <div>
+          </span>
 
-          <p class="netzwerk-instagram__handle">
-            {{ netzwerk.instagram.handle }}
-          </p>
+          <span class="netzwerk-instagram__profile-text">
 
-          {% if instagram_url %}
-            <a
-              class="netzwerk-instagram__link cta-btn"
-              href="{{ instagram_url }}"
-              target="_blank"
-              rel="noopener noreferrer">
-              Profil auf Instagram öffnen
-            </a>
-          {% endif %}
+            <span class="netzwerk-instagram__handle">
+              {{ netzwerk.instagram.handle }}
+            </span>
 
-        </div>
+            <span class="netzwerk-instagram__domain">
+              instagram.com
+            </span>
 
-      </div>
+          </span>
+
+          <span
+            class="netzwerk-instagram__external"
+            aria-hidden="true">
+
+            ↗
+
+          </span>
+
+        </a>
+
+        <p class="netzwerk-instagram__note">
+          Öffnet in einem neuen Tab — kein eingebetteter Feed.
+        </p>
+      {% endif %}
 
       {% if netzwerk.instagram.show_feed_placeholder %}
         <div

@@ -47,10 +47,6 @@ dealers_workshops:
     url: "https://www.bike-galerie.de/"
     kind: "CUBE Händler und Werkstatt"
 
-  - name: "Jan´s Radland"
-    url: "https://www.jansradland.de/"
-    kind: "CUBE Händler und Werkstatt"
-
 
 associations:
 
@@ -62,3 +58,9 @@ associations:
 
   - name: "DIMB - Deutscher Intressenverband Mountainbike e.V."
     url: "https://www.dimb.de/"
+
+instagram:
+
+  handle: "@mtb_werdohl"
+  description: "Einblicke von unterwegs, Touren und Vereinsleben — ohne App, direkt im Browser."
+  show_feed_placeholder: false
