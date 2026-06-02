@@ -1332,52 +1332,59 @@ h2 { font-weight: 600; }
 
 @media (min-width: 801px) {
   .site-main .content.content--prose-centered {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 1fr min(100%, 65ch) 1fr;
   }
 
-  .site-main .content.content--prose-centered > h1,
-  .site-main .content.content--prose-centered > h2,
-  .site-main .content.content--prose-centered > h3,
-  .site-main .content.content--prose-centered > p,
-  .site-main .content.content--prose-centered > ul,
-  .site-main .content.content--prose-centered > ol,
-  .site-main .content.content--prose-centered > hr,
-  .site-main .content.content--prose-centered > .cta-row,
-  .site-main .content.content--prose-centered .about-page h1,
-  .site-main .content.content--prose-centered .about-page h2,
-  .site-main .content.content--prose-centered .about-page h3,
-  .site-main .content.content--prose-centered .about-page p,
-  .site-main .content.content--prose-centered .about-page ul,
-  .site-main .content.content--prose-centered .about-page ol,
-  .site-main .content.content--prose-centered .about-page hr,
-  .site-main .content.content--prose-centered .about-page .cta-row,
-  .site-main .content.content--prose-centered .about-page blockquote {
-    box-sizing: border-box;
-    width: min(100%, 65ch);
-    max-width: 65ch;
-    margin-left: auto;
-    margin-right: auto;
+  .site-main .content.content--prose-centered > * {
+    grid-column: 2;
+    max-width: none;
+    width: auto;
+    margin-left: 0;
+    margin-right: 0;
   }
 
   .site-main .content.content--prose-centered > ul,
-  .site-main .content.content--prose-centered > ol,
-  .site-main .content.content--prose-centered .about-page ul,
-  .site-main .content.content--prose-centered .about-page ol {
+  .site-main .content.content--prose-centered > ol {
     margin-bottom: 18px;
   }
 
   .site-main .content.content--prose-centered > .about-page {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr min(100%, 65ch) 1fr;
     width: 100%;
+  }
+
+  .site-main .content.content--prose-centered .about-page > * {
+    grid-column: 2;
     max-width: none;
+    width: auto;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .site-main .content.content--prose-centered .home-section {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr min(100%, 65ch) 1fr;
+    width: 100%;
+  }
+
+  .site-main .content.content--prose-centered .home-section > :not(.about-values) {
+    grid-column: 2;
   }
 
   .site-main .content.content--prose-centered .about-values {
+    grid-column: 1 / -1;
+    justify-self: center;
     width: min(100%, 720px);
     max-width: 720px;
-    margin-left: auto;
-    margin-right: auto;
+  }
+
+  .site-main .content.content--prose-centered .about-page ul,
+  .site-main .content.content--prose-centered .about-page ol {
+    margin-bottom: 18px;
   }
 }
 
