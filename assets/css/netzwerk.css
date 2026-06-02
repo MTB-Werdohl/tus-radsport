@@ -267,137 +267,55 @@
 
 }
 
-.netzwerk-instagram__inner {
+.netzwerk-instagram__card {
 
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  justify-content: center;
-
-  padding: 8px 0 4px;
-
-}
-
-.netzwerk-instagram__tile {
-
-  display: flex;
-
-  flex-direction: column;
-
-  align-items: center;
-
-  gap: 14px;
-
-  padding: 24px 28px;
-
-  border-radius: 12px;
-
-  background: rgba(0, 0, 0, 0.16);
-
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  display: block;
 
   color: inherit;
 
   text-decoration: none;
 
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.2s ease;
+  transition: opacity 0.2s ease;
 
 }
 
-.netzwerk-instagram__tile:hover {
+.netzwerk-instagram__card:hover {
 
-  background: rgba(0, 0, 0, 0.26);
-
-  border-color: rgba(255, 255, 255, 0.38);
-
-  transform: translateY(-2px);
+  opacity: 0.92;
 
 }
 
-.netzwerk-instagram__tile:focus-visible {
+.netzwerk-instagram__card:focus-visible {
 
   outline: 2px solid #fff;
 
-  outline-offset: 3px;
+  outline-offset: 4px;
+
+  border-radius: 6px;
 
 }
 
-.netzwerk-instagram__badge {
+.netzwerk-instagram__heading {
 
-  display: flex;
+  margin: 0 0 12px;
 
-  align-items: center;
+  font-size: 1.15rem;
 
-  justify-content: center;
-
-  width: 72px;
-
-  height: 72px;
-
-  border-radius: 18px;
-
-  background:
-
-    linear-gradient(
-      45deg,
-      #f09433,
-      #e6683c,
-      #dc2743,
-      #cc2366,
-      #bc1888
-    );
-
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  font-weight: 600;
 
 }
 
-.netzwerk-instagram__icon {
-
-  width: 40px;
-
-  height: 40px;
-
-  color: #fff;
-
-}
-
-.netzwerk-instagram__handle {
-
-  font-size: 1.2rem;
-
-  font-weight: 700;
-
-  letter-spacing: -0.01em;
-
-}
-
-.netzwerk-instagram__feed-placeholder {
-
-  padding: 20px;
-
-  border-radius: 8px;
-
-  border: 1px dashed rgba(255, 255, 255, 0.35);
-
-  background: rgba(0, 0, 0, 0.15);
-
-  text-align: center;
-
-}
-
-.netzwerk-instagram__feed-placeholder p {
+.netzwerk-instagram__body {
 
   margin: 0;
 
-  opacity: 0.85;
+  max-width: 52ch;
 
-  font-size: 0.92rem;
+  font-size: 0.98rem;
+
+  line-height: 1.55;
+
+  opacity: 0.92;
 
 }
 

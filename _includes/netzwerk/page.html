@@ -85,77 +85,40 @@
 
   </div>
 
-  <section
-    class="netzwerk-section netzwerk-instagram"
-    aria-labelledby="netzwerk-instagram-heading">
+  <section class="netzwerk-section netzwerk-instagram">
 
-    <h2 id="netzwerk-instagram-heading">
-      Instagram
-    </h2>
+  {% if instagram_url %}
+    <a
+      class="netzwerk-instagram__card"
+      href="{{ instagram_url }}"
+      target="_blank"
+      rel="noopener noreferrer">
 
-    <div class="netzwerk-instagram__inner">
+      <h2 class="netzwerk-instagram__heading">
+        Instagram
+      </h2>
 
       {% if netzwerk.instagram.description %}
-        <p class="netzwerk-instagram__tagline">
+        <p class="netzwerk-instagram__body">
           {{ netzwerk.instagram.description }}
         </p>
       {% endif %}
 
-      {% if instagram_url %}
-        <a
-          class="netzwerk-instagram__profile"
-          href="{{ instagram_url }}"
-          target="_blank"
-          rel="noopener noreferrer">
+    </a>
+  {% else %}
 
-          <span
-            class="netzwerk-instagram__glyph"
-            aria-hidden="true">
+    <h2 class="netzwerk-instagram__heading">
+      Instagram
+    </h2>
 
-            @
+    {% if netzwerk.instagram.description %}
+      <p class="netzwerk-instagram__body">
+        {{ netzwerk.instagram.description }}
+      </p>
+    {% endif %}
 
-          </span>
+  {% endif %}
 
-          <span class="netzwerk-instagram__profile-text">
-
-            <span class="netzwerk-instagram__handle">
-              {{ netzwerk.instagram.handle }}
-            </span>
-
-            <span class="netzwerk-instagram__domain">
-              instagram.com
-            </span>
-
-          </span>
-
-          <span
-            class="netzwerk-instagram__external"
-            aria-hidden="true">
-
-            ↗
-
-          </span>
-
-        </a>
-
-      {% endif %}
-
-      {% if netzwerk.instagram.show_feed_placeholder %}
-        <div
-          class="netzwerk-instagram__feed-placeholder"
-          role="status"
-          aria-label="Platzhalter für Instagram-Feed">
-
-          <p>
-            Hier folgt demnächst ein Einblick in unsere
-            Instagram-Beiträge.
-          </p>
-
-        </div>
-      {% endif %}
-
-    </div>
-
-  </section>
+</section>
 
 </div>

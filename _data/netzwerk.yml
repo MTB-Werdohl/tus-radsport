@@ -61,6 +61,4 @@ associations:
 
 instagram:
 
-  handle: "@mtb_werdohl"
   description: "Einblicke von unterwegs, Touren und unserem Vereinsleben - Besuche uns auf Instagram"
-  show_feed_placeholder: false
