@@ -155,7 +155,7 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
   </p>
   <p>
     Details zum Datenschutz:
-    <a href="{{ '/datenschutz' | relative_url }}">Datenschutzerklärung</a>
+    <a href="{{ '/datenschutz/' | relative_url }}">Datenschutzerklärung</a>
     (Abschnitt 12).
   </p>
 </section>

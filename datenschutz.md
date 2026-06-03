@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Datenschutz
+permalink: /datenschutz/
 ---
 
 ## 1. Verantwortlicher

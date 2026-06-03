@@ -6,7 +6,7 @@ links:
     external: true
 
   - title: "Datenschutz"
-    url: "/datenschutz"
+    url: "/datenschutz/"
     external: false
 
   - title: "Login-Hilfe"

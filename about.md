@@ -1,6 +1,7 @@
 ---
 layout: default
 title: "Über uns"
+permalink: /about/
 hide_title: true
 header_image: /assets/images/header/ueberuns.png
 center_prose: true
