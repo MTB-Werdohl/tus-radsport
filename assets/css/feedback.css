@@ -300,6 +300,104 @@ box-sizing: border-box;
 
 }
 
+.feedback-public-modal__consents {
+
+margin: 0;
+
+padding: 0;
+
+border: none;
+
+display: flex;
+
+flex-direction: column;
+
+gap: 12px;
+
+}
+
+.feedback-public-modal__consents legend {
+
+font-weight: 700;
+
+margin-bottom: 4px;
+
+padding: 0;
+
+}
+
+.feedback-public-modal__consent-hint {
+
+margin: 0;
+
+font-size: 0.875rem;
+
+line-height: 1.45;
+
+opacity: 0.88;
+
+}
+
+.feedback-public-modal__consent-hint a {
+
+color: inherit;
+
+}
+
+.feedback-public-modal__consent {
+
+display: flex;
+
+align-items: flex-start;
+
+gap: 10px;
+
+margin: 0;
+
+font-weight: 400;
+
+}
+
+.feedback-public-modal__consent input[type="checkbox"] {
+
+width: auto;
+
+margin-top: 4px;
+
+flex-shrink: 0;
+
+}
+
+.feedback-public-modal__consent-copy {
+
+display: flex;
+
+flex-direction: column;
+
+gap: 6px;
+
+min-width: 0;
+
+}
+
+.feedback-public-modal__consent-text {
+
+font-size: 0.875rem;
+
+line-height: 1.45;
+
+opacity: 0.92;
+
+}
+
+.feedback-public-modal__consent--optional .feedback-public-modal__consent-copy strong {
+
+font-weight: 600;
+
+opacity: 0.95;
+
+}
+
 .feedback-public-modal__submit,
 .feedback-public-modal__login-submit {
 

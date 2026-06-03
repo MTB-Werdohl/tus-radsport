@@ -245,7 +245,7 @@ Dies können insbesondere sein:
 - Rolle (z. B. **Mitglied**, **Vorstand** oder **public** — externer Teilnehmer)
 - Datenschutz-Einwilligungen (siehe Abschnitt 12.3; nur bei Vereinsmitgliedern)
 
-**Rolle „public“:** Es wird eine **eingeschränkte Profilansicht** angezeigt (Name, E-Mail, Telefon, Logout, **Account löschen**). Datenschutz-Einwilligungen auf der Profilseite stehen externen Teilnehmern nicht zur Verfügung.
+**Rolle „public“:** Es wird eine **eingeschränkte Profilansicht** angezeigt (Name, E-Mail, Telefon, Logout, **Account löschen**). Erteilte Datenschutz-Einwilligungen werden in der Mitgliederdatenbank gespeichert; auf der Profilseite können externe Teilnehmer sie nicht nachträglich ändern (Widerruf in Textform, siehe Abschnitt 12.3).
 
 Der Vorstand kann Mitgliederdaten zur Vereinsverwaltung pflegen (Anlegen, Bearbeiten). **Löschen** entfernt personenbezogene Daten (**Anonymisierung**); technische IDs und anonyme Abstimmungen bleiben für Auswertungen erhalten.
 
@@ -260,6 +260,8 @@ Auf der Profilseite (**Mein Profil**, [mtb-werdohl.de/profil/](https://www.mtb-w
 
 - **Einwilligung Kontakt** — Nutzung der Daten für vereinsbezogene Kontaktaufnahme
 - **Einwilligung Bilder** — Verwendung von Bildern im Vereinskontext
+
+**Externe Teilnehmer** (Rolle „public“) erteilen die **Einwilligung Kontakt** bei der Registrierung im Anmeldeformular (Pflicht-Checkbox, siehe Abschnitt 12.5). Die **Einwilligung Bilder** können sie dort **freiwillig** erteilen.
 
 Alternativ können Einwilligungen weiterhin schriftlich (z. B. über den Mitgliedsantrag) erteilt werden.
 
@@ -289,6 +291,10 @@ Verarbeitete Daten:
 - E-Mail-Adresse
 - Telefonnummer (optional)
 - Rolle „public“ in unserer Mitgliederdatenbank
+- **Einwilligung Kontakt** (Pflicht bei Registrierung, mit Datum der Erteilung)
+- **Einwilligung Bilder** (freiwillig, nur bei aktiver Checkbox; mit Datum, sofern erteilt)
+
+Bei der Registrierung musst du der **Einwilligung Kontakt** im Formular aktiv zustimmen (Checkbox). Die **Einwilligung Bilder** ist optional — ohne sie erfolgt keine Veröffentlichung von Fotos oder Videos mit dir. Erst nach der Kontakt-Einwilligung wird der Bestätigungs-Link versendet; gespeichert werden die Einwilligungen **mit dem Anlegen deines Datensatzes** nach Klick auf den Link in der E-Mail (Magic Link). Die Einwilligungstexte entsprechen denen in Abschnitt 12.3.
 
 Zweck:
 
@@ -301,6 +307,7 @@ Externe Teilnehmer sind **keine** Vereinsmitglieder: kein Zugang zu internen Inh
 
 Rechtsgrundlagen:
 
+- Art. 6 Abs. 1 lit. a DSGVO — Einwilligung Kontakt (Pflicht) und ggf. Einwilligung Bilder (freiwillig)
 - Art. 6 Abs. 1 lit. b DSGVO — Durchführung der von dir gewünschten Anmeldung/Teilnahme
 - Art. 6 Abs. 1 lit. f DSGVO — Organisation des Radsportbetriebs und Auswertung durch den Vorstand
 

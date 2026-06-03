@@ -203,13 +203,34 @@ async function ensurePublicParticipantFromSession(
     return null;
   }
 
+  const einwilligungKontakt =
+    pending?.einwilligung_kontakt === true
+    || meta.einwilligung_kontakt === true;
+
+  const einwilligungBilder =
+    pending?.einwilligung_bilder === true
+    || meta.einwilligung_bilder === true;
+
+  if (!einwilligungKontakt) {
+
+    showMemberToast(
+      'Registrierung unvollständig: Bitte erneut anmelden und der Einwilligung Kontakt zustimmen.',
+      'error'
+    );
+
+    return null;
+
+  }
+
   const { error } =
     await window.supabaseClient.rpc(
       'complete_public_participant_registration',
       {
         p_vorname: vorname,
         p_nachname: nachname,
-        p_telefon: telefon
+        p_telefon: telefon,
+        p_einwilligung_kontakt: true,
+        p_einwilligung_bilder: einwilligungBilder === true
       }
     );
 

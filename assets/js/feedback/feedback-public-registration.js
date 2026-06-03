@@ -4,6 +4,20 @@ const PUBLIC_FEEDBACK_RETURN_KEY =
 const PUBLIC_REGISTRATION_PENDING_KEY =
   'publicRegistrationPending';
 
+function escapePublicRegistrationHtml(value) {
+
+  if (value === null || value === undefined) {
+    return '';
+  }
+
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
+}
+
 function getPublicFeedbackReturnUrl() {
 
   const canonical =
@@ -129,6 +143,27 @@ function getPublicFeedbackRedirectUrl() {
 
 }
 
+const PUBLIC_REGISTRATION_CONSENT_TEXTS = {
+
+  kontakt:
+    'Ich willige ein, dass meine oben angegebenen Kontaktdaten durch die Abteilung zur '
+    + 'Organisation des Ausfahrts- und Wettkampfbetriebs, zur Weitergabe von Terminen und '
+    + 'Informationen sowie zur internen Abstimmung innerhalb der Abteilung genutzt werden '
+    + 'dürfen. Eine Weitergabe an Dritte außerhalb des Vereins erfolgt nicht.',
+
+  bilder:
+    'Ich willige ein, dass Fotos und Videos meiner Person, die im Rahmen von Ausfahrten, '
+    + 'Wettkämpfen oder Vereinsveranstaltungen entstehen, für Zwecke der '
+    + 'Öffentlichkeitsarbeit der Abteilung veröffentlicht werden dürfen (insbesondere auf der '
+    + 'Vereinswebsite, in sozialen Medien sowie in Presseveröffentlichungen). '
+    + 'Ich wurde darauf hingewiesen, dass Inhalte im Internet weltweit abrufbar sind und eine '
+    + 'Weiterverwendung durch Dritte nicht ausgeschlossen werden kann.'
+
+};
+
+const PUBLIC_REGISTRATION_CONSENT_REVOKE =
+  'Widerruf jederzeit in Textform (z. B. per E-Mail) an den Verein — siehe Datenschutzerklärung.';
+
 function savePublicRegistrationPending(
   registration
 ) {
@@ -144,6 +179,10 @@ function savePublicRegistrationPending(
       vorname: registration.vorname || '',
       nachname: registration.nachname || '',
       telefon: registration.telefon || '',
+      einwilligung_kontakt:
+        registration.einwilligung_kontakt === true,
+      einwilligung_bilder:
+        registration.einwilligung_bilder === true,
       savedAt: Date.now()
     })
   );
@@ -219,6 +258,10 @@ function validatePublicFeedbackRegistration(
     && !registration.nachname?.trim()
   ) {
     return 'Bitte mindestens Vor- oder Nachname angeben.';
+  }
+
+  if (registration.einwilligung_kontakt !== true) {
+    return 'Bitte der Einwilligung Kontakt zustimmen.';
   }
 
   return null;
@@ -340,6 +383,55 @@ function ensurePublicFeedbackModal() {
         name="telefon"
         autocomplete="tel">
     </label>
+
+    <fieldset class="feedback-public-modal__consents">
+
+      <legend>
+        Einwilligungen
+      </legend>
+
+      <p class="feedback-public-modal__consent-hint">
+        Die Einwilligung Kontakt ist für die Registrierung erforderlich.
+        Die Einwilligung Bilder ist freiwillig — ohne sie werden keine Fotos
+        oder Videos mit dir veröffentlicht.
+        ${escapePublicRegistrationHtml(PUBLIC_REGISTRATION_CONSENT_REVOKE)}
+        <a href="/datenschutz/" target="_blank" rel="noopener noreferrer">
+          Datenschutzerklärung
+        </a>
+      </p>
+
+      <label class="feedback-public-modal__consent">
+        <input
+          type="checkbox"
+          name="einwilligung_kontakt"
+          value="1"
+          required>
+        <span class="feedback-public-modal__consent-copy">
+          <strong>
+            Einwilligung Kontakt (erforderlich)
+          </strong>
+          <span class="feedback-public-modal__consent-text">
+            ${escapePublicRegistrationHtml(PUBLIC_REGISTRATION_CONSENT_TEXTS.kontakt)}
+          </span>
+        </span>
+      </label>
+
+      <label class="feedback-public-modal__consent feedback-public-modal__consent--optional">
+        <input
+          type="checkbox"
+          name="einwilligung_bilder"
+          value="1">
+        <span class="feedback-public-modal__consent-copy">
+          <strong>
+            Einwilligung Bilder (optional)
+          </strong>
+          <span class="feedback-public-modal__consent-text">
+            ${escapePublicRegistrationHtml(PUBLIC_REGISTRATION_CONSENT_TEXTS.bilder)}
+          </span>
+        </span>
+      </label>
+
+    </fieldset>
 
     <button
       type="submit"
@@ -504,7 +596,11 @@ function readPublicFeedbackModalRegistration(
         .trim(),
     telefon:
       String(formData.get('telefon') || '')
-        .trim()
+        .trim(),
+    einwilligung_kontakt:
+      formData.get('einwilligung_kontakt') === '1',
+    einwilligung_bilder:
+      formData.get('einwilligung_bilder') === '1'
   };
 
 }
@@ -573,7 +669,11 @@ async function sendPublicParticipantRegistrationMagicLink(
           nachname: registration.nachname,
           telefon:
             registration.telefon
-            || null
+            || null,
+          einwilligung_kontakt:
+            registration.einwilligung_kontakt === true,
+          einwilligung_bilder:
+            registration.einwilligung_bilder === true
         }
       }
 

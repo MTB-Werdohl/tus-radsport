@@ -28,6 +28,8 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Feedback Public E-Mail zuerst:** [`supabase-feedback-public-email-verify.sql`](../supabase-feedback-public-email-verify.sql) — `members`-Eintrag erst nach Magic-Link-Klick (`complete_public_participant_registration`); Name vorher nur in Auth-Metadaten.
 
+**Externe Teilnehmer Einwilligungen:** [`supabase-public-participant-consents.sql`](../supabase-public-participant-consents.sql) — Kontakt-Einwilligung Pflicht, Bilder optional (RPC + Datum).
+
 **Mitglieder anonymisieren:** [`supabase-members-anonymize.sql`](../supabase-members-anonymize.sql) — Account-Löschung entfernt personenbezogene Daten, `member_id` und `feedback_answers` bleiben; Edge Function `anonymize-member-account` löscht zusätzlich `auth.users`.
 
 **Mitglieder letzter Login:** [`supabase-members-last-login.sql`](../supabase-members-last-login.sql) — Spalte `last_login_at`, RPC `touch_member_last_login()` beim Magic-Link-Login; einmaliges Backfill aus `auth.users`.
