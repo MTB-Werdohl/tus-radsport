@@ -132,7 +132,7 @@ function renderEventsListItems(
 
     container.innerHTML += `
 
-      <div class="event-card ${contentVisibilityCardClass(event.sichtbarkeit)}">
+      <div class="event-card">
 
         <div class="event-header">
 
