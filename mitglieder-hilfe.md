@@ -166,7 +166,7 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
     <li><strong>Vereinsmitglied:</strong> E-Mail oben rechts → Link in der Mail → eingeloggt</li>
     <li><strong>Teilnehmen:</strong> eingeloggt sein, dann am Termin/News abstimmen</li>
     <li><strong>Profil:</strong> Daten und Erreichbarkeit prüfen</li>
-    <li><strong>Problem:</strong> falsche oder fehlende E-Mail → <a href="mailto:{{ site.contact.email }}"> kontaktieren</li>
+    <li><strong>Problem:</strong> falsche oder fehlende E-Mail → <a href="mailto:{{ site.contact.email }}"> kontaktieren</a></li>
     <li><strong>Gast:</strong> Formular → E-Mail bestätigen → abstimmen — bis Account gelöscht</li>
   </ul>
 </section>
