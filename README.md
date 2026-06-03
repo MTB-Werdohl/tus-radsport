@@ -80,6 +80,7 @@ Unter `/admin/` (nicht in der Hauptnavigation verlinkt; Footer-Link).
 - **Galerien** — `galleries` + `gallery_images`
 - **Mitglieder** — `members` (CRUD, Rolle Vorstand/Mitglied)
 - **Tröte** — `site_state.last_push` (Admin: `/admin/push.html`)
+- **E-Mail** — Edge Function `send-admin-email` (Admin: `/admin/email.html`)
 
 SQL-Reihenfolge und Policies: [`docs/supabase/RUNBOOK.md`](docs/supabase/RUNBOOK.md)
 

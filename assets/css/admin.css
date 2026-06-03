@@ -533,13 +533,15 @@ h3 {
   letter-spacing: 1px;
 }
 
-.admin-push {
+.admin-push,
+.admin-email {
 
   max-width: 700px;
 
 }
 
-.admin-push form {
+.admin-push form,
+.admin-email form {
 
   display: flex;
 
@@ -550,7 +552,10 @@ h3 {
 }
 
 .admin-push input,
-.admin-push textarea {
+.admin-push textarea,
+.admin-email input,
+.admin-email textarea,
+.admin-email select {
 
   width: 100%;
 
@@ -564,7 +569,8 @@ h3 {
 
 }
 
-.admin-push button {
+.admin-push button,
+.admin-email button {
 
   width: fit-content;
 
@@ -584,12 +590,55 @@ h3 {
 
 }
 
-#push-status {
+#push-status,
+#email-status {
 
   margin-top: 1rem;
 
   font-weight: 600;
 
+}
+
+.admin-email-from {
+  margin: 0;
+}
+
+.admin-email-audience {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 0;
+}
+
+.admin-email-audience legend {
+  padding: 0 6px;
+  font-weight: 600;
+}
+
+.admin-email-radio {
+  display: block;
+  margin: 8px 0;
+  cursor: pointer;
+}
+
+.admin-email-radio input {
+  width: auto;
+  margin-right: 8px;
+}
+
+.admin-email-hint {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: #555;
+  line-height: 1.45;
+}
+
+.admin-email-preview {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #f4f6f8;
+  font-weight: 600;
 }
 
 .member-admin-form label {

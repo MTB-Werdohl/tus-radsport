@@ -45,6 +45,7 @@ window.siteConfig = {
   },
 
   functions: {
+    sendAdminEmail: 'send-admin-email',
     anonymizeMemberAccount: 'anonymize-member-account'
   },
 
@@ -58,7 +59,7 @@ window.siteConfig = {
     draft: 'draft'
   },
 
-  adminJsVersion: '20260535'
+  adminJsVersion: '20260536'
 
 };
 

@@ -47,6 +47,7 @@ Nach Frontend-Deploy: [`supabase-drop-web-push.sql`](../supabase-drop-web-push.s
 | Funktion | Referenz / Verhalten |
 |----------|----------------------|
 | `anonymize-member-account` | [`supabase-edge-anonymize-member-account.ts`](../supabase-edge-anonymize-member-account.ts) — **Edge Function deployen, nicht SQL!** JWT; Self (public) oder Vorstand `{ member_id }`; ruft `anonymize_member()` + löscht Auth-User |
+| `send-admin-email` | [`supabase-edge-send-admin-email.ts`](../supabase-edge-send-admin-email.ts) — Vorstand-E-Mails; Setup: [`supabase-admin-email-setup.md`](../supabase-admin-email-setup.md) |
 
 ### Edge Function `anonymize-member-account` deployen
 

@@ -136,7 +136,17 @@ SQL Feedback: [`supabase-feedback.sql`](supabase-feedback.sql)
 
 **Edge Functions** (URLs in `site-config.js` → `functionsUrl`):
 
+- `send-admin-email` — Vorstand-E-Mails (Einzel / Termin / Alle mit Kontakt-Einwilligung); Setup: [`supabase-admin-email-setup.md`](supabase-admin-email-setup.md)
 - `anonymize-member-account` — Account-Löschung (public Self-Service / Vorstand); Referenz: [`supabase-edge-anonymize-member-account.ts`](supabase-edge-anonymize-member-account.ts), **Verify JWT OFF**
+
+## Admin-E-Mail
+
+| Datei | Aufgabe |
+|-------|---------|
+| `admin/email.html` | Formular: Empfänger, Betreff, Nachricht |
+| `admin/js/email-admin.js` | Vorschau + Aufruf Edge Function |
+
+Empfängerfilter serverseitig: `einwilligung_kontakt = true`, gültige E-Mail, nicht anonymisiert.
 
 ## Tröte (Startseite)
 

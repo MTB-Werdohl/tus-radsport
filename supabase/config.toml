@@ -3,3 +3,6 @@
 
 [functions.anonymize-member-account]
 verify_jwt = false
+
+[functions.send-admin-email]
+verify_jwt = false

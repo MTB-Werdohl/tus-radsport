@@ -376,11 +376,13 @@ async function fetchFeedbackAnswersForModule(
         updated_at,
         member_id,
         members (
+          id,
           vorname,
           nachname,
           email,
           rolle,
-          anonymized_at
+          anonymized_at,
+          einwilligung_kontakt
         )
       `)
       .eq('module_id', moduleId)
