@@ -167,6 +167,47 @@ h3 {
   cursor: not-allowed;
 }
 
+.member-list-card {
+  padding: 7px 12px;
+}
+
+.member-list-card .event-header {
+  align-items: center;
+  gap: 10px;
+}
+
+.member-list-card .member-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.member-list-card .member-card-name {
+  font-size: 0.9375rem;
+  line-height: 1.15;
+}
+
+.member-list-card .member-card-contact,
+.member-list-card .member-card-consents {
+  font-size: 0.8125rem;
+  line-height: 1.15;
+  margin-top: 1px;
+  opacity: 0.85;
+}
+
+.member-list-card .member-card-consents {
+  margin-top: 1px;
+}
+
+.member-list-card .member-consent-yes,
+.member-list-card .member-consent-no {
+  font-weight: 600;
+}
+
+.member-list-card .actions button {
+  padding: 5px 8px;
+  font-size: 13px;
+}
+
 .member-role-public {
   color: #ffd54f;
   font-weight: 600;
@@ -185,16 +226,6 @@ h3 {
 
 .member-card-contact--anonymized {
   font-style: italic;
-}
-
-.member-card-contact,
-.member-card-consents {
-  font-size: 0.88rem;
-  line-height: 1.45;
-}
-
-.member-list-card .event-header {
-  align-items: flex-start;
 }
 
 .member-consent-yes {

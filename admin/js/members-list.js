@@ -33,9 +33,9 @@ function renderConsentValue(value) {
       : 'member-consent-no';
 
   return `
-    <strong class="${className}">
+    <span class="${className}">
       ${label}
-    </strong>
+    </span>
   `;
 
 }

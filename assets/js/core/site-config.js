@@ -66,7 +66,7 @@ window.siteConfig = {
     draft: 'draft'
   },
 
-  adminJsVersion: '20260530'
+  adminJsVersion: '20260531'
 
 };
 
