@@ -1,0 +1,75 @@
+---
+layout: null
+title: Protokolle
+---
+
+<!doctype html>
+
+<html lang="de">
+
+<head>
+
+{% include admin-head.html %}
+
+</head>
+
+<body>
+
+<div id="admin">
+
+  <div class="page-header">
+
+    <div>
+
+      <h1>
+        Protokolle, Beschlüsse, Informationen
+      </h1>
+
+      <p>
+        Vorstandsunterlagen — nur für den Adminbereich
+      </p>
+
+    </div>
+
+    <a href="/admin/"
+       class="back-button">
+
+      ← Dashboard
+
+    </a>
+
+  </div>
+
+  <div class="admin-topbar">
+
+    <input
+      id="search"
+      placeholder="Protokolle suchen..."
+    >
+
+    <button
+      id="new-protocol"
+      class="new-button"
+      type="button">
+
+      ➕ Neues Protokoll
+
+    </button>
+
+  </div>
+
+  <div id="protocols"></div>
+
+  <div id="protocols-pagination"></div>
+
+</div>
+
+<script src="/admin/js/protocol-utils.js?v={{ site.admin_js_version }}"></script>
+<script src="/admin/js/protocols-list.js?v={{ site.admin_js_version }}"></script>
+<script>
+requireAdminSession(loadProtocols);
+</script>
+
+</body>
+
+</html>

@@ -19,6 +19,7 @@ window.siteConfig = {
     galleryImages: 'gallery_images',
     siteState: 'site_state',
     members: 'members',
+    boardDocuments: 'board_documents',
     feedbackModules: 'feedback_modules',
     feedbackAnswers: 'feedback_answers'
   },
@@ -59,7 +60,7 @@ window.siteConfig = {
     draft: 'draft'
   },
 
-  adminJsVersion: '20260541'
+  adminJsVersion: '20260542'
 
 };
 

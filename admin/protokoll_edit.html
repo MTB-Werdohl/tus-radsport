@@ -1,0 +1,107 @@
+---
+layout: null
+title: Protokoll bearbeiten
+---
+
+<!doctype html>
+
+<html lang="de">
+
+<head>
+
+{% include admin-head.html %}
+
+</head>
+
+<body>
+
+<div id="admin">
+
+  <div class="page-header">
+
+    <div>
+
+      <h1 id="form-title">
+        Neues Protokoll
+      </h1>
+
+      <p>
+        Protokoll, Beschluss oder Information anlegen oder bearbeiten
+      </p>
+
+    </div>
+
+    <a href="/admin/protokolle.html"
+       class="back-button">
+
+      ← Protokolle
+
+    </a>
+
+  </div>
+
+  <div class="member-admin-form">
+
+    <label>
+      Sitzungsdatum
+      <input id="meeting_date" type="date" required>
+    </label>
+
+    <label>
+      Art
+      <select id="meeting_label"></select>
+    </label>
+
+    <label>
+      Bereich
+      <select id="scope">
+        <option value="abteilung">Abteilung (Radsport)</option>
+        <option value="hauptverein">Hauptverein / Beirat</option>
+      </select>
+    </label>
+
+    <label>
+      Inhalt (Markdown)
+      <textarea id="content" rows="12"></textarea>
+    </label>
+
+    <label>
+      Protokoll-PDF
+      <input id="protocolPdfFile" type="file" accept="application/pdf,.pdf">
+    </label>
+
+    <div id="currentProtocolPdf"></div>
+
+    <section class="admin-protocol-attachments">
+
+      <h2>Anhänge (PDF)</h2>
+
+      <div id="attachments-list"></div>
+
+      <button
+        id="add-attachment"
+        type="button"
+        class="new-button"
+      >
+        ➕ Anhang hinzufügen
+      </button>
+
+    </section>
+
+    <button id="save-protocol" type="button">
+      Speichern
+    </button>
+
+  </div>
+
+</div>
+
+<script src="/admin/js/protocol-utils.js?v={{ site.admin_js_version }}"></script>
+<script src="/admin/js/protocol-edit.js?v={{ site.admin_js_version }}"></script>
+<script>
+requireAdminSession(initProtocolEdit);
+</script>
+
+</body>
+
+</html>

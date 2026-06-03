@@ -849,3 +849,68 @@ h3 {
 .admin-draft-preview .event-links a {
   color: #8fc9ff;
 }
+
+.admin-protocol-card--abteilung {
+  background: rgba(34, 81, 180, 0.82);
+}
+
+.admin-protocol-card--hauptverein {
+  background: rgba(120, 72, 28, 0.88);
+}
+
+.admin-protocol-card-link {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+}
+
+.admin-protocol-card-link:hover {
+  opacity: 0.92;
+}
+
+.admin-protocol-attachments {
+  margin-top: 24px;
+}
+
+.admin-protocol-attachments h2 {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+}
+
+.admin-protocol-attachment-row {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.admin-protocol-pdf-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.admin-protocol-pdf-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: rgba(46, 139, 87, 0.85);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.admin-protocol-pdf-button:hover {
+  background: rgba(46, 139, 87, 1);
+}
+
+.admin-protocol-view .admin-draft-preview__body {
+  margin-top: 8px;
+}
