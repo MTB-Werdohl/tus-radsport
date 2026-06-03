@@ -103,7 +103,7 @@ Anmeldelink für mtb-werdohl.de
               <p style="margin:0 0 10px 0;">
                 <strong>Verantwortlicher:</strong><br>
                 TuS Jahn Werdohl e.V., Abteilung Radsport, Postfach 1771, 58791 Werdohl<br>
-                E-Mail: schlotmann@t-online.de
+                E-Mail: info@mtb-werdohl.de
               </p>
               <p style="margin:0;font-size:11px;color:#888;">
                 Diese Nachricht ist eine automatische System-E-Mail im Zusammenhang mit
@@ -159,7 +159,7 @@ Automatische System-E-Mail — bitte nicht antworten.
 | Thema               | Empfehlung                                                                                 |
 | ------------------- | ------------------------------------------------------------------------------------------ |
 | **Absender-Name**   | `MTB Werdohl` oder `TuS Jahn Werdohl e.V.`                                                 |
-| **Reply-To**        | erreichbare Vereinsadresse (z. B. [schlotmann@t-online.de](mailto:schlotmann@t-online.de)) |
+| **Reply-To**        | erreichbare Vereinsadresse (z. B. [info@mtb-werdohl.de(mailto:info@mtb-werdohl.de)) |
 | **Link-Gültigkeit** | in Supabase unter Auth-Einstellungen prüfen; im Text bewusst nur „zeitlich begrenzt“       |
 | **Test**            | Magic Link an eigene Adresse senden — Darstellung in Gmail, Outlook, Handy prüfen          |
 | **Confirm email**   | bei Magic Link in der Regel deaktiviert lassen (Link = Bestätigung)                        |
