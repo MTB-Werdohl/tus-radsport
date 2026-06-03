@@ -14,7 +14,7 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
     bei Terminen und Abstimmungen <strong>zusagen oder absagen</strong> und deine
     <strong>Kontaktdaten aktuell halten</strong>. Diese Seite erklärt kurz, wie
     das funktioniert — für Vereinsmitglieder und für Gäste bei öffentlichen
-    Anmeldungen (z.&nbsp;B. Trainingslager).
+    Anmeldungen (z.&nbsp;B. zu den Bike-Days).
   </p>
 </header>
 
@@ -119,16 +119,15 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
   Dann kommt kein Login-Link oder nach dem Klick die Meldung, dass kein
   Vereinsmitglied gefunden wurde.
   <br><br>
-  <strong>Bitte melde dich bei {{ site.contact.name }}:</strong><br>
+  <strong>Bitte melde dich beim Vorstand:</strong><br>
   E-Mail:
   <a href="mailto:{{ site.contact.email }}">{{ site.contact.email }}</a><br>
-  Telefon: {{ site.contact.phone_display }}
 </blockquote>
 
 <section class="about-section">
   <h2>Für Gäste &amp; Nichtmitglieder (öffentliche Anmeldung)</h2>
   <p>
-    Manche Abstimmungen — z.&nbsp;B. zum <strong>Trainingslager</strong> — sind
+    Manche Abstimmungen — z.&nbsp;B. zu den <strong>Bike-Days</strong> — sind
     auch für Personen ohne Vereinsmitgliedschaft freigegeben. Du musst dafür
     <strong>kein Vereinsmitglied</strong> sein.
   </p>
@@ -167,7 +166,7 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
     <li><strong>Vereinsmitglied:</strong> E-Mail oben rechts → Link in der Mail → eingeloggt</li>
     <li><strong>Teilnehmen:</strong> eingeloggt sein, dann am Termin/News abstimmen</li>
     <li><strong>Profil:</strong> Daten und Erreichbarkeit prüfen</li>
-    <li><strong>Problem:</strong> falsche oder fehlende E-Mail → {{ site.contact.name }} kontaktieren</li>
+    <li><strong>Problem:</strong> falsche oder fehlende E-Mail → {{ site.contact.e-mail }} kontaktieren</li>
     <li><strong>Gast:</strong> Formular → E-Mail bestätigen → abstimmen — bis Account gelöscht</li>
   </ul>
 </section>
