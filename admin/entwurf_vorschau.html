@@ -1,0 +1,79 @@
+---
+layout: null
+title: Entwurf Vorschau
+---
+
+<!doctype html>
+
+<html lang="de">
+
+<head>
+
+{% include admin-head.html %}
+
+</head>
+
+<body>
+
+<div id="admin">
+
+  <div class="page-header">
+
+    <div>
+
+      <h1>
+        Entwurf-Vorschau
+      </h1>
+
+      <p>
+        Vorschau ohne Website-Layout
+      </p>
+
+    </div>
+
+    <div class="admin-draft-preview-actions">
+
+      <a
+        id="draft-preview-edit"
+        href="/admin/entwuerfe.html"
+        class="back-button"
+      >
+        ✏ Bearbeiten
+      </a>
+
+      <a
+        href="/admin/entwuerfe.html"
+        class="back-button"
+      >
+        ← Entwürfe
+      </a>
+
+    </div>
+
+  </div>
+
+  <article
+    id="draft-preview-content"
+    class="admin-draft-preview"
+  >
+
+    <p class="admin-hint">
+      Vorschau wird geladen …
+    </p>
+
+  </article>
+
+</div>
+
+<script src="/assets/js/marked/marked.min.js"></script>
+<script src="/assets/js/core/termin-dates.js"></script>
+<script src="/assets/js/event/event-dates.js"></script>
+<script src="/assets/js/event/event-render.js"></script>
+<script src="/admin/js/drafts.js?v={{ site.admin_js_version }}"></script>
+<script>
+requireAdminSession(initDraftPreview);
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,54 @@
+---
+layout: null
+title: Entwürfe
+---
+
+<!doctype html>
+
+<html lang="de">
+
+<head>
+
+{% include admin-head.html %}
+
+</head>
+
+<body>
+
+<div id="admin">
+
+  <div class="page-header">
+
+    <div>
+
+      <h1>
+        Entwürfe
+      </h1>
+
+      <p>
+        Offene News- und Termin-Entwürfe
+      </p>
+
+    </div>
+
+    <a href="/admin/"
+       class="back-button">
+
+      ← Dashboard
+
+    </a>
+
+  </div>
+
+  <div id="drafts-list"></div>
+
+</div>
+
+<script src="/admin/js/drafts.js?v={{ site.admin_js_version }}"></script>
+<script>
+requireAdminSession(loadDraftsList);
+</script>
+
+</body>
+
+</html>

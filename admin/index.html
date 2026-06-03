@@ -125,6 +125,40 @@ title: MTB Werdohl Admin
 
           </a>
 
+          <a href="/admin/entwuerfe.html"
+             class="dashboard-card"
+             id="dashboard-drafts-card">
+
+            <span
+              class="dashboard-icon"
+              aria-hidden="true">
+
+              📝
+
+            </span>
+
+            <span class="dashboard-card-copy">
+
+              <strong class="dashboard-card-title">
+                Entwürfe
+              </strong>
+
+              <span class="dashboard-card-desc">
+                Offene News- und Termin-Entwürfe
+              </span>
+
+            </span>
+
+            <span
+              class="dashboard-card-meta"
+              id="dashboard-drafts-meta">
+
+              …
+
+            </span>
+
+          </a>
+
         </div>
 
       </details>
@@ -317,6 +351,8 @@ title: MTB Werdohl Admin
 
 </div>
 
+<script src="/admin/js/drafts.js?v={{ site.admin_js_version }}"></script>
+
 <script>
 
 const DASHBOARD_SECTIONS_KEY =
@@ -396,6 +432,7 @@ function saveDashboardSections() {
 function showAdminDashboard() {
 
   initDashboardSections();
+  loadDraftDashboardCard();
 
 }
 
