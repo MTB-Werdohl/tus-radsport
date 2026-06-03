@@ -475,6 +475,31 @@ function ensurePublicFeedbackModal() {
 
   </div>
 
+  <div
+    id="feedback-public-email-sent"
+    class="feedback-public-modal__email-sent"
+    hidden>
+
+    <p class="feedback-public-modal__email-sent-text">
+
+      Vielen Dank für dein Interesse, wir haben dir eben eine E-Mail gesendet.
+
+      <button
+        type="button"
+        id="feedback-public-close-tab"
+        class="feedback-public-modal__close-tab">
+
+        Klick hier
+
+      </button>
+
+      und der Tab wird geschlossen. Mit dem Klick in der E-Mail gelangst du
+      hier wieder zurück.
+
+    </p>
+
+  </div>
+
 </div>
 
 `;
@@ -482,6 +507,14 @@ function ensurePublicFeedbackModal() {
   document.body.appendChild(modal);
 
   bindPublicFeedbackModalEvents(modal);
+
+  modal
+    .querySelector('#feedback-public-close-tab')
+    ?.addEventListener('click', () => {
+
+      closePublicFeedbackTab();
+
+    });
 
 }
 
@@ -520,9 +553,146 @@ function setPublicFeedbackModalStatus(
 
 }
 
+function ensurePublicFeedbackEmailSentPanel() {
+
+  if (
+    document.getElementById(
+      'feedback-public-email-sent'
+    )
+  ) {
+    return;
+  }
+
+  const dialog =
+    document.querySelector(
+      '.feedback-public-modal__dialog'
+    );
+
+  if (!dialog) {
+    return;
+  }
+
+  dialog.insertAdjacentHTML(
+    'beforeend',
+    `
+
+    <div
+      id="feedback-public-email-sent"
+      class="feedback-public-modal__email-sent"
+      hidden>
+
+      <p class="feedback-public-modal__email-sent-text">
+
+        Vielen Dank für dein Interesse, wir haben dir eben eine E-Mail gesendet.
+
+        <button
+          type="button"
+          id="feedback-public-close-tab"
+          class="feedback-public-modal__close-tab">
+
+          Klick hier
+
+        </button>
+
+        und der Tab wird geschlossen. Mit dem Klick in der E-Mail gelangst du
+        hier wieder zurück.
+
+      </p>
+
+    </div>
+
+    `
+  );
+
+  document
+    .getElementById('feedback-public-close-tab')
+    ?.addEventListener('click', () => {
+
+      closePublicFeedbackTab();
+
+    });
+
+}
+
+function resetPublicFeedbackModalView() {
+
+  ensurePublicFeedbackEmailSentPanel();
+
+  const title =
+    document.getElementById(
+      'feedback-public-modal-title'
+    );
+
+  if (title) {
+    title.textContent = 'Externe Teilnahme';
+  }
+
+  document
+    .querySelector('.feedback-public-modal__intro')
+    ?.removeAttribute('hidden');
+
+  document
+    .getElementById('feedback-public-register-form')
+    ?.removeAttribute('hidden');
+
+  document
+    .querySelector('.feedback-public-modal__login')
+    ?.removeAttribute('hidden');
+
+  document
+    .getElementById('feedback-public-email-sent')
+    ?.setAttribute('hidden', '');
+
+  setPublicFeedbackModalStatus('', false);
+
+}
+
+function showPublicFeedbackEmailSentView() {
+
+  ensurePublicFeedbackEmailSentPanel();
+
+  const title =
+    document.getElementById(
+      'feedback-public-modal-title'
+    );
+
+  if (title) {
+    title.textContent = 'E-Mail gesendet';
+  }
+
+  document
+    .querySelector('.feedback-public-modal__intro')
+    ?.setAttribute('hidden', '');
+
+  document
+    .getElementById('feedback-public-register-form')
+    ?.setAttribute('hidden', '');
+
+  document
+    .querySelector('.feedback-public-modal__login')
+    ?.setAttribute('hidden', '');
+
+  setPublicFeedbackModalStatus('', false);
+
+  document
+    .getElementById('feedback-public-email-sent')
+    ?.removeAttribute('hidden');
+
+}
+
+function closePublicFeedbackTab() {
+
+  closePublicFeedbackModal();
+
+  window.close();
+
+}
+
 function openPublicFeedbackModal() {
 
   ensurePublicFeedbackModal();
+
+  resetPublicFeedbackModalView();
 
   setPublicFeedbackReturnUrl(
     getPublicFeedbackRedirectUrl()
@@ -845,10 +1015,7 @@ function bindPublicFeedbackModalEvents(modal) {
 
       }
 
-      setPublicFeedbackModalStatus(
-        'Bestätigungs-Link gesendet. Bitte E-Mail öffnen und Link klicken — erst dann wirst du registriert und kannst abstimmen.',
-        false
-      );
+      showPublicFeedbackEmailSentView();
 
       if (submitBtn) {
         submitBtn.disabled = false;
@@ -919,10 +1086,7 @@ function bindPublicFeedbackModalEvents(modal) {
 
       }
 
-      setPublicFeedbackModalStatus(
-        'Anmelde-Link gesendet. Bitte E-Mail öffnen und danach hier abstimmen.',
-        false
-      );
+      showPublicFeedbackEmailSentView();
 
       if (submitBtn) {
         submitBtn.disabled = false;

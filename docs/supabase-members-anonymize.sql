@@ -92,6 +92,11 @@ begin
 
   end if;
 
+  if to_regclass('public."PushSubscriptions"') is not null then
+    delete from public."PushSubscriptions"
+    where member_id = v_member_id;
+  end if;
+
   update public.feedback_answers
   set comment = null
   where member_id = v_member_id;

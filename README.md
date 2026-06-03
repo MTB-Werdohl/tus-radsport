@@ -28,7 +28,7 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Trö
 ├── _data/               # Navigation, Footer, Social-Links (YAML)
 ├── _includes/           # wiederverwendbare HTML-Fragmente (Sidebar, Admin-Head)
 ├── _layouts/            # Seiten-Layout (default.html)
-├── admin/               # CMS für Vorstand (Termine, News, Galerie, Mitglieder, Push)
+├── admin/               # CMS für Vorstand (Termine, News, Galerie, Mitglieder, Tröte)
 │   └── js/              # Admin-Logik (termine-list, news-edit, …)
 ├── assets/
 │   ├── css/             # Styles (global, Kalender, News, Admin, …)
@@ -84,7 +84,7 @@ Unter `/admin/` (nicht in der Hauptnavigation verlinkt; Footer-Link).
 
 SQL-Reihenfolge und Policies: [`docs/supabase/RUNBOOK.md`](docs/supabase/RUNBOOK.md)
 
-Web-Push-Tabellen entfernen (nach Deploy): [`docs/supabase-drop-web-push.sql`](docs/supabase-drop-web-push.sql)
+**Mitglieder löschen schlägt fehl (Push-FK):** [`supabase-drop-web-push.sql`](docs/supabase-drop-web-push.sql) im SQL Editor ausführen — entfernt Legacy-Tabellen `PushMessages` / `PushSubscriptions` und aktualisiert `anonymize_member`.
 
 Authentifizierung: Magic Link in der Website-Navigation. Nur `members.rolle = 'Vorstand'` erhält Zugriff auf `/admin/`. Ohne Vorstand-Session leitet `/admin/` still nach `/` um (keine separate Login-Seite).
 
@@ -159,7 +159,7 @@ Diese Pfade werden referenziert und müssen für einen vollständigen lokalen Bu
 |------|--------|
 | `assets/js/fullcalendar/` | FullCalendar-Bundle |
 | `assets/js/glightbox/` | Lightbox CSS/JS |
-| `assets/images/` | Logo, Favicon, Hero, Push-Benachrichtigungs-Icons |
+| `assets/images/` | Logo, Favicon, Hero |
 
 Fehlen sie lokal, funktionieren Kalender oder Bilder erst nach Ergänzen der Dateien.
 

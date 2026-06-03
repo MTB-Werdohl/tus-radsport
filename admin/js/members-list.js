@@ -281,9 +281,8 @@ async function deleteMember(id) {
   const confirmDelete =
     confirm(
       'Mitglied wirklich löschen?\n\n'
-      + 'Personenbezogene Daten werden entfernt. '
-      + 'Abstimmungen bleiben anonym gezählt. '
-      + 'Push-Abos werden entfernt.'
+      +       'Personenbezogene Daten werden entfernt. '
+      + 'Abstimmungen bleiben anonym gezählt.'
     );
 
   if (!confirmDelete) {

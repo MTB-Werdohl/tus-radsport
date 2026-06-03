@@ -14,7 +14,7 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Optional (Mehrtages-Termine):** [`supabase-termine-multiday.sql`](../supabase-termine-multiday.sql) — Spalten `endDate`, `durationDays` auf `Termine`.
 
-**Tröte (Web Push entfernt):** [`supabase-drop-web-push.sql`](../supabase-drop-web-push.sql) — löscht `PushMessages` und `PushSubscriptions`; **Tröte** bleibt in `site_state.last_push`. Edge Functions `send-push`, `save-push-subscription`, `delete-push-subscription` im Dashboard optional löschen.
+**Tröte (Web Push entfernt):** [`supabase-drop-web-push.sql`](../supabase-drop-web-push.sql) — löscht `PushMessages` und `PushSubscriptions`, aktualisiert `anonymize_member` (Legacy-Push-Abos vor Löschung); **Tröte** bleibt in `site_state.last_push`. Edge Functions `send-push`, `save-push-subscription`, `delete-push-subscription` im Dashboard optional löschen.
 
 **Feedback:** [`supabase-feedback.sql`](../supabase-feedback.sql) — `feedback_modules` + `feedback_answers` (nach #2). Polymorphe `entity_type`/`entity_id` **ohne FK**; Poll-Antworten speichern `option_id` in `answer`.
 

@@ -18,7 +18,7 @@ create policy "Public read gallery images"
   to public
   using (true);
 
--- Letzte Push-Meldung für Widget (nur Key last_push)
+-- Letzte Tröte-Mitteilung für Widget (nur Key last_push)
 drop policy if exists public_can_read_last_push on public.site_state;
 drop policy if exists site_state_read_last_push_authenticated on public.site_state;
 
