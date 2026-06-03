@@ -363,6 +363,10 @@ async function saveProtocolEdit() {
 
   }
 
+  if (window.adminUnsavedGuard) {
+    window.adminUnsavedGuard.markClean();
+  }
+
   window.location.href =
     getProtocolViewUrl(savedId);
 
@@ -378,11 +382,12 @@ document
 
 function initProtocolEdit() {
 
-  loadProtocolEdit();
+  window.adminUnsavedGuard =
+    initAdminUnsavedGuard({
+      message:
+        'Sicher, dass du ohne Speichern zurück willst?'
+    });
 
-  initAdminUnsavedGuard({
-    formSelector: '.member-admin-form',
-    saveButtonId: 'save-protocol'
-  });
+  loadProtocolEdit();
 
 }
