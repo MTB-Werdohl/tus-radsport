@@ -60,7 +60,7 @@ window.siteConfig = {
     draft: 'draft'
   },
 
-  adminJsVersion: '20260543'
+  adminJsVersion: '20260544'
 
 };
 

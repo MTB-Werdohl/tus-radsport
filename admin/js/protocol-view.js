@@ -6,10 +6,10 @@ const viewParams =
 const viewId =
   viewParams.get('id');
 
-async function renderProtocolPdfButtons(row) {
+async function renderProtocolFileButtons(row) {
 
   const container =
-    document.getElementById('protocol-pdf-buttons');
+    document.getElementById('protocol-file-buttons');
 
   if (!container) {
     return;
@@ -22,7 +22,6 @@ async function renderProtocolPdfButtons(row) {
   if (row.protocol_pdf_path) {
 
     files.push({
-      label: 'Protokoll (PDF)',
       path: row.protocol_pdf_path
     });
 
@@ -32,7 +31,6 @@ async function renderProtocolPdfButtons(row) {
     .forEach((item) => {
 
       files.push({
-        label: item.label,
         path: item.path
       });
 
@@ -41,7 +39,7 @@ async function renderProtocolPdfButtons(row) {
   if (!files.length) {
 
     container.innerHTML =
-      '<p class="admin-hint">Keine PDF-Dateien hinterlegt.</p>';
+      '<p class="admin-hint">Keine Dateien hinterlegt.</p>';
 
     return;
 
@@ -56,15 +54,18 @@ async function renderProtocolPdfButtons(row) {
       continue;
     }
 
+    const label =
+      getProtocolFileLabel(file.path);
+
     container.innerHTML += `
 
       <a
         href="${escapeAdminHtml(url)}"
-        class="admin-protocol-pdf-button"
+        class="admin-protocol-file-button"
         target="_blank"
         rel="noopener noreferrer"
       >
-        📄 ${escapeAdminHtml(file.label)}
+        📎 ${escapeAdminHtml(label)}
       </a>
 
     `;
@@ -96,7 +97,7 @@ async function initProtocolView() {
     console.error(error);
 
     document
-      .getElementById('protocol-view-content')
+      .getElementById('protocol-view-body')
       .innerHTML =
         '<p class="admin-hint">Protokoll nicht gefunden.</p>';
 
@@ -119,7 +120,7 @@ async function initProtocolView() {
     .href =
       getProtocolEditUrl(data.id);
 
-  await renderProtocolPdfButtons(data);
+  await renderProtocolFileButtons(data);
 
   const body =
     document.getElementById('protocol-view-body');

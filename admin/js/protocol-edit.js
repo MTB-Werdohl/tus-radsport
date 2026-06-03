@@ -6,7 +6,7 @@ const params =
 const editId =
   params.get('id');
 
-let existingProtocolPdfPath =
+let existingProtocolFilePath =
   null;
 
 let existingAttachments =
@@ -25,6 +25,11 @@ function renderAttachmentRows() {
 
   existingAttachments.forEach((item, index) => {
 
+    const currentFile =
+      item.path
+        ? getProtocolFileLabel(item.path)
+        : null;
+
     container.innerHTML += `
 
       <div
@@ -32,32 +37,19 @@ function renderAttachmentRows() {
         data-index="${index}"
       >
 
+        ${currentFile
+          ? `<p class="admin-hint">Aktuelle Datei: ${escapeAdminHtml(currentFile)}</p>`
+          : ''}
+
         <label>
-          Bezeichnung
+          ${currentFile
+            ? 'Datei ersetzen'
+            : 'Datei auswählen'}
           <input
-            type="text"
-            class="attachment-label"
-            value="${escapeAdminHtml(item.label)}"
+            type="file"
+            class="attachment-file"
           >
         </label>
-
-        <div class="admin-protocol-attachment-file">
-
-          <p class="admin-hint">
-            Aktuelle Datei:
-            ${escapeAdminHtml(item.path.split('/').pop() || item.path)}
-          </p>
-
-          <label>
-            Datei ersetzen (PDF)
-            <input
-              type="file"
-              class="attachment-file"
-              accept="application/pdf,.pdf"
-            >
-          </label>
-
-        </div>
 
         <button
           type="button"
@@ -98,7 +90,6 @@ function renderAttachmentRows() {
 function addAttachmentRow() {
 
   existingAttachments.push({
-    label: '',
     path: ''
   });
 
@@ -170,20 +161,20 @@ async function loadProtocolEdit() {
   document.getElementById('content').value =
     data.content || '';
 
-  existingProtocolPdfPath =
+  existingProtocolFilePath =
     data.protocol_pdf_path || null;
 
   existingAttachments =
     normalizeProtocolAttachments(data.attachments);
 
-  const currentPdf =
-    document.getElementById('currentProtocolPdf');
+  const currentFile =
+    document.getElementById('currentProtocolFile');
 
-  if (currentPdf) {
+  if (currentFile) {
 
-    currentPdf.innerHTML =
-      existingProtocolPdfPath
-        ? `<p class="admin-hint">Aktuelles Protokoll-PDF: ${escapeAdminHtml(existingProtocolPdfPath.split('/').pop())}</p>`
+    currentFile.innerHTML =
+      existingProtocolFilePath
+        ? `<p class="admin-hint">Aktuelle Protokoll-Datei: ${escapeAdminHtml(getProtocolFileLabel(existingProtocolFilePath))}</p>`
         : '';
 
   }
@@ -224,24 +215,24 @@ async function saveProtocolEdit() {
 
   const protocolFile =
     document
-      .getElementById('protocolPdfFile')
+      .getElementById('protocolFile')
       ?.files[0];
 
   let protocolPdfPath =
-    existingProtocolPdfPath;
+    existingProtocolFilePath;
 
   if (protocolFile) {
 
     try {
 
       protocolPdfPath =
-        await uploadProtocolPdf(protocolFile);
+        await uploadProtocolFile(protocolFile);
 
     } catch (error) {
 
       console.error(error);
 
-      alert('Protokoll-PDF konnte nicht hochgeladen werden.');
+      alert('Protokoll-Datei konnte nicht hochgeladen werden.');
 
       return;
 
@@ -263,13 +254,7 @@ async function saveProtocolEdit() {
 
     const existing =
       existingAttachments[index]
-      || { label: '', path: '' };
-
-    const label =
-      row.querySelector('.attachment-label')
-        ?.value
-        .trim()
-        || '';
+      || { path: '' };
 
     const file =
       row.querySelector('.attachment-file')
@@ -283,7 +268,7 @@ async function saveProtocolEdit() {
       try {
 
         path =
-          await uploadProtocolPdf(file);
+          await uploadProtocolFile(file);
 
       } catch (error) {
 
@@ -297,13 +282,8 @@ async function saveProtocolEdit() {
 
     }
 
-    if (label && path) {
-
-      nextAttachments.push({
-        label,
-        path
-      });
-
+    if (path) {
+      nextAttachments.push({ path });
     }
 
   }

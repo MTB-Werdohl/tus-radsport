@@ -69,6 +69,7 @@ h3 {
 #admin .admin-topbar,
 #admin #events,
 #admin #news,
+#admin #protocols,
 #admin #members,
 #admin #galleries,
 #admin #feedback-list,
@@ -87,6 +88,7 @@ h3 {
 
 #admin #events,
 #admin #news,
+#admin #protocols,
 #admin #members,
 #admin #galleries,
 #admin #feedback-list,
@@ -888,14 +890,14 @@ h3 {
   background: rgba(255, 255, 255, 0.06);
 }
 
-.admin-protocol-pdf-buttons {
+.admin-protocol-file-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 24px;
 }
 
-.admin-protocol-pdf-button {
+.admin-protocol-file-button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -907,7 +909,7 @@ h3 {
   font-weight: 600;
 }
 
-.admin-protocol-pdf-button:hover {
+.admin-protocol-file-button:hover {
   background: rgba(46, 139, 87, 1);
 }
 

@@ -80,20 +80,35 @@ function normalizeProtocolAttachments(value) {
   }
 
   return value
-    .map((item) => ({
+    .map((item) => {
 
-      label:
-        String(item?.label || '')
-          .trim(),
+      if (typeof item === 'string') {
+        return item.trim();
+      }
 
-      path:
-        String(item?.path || '')
-          .trim()
+      return String(item?.path || '')
+        .trim();
 
-    }))
-    .filter((item) =>
-      item.label && item.path
-    );
+    })
+    .filter(Boolean)
+    .map((path) => ({ path }));
+
+}
+
+function getProtocolFileLabel(path) {
+
+  const name =
+    String(path || '')
+      .split('/')
+      .pop()
+      || 'Datei';
+
+  const withoutTimestamp =
+    name.match(/^\d+-(.+)$/);
+
+  return withoutTimestamp
+    ? withoutTimestamp[1]
+    : name;
 
 }
 
@@ -106,7 +121,7 @@ function sanitizeProtocolFilename(name) {
 
 }
 
-async function uploadProtocolPdf(file) {
+async function uploadProtocolFile(file) {
 
   if (!file) {
     return null;
@@ -133,6 +148,12 @@ async function uploadProtocolPdf(file) {
   }
 
   return path;
+
+}
+
+async function uploadProtocolPdf(file) {
+
+  return uploadProtocolFile(file);
 
 }
 
