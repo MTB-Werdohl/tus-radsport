@@ -294,6 +294,59 @@ h3 {
   gap: 24px;
 }
 
+.dashboard-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dashboard-section {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  background: rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+
+.dashboard-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 22px;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.dashboard-section-title::-webkit-details-marker {
+  display: none;
+}
+
+.dashboard-section-title::after {
+  content: '▾';
+  font-size: 18px;
+  opacity: 0.7;
+  transition: transform 0.2s ease;
+}
+
+.dashboard-section:not([open])
+  .dashboard-section-title::after {
+  transform: rotate(-90deg);
+}
+
+.dashboard-section .dashboard-grid {
+  padding: 0 22px 22px;
+  margin-top: 0;
+}
+
+.push-count {
+  margin-top: 8px;
+  font-size: 15px;
+  opacity: 0.85;
+}
+
 .dashboard-card {
   background: linear-gradient(
     145deg,

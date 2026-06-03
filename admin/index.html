@@ -37,148 +37,191 @@ title: MTB Werdohl Admin
 
     </div>
 
-    <div class="dashboard-grid">
+    <div class="dashboard-sections">
 
-<a href="/admin/push.html"
-   class="dashboard-card">
+      <details
+        class="dashboard-section"
+        data-section="content"
+        open>
 
-  <div class="dashboard-icon">
-    🔔
-  </div>
+        <summary class="dashboard-section-title">
+          Content
+        </summary>
 
-  <h2>
-    Push-Nachrichten
-  </h2>
+        <div class="dashboard-grid">
 
-  <p>
-    Mitteilungen, Absagen zu Ausfahrten
-    und wichtige Informationen
-    direkt an alle Geräte senden.
-  </p>
+          <a href="/admin/termine.html"
+             class="dashboard-card">
 
-  <p class="push-count">
+            <div class="dashboard-icon">
+              📅
+            </div>
 
-    Erreichte Geräte:
+            <h2>
+              Termine
+            </h2>
 
-    <span id="push-count">
+            <p>
+              Touren, Ausfahrten, Events und
+              wiederkehrende Termine verwalten.
+            </p>
 
-      ...
+          </a>
 
-    </span>
+          <a href="/admin/news.html"
+             class="dashboard-card">
 
-  </p>
+            <div class="dashboard-icon">
+              📰
+            </div>
 
-</a>
+            <h2>
+              News
+            </h2>
 
-      <a href="/admin/termine.html"
-         class="dashboard-card">
+            <p>
+              Vereinsnews, Informationen und
+              Ankündigungen veröffentlichen.
+            </p>
 
-        <div class="dashboard-icon">
-          📅
+          </a>
+
+          <a href="/admin/galerie.html"
+             class="dashboard-card">
+
+            <div class="dashboard-icon">
+              🖼
+            </div>
+
+            <h2>
+              Galerien
+            </h2>
+
+            <p>
+              Bilder und Eventgalerien
+              organisieren und verlinken.
+            </p>
+
+          </a>
+
         </div>
 
-        <h2>
-          Termine
-        </h2>
+      </details>
 
-        <p>
-          Touren, Ausfahrten, Events und
-          wiederkehrende Termine verwalten.
-        </p>
+      <details
+        class="dashboard-section"
+        data-section="kommunikation">
 
-      </a>
+        <summary class="dashboard-section-title">
+          Kommunikation
+        </summary>
 
-      <a href="/admin/news.html"
-         class="dashboard-card">
+        <div class="dashboard-grid">
 
-        <div class="dashboard-icon">
-          📰
+          <a href="/admin/push.html"
+             class="dashboard-card">
+
+            <div class="dashboard-icon">
+              🔔
+            </div>
+
+            <h2>
+              Push-Nachrichten
+            </h2>
+
+            <p>
+              Mitteilungen, Absagen zu Ausfahrten
+              und wichtige Informationen
+              direkt an alle Geräte senden.
+            </p>
+
+            <p class="push-count">
+
+              Erreichte Geräte:
+
+              <span id="push-count">
+
+                ...
+
+              </span>
+
+            </p>
+
+          </a>
+
+          <a href="/admin/feedback.html"
+             class="dashboard-card">
+
+            <div class="dashboard-icon">
+              📋
+            </div>
+
+            <h2>
+              Feedback
+            </h2>
+
+            <p>
+              Rückmeldungen zu Terminen und News
+              auswerten und exportieren.
+            </p>
+
+          </a>
+
         </div>
 
-        <h2>
-          News
-        </h2>
+      </details>
 
-        <p>
-          Vereinsnews, Informationen und
-          Ankündigungen veröffentlichen.
-        </p>
+      <details
+        class="dashboard-section"
+        data-section="verwaltung">
 
-      </a>
+        <summary class="dashboard-section-title">
+          Verwaltung
+        </summary>
 
-      <a href="/admin/galerie.html"
-         class="dashboard-card">
+        <div class="dashboard-grid">
 
-        <div class="dashboard-icon">
-          🖼
+          <a href="/admin/mitglieder.html"
+             class="dashboard-card">
+
+            <div class="dashboard-icon">
+              👥
+            </div>
+
+            <h2>
+              Mitglieder
+            </h2>
+
+            <p>
+              Vereinsmitglieder anlegen,
+              bearbeiten und Rollen verwalten.
+            </p>
+
+          </a>
+
+          <a href="https://meet.jit.si/radsportvorstandmtbwerdohl"
+             class="dashboard-card"
+             target="_blank"
+             rel="noopener noreferrer">
+
+            <div class="dashboard-icon">
+              🎥
+            </div>
+
+            <h2>
+              Vorstandssitzung
+            </h2>
+
+            <p>
+              Videokonferenz per Jitsi —
+              Raum für Vorstandssitzungen.
+            </p>
+
+          </a>
+
         </div>
 
-        <h2>
-          Galerien
-        </h2>
-
-        <p>
-          Bilder und Eventgalerien
-          organisieren und verlinken.
-        </p>
-
-      </a>
-
-      <a href="/admin/mitglieder.html"
-         class="dashboard-card">
-
-        <div class="dashboard-icon">
-          👥
-        </div>
-
-        <h2>
-          Mitglieder
-        </h2>
-
-        <p>
-          Vereinsmitglieder anlegen,
-          bearbeiten und Rollen verwalten.
-        </p>
-
-      </a>
-
-      <a href="/admin/feedback.html"
-         class="dashboard-card">
-
-        <div class="dashboard-icon">
-          📋
-        </div>
-
-        <h2>
-          Feedback
-        </h2>
-
-        <p>
-          Rückmeldungen zu Terminen und News
-          auswerten und exportieren.
-        </p>
-
-      </a>
-
-      <a href="https://meet.jit.si/radsportvorstandmtbwerdohl"
-         class="dashboard-card"
-         target="_blank"
-         rel="noopener noreferrer">
-
-        <div class="dashboard-icon">
-          🎥
-        </div>
-
-        <h2>
-          Vorstandssitzung
-        </h2>
-
-        <p>
-          Videokonferenz per Jitsi —
-          Raum für Vorstandssitzungen.
-        </p>
-
-      </a>
+      </details>
 
     </div>
 
@@ -188,8 +231,83 @@ title: MTB Werdohl Admin
 
 <script>
 
+const DASHBOARD_SECTIONS_KEY =
+  'adminDashboardSections';
+
+const DASHBOARD_SECTION_DEFAULTS = {
+  content: true,
+  kommunikation: false,
+  verwaltung: false
+};
+
+function initDashboardSections() {
+
+  let saved = {};
+
+  try {
+
+    saved = JSON.parse(
+      localStorage.getItem(
+        DASHBOARD_SECTIONS_KEY
+      ) || '{}'
+    );
+
+  } catch (error) {
+
+    saved = {};
+
+  }
+
+  document
+    .querySelectorAll(
+      '.dashboard-section[data-section]'
+    )
+    .forEach((section) => {
+
+      const key =
+        section.dataset.section;
+
+      const isOpen =
+        key in saved
+          ? saved[key]
+          : DASHBOARD_SECTION_DEFAULTS[key];
+
+      section.open = isOpen === true;
+
+      section.addEventListener(
+        'toggle',
+        saveDashboardSections
+      );
+
+    });
+
+}
+
+function saveDashboardSections() {
+
+  const state = {};
+
+  document
+    .querySelectorAll(
+      '.dashboard-section[data-section]'
+    )
+    .forEach((section) => {
+
+      state[section.dataset.section] =
+        section.open;
+
+    });
+
+  localStorage.setItem(
+    DASHBOARD_SECTIONS_KEY,
+    JSON.stringify(state)
+  );
+
+}
+
 function showAdminDashboard() {
 
+  initDashboardSections();
   loadPushCount();
 
 }
