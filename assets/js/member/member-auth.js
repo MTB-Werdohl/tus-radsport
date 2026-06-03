@@ -745,6 +745,10 @@ async function initMemberAuth() {
       { strict: true }
     );
 
+    if (isAuthCallback()) {
+      await touchMemberLastLogin();
+    }
+
     cleanAuthCallbackUrl();
 
   }
