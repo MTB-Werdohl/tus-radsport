@@ -913,6 +913,11 @@ h3 {
   background: rgba(46, 139, 87, 1);
 }
 
+.admin-protocol-file-button--missing {
+  background: rgba(160, 60, 60, 0.85);
+  cursor: not-allowed;
+}
+
 .admin-protocol-view .admin-draft-preview__body {
   margin-top: 8px;
 }

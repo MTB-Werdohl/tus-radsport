@@ -12,7 +12,98 @@ let existingProtocolFilePath =
 let existingAttachments =
   [];
 
+function syncAttachmentPendingFiles() {
+
+  document
+    .querySelectorAll('.admin-protocol-attachment-row')
+    .forEach((row) => {
+
+      const index =
+        Number(row.dataset.index);
+
+      const input =
+        row.querySelector('.attachment-file');
+
+      if (
+        Number.isNaN(index)
+        || !existingAttachments[index]
+        || !input?.files[0]
+      ) {
+        return;
+      }
+
+      existingAttachments[index].pendingFile =
+        input.files[0];
+
+    });
+
+}
+
+function bindAttachmentRowEvents(container) {
+
+  container.querySelectorAll('.attachment-file').forEach((input) => {
+
+    input.addEventListener('change', () => {
+
+      const row =
+        input.closest('.admin-protocol-attachment-row');
+
+      const index =
+        Number(row?.dataset.index);
+
+      if (
+        Number.isNaN(index)
+        || !existingAttachments[index]
+      ) {
+        return;
+      }
+
+      existingAttachments[index].pendingFile =
+        input.files[0] || null;
+
+      const hint =
+        row.querySelector('.attachment-pending-name');
+
+      if (hint) {
+
+        hint.textContent =
+          input.files[0]
+            ? `Ausgewählt: ${input.files[0].name}`
+            : '';
+
+      }
+
+    });
+
+  });
+
+  container.querySelectorAll('.attachment-remove').forEach((button) => {
+
+    button.addEventListener('click', () => {
+
+      const row =
+        button.closest('.admin-protocol-attachment-row');
+
+      const index =
+        Number(row?.dataset.index);
+
+      if (Number.isNaN(index)) {
+        return;
+      }
+
+      syncAttachmentPendingFiles();
+      existingAttachments.splice(index, 1);
+      renderAttachmentRows();
+
+    });
+
+  });
+
+}
+
 function renderAttachmentRows() {
+
+  syncAttachmentPendingFiles();
 
   const container =
     document.getElementById('attachments-list');
@@ -30,6 +121,9 @@ function renderAttachmentRows() {
         ? getProtocolFileLabel(item.path)
         : null;
 
+    const pendingName =
+      item.pendingFile?.name || '';
+
     container.innerHTML += `
 
       <div
@@ -40,6 +134,12 @@ function renderAttachmentRows() {
         ${currentFile
           ? `<p class="admin-hint">Aktuelle Datei: ${escapeAdminHtml(currentFile)}</p>`
           : ''}
+
+        <p class="admin-hint attachment-pending-name">
+          ${pendingName
+            ? `Ausgewählt: ${escapeAdminHtml(pendingName)}`
+            : ''}
+        </p>
 
         <label>
           ${currentFile
@@ -64,33 +164,15 @@ function renderAttachmentRows() {
 
   });
 
-  container.querySelectorAll('.attachment-remove').forEach((button) => {
-
-    button.addEventListener('click', () => {
-
-      const row =
-        button.closest('.admin-protocol-attachment-row');
-
-      const index =
-        Number(row?.dataset.index);
-
-      if (Number.isNaN(index)) {
-        return;
-      }
-
-      existingAttachments.splice(index, 1);
-      renderAttachmentRows();
-
-    });
-
-  });
+  bindAttachmentRowEvents(container);
 
 }
 
 function addAttachmentRow() {
 
   existingAttachments.push({
-    path: ''
+    path: '',
+    pendingFile: null
   });
 
   renderAttachmentRows();
@@ -165,7 +247,11 @@ async function loadProtocolEdit() {
     data.protocol_pdf_path || null;
 
   existingAttachments =
-    normalizeProtocolAttachments(data.attachments);
+    normalizeProtocolAttachments(data.attachments)
+      .map((item) => ({
+        path: item.path,
+        pendingFile: null
+      }));
 
   const currentFile =
     document.getElementById('currentProtocolFile');
@@ -184,6 +270,8 @@ async function loadProtocolEdit() {
 }
 
 async function saveProtocolEdit() {
+
+  syncAttachmentPendingFiles();
 
   const meetingDate =
     document
@@ -240,25 +328,21 @@ async function saveProtocolEdit() {
 
   }
 
-  const attachmentRows =
-    document.querySelectorAll(
-      '.admin-protocol-attachment-row'
-    );
-
   const nextAttachments = [];
 
-  for (const row of attachmentRows) {
-
-    const index =
-      Number(row.dataset.index);
+  for (
+    let index = 0;
+    index < existingAttachments.length;
+    index += 1
+  ) {
 
     const existing =
       existingAttachments[index]
-      || { path: '' };
+      || { path: '', pendingFile: null };
 
     const file =
-      row.querySelector('.attachment-file')
-        ?.files[0];
+      existing.pendingFile
+      || null;
 
     let path =
       existing.path || '';

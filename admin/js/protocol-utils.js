@@ -75,6 +75,16 @@ function getProtocolScopeCardClass(scope) {
 
 function normalizeProtocolAttachments(value) {
 
+  if (typeof value === 'string') {
+
+    try {
+      value = JSON.parse(value);
+    } catch (error) {
+      return [];
+    }
+
+  }
+
   if (!Array.isArray(value)) {
     return [];
   }
@@ -95,6 +105,29 @@ function normalizeProtocolAttachments(value) {
 
 }
 
+function collectProtocolFilePaths(row) {
+
+  const paths = [];
+
+  if (row?.protocol_pdf_path) {
+    paths.push(
+      String(row.protocol_pdf_path).trim()
+    );
+  }
+
+  normalizeProtocolAttachments(row?.attachments)
+    .forEach((item) => {
+      paths.push(item.path);
+    });
+
+  return [
+    ...new Set(
+      paths.filter(Boolean)
+    )
+  ];
+
+}
+
 function getProtocolFileLabel(path) {
 
   const name =
@@ -103,11 +136,20 @@ function getProtocolFileLabel(path) {
       .pop()
       || 'Datei';
 
-  const withoutTimestamp =
+  const withRandomPrefix =
+    name.match(
+      /^\d+-\d+-[a-z0-9]+-(.+)$/i
+    );
+
+  if (withRandomPrefix) {
+    return withRandomPrefix[1];
+  }
+
+  const withTimestampPrefix =
     name.match(/^\d+-(.+)$/);
 
-  return withoutTimestamp
-    ? withoutTimestamp[1]
+  return withTimestampPrefix
+    ? withTimestampPrefix[1]
     : name;
 
 }
@@ -121,14 +163,18 @@ function sanitizeProtocolFilename(name) {
 
 }
 
+let protocolUploadCounter = 0;
+
 async function uploadProtocolFile(file) {
 
   if (!file) {
     return null;
   }
 
+  protocolUploadCounter += 1;
+
   const path =
-    `protocols/${Date.now()}-${sanitizeProtocolFilename(file.name)}`;
+    `protocols/${Date.now()}-${protocolUploadCounter}-${Math.random().toString(36).slice(2, 8)}-${sanitizeProtocolFilename(file.name)}`;
 
   const { error } =
     await window.supabaseClient

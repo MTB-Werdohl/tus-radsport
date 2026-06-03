@@ -17,26 +17,10 @@ async function renderProtocolFileButtons(row) {
 
   container.innerHTML = '';
 
-  const files = [];
+  const paths =
+    collectProtocolFilePaths(row);
 
-  if (row.protocol_pdf_path) {
-
-    files.push({
-      path: row.protocol_pdf_path
-    });
-
-  }
-
-  normalizeProtocolAttachments(row.attachments)
-    .forEach((item) => {
-
-      files.push({
-        path: item.path
-      });
-
-    });
-
-  if (!files.length) {
+  if (!paths.length) {
 
     container.innerHTML =
       '<p class="admin-hint">Keine Dateien hinterlegt.</p>';
@@ -45,32 +29,50 @@ async function renderProtocolFileButtons(row) {
 
   }
 
-  for (const file of files) {
+  const buttons =
+    document.createDocumentFragment();
+
+  for (const path of paths) {
 
     const url =
-      await getProtocolSignedUrl(file.path);
-
-    if (!url) {
-      continue;
-    }
+      await getProtocolSignedUrl(path);
 
     const label =
-      getProtocolFileLabel(file.path);
+      getProtocolFileLabel(path);
 
-    container.innerHTML += `
+    if (url) {
 
-      <a
-        href="${escapeAdminHtml(url)}"
-        class="admin-protocol-file-button"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        📎 ${escapeAdminHtml(label)}
-      </a>
+      const link =
+        document.createElement('a');
 
-    `;
+      link.href = url;
+      link.className =
+        'admin-protocol-file-button';
+      link.target = '_blank';
+      link.rel =
+        'noopener noreferrer';
+      link.textContent =
+        `📎 ${label}`;
+
+      buttons.appendChild(link);
+
+      continue;
+
+    }
+
+    const fallback =
+      document.createElement('span');
+
+    fallback.className =
+      'admin-protocol-file-button admin-protocol-file-button--missing';
+    fallback.textContent =
+      `📎 ${label} (Datei nicht erreichbar)`;
+
+    buttons.appendChild(fallback);
 
   }
+
+  container.appendChild(buttons);
 
 }
 
