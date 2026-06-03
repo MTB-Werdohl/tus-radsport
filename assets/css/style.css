@@ -1131,6 +1131,34 @@ body.member-consent-modal-open {
   margin-top: 0;
 }
 
+.help-steps {
+  margin: 0 0 16px;
+  padding-left: 1.25rem;
+}
+
+.help-steps li {
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
+.help-steps li:last-child {
+  margin-bottom: 0;
+}
+
+.member-auth-hint a {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.member-auth-hint a:hover {
+  opacity: 0.85;
+}
+
 .about-page a:not(.cta-btn) {
   color: var(--header-bg);
   font-weight: 600;

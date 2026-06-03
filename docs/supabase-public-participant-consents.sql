@@ -62,7 +62,9 @@ begin
   select id, rolle
   into v_member_id, v_rolle
   from public.members
-  where lower(trim(email)) = v_email;
+  where lower(trim(email)) = v_email
+    and anonymized_at is null
+    and email is not null;
 
   if v_member_id is not null then
 
@@ -76,6 +78,7 @@ begin
       nachname = nullif(v_nachname, ''),
       telefonnummer = nullif(trim(coalesce(p_telefon, '')), ''),
       rolle = 'public',
+      last_login_at = now(),
       einwilligung_kontakt = true,
       kontakt_eingewilligt_am =
         coalesce(kontakt_eingewilligt_am, v_today),
@@ -108,7 +111,8 @@ begin
     einwilligung_kontakt,
     kontakt_eingewilligt_am,
     einwilligung_bilder,
-    bilder_eingewilligt_am
+    bilder_eingewilligt_am,
+    last_login_at
   )
   values (
     v_email,
@@ -122,7 +126,8 @@ begin
     case
       when v_bilder then v_today
       else null
-    end
+    end,
+    now()
   )
   returning id
   into v_member_id;

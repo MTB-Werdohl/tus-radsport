@@ -77,6 +77,7 @@ async function fetchMemberByEmail(email) {
         .from(table)
         .select('*')
         .eq('email', normalized)
+        .is('anonymized_at', null)
         .limit(1)
         .maybeSingle(),
 
@@ -85,6 +86,7 @@ async function fetchMemberByEmail(email) {
         .from(table)
         .select('*')
         .eq('email', trimmed)
+        .is('anonymized_at', null)
         .limit(1)
         .maybeSingle(),
 
@@ -93,6 +95,7 @@ async function fetchMemberByEmail(email) {
         .from(table)
         .select('*')
         .filter('email', 'ilike', trimmed)
+        .is('anonymized_at', null)
         .limit(1)
         .maybeSingle()
 

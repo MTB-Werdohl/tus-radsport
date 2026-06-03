@@ -30,6 +30,8 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Externe Teilnehmer Einwilligungen:** [`supabase-public-participant-consents.sql`](../supabase-public-participant-consents.sql) — Kontakt-Einwilligung Pflicht, Bilder optional (RPC + Datum).
 
+**Gelöschte Mitglieder nicht neu anlegen:** Frontend-Fix in `member-auth.js` / `member-service.js`; SQL: anonymisierte Zeilen in `complete_public_participant_registration` ignorieren (in `supabase-public-participant-consents.sql`). Edge Function `anonymize-member-account` beendet alle Auth-Sessions (`signOut global`) vor User-Löschung — **neu deployen**.
+
 **Mitglieder anonymisieren:** [`supabase-members-anonymize.sql`](../supabase-members-anonymize.sql) — Account-Löschung entfernt personenbezogene Daten, `member_id` und `feedback_answers` bleiben; Edge Function `anonymize-member-account` löscht zusätzlich `auth.users`.
 
 **Mitglieder letzter Login:** [`supabase-members-last-login.sql`](../supabase-members-last-login.sql) — Spalte `last_login_at`, RPC `touch_member_last_login()` beim Magic-Link-Login; einmaliges Backfill aus `auth.users`.

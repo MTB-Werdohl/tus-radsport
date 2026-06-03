@@ -210,6 +210,18 @@ Deno.serve(async (req) => {
 
     if (authUserId) {
 
+      const { error: signOutError } =
+        await supabaseAdmin.auth.admin.signOut(
+          authUserId,
+          'global'
+        );
+
+      if (signOutError) {
+
+        console.error(signOutError);
+
+      }
+
       const { error: deleteError } =
         await supabaseAdmin.auth.admin.deleteUser(
           authUserId

@@ -9,6 +9,10 @@ links:
     url: "/datenschutz"
     external: false
 
+  - title: "Login-Hilfe"
+    url: "/mitglieder-hilfe"
+    external: false
+
   - title: "Mitgliedsantrag"
     url: "https://www.tusjahnwerdohl.de/files/DSGVO_Aufnahmeantrag-TuS-Jahn-ab-2025.pdf"
     external: true

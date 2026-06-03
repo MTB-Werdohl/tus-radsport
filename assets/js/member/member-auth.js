@@ -173,6 +173,13 @@ async function ensurePublicParticipantFromSession(
     return null;
   }
 
+  if (
+    !pending
+    && !isAuthCallback()
+  ) {
+    return null;
+  }
+
   const vorname =
     String(
       meta.vorname
@@ -273,6 +280,79 @@ function notifyMemberSessionReady() {
 
 }
 
+function getPublicRegistrationPending(
+  session
+) {
+
+  if (
+    typeof readPublicRegistrationPending
+      !== 'function'
+    || !session?.user?.email
+  ) {
+    return null;
+  }
+
+  return readPublicRegistrationPending(
+    session.user.email
+  );
+
+}
+
+function canCompletePublicRegistration(
+  session
+) {
+
+  const meta =
+    session?.user?.user_metadata
+    || {};
+
+  const pending =
+    getPublicRegistrationPending(
+      session
+    );
+
+  return (
+    (
+      meta.public_registration
+      === true
+      || !!pending
+    )
+    && (
+      isAuthCallback()
+      || !!pending
+    )
+  );
+
+}
+
+async function invalidateMemberSession(
+  options
+) {
+
+  const strict =
+    options?.strict === true;
+
+  const message =
+    options?.message
+    || MEMBER_ERROR_NOT_FOUND;
+
+  currentMember = null;
+
+  await window.supabaseClient.auth.signOut({
+    scope: 'local'
+  });
+
+  if (strict && message) {
+
+    showMemberToast(
+      message,
+      'error'
+    );
+
+  }
+
+}
+
 async function validateMemberSession(
   session,
   options
@@ -303,10 +383,18 @@ async function validateMemberSession(
 
   if (!member) {
 
-    member =
-      await ensurePublicParticipantFromSession(
+    if (
+      canCompletePublicRegistration(
         session
-      );
+      )
+    ) {
+
+      member =
+        await ensurePublicParticipantFromSession(
+          session
+        );
+
+    }
 
   }
 
@@ -314,42 +402,27 @@ async function validateMemberSession(
 
     currentMember = null;
 
-    if (strict) {
+    if (
+      isAuthCallback()
+      && canCompletePublicRegistration(
+        session
+      )
+      && strict
+    ) {
 
-      const meta =
-        session.user.user_metadata
-        || {};
+      await invalidateMemberSession({
+        strict: true,
+        message:
+          'Registrierung konnte nicht abgeschlossen werden. Bitte Formular erneut ausfüllen.'
+      });
 
-      const pending =
-        typeof readPublicRegistrationPending
-          === 'function'
-          ? readPublicRegistrationPending(
-              session.user.email
-            )
-          : null;
-
-      if (
-        meta.public_registration
-        === true
-        || pending
-      ) {
-
-        showMemberToast(
-          'Registrierung konnte nicht abgeschlossen werden. Bitte Formular erneut ausfüllen.',
-          'error'
-        );
-
-        await window.supabaseClient.auth.signOut({
-          scope: 'local'
-        });
-
-      } else {
-
-        await rejectInvalidMemberSession();
-
-      }
+      return null;
 
     }
+
+    await invalidateMemberSession({
+      strict
+    });
 
     return null;
 
@@ -367,6 +440,13 @@ async function validateMemberSession(
     && member?.id
   ) {
     notifyMemberSessionReady();
+  }
+
+  if (
+    options?.touchLogin
+    || isAuthCallback()
+  ) {
+    await touchMemberLastLogin();
   }
 
   return member;
@@ -766,10 +846,6 @@ async function initMemberAuth() {
       { strict: true }
     );
 
-    if (isAuthCallback()) {
-      await touchMemberLastLogin();
-    }
-
     cleanAuthCallbackUrl();
 
   }
@@ -791,10 +867,11 @@ async function initMemberAuth() {
 
         await validateMemberSession(
           session,
-          { strict: true }
+          {
+            strict: true,
+            touchLogin: true
+          }
         );
-
-        await touchMemberLastLogin();
 
         cleanAuthCallbackUrl();
 
