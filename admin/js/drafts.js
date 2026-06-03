@@ -1,59 +1,113 @@
-async function fetchAdminDrafts() {
+function isAdminDraftRow(row) {
+
+  if (!row) {
+    return false;
+  }
 
   const draft =
     window.siteConfig.visibility.draft;
 
-  const [newsResult, termineResult] =
-    await Promise.all([
+  if (row.sichtbarkeit === draft) {
+    return true;
+  }
 
-      window.supabaseClient
-        .from(window.siteConfig.tables.news)
-        .select(
-          'id, title, slug, created_at, sichtbarkeit'
-        )
-        .eq('sichtbarkeit', draft)
-        .order('created_at', { ascending: false }),
+  if (
+    row.published === false
+    && (
+      row.sichtbarkeit == null
+      || row.sichtbarkeit === ''
+    )
+  ) {
+    return true;
+  }
 
-      window.supabaseClient
-        .from(window.siteConfig.tables.termine)
-        .select(
-          'id, title, slug, date, created_at, sichtbarkeit'
-        )
-        .eq('sichtbarkeit', draft)
-        .order('date', { ascending: false })
+  return false;
 
-    ]);
+}
+
+function getAdminDraftSortAt(row, type) {
+
+  if (type === 'event') {
+    return row.date || null;
+  }
+
+  return row.updated_at
+    || row.created_at
+    || null;
+
+}
+
+async function fetchAdminDrafts() {
+
+  const newsResult =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.news)
+      .select(
+        'id, title, slug, sichtbarkeit, published, updated_at, created_at'
+      )
+      .order('updated_at', {
+        ascending: false,
+        nullsFirst: false
+      });
+
+  const termineResult =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.termine)
+      .select(
+        'id, title, slug, date, sichtbarkeit'
+      )
+      .order('date', {
+        ascending: false,
+        nullsFirst: false
+      });
+
+  const errors = [];
 
   if (newsResult.error) {
-    throw newsResult.error;
+    errors.push(newsResult.error);
+    console.error(newsResult.error);
   }
 
   if (termineResult.error) {
-    throw termineResult.error;
+    errors.push(termineResult.error);
+    console.error(termineResult.error);
+  }
+
+  if (
+    errors.length === 2
+  ) {
+    throw errors[0];
   }
 
   const newsItems =
-    (newsResult.data || []).map((item) => ({
-      type: 'news',
-      id: item.id,
-      title: item.title || 'Ohne Titel',
-      slug: item.slug || '',
-      sortAt:
-        item.created_at
-        || null
-    }));
+    (newsResult.data || [])
+      .filter(isAdminDraftRow)
+      .map((item) => ({
+        type: 'news',
+        id: item.id,
+        title: item.title || 'Ohne Titel',
+        slug: item.slug || '',
+        sortAt:
+          getAdminDraftSortAt(
+            item,
+            'news'
+          )
+      }));
 
   const eventItems =
-    (termineResult.data || []).map((item) => ({
-      type: 'event',
-      id: item.id,
-      title: item.title || 'Ohne Titel',
-      slug: item.slug || '',
-      sortAt:
-        item.date
-        || item.created_at
-        || null
-    }));
+    (termineResult.data || [])
+      .filter(isAdminDraftRow)
+      .map((item) => ({
+        type: 'event',
+        id: item.id,
+        title: item.title || 'Ohne Titel',
+        slug: item.slug || '',
+        sortAt:
+          getAdminDraftSortAt(
+            item,
+            'event'
+          )
+      }));
 
   return [...newsItems, ...eventItems]
     .sort((a, b) => {
@@ -266,7 +320,13 @@ async function loadDraftsList() {
     console.error(error);
 
     container.innerHTML =
-      '<p class="admin-hint">Entwürfe konnten nicht geladen werden.</p>';
+      '<p class="admin-hint">Entwürfe konnten nicht geladen werden.'
+      + (
+        error?.message
+          ? ` (${escapeAdminHtml(error.message)})`
+          : ''
+      )
+      + '</p>';
 
   }
 
@@ -278,9 +338,6 @@ async function fetchAdminDraftByParams(
   slug
 ) {
 
-  const draft =
-    window.siteConfig.visibility.draft;
-
   const table =
     type === 'event'
       ? window.siteConfig.tables.termine
@@ -289,8 +346,7 @@ async function fetchAdminDraftByParams(
   let query =
     window.supabaseClient
       .from(table)
-      .select('*')
-      .eq('sichtbarkeit', draft);
+      .select('*');
 
   if (id) {
     query = query.eq('id', id);
@@ -309,6 +365,10 @@ async function fetchAdminDraftByParams(
 
     return null;
 
+  }
+
+  if (!isAdminDraftRow(data)) {
+    return null;
   }
 
   return data;
