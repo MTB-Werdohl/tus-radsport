@@ -61,7 +61,7 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
     <li>
       Danach bist du angemeldet. In der Kopfzeile steht
       <strong>„Hallo … · Profil · Logout“</strong>. Unter
-      <a href="{{ '/profil/' | relative_url }}">Profil</a> findest du deine Daten.
+      <a href="{{ '/profil' | relative_url }}">Profil</a> findest du deine Daten.
     </li>
   </ol>
   <p>
@@ -94,7 +94,7 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
 <section class="about-section">
   <h2>Profil aktuell halten</h2>
   <p>
-    Unter <a href="{{ '/profil/' | relative_url }}">Mein Profil</a> siehst du,
+    Unter <a href="{{ '/profil' | relative_url }}">Mein Profil</a> siehst du,
     welche Daten der Verein für dich gespeichert hat. Bitte prüfe regelmäßig:
   </p>
   <ul>
@@ -143,7 +143,7 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
     <li>
       Du bleibst auf diesem Gerät <strong>angemeldet</strong>, bis du dich
       ausloggst oder deinen Account unter
-      <a href="{{ '/profil/' | relative_url }}">Profil</a>
+      <a href="{{ '/profil' | relative_url }}">Profil</a>
       <strong>löschst</strong>.
     </li>
   </ol>
@@ -155,7 +155,7 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
   </p>
   <p>
     Details zum Datenschutz:
-    <a href="{{ '/datenschutz/' | relative_url }}">Datenschutzerklärung</a>
+    <a href="{{ '/datenschutz' | relative_url }}">Datenschutzerklärung</a>
     (Abschnitt 12).
   </p>
 </section>
