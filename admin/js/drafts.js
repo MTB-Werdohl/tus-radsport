@@ -262,7 +262,10 @@ async function loadDraftsList() {
       drafts
         .map((draft) => `
 
-          <div class="event-card admin-draft-card">
+          <a
+            class="event-card admin-draft-card admin-draft-card-link"
+            href="${escapeAdminHtml(getDraftPreviewUrl(draft))}"
+          >
 
             <div class="event-header">
 
@@ -288,29 +291,9 @@ async function loadDraftsList() {
 
               </div>
 
-              <div class="actions">
-
-                <a
-                  class="admin-draft-preview-link"
-                  href="${escapeAdminHtml(getDraftPreviewUrl(draft))}"
-                  title="Vorschau"
-                >
-                  👁
-                </a>
-
-                <a
-                  class="admin-draft-edit-link"
-                  href="${escapeAdminHtml(getDraftEditUrl(draft))}"
-                  title="Bearbeiten"
-                >
-                  ✏
-                </a>
-
-              </div>
-
             </div>
 
-          </div>
+          </a>
 
         `)
         .join('');
