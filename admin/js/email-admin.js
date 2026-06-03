@@ -175,10 +175,75 @@ async function loadEmailEvents() {
   const select =
     document.getElementById('email-event-id');
 
+  emailModulesByEventId =
+    new Map();
+
+  const { data: modules, error: modulesError } =
+    await window.supabaseClient
+      .from(
+        window.siteConfig.tables.feedbackModules
+      )
+      .select('id, entity_id, type, enabled')
+      .eq(
+        'entity_type',
+        window.siteConfig.feedback.entityTypes.event
+      );
+
+  if (modulesError) {
+
+    console.error(modulesError);
+
+    select.innerHTML =
+      '<option value="">Termine konnten nicht geladen werden</option>';
+
+    select.disabled = true;
+
+    emailEvents = [];
+
+    return;
+
+  }
+
+  const eventModules =
+    modules || [];
+
+  eventModules.forEach((module) => {
+
+    const eventId =
+      Number(module.entity_id);
+
+    if (!Number.isFinite(eventId)) {
+      return;
+    }
+
+    emailModulesByEventId.set(
+      eventId,
+      module
+    );
+
+  });
+
+  const eventIds =
+    [...emailModulesByEventId.keys()];
+
+  if (eventIds.length === 0) {
+
+    select.innerHTML =
+      '<option value="">Keine Termine mit Anmeldung/Abstimmung</option>';
+
+    select.disabled = true;
+
+    emailEvents = [];
+
+    return;
+
+  }
+
   const { data, error } =
     await window.supabaseClient
       .from(window.siteConfig.tables.termine)
       .select('id, title, date, slug')
+      .in('id', eventIds)
       .order('date', { ascending: false });
 
   if (error) {
@@ -187,6 +252,10 @@ async function loadEmailEvents() {
 
     select.innerHTML =
       '<option value="">Termine konnten nicht geladen werden</option>';
+
+    select.disabled = true;
+
+    emailEvents = [];
 
     return;
 
@@ -197,7 +266,7 @@ async function loadEmailEvents() {
   if (emailEvents.length === 0) {
 
     select.innerHTML =
-      '<option value="">Keine Termine vorhanden</option>';
+      '<option value="">Keine Termine mit Anmeldung/Abstimmung</option>';
 
     select.disabled = true;
 

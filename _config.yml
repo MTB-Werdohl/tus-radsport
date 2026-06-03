@@ -14,7 +14,7 @@ seo:
 
 future: true
 
-admin_js_version: "20260536"
+admin_js_version: "20260537"
 
 contact:
   name: "Tobias Withalm"
@@ -26,3 +26,7 @@ contact:
 links:
   impressum: "https://www.tusjahnwerdohl.de/impressum-.html"
   datenschutz: "/datenschutz"
+
+webmail:
+  url: "https://www.checkdomain.de/webmail/"
+  account: "info@mtb-werdohl.de"
