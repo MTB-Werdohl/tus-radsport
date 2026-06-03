@@ -63,23 +63,97 @@ h3 {
 }
 
 #search {
-  margin-bottom: 20px;
-}
-
-.event-card {
-  background: #222;
-  padding: 12px 15px;
-  border-radius: 10px;
   margin-bottom: 0;
 }
 
-#events,
-#members,
-#galleries,
-#news {
+#admin .admin-topbar,
+#admin #events,
+#admin #news,
+#admin #members,
+#admin #galleries,
+#admin #feedback-list,
+#admin .feedback-admin-list,
+#admin .admin-pagination,
+#admin [id$="-pagination"],
+#admin .event-separator {
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#admin #events,
+#admin #news,
+#admin #members,
+#admin #galleries,
+#admin #feedback-list,
+#admin .feedback-admin-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.event-card {
+  background: rgba(34, 81, 180, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  padding: 10px 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
+  margin-bottom: 0;
+  width: 100%;
+  box-sizing: border-box;
+  color: white;
+}
+
+.event-card.calendar-card--members {
+  background: rgba(22, 38, 56, 0.92);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.event-card.calendar-card--draft {
+  background: rgba(180, 34, 48, 0.88);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.event-card strong,
+.member-card-name,
+.feedback-card-title {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.event-meta,
+.member-card-contact,
+.member-card-consents,
+.feedback-card-question {
+  font-size: 0.88rem;
+  opacity: 0.82;
+  line-height: 1.3;
+}
+
+.event-meta {
+  margin-top: 4px;
+}
+
+.member-card-contact,
+.member-card-consents {
+  margin-top: 4px;
+  opacity: 0.82;
+}
+
+.member-card-consents {
+  margin-top: 6px;
 }
 
 .admin-pagination {
@@ -106,25 +180,6 @@ h3 {
   cursor: not-allowed;
 }
 
-.event-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-}
-
-.event-meta {
-  font-size: 14px;
-  opacity: 0.8;
-  margin-top: 4px;
-}
-
-.member-card-name {
-  font-size: 1rem;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
 .member-role-public {
   color: #ffd54f;
   font-weight: 600;
@@ -147,14 +202,8 @@ h3 {
 
 .member-card-contact,
 .member-card-consents {
-  font-size: 14px;
-  opacity: 0.9;
-  margin-top: 6px;
+  font-size: 0.88rem;
   line-height: 1.45;
-}
-
-.member-card-consents {
-  margin-top: 8px;
 }
 
 .member-list-card .event-header {
@@ -179,7 +228,9 @@ h3 {
 .actions button {
   width: auto;
   margin: 0;
-  padding: 8px 12px;
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 8px;
 }
 
 .delete-button {

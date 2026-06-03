@@ -139,7 +139,7 @@ async function loadNews() {
 
     container.innerHTML += `
 
-      <div class="event-card">
+      <div class="event-card ${contentVisibilityCardClass(item.sichtbarkeit)}">
 
         <div class="event-header">
 
