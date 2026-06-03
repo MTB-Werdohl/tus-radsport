@@ -92,9 +92,6 @@ begin
 
   end if;
 
-  delete from "PushSubscriptions"
-  where member_id = v_member_id;
-
   update public.feedback_answers
   set comment = null
   where member_id = v_member_id;

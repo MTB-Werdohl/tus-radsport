@@ -5,19 +5,19 @@ document
     event.preventDefault();
 
     const title =
-      document.getElementById('push-title').value;
+      document.getElementById('push-title').value.trim();
 
     const body =
-      document.getElementById('push-body').value;
+      document.getElementById('push-body').value.trim();
 
     const url =
-      document.getElementById('push-url').value || '/';
+      document.getElementById('push-url').value.trim() || '/';
 
     const status =
       document.getElementById('push-status');
 
     status.innerText =
-      'Push wird gesendet...';
+      'Tröte wird aktualisiert …';
 
     const {
 
@@ -35,58 +35,35 @@ document
 
     }
 
+    if (typeof saveLastPush !== 'function') {
+
+      status.innerText =
+        '❌ Speichern nicht verfügbar';
+
+      return;
+
+    }
+
     try {
 
-      const response = await fetch(
-        getFunctionUrl('sendPush'),
-        {
+      const ok =
+        await saveLastPush(
+          title,
+          body,
+          url
+        );
 
-          method: 'POST',
-
-          headers: {
-
-            'Content-Type': 'application/json',
-
-            'Authorization':
-              `Bearer ${session.access_token}`
-
-          },
-
-          body: JSON.stringify({
-
-            title,
-            body,
-            url
-
-          })
-
-        }
-      );
-
-      const result =
-        await response.json();
-
-      if (!response.ok) {
+      if (!ok) {
 
         status.innerText =
-          '❌ '
-          + (result.error || 'Fehler beim Senden');
+          '❌ Fehler beim Speichern';
 
         return;
 
       }
 
-      console.log(result);
-
       status.innerText =
-        result.historySaved !== false
-          ? '✅ Push erfolgreich gesendet'
-          : '⚠️ Push gesendet, Verlauf nicht gespeichert'
-            + (
-              result.historyError
-                ? `: ${result.historyError}`
-                : ' (Tabelle PushMessages fehlt?)'
-            );
+        '✅ Tröte aktualisiert';
 
       document
         .getElementById('push-form')
@@ -97,7 +74,7 @@ document
       console.error(error);
 
       status.innerText =
-        '❌ Fehler beim Senden';
+        '❌ Fehler beim Speichern';
 
     }
 

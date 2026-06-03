@@ -25,7 +25,7 @@ Internet: https://www.tusjahnwerdohl.de
 
 Der Schutz personenbezogener Daten ist uns wichtig.
 
-Diese Website dient der Information über die Abteilung Radsport des TuS Jahn Werdohl e.V. Die Seiten werden als statische Website bereitgestellt. Für den **Mitgliederbereich**, die Verwaltung von Vereinsinhalten, **Feedback/Abstimmungen**, **externe Anmeldungen** (z. B. Trainingslager) und **Push-Mitteilungen** nutzen wir zusätzlich einen Backend-Dienst (Supabase, siehe Abschnitt 11).
+Diese Website dient der Information über die Abteilung Radsport des TuS Jahn Werdohl e.V. Die Seiten werden als statische Website bereitgestellt. Für den **Mitgliederbereich**, die Verwaltung von Vereinsinhalten, **Feedback/Abstimmungen**, **externe Anmeldungen** (z. B. Trainingslager) und die **Tröte** (kurze Mitteilung auf der Startseite) nutzen wir zusätzlich einen Backend-Dienst (Supabase, siehe Abschnitt 11).
 
 Personenbezogene Daten werden nur verarbeitet, soweit dies für die Mitgliedschaft, die Nutzung des Mitgliederbereichs, eine Anmeldung zu Vereinsangeboten, eine Einwilligung oder eine gesetzliche Grundlage erforderlich ist.
 
@@ -80,9 +80,9 @@ Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an einer fun
 
 ## 5. Datenübermittlung in Drittländer
 
-**Mitgliederdaten, Feedback, Push-Abonnements und Inhalte aus dem Mitgliederbereich** werden in unserem Supabase-Projekt in der Region **eu-central-2** gespeichert und primär verarbeitet (siehe Abschnitt 11).
+**Mitgliederdaten, Feedback und Inhalte aus dem Mitgliederbereich** werden in unserem Supabase-Projekt in der Region **eu-central-2** gespeichert und primär verarbeitet (siehe Abschnitt 11).
 
-Andere eingesetzte Dienste — insbesondere **GitHub Pages**, **jsDelivr** und **Push-Dienste der Browser-Hersteller** (Abschnitt 13) — können Daten auch außerhalb der Europäischen Union verarbeiten.
+Andere eingesetzte Dienste — insbesondere **GitHub Pages** und **jsDelivr** (Abschnitt 4) — können Daten auch außerhalb der Europäischen Union verarbeiten.
 
 Die Übermittlung erfolgt — soweit erforderlich — auf Grundlage geeigneter Garantien gemäß Art. 46 DSGVO (z. B. Standardvertragsklauseln der Anbieter).
 
@@ -170,9 +170,9 @@ Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an erreichba
 
 ---
 
-## 11. Backend-Dienst Supabase (Mitgliederbereich, Inhalte, Push)
+## 11. Backend-Dienst Supabase (Mitgliederbereich, Inhalte, Tröte)
 
-Für den Mitgliederbereich, die Speicherung von Vereinsinhalten (News, Termine, Galerie), Mitgliederdaten, Feedback/Abstimmungen und Push-Abonnements nutzen wir **Supabase** als technischen Dienstleister.
+Für den Mitgliederbereich, die Speicherung von Vereinsinhalten (News, Termine, Galerie), Mitgliederdaten und Feedback/Abstimmungen nutzen wir **Supabase** als technischen Dienstleister.
 
 Anbieter:
 
@@ -198,15 +198,13 @@ Beim Aufruf von Seiten mit Mitgliederfunktionen oder beim Speichern von Inhalten
 - Vereins-News, Termine und Galerie-Bilder (inkl. Metadaten und Mediendateien)
 - Mitgliederstammdaten (siehe Abschnitt 12)
 - Feedback und Abstimmungen (siehe Abschnitt 12.6)
-- Push-Abonnements (siehe Abschnitt 13)
-- Push-Verlauf (`PushMessages`) für die Anzeige auf der Website
-- technischer Website-Zustand (z. B. letzte Push-Mitteilung für die Anzeige auf der Startseite)
+- letzte Mitteilung für die **Tröte** auf der Startseite (`site_state.last_push`, siehe Abschnitt 13)
 
 Rechtsgrundlagen:
 
 - Art. 6 Abs. 1 lit. b DSGVO — Bereitstellung des Mitgliederbereichs und Vereinskommunikation
 - Art. 6 Abs. 1 lit. f DSGVO — sicherer Betrieb der Website und Inhaltsverwaltung durch den Vorstand
-- Art. 6 Abs. 1 lit. a DSGVO — soweit eine Einwilligung erforderlich ist (Push, gesonderte Einwilligungen)
+- Art. 6 Abs. 1 lit. a DSGVO — soweit eine Einwilligung erforderlich ist (gesonderte Einwilligungen auf der Profilseite)
 
 Weitere Informationen: [Supabase Privacy Policy](https://supabase.com/privacy)
 
@@ -247,9 +245,9 @@ Dies können insbesondere sein:
 - Rolle (z. B. **Mitglied**, **Vorstand** oder **public** — externer Teilnehmer)
 - Datenschutz-Einwilligungen (siehe Abschnitt 12.3; nur bei Vereinsmitgliedern)
 
-**Rolle „public“:** Es wird eine **eingeschränkte Profilansicht** angezeigt (Name, E-Mail, Telefon, Logout, **Account löschen**). Push-Mitteilungen und Datenschutz-Einwilligungen auf der Profilseite stehen externen Teilnehmern nicht zur Verfügung.
+**Rolle „public“:** Es wird eine **eingeschränkte Profilansicht** angezeigt (Name, E-Mail, Telefon, Logout, **Account löschen**). Datenschutz-Einwilligungen auf der Profilseite stehen externen Teilnehmern nicht zur Verfügung.
 
-Der Vorstand kann Mitgliederdaten zur Vereinsverwaltung pflegen (Anlegen, Bearbeiten). **Löschen** entfernt personenbezogene Daten (**Anonymisierung**); technische IDs und anonyme Abstimmungen bleiben für Auswertungen erhalten. Push-Abonnements werden entfernt.
+Der Vorstand kann Mitgliederdaten zur Vereinsverwaltung pflegen (Anlegen, Bearbeiten). **Löschen** entfernt personenbezogene Daten (**Anonymisierung**); technische IDs und anonyme Abstimmungen bleiben für Auswertungen erhalten.
 
 Rechtsgrundlagen:
 
@@ -297,7 +295,7 @@ Zweck:
 - Organisation von Vereinsveranstaltungen und Auswertung von Anmeldungen/Abstimmungen durch den Vorstand
 - optional späterer Login per Magic Link (siehe Abschnitt 12.1)
 
-Externe Teilnehmer sind **keine** Vereinsmitglieder: kein Zugang zu internen Inhalten, kein Admin-Bereich, keine Push-Bestellung.
+Externe Teilnehmer sind **keine** Vereinsmitglieder: kein Zugang zu internen Inhalten, kein Admin-Bereich.
 
 **Account löschen:** Auf der Profilseite kannst du deinen externen Account löschen. Dabei werden Name, E-Mail, Telefon und dein Login-Konto entfernt. Bereits abgegebene **Abstimmungen bleiben anonym gezählt** (ohne Zuordnung zu deinem Namen), damit Auswertungen wie Teilnehmerzahlen korrekt bleiben. Freitext-Kommentare in Abstimmungen werden gelöscht.
 
@@ -340,49 +338,19 @@ Rechtsgrundlagen:
 
 ---
 
-## 13. Service Worker und Push-Mitteilungen
+## 13. Tröte (Mitteilung auf der Startseite)
 
-### 13.1 Service Worker (nur für Push)
-
-Für **Web-Push** wird ein **Service Worker** (`sw.js`) registriert — **nur** wenn du auf der Profilseite Push aktivierst oder der Browser bereits ein Push-Abo für diese Website hat.
-
-Der Service Worker **cached keine Seiteninhalte**. Er dient ausschließlich dem Empfang und der Anzeige von Push-Mitteilungen.
-
-Es gibt **keine** installierbare App und **kein** „Zum Home-Bildschirm hinzufügen“ als offizielles Angebot. Die Website wird im **Browser** genutzt.
-
-Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (technisch erforderliche Funktion für Push).
-
-### 13.2 Push-Mitteilungen
-
-Push-Mitteilungen können von **Vereinsmitgliedern** (Rollen „Mitglied“ oder „Vorstand“) auf der **Profilseite** im **Browser** aktiviert werden, nachdem du dem **Benachrichtigungsdialog des Browsers** zugestimmt hast. Externe Teilnehmer (Rolle „public“) können Push nicht bestellen.
-
-**Hinweis auf der Website:** Der Vorstand kann Mitteilungen versenden. Der **Text der letzten Mitteilung** kann auf der Website angezeigt werden (auch ohne aktives Push-Abo). Die **Zustellung als Push** setzt die Aktivierung auf der Profilseite im Browser voraus.
+Der Vorstand kann im Admin-Bereich eine **kurze Mitteilung** veröffentlichen. Sie erscheint als **Tröte** auf der Website (Titel, Text, optional Link zum Weiterlesen).
 
 Verarbeitete Daten:
 
-- Push-Subscription (Endpoint, technische Schlüssel `p256dh` und `auth`)
-- Zuordnung zum Mitglied (`member_id`)
-- Gerätename und Browser-Informationen (User-Agent)
-- Inhalt der vom Vorstand versandten Mitteilungen (Titel, Text, optional Link)
+- Inhalt der Mitteilung (Titel, Text, optional Link, Zeitstempel)
+- technischer Speichereintrag in der Datenbank (`site_state.last_push`)
+- **lastSeenPush** im Local Storage deines Browsers — ob du die Mitteilung bereits geöffnet/gelesen markiert hast (siehe Abschnitt 14)
 
-Push-Nachrichten werden an **alle aktiven Abonnements** versendet — auch an den absendenden Vorstand, sofern dort Push aktiviert ist.
+Es werden **keine** Browser-Push-Benachrichtigungen versendet. Es ist **kein** Service Worker und **keine** Geräte-Registrierung nötig.
 
-Zur technischen Zustellung kann dein Browser Push-Dienste des jeweiligen Herstellers nutzen, z. B.:
-
-- **Google** (Firebase Cloud Messaging) bei Chromium-Browsern / Android
-- **Apple** bei Safari / iOS
-- **Mozilla** bei Firefox
-
-Dabei können Daten an diese Anbieter übermittelt werden. Welcher Dienst genutzt wird, hängt von Browser und Betriebssystem ab.
-
-Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO (Einwilligung über Browser-Dialog und aktive Aktivierung auf der Profilseite).
-
-Die Einwilligung kann jederzeit widerrufen werden:
-
-- über **Push abbestellen** auf der Profilseite, und/oder
-- über die Benachrichtigungseinstellungen des Geräts / Browsers
-
-Push-Daten werden gelöscht, sobald Push deaktiviert wird, das Abonnement ungültig ist oder das Mitglied gelöscht wird.
+Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (Information der Website-Besucher über aktuelle Vereinsmitteilungen).
 
 ---
 
@@ -399,7 +367,7 @@ Diese Website verwendet:
 Zur technischen Funktion können Informationen **lokal im Browser** gespeichert werden (Local Storage), insbesondere:
 
 - **Supabase Auth-Session** — damit du eingeloggt bleibst (Magic Link)
-- **lastSeenPush** — welche Push-Mitteilung auf der Website bereits als gelesen markiert wurde
+- **lastSeenPush** — ob die Tröte-Mitteilung auf der Website bereits als gelesen markiert wurde
 - **publicFeedbackReturnUrl** — Rückkehr-Adresse nach Magic Link bei externer Abstimmung (Session Storage, bis Tab geschlossen oder überschrieben)
 - **publicRegistrationPending** — vorübergehend Name/Telefon bis E-Mail bestätigt ist (Session Storage, bis Registrierung abgeschlossen oder Account gelöscht)
 
@@ -421,8 +389,7 @@ Es werden keine Cookies zu Werbe- oder Analysezwecken gesetzt.
 - **Externe Teilnehmer (Rolle „public“):** bis zur Löschung durch dich (Profil), den Vorstand oder auf Anfrage; nach Löschung nur noch anonyme technische ID ohne Personenbezug, soweit Abstimmungen ausgewertet werden.
 - **Feedback-Antworten:** für die Dauer des jeweiligen Termins/Anlasses und der Auswertung durch den Vorstand; bei Account-Löschung bleiben Antworten **anonym** erhalten (ohne Name/Kommentar), Löschung auf Anfrage möglich.
 - **Auth-Session:** bis zum Logout, Ablauf der Session oder Ungültigkeit des Login-Links.
-- **Push-Abonnements:** bis zur Deaktivierung, Ungültigkeit oder Löschung des Mitglieds.
-- **Push-Verlauf (`PushMessages`):** für die Anzeige auf der Website; technische Löschung durch den Vorstand bei Bedarf.
+- **Tröte (`site_state.last_push`):** bis der Vorstand eine neue Mitteilung veröffentlicht oder den Eintrag entfernt.
 - **Local Storage im Browser** (z. B. `lastSeenPush`) und **Session Storage** (z. B. `publicFeedbackReturnUrl`, `publicRegistrationPending`): bis du die Website-Daten im Browser löschst, der Tab geschlossen wird oder der Eintrag überschrieben wird.
 - **Server- und Verbindungslogs der Hosting-/Backend-Anbieter:** gemäß deren Richtlinien; auf diese Logs hat der Verein in der Regel keinen direkten Zugriff.
 

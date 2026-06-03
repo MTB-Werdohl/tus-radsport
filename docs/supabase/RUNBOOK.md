@@ -10,12 +10,11 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 | 1 | [`supabase-members-auth.sql`](../supabase-members-auth.sql) | Tabelle `members` | RLS Basis, `check_member_email()` |
 | 2 | [`supabase-vorstand-roles.sql`](../supabase-vorstand-roles.sql) | #1 | `is_vorstand()`, Vorstand-Schreibrechte, Zwischen-News-SELECT |
 | 3 | [`supabase-content-visibility.sql`](../supabase-content-visibility.sql) | #2 | `is_member()`, `sichtbarkeit`, finale News/Termine-SELECT |
-| 4 | [`supabase-members-admin.sql`](../supabase-members-admin.sql) | #2 | Vorstand CRUD auf `members`, Push-Löschen |
-| 5 | [`supabase-push-members.sql`](../supabase-push-members.sql) | #2 | Push RLS, eigene Subscriptions lesen |
+| 4 | [`supabase-members-admin.sql`](../supabase-members-admin.sql) | #2 | Vorstand CRUD auf `members` |
 
 **Optional (Mehrtages-Termine):** [`supabase-termine-multiday.sql`](../supabase-termine-multiday.sql) — Spalten `endDate`, `durationDays` auf `Termine`.
 
-**Push-Verlauf:** [`supabase-push-messages.sql`](../supabase-push-messages.sql) — Tabelle `PushMessages` + RLS (nach #2). Edge Function `send-push` danach **neu deployen**.
+**Tröte (Web Push entfernt):** [`supabase-drop-web-push.sql`](../supabase-drop-web-push.sql) — löscht `PushMessages` und `PushSubscriptions`; **Tröte** bleibt in `site_state.last_push`. Edge Functions `send-push`, `save-push-subscription`, `delete-push-subscription` im Dashboard optional löschen.
 
 **Feedback:** [`supabase-feedback.sql`](../supabase-feedback.sql) — `feedback_modules` + `feedback_answers` (nach #2). Polymorphe `entity_type`/`entity_id` **ohne FK**; Poll-Antworten speichern `option_id` in `answer`.
 
@@ -31,29 +30,22 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Mitglieder anonymisieren:** [`supabase-members-anonymize.sql`](../supabase-members-anonymize.sql) — Account-Löschung entfernt personenbezogene Daten, `member_id` und `feedback_answers` bleiben; Edge Function `anonymize-member-account` löscht zusätzlich `auth.users`.
 
+**Mitglieder letzter Login:** [`supabase-members-last-login.sql`](../supabase-members-last-login.sql) — Spalte `last_login_at`, RPC `touch_member_last_login()` beim Magic-Link-Login; einmaliges Backfill aus `auth.users`.
+
 **Rolle „public“ (externe Teilnehmer):** [`supabase-members-public-role.sql`](../supabase-members-public-role.sql) — `is_member()` ohne public, RPC `submit_public_feedback` / `get_public_feedback_answer`.
 
 **Falls Abstimmung fehlschlägt mit „no unique or exclusion constraint“:** [`supabase-feedback-answers-unique-fix.sql`](../supabase-feedback-answers-unique-fix.sql) — stellt `UNIQUE (module_id, member_id)` wieder her (nach alter public-voting-Migration).
 
 **Wichtig:** Schritt 3 ersetzt die News-SELECT-Policy aus Schritt 2. Ohne Schritt 3 gelten News-Leserechte noch über `published`, nicht `sichtbarkeit`.
 
-### Einmalig (Push Upsert)
+### Einmalig (Tröte / Web Push entfernen)
 
-```sql
-ALTER TABLE "PushSubscriptions"
-  ADD CONSTRAINT push_subscriptions_endpoint_unique
-  UNIQUE (endpoint);
-```
-
-Nur ausführen, wenn der Constraint noch fehlt (Edge Function `save-push-subscription` nutzt `onConflict: 'endpoint'`).
+Nach Frontend-Deploy: [`supabase-drop-web-push.sql`](../supabase-drop-web-push.sql) ausführen.
 
 ## Edge Functions
 
 | Funktion | Referenz / Verhalten |
 |----------|----------------------|
-| `save-push-subscription` | [`supabase-edge-save-push-subscription.ts`](../supabase-edge-save-push-subscription.ts) — JWT des Mitglieds, Service Role Upsert |
-| `delete-push-subscription` | Analog zu save — JWT, Endpoint löschen |
-| `send-push` | [`supabase-edge-send-push.ts`](../supabase-edge-send-push.ts) — JWT + Vorstand-Check, Push senden, **Verlauf in `PushMessages` + `site_state`** (Service Role) |
 | `anonymize-member-account` | [`supabase-edge-anonymize-member-account.ts`](../supabase-edge-anonymize-member-account.ts) — **Edge Function deployen, nicht SQL!** JWT; Self (public) oder Vorstand `{ member_id }`; ruft `anonymize_member()` + löscht Auth-User |
 
 ### Edge Function `anonymize-member-account` deployen
@@ -91,18 +83,16 @@ Falscher Slug (404): alte Test-Function im Dashboard löschen.
 | `News` / `Termine` | SELECT `sichtbarkeit=public` | + `members` + alle `public` | + alle Zeilen + CRUD |
 | `members` | — | SELECT/UPDATE eigene Zeile | SELECT alle + CRUD alle |
 | `galleries` / `gallery_images` | SELECT | SELECT | CRUD |
-| `PushSubscriptions` | — | SELECT eigene (`member_id`) | SELECT alle, DELETE (Mitglied löschen) |
-| `PushMessages` | SELECT | SELECT | INSERT |
 | `feedback_modules` | SELECT | SELECT | ALL |
 | `feedback_answers` | — | SELECT/INSERT/UPDATE eigene | SELECT alle + (später Auswertung) |
-| `site_state` | SELECT `last_push` | SELECT `last_push` | ALL |
+| `site_state` | SELECT `last_push` | SELECT `last_push` | ALL (Tröte) |
 | `storage.objects` (media) | SELECT | SELECT | INSERT, DELETE |
 
-Schreibzugriffe auf Push-Subscriptions für Mitglieder laufen über Edge Functions (Service Role), nicht über Client-RLS.
+Schreibzugriffe auf `site_state` (`last_push`) für die Tröte: Vorstand direkt per Client (RLS).
 
 ## Upgrade vs. Neuinstallation
 
-- **Neu:** Skripte 0→5 der Reihe nach.
+- **Neu:** Skripte 0→4 der Reihe nach.
 - **Bereits live:** Einzelne Skripte erneut ausführen ist idempotent (`drop policy if exists` …).
 - **`is_vorstand()` / `is_member()`:** nutzen `SET row_security = off` — bei Problemen mit Admin-Listen erneut [`supabase-vorstand-roles.sql`](../supabase-vorstand-roles.sql) bzw. [`supabase-content-visibility.sql`](../supabase-content-visibility.sql) ausführen.
 

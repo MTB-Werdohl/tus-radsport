@@ -1,7 +1,5 @@
 const PUSH_SEEN_STORAGE_KEY = 'lastSeenPush';
 
-const PUSH_HISTORY_LIMIT = 15;
-
 function escapePushHtml(value) {
 
   if (value === null || value === undefined) {
@@ -16,18 +14,17 @@ function escapePushHtml(value) {
 
 }
 
-function normalizePushMessage(row) {
+function normalizePushMessage(value) {
 
-  if (!row) {
+  if (!value) {
     return null;
   }
 
   return {
-    id: row.id,
-    title: row.title || '',
-    body: row.body || '',
-    url: row.url || '/',
-    sent_at: row.sent_at || ''
+    title: value.title || '',
+    body: value.body || '',
+    url: value.url || '/',
+    sent_at: value.sent_at || ''
   };
 
 }
@@ -113,48 +110,20 @@ function markPushSeen(pushOrSentAt) {
 
 }
 
-function markAllPushesSeen(messages) {
-
-  if (!messages?.length) {
-    return;
-  }
-
-  markPushSeen(messages[0]);
-
-}
-
-async function savePushMessage(
+async function saveLastPush(
   title,
   body,
   url
 ) {
 
-  const sentAt =
-    new Date().toISOString();
-
   const payload = {
     title,
     body,
     url: url || '/',
-    sent_at: sentAt
+    sent_at: new Date().toISOString()
   };
 
-  const { error: insertError } =
-    await window.supabaseClient
-      .from(
-        window.siteConfig.tables.pushMessages
-      )
-      .insert([payload]);
-
-  if (insertError) {
-
-    console.error(insertError);
-
-    return false;
-
-  }
-
-  const { error: stateError } =
+  const { error } =
     await window.supabaseClient
       .from(window.siteConfig.tables.siteState)
       .upsert(
@@ -166,9 +135,11 @@ async function savePushMessage(
         { onConflict: 'key' }
       );
 
-  if (stateError) {
+  if (error) {
 
-    console.error(stateError);
+    console.error(error);
+
+    return false;
 
   }
 
@@ -180,24 +151,6 @@ async function getLastPush() {
 
   const { data, error } =
     await window.supabaseClient
-      .from(
-        window.siteConfig.tables.pushMessages
-      )
-      .select('id, title, body, url, sent_at')
-      .order('sent_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-  if (!error && data) {
-    return normalizePushMessage(data);
-  }
-
-  if (error) {
-    console.error(error);
-  }
-
-  const { data: legacy, error: legacyError } =
-    await window.supabaseClient
       .from(window.siteConfig.tables.siteState)
       .select('value')
       .eq(
@@ -206,82 +159,14 @@ async function getLastPush() {
       )
       .maybeSingle();
 
-  if (legacyError) {
+  if (error) {
 
-    console.error(legacyError);
+    console.error(error);
 
     return null;
 
   }
 
-  return normalizePushMessage(legacy?.value);
-
-}
-
-function dedupePushMessages(messages) {
-
-  const seen =
-    new Set();
-
-  return messages.filter((message) => {
-
-    const key = [
-      message.title,
-      message.body,
-      message.url || '/'
-    ].join('\0');
-
-    if (seen.has(key)) {
-      return false;
-    }
-
-    seen.add(key);
-
-    return true;
-
-  });
-
-}
-
-async function getPushMessages(
-  limit = PUSH_HISTORY_LIMIT
-) {
-
-  const { data, error } =
-    await window.supabaseClient
-      .from(
-        window.siteConfig.tables.pushMessages
-      )
-      .select('id, title, body, url, sent_at')
-      .order('sent_at', { ascending: false })
-      .limit(limit);
-
-  if (error) {
-
-    console.error(error);
-
-    return [];
-
-  }
-
-  return dedupePushMessages(
-    (data || [])
-      .map(normalizePushMessage)
-      .filter(Boolean)
-  );
-
-}
-
-async function saveLastPush(
-  title,
-  body,
-  url
-) {
-
-  return savePushMessage(
-    title,
-    body,
-    url
-  );
+  return normalizePushMessage(data?.value);
 
 }

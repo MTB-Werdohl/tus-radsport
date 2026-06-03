@@ -883,49 +883,6 @@ body.member-consent-modal-open {
   cursor: not-allowed;
 }
 
-.member-push-status {
-  margin: 0 0 12px;
-  font-size: 0.9375rem;
-}
-
-.member-push-status--yes {
-  color: #c8f7c8;
-}
-
-.member-push-unsupported {
-  margin: 0;
-  font-size: 0.875rem;
-  opacity: 0.9;
-}
-
-.member-push-details {
-  margin-bottom: 16px;
-}
-
-.member-push-btn {
-  padding: 10px 16px;
-  border-radius: 8px;
-  border: var(--border-soft);
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 0.9375rem;
-  background: rgba(255, 255, 255, 0.15);
-  color: var(--text-main);
-}
-
-.member-push-btn--active:hover {
-  background: rgba(255, 255, 255, 0.22);
-}
-
-.member-push-btn--cancel {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.member-push-btn:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
 .member-profile-actions {
   padding-top: 8px;
 }
@@ -1771,8 +1728,7 @@ margin-top:10px;
 
 }
 
-.push-widget-more,
-.push-widget-archive{
+.push-widget-more{
 
 display:inline-block;
 
@@ -1780,119 +1736,7 @@ font-weight:600;
 
 text-decoration:none;
 
-}
-
-.push-widget-more{
-
 color:inherit;
-
-}
-
-.push-widget-archive{
-
-font-size:0.875rem;
-
-color:#444;
-
-}
-
-.push-messages-intro,
-.push-messages-loading,
-.push-messages-empty {
-
-margin: 0 0 16px;
-
-color: var(--text-muted);
-
-line-height: 1.5;
-
-}
-
-.push-messages-list {
-
-display: flex;
-
-flex-direction: column;
-
-gap: 12px;
-
-}
-
-.push-message-card {
-
-background: rgba(34, 81, 180, 0.8);
-
-backdrop-filter: blur(8px);
-
-border: 1px solid rgba(255, 255, 255, 0.05);
-
-border-radius: 14px;
-
-padding: 10px 14px;
-
-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-
-}
-
-.push-message-card--unread {
-
-border-left: 4px solid #ed1c24;
-
-}
-
-.push-message-card a {
-
-display: block;
-
-text-decoration: none;
-
-color: #fff;
-
-}
-
-.push-message-card__static {
-
-cursor: default;
-
-}
-
-.push-message-card__title {
-
-margin: 0 0 8px;
-
-font-size: 1rem;
-
-line-height: 1.35;
-
-}
-
-.push-message-card__body {
-
-margin: 0 0 8px;
-
-line-height: 1.5;
-
-opacity: 0.95;
-
-}
-
-.push-message-card__meta {
-
-margin: 0;
-
-font-size: 0.875rem;
-
-opacity: 0.85;
-
-}
-
-.push-message-card__link {
-
-display: inline-block;
-
-margin-top: 8px;
-
-font-weight: 600;
 
 }
 

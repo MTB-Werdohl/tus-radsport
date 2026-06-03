@@ -125,8 +125,7 @@ SQL: [`docs/supabase-content-visibility.sql`](supabase-content-visibility.sql) �
 | `News` | Vereinsnachrichten |
 | `galleries` | Galerie-Metadaten |
 | `gallery_images` | Bilder pro Galerie |
-| `PushSubscriptions` | Web-Push-Endpunkte (verknüpft mit `members` über `member_id`) |
-| `site_state` | z. B. letzte Push-Nachricht (`last_push`) |
+| `site_state` | Tröte: letzte Mitteilung (`last_push`) |
 | `members` | Vereinsmitglieder (`rolle`, Profil, Einwilligungen) |
 | `feedback_modules` | Universelles Feedback (polymorph: `entity_type` + `entity_id`, kein FK) |
 | `feedback_answers` | Antworten pro Modul und Mitglied (`answer` = Code/`option_id`) |
@@ -137,28 +136,19 @@ SQL Feedback: [`supabase-feedback.sql`](supabase-feedback.sql)
 
 **Edge Functions** (URLs in `site-config.js` → `functionsUrl`):
 
-- `save-push-subscription` — JWT des Mitglieds (Referenz: `docs/supabase-edge-save-push-subscription.ts`)
-- `delete-push-subscription` — JWT des Mitglieds
-- `send-push` — JWT + Vorstand-Check serverseitig; Referenz: [`supabase-edge-send-push.ts`](supabase-edge-send-push.ts)
 - `anonymize-member-account` — Account-Löschung (public Self-Service / Vorstand); Referenz: [`supabase-edge-anonymize-member-account.ts`](supabase-edge-anonymize-member-account.ts), **Verify JWT OFF**
 
-## Web Push (Mitglieder)
+## Tröte (Startseite)
 
-Push-Aktivierung nur auf `/profil/` für eingeloggte Mitglieder (Magic Link).
+Der Vorstand veröffentlicht unter `/admin/push.html` eine Mitteilung. Gespeichert wird nur `site_state.last_push` (Titel, Text, optional Link, Zeitstempel). Die Tröte auf allen Seiten liest diesen Eintrag — **kein** Web Push, **kein** Service Worker.
 
 | Datei | Aufgabe |
 |-------|---------|
-| `push/subscribe.js` | Permission, `pushManager.subscribe`, ruft `saveSubscription` |
-| `push/save-subscription.js` | POST an Edge Function mit JWT + `member_id`, `device_name`, `user_agent` |
-| `push/push-subscription-service.js` | Profil-Status: Browser-Endpoint + DB-Abfrage |
-| `push/utils.js` | VAPID-Hilfe, `getDeviceName()` |
-| `push/widget.js` | Anzeige letzter Push (unabhängig von Aktivierung) |
-| `push/sw-register.js` | Registriert `sw.js` nur für Push (nicht site-weit) |
-| `sw.js` | Service Worker (Push-Empfang, kein Caching) |
+| `push/state.js` | Lesen/Schreiben `last_push`, Gelesen-Status (Local Storage) |
+| `push/widget.js` | Tröte-Widget im Layout |
+| `admin/js/push-admin.js` | Formular → `saveLastPush()` |
 
-Ablauf: Profil → „Push-Mitteilungen aktivieren“ → Upsert in `PushSubscriptions` nach `endpoint` (keine Duplikate).
-
-Supabase-Setup: [`docs/supabase-push-members.sql`](supabase-push-members.sql) · Edge Function: [`docs/supabase-edge-save-push-subscription.ts`](supabase-edge-save-push-subscription.ts)
+SQL: [`docs/supabase-drop-web-push.sql`](supabase-drop-web-push.sql) (entfernt alte Push-Tabellen nach Migration)
 
 ---
 
@@ -173,10 +163,10 @@ Supabase-Setup: [`docs/supabase-push-members.sql`](supabase-push-members.sql) ·
 
 Zentrale Datei: `assets/js/core/site-config.js`
 
-- Supabase-URL, Anon-Key, VAPID-Key
+- Supabase-URL, Anon-Key
 - `siteUrl`, `functionsUrl`
 - `tables`, `storage`, `functions`, `siteStateKeys`
-- Hilfsfunktion: `getFunctionUrl('sendPush')` usw.
+- Hilfsfunktion: `getFunctionUrl('anonymizeMemberAccount')` usw.
 
 Gemeinsame Datumsformatierung: `assets/js/core/dates.js`
 

@@ -67,9 +67,6 @@ async function loadGallery() {
   document.getElementById('title').value =
     data.title || '';
 
-  document.getElementById('slug').value =
-    data.slug || '';
-
   document.getElementById('event_date').value =
     formatDateInputValue(data.event_date);
 
@@ -176,7 +173,7 @@ form.addEventListener('submit', async (event) => {
     document.getElementById('title').value;
 
   const slug =
-    document.getElementById('slug').value;
+    buildAdminSlug(title);
 
   const eventDate =
     document.getElementById('event_date').value;

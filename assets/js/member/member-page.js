@@ -226,31 +226,17 @@ function setupConsentInfoDialogs() {
 }
 
 function bindMemberProfileEvents(
-  member,
-  pushState = {}
+  member
 ) {
 
-  async function refreshProfilePushState() {
+  async function refreshMemberProfile() {
 
     const currentMember =
       getCurrentMember();
 
-    const currentPushState =
-      await resolveMemberPushState(
-        currentMember
-      );
+    renderMemberProfile(currentMember);
 
-    renderMemberProfile(
-      currentMember,
-      currentPushState
-    );
-
-    bindMemberProfileEvents(
-      currentMember,
-      currentPushState
-    );
-
-    return currentPushState;
+    bindMemberProfileEvents(currentMember);
 
   }
 
@@ -375,7 +361,7 @@ function bindMemberProfileEvents(
 
             applyMemberUpdate(updated);
 
-            await refreshProfilePushState();
+            await refreshMemberProfile();
 
             showMemberToast(
               'Einwilligung gespeichert.',
@@ -400,148 +386,6 @@ function bindMemberProfileEvents(
       );
 
     });
-
-  const pushBtn =
-    document.getElementById(
-      'member-push-enable'
-    );
-
-  if (pushBtn) {
-
-    pushBtn.addEventListener(
-      'click',
-      async () => {
-
-        pushBtn.disabled = true;
-
-        try {
-
-          const result =
-            await subscribeUserToPush({
-              memberId: member.id
-            });
-
-          if (!result.ok) {
-
-            let message =
-              'Push konnte nicht bestellt werden.';
-
-            if (result.reason === 'permission_denied') {
-              message =
-                'Benachrichtigungen wurden nicht erlaubt.';
-            }
-
-            if (result.reason === 'unsupported') {
-              message =
-                'Push-Mitteilungen werden in diesem Browser nicht unterstützt.';
-            }
-
-            showMemberToast(
-              message,
-              'error'
-            );
-
-            pushBtn.disabled = false;
-
-            return;
-
-          }
-
-          await refreshProfilePushState();
-
-          showMemberToast(
-            'Push bestellt.',
-            'success',
-            3000
-          );
-
-        } catch (error) {
-
-          console.error(error);
-
-          showMemberToast(
-            'Push konnte nicht bestellt werden.',
-            'error'
-          );
-
-          pushBtn.disabled = false;
-
-        }
-
-      }
-    );
-
-  }
-
-  const pushDisableBtn =
-    document.getElementById(
-      'member-push-disable'
-    );
-
-  if (pushDisableBtn) {
-
-    pushDisableBtn.addEventListener(
-      'click',
-      async () => {
-
-        pushDisableBtn.disabled = true;
-
-        try {
-
-          const result =
-            await unsubscribeUserFromPush();
-
-          if (!result.ok) {
-
-            let message =
-              'Push konnte nicht abbestellt werden.';
-
-            if (result.reason === 'not_subscribed') {
-              message =
-                'Keine Push-Mitteilung aktiv.';
-            }
-
-            if (result.reason === 'unsupported') {
-              message =
-                'Push-Mitteilungen werden in diesem Browser nicht unterstützt.';
-            }
-
-            showMemberToast(
-              message,
-              'error'
-            );
-
-            pushDisableBtn.disabled = false;
-
-            return;
-
-          }
-
-          await refreshProfilePushState();
-
-          showMemberToast(
-            'Push abbestellt.',
-            'success',
-            3000
-          );
-
-        } catch (error) {
-
-          console.error(error);
-
-          showMemberToast(
-            'Push konnte nicht abbestellt werden.',
-            'error'
-          );
-
-          pushDisableBtn.disabled = false;
-
-        }
-
-      }
-    );
-
-  }
 
   const logoutBtn =
     document.getElementById(
@@ -665,18 +509,9 @@ async function loadMemberProfilePage() {
   document.title =
     `Mein Profil · MTB Werdohl`;
 
-  const pushState =
-    await resolveMemberPushState(member);
+  renderMemberProfile(member);
 
-  renderMemberProfile(
-    member,
-    pushState
-  );
-
-  bindMemberProfileEvents(
-    member,
-    pushState
-  );
+  bindMemberProfileEvents(member);
 
   setupConsentInfoDialogs();
 

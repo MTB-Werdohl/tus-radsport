@@ -30,12 +30,3 @@ create policy members_delete_vorstand
   for delete
   to authenticated
   using (public.is_vorstand());
-
--- Push-Abos vor dem Löschen eines Mitglieds entfernen
-drop policy if exists push_subscriptions_delete_vorstand on "PushSubscriptions";
-
-create policy push_subscriptions_delete_vorstand
-  on "PushSubscriptions"
-  for delete
-  to authenticated
-  using (public.is_vorstand());

@@ -3,21 +3,6 @@ document.addEventListener(
   initPushWidget
 );
 
-navigator
-  .serviceWorker
-  ?.addEventListener(
-    'message',
-    async (event) => {
-
-      if (event.data?.type !== 'PUSH_OPENED') {
-        return;
-      }
-
-      await initPushWidget();
-
-    }
-  );
-
 async function initPushWidget() {
 
   const widget =
@@ -30,11 +15,6 @@ async function initPushWidget() {
     document.getElementById('push-widget-toggle');
 
   if (!widget || !content) {
-    return;
-  }
-
-  if (window.location.pathname.startsWith('/mitteilungen')) {
-    widget.classList.add('hidden');
     return;
   }
 
@@ -115,22 +95,13 @@ function renderPush(target, push) {
 
   <p>${escapePushHtml(push.body)}</p>
 
-  <div class="push-widget-links">
-
   ${
     url
-      ? `<a class="push-widget-more" href="${escapePushHtml(url)}">Mehr erfahren</a>`
+      ? `<div class="push-widget-links">
+  <a class="push-widget-more" href="${escapePushHtml(url)}">Mehr erfahren</a>
+  </div>`
       : ''
   }
-
-  <a class="push-widget-archive"
-     href="/mitteilungen/">
-
-    ältere Mitteilungen
-
-  </a>
-
-  </div>
 
 </div>
 

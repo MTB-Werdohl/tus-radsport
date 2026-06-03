@@ -6,9 +6,6 @@ window.siteConfig = {
   supabaseAnonKey:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVheml6ZXN5dHJua25iZ3JuZ2dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwNDM2NDcsImV4cCI6MjA5NDYxOTY0N30.fLTAzJvNurXru8maAZYkD5MjgArZ3l_KRnVrb_ftR-o',
 
-  vapidPublicKey:
-    'BK1Qb1ac1BWx72ahU6lCrqJ0SUW9gWoTiREwX3KPbRlgkjpyvsedbHwfuYUI0oEpq2A_FT2RNLPYgJ9Cu9bvJSI',
-
   siteUrl:
     'https://www.mtb-werdohl.de',
 
@@ -20,8 +17,6 @@ window.siteConfig = {
     news: 'News',
     galleries: 'galleries',
     galleryImages: 'gallery_images',
-    pushSubscriptions: 'PushSubscriptions',
-    pushMessages: 'PushMessages',
     siteState: 'site_state',
     members: 'members',
     feedbackModules: 'feedback_modules',
@@ -50,9 +45,6 @@ window.siteConfig = {
   },
 
   functions: {
-    savePushSubscription: 'save-push-subscription',
-    deletePushSubscription: 'delete-push-subscription',
-    sendPush: 'send-push',
     anonymizeMemberAccount: 'anonymize-member-account'
   },
 
@@ -66,7 +58,7 @@ window.siteConfig = {
     draft: 'draft'
   },
 
-  adminJsVersion: '20260531'
+  adminJsVersion: '20260535'
 
 };
 

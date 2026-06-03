@@ -93,8 +93,11 @@ title: Termin bearbeiten
 
   <label class="admin-field">
     Kategorie
-    <input id="category"
-           placeholder="Kategorie">
+    <select id="category">
+      <option value="">
+        Kategorie wählen…
+      </option>
+    </select>
   </label>
 
   <label class="admin-field">
@@ -256,6 +259,7 @@ title: Termin bearbeiten
 
 </div>
 
+<script src="/assets/js/calendar/categories.js?v={{ site.admin_js_version }}"></script>
 <script src="/assets/js/core/termin-dates.js?v={{ site.admin_js_version }}"></script>
 <script src="/assets/js/feedback/feedback-types.js?v={{ site.admin_js_version }}"></script>
 <script src="/assets/js/feedback/feedback-service.js?v={{ site.admin_js_version }}"></script>

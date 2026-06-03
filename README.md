@@ -3,7 +3,7 @@
 Öffentliche Website der **Radsportabteilung des TuS Jahn Werdohl e.V.**  
 Live: [www.mtb-werdohl.de](https://www.mtb-werdohl.de)
 
-Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Push) über **Supabase**.
+Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Tröte) über **Supabase**.
 
 ---
 
@@ -17,7 +17,7 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Push
 | Kalender | FullCalendar (lokal unter `assets/js/fullcalendar/`) |
 | Markdown (Inhalte) | [marked](https://marked.js.org/) |
 | Lightbox | GLightbox |
-| Push | Service Worker (`sw.js`) nur bei Push-Aktivierung, Web Push + VAPID |
+| Tröte | Letzte Mitteilung auf der Startseite (`site_state.last_push`) |
 
 ---
 
@@ -39,12 +39,11 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Push
 │       ├── news/        # News-Liste & Detail
 │       ├── gallery/     # Galerie
 │       ├── member/      # Mitglieder-Login (Magic Link)
-│       └── push/        # Web-Push
+│       └── push/        # Tröte (state.js, widget.js)
 ├── *.md, *.html         # Öffentliche Seiten (Jekyll)
 ├── scripts/
 │   └── generate-pages.js   # OG-Seiten für WhatsApp (CI)
 ├── .github/workflows/   # Deploy-Pipeline
-├── sw.js                # Service Worker (nur Push, kein Seiten-Cache)
 └── docs/
     ├── README.md           # Doku-Index
     ├── ARCHITECTURE.md     # Datenfluss & Muster
@@ -80,11 +79,11 @@ Unter `/admin/` (nicht in der Hauptnavigation verlinkt; Footer-Link).
 - **News** — Tabelle `News` (`sichtbarkeit`)
 - **Galerien** — `galleries` + `gallery_images`
 - **Mitglieder** — `members` (CRUD, Rolle Vorstand/Mitglied)
-- **Push** — Edge Function `send-push` (Mitglieder-Abo nur auf `/profil/`)
+- **Tröte** — `site_state.last_push` (Admin: `/admin/push.html`)
 
 SQL-Reihenfolge und Policies: [`docs/supabase/RUNBOOK.md`](docs/supabase/RUNBOOK.md)
 
-Push-Setup: [`docs/supabase-push-members.sql`](docs/supabase-push-members.sql) · [`docs/supabase-edge-save-push-subscription.ts`](docs/supabase-edge-save-push-subscription.ts)
+Web-Push-Tabellen entfernen (nach Deploy): [`docs/supabase-drop-web-push.sql`](docs/supabase-drop-web-push.sql)
 
 Authentifizierung: Magic Link in der Website-Navigation. Nur `members.rolle = 'Vorstand'` erhält Zugriff auf `/admin/`. Ohne Vorstand-Session leitet `/admin/` still nach `/` um (keine separate Login-Seite).
 
@@ -100,8 +99,7 @@ Rollen & Sichtbarkeit: [`docs/supabase-vorstand-roles.sql`](docs/supabase-vorsta
 | `News` | Tabelle | News-Liste & Detail |
 | `galleries` | Tabelle | Galerie-Metadaten |
 | `gallery_images` | Tabelle | Bilder pro Galerie |
-| `PushSubscriptions` | Tabelle | Push-Empfänger (mit `member_id`, `device_name`, `user_agent`) |
-| `site_state` | Tabelle | z. B. letzte Push-Meldung |
+| `site_state` | Tabelle | Tröte: letzte Mitteilung (`last_push`) |
 | `members` | Tabelle | Vereinsmitglieder (`rolle`: Mitglied / Vorstand) |
 | `media` | Storage | Uploads (Bilder, GPX) |
 

@@ -246,75 +246,8 @@ function renderConsentBlock(
 
 }
 
-function renderMemberPushSection(pushState) {
-
-  if (!pushState?.supported) {
-
-    return `
-      <p class="member-push-unsupported">
-        Push-Mitteilungen werden in diesem Browser nicht unterstützt.
-      </p>
-    `;
-
-  }
-
-  if (pushState.active) {
-
-    return `
-      <p class="member-push-status member-push-status--yes">
-        ✓ Push aktiviert
-      </p>
-
-      <dl class="member-profile-list member-push-details">
-
-        <div class="member-profile-row">
-          <dt>Gerät</dt>
-          <dd>${formatMemberField(pushState.device_name)}</dd>
-        </div>
-
-        <div class="member-profile-row">
-          <dt>Registriert</dt>
-          <dd>${formatMemberPushDate(pushState.created_at)}</dd>
-        </div>
-
-      </dl>
-
-      <button
-        type="button"
-        id="member-push-disable"
-        class="member-push-btn member-push-btn--active member-push-btn--cancel"
-      >
-        Push abbestellen
-      </button>
-    `;
-
-  }
-
-  return `
-    <button
-      type="button"
-      id="member-push-enable"
-      class="member-push-btn member-push-btn--active"
-    >
-      Push bestellen
-    </button>
-  `;
-
-}
-
-function formatMemberPushDate(value) {
-
-  if (!value) {
-    return '—';
-  }
-
-  return formatDateLong(value);
-
-}
-
 function renderMemberProfile(
-  member,
-  pushState = {}
+  member
 ) {
 
   const container =
@@ -506,14 +439,6 @@ function renderMemberProfile(
   </p>
 
   ${renderConsentDialogs()}
-
-</section>
-
-<section class="member-profile-section-block">
-
-  <h2>Push-Mitteilungen</h2>
-
-  ${renderMemberPushSection(pushState)}
 
 </section>
 

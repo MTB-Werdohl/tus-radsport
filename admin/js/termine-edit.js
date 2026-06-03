@@ -72,8 +72,10 @@ async function loadEvent() {
   document.getElementById('location').value =
     data.location || '';
 
-  document.getElementById('category').value =
-    data.category || '';
+  populateTerminCategorySelect(
+    document.getElementById('category'),
+    data.category || ''
+  );
 
   document.getElementById('komoot').value =
     data.komoot || '';
@@ -522,6 +524,10 @@ document
 function initTerminEdit() {
 
   toggleRecurring();
+
+  populateTerminCategorySelect(
+    document.getElementById('category')
+  );
 
   window.adminUnsavedGuard =
     initAdminUnsavedGuard({

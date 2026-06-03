@@ -94,6 +94,45 @@ function normalizeMemberId(value) {
 
 }
 
+function buildAdminSlug(title) {
+
+  return String(title || '')
+    .trim()
+    .toLowerCase()
+    .replaceAll(' ', '-')
+    .replace(/[^\w-]+/g, '');
+
+}
+
+function formatMemberLastLogin(value) {
+
+  if (!value) {
+    return 'Noch nie';
+  }
+
+  const date =
+    new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return 'Noch nie';
+  }
+
+  return date.toLocaleString('de-DE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+
+}
+
+function memberHasLoggedIn(member) {
+
+  return !!member?.last_login_at;
+
+}
+
 function extractStoragePath(url) {
 
   const split =

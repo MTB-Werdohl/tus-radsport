@@ -6,7 +6,7 @@ Stand: Projekt MTB Werdohl. Spalten aus Code + Supabase; bei Abweichungen Dashbo
 
 | Spalte | Typ | Hinweis |
 |--------|-----|---------|
-| `id` | bigint PK | FK für `PushSubscriptions.member_id` |
+| `id` | bigint PK | FK für `feedback_answers.member_id` |
 | `mitgliedsnummer` | text | |
 | `vorname`, `nachname` | text | |
 | `abteilung` | text | |
@@ -20,6 +20,7 @@ Stand: Projekt MTB Werdohl. Spalten aus Code + Supabase; bei Abweichungen Dashbo
 | `einwilligung_bilder` | boolean | Profil: nur Erteilen |
 | `bilder_eingewilligt_am` | date | |
 | `anonymized_at` | timestamptz | gesetzt nach Account-Löschung; `id` bleibt für `feedback_answers` |
+| `last_login_at` | timestamptz | letzter erfolgreicher Magic-Link-Login (Admin: grün/rot) |
 
 ## `News`
 
@@ -42,28 +43,9 @@ Stand: Projekt MTB Werdohl. Spalten aus Code + Supabase; bei Abweichungen Dashbo
 
 Metadaten + `image_path` (öffentliche Storage-URL).
 
-## `PushSubscriptions`
-
-| Spalte | Hinweis |
-|--------|---------|
-| `endpoint` | UNIQUE (empfohlen) |
-| `member_id` | → `members.id` |
-| `p256dh`, `auth`, `active` | Web Push |
-| `device_name`, `user_agent` | Profil-Anzeige |
-
-## `PushMessages`
-
-| Spalte | Hinweis |
-|--------|---------|
-| `id` | bigint PK |
-| `title`, `body`, `url` | Mitteilungsinhalt |
-| `sent_at` | Zeitstempel (neueste zuerst) |
-
-Verlauf wird beim Senden **append-only** gespeichert (kein Löschen). Widget + `/mitteilungen/` lesen daraus.
-
 ## `site_state`
 
-Key-Value (JSONB), z. B. `last_push` für Push-Widget (Spiegel der letzten Mitteilung).
+Key-Value (JSONB). Für die **Tröte** auf der Startseite: `key = 'last_push'`, `value` = `{ title, body, url, sent_at }`. Nur eine aktuelle Mitteilung; Vorstand überschreibt beim Veröffentlichen.
 
 ## `feedback_modules` / `feedback_answers`
 

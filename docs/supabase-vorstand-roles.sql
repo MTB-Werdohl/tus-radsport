@@ -163,16 +163,6 @@ create policy site_state_write_vorstand
   for all
   to authenticated
   using (public.is_vorstand())
-  with check (public.is_vorstand());
-
--- PushSubscriptions: Vorstand sieht alle (Dashboard)
-drop policy if exists push_subscriptions_admin_select on "PushSubscriptions";
-drop policy if exists "PushSubscriptions Admin Select" on "PushSubscriptions";
-
-create policy push_subscriptions_admin_select
-  on "PushSubscriptions"
-  for select
-  to authenticated
   using (public.is_vorstand());
 
 -- Storage media: nur Vorstand hochladen/löschen

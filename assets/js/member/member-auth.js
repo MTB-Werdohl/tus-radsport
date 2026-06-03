@@ -352,6 +352,24 @@ async function validateMemberSession(
 
 }
 
+async function touchMemberLastLogin() {
+
+  const { error } =
+    await window.supabaseClient.rpc(
+      'touch_member_last_login'
+    );
+
+  if (error) {
+
+    console.warn(
+      'touch_member_last_login:',
+      error.message
+    );
+
+  }
+
+}
+
 async function recoverAuthSessionFromUrl() {
 
   if (!isAuthCallback()) {
@@ -750,6 +768,8 @@ async function initMemberAuth() {
           session,
           { strict: true }
         );
+
+        await touchMemberLastLogin();
 
         cleanAuthCallbackUrl();
 

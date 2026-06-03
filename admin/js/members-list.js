@@ -95,6 +95,8 @@ function renderMemberCard(item) {
       : `
           <div class="member-card-contact">
             ${telefon}, ${email}
+            · Login:
+            ${escapeAdminHtml(formatMemberLastLogin(item.last_login_at))}
           </div>
         `;
 
@@ -115,6 +117,26 @@ function renderMemberCard(item) {
         </div>
       `;
 
+  const loginActive =
+    !isAnonymized
+    && memberHasLoggedIn(item);
+
+  const loginDotClass =
+    loginActive
+      ? 'member-login-dot--active'
+      : 'member-login-dot--inactive';
+
+  const loginDot =
+    isAnonymized
+      ? ''
+      : `
+          <span
+            class="member-login-dot ${loginDotClass}"
+            title="${loginActive ? 'Hat sich angemeldet' : 'Noch nie angemeldet'}"
+            aria-hidden="true">
+          </span>
+        `;
+
   return `
     <div class="event-card member-list-card${isAnonymized ? ' member-list-card--anonymized' : ''}">
 
@@ -123,7 +145,7 @@ function renderMemberCard(item) {
         <div class="member-card-body">
 
           <div class="member-card-name">
-            ${name}${publicLabel}${anonymizedLabel}
+            ${loginDot}${name}${publicLabel}${anonymizedLabel}
           </div>
 
           ${contactLine}

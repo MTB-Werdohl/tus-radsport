@@ -35,9 +35,6 @@ async function loadNews() {
   document.getElementById('title').value =
     data.title || '';
 
-  document.getElementById('slug').value =
-    data.slug || '';
-
   document.getElementById('excerpt').value =
     data.excerpt || '';
 
@@ -76,11 +73,6 @@ async function saveNews() {
       .getElementById('title')
       .value;
 
-  const slugInput =
-    document
-      .getElementById('slug')
-      .value;
-
   const excerpt =
     document
       .getElementById('excerpt')
@@ -105,12 +97,7 @@ async function saveNews() {
       .files[0];
 
   const slug =
-    slugInput && slugInput !== ''
-      ? slugInput
-      : title
-          .toLowerCase()
-          .replaceAll(' ', '-')
-          .replace(/[^\w-]+/g, '');
+    buildAdminSlug(title);
 
   let image = null;
 
