@@ -47,6 +47,10 @@ create table if not exists public.strava_connections (
   refresh_token text not null,
   token_expires_at timestamptz,
   last_sync_at timestamptz,
+  sync_status text not null default 'pending',
+  sync_error_message text,
+  imported_activity_count integer not null default 0,
+  initial_sync_completed_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint strava_connections_athlete_unique
@@ -364,8 +368,9 @@ as $$
 declare
   v_member_id bigint;
   v_member public.members;
-  v_last_sync timestamptz;
+  v_conn public.strava_connections;
   v_connected boolean;
+  v_activity_count integer;
 begin
   v_member_id :=
     public.strava_assert_club_member();
@@ -375,17 +380,18 @@ begin
   from public.members
   where id = v_member_id;
 
-  select last_sync_at
-  into v_last_sync
+  select *
+  into v_conn
   from public.strava_connections
   where member_id = v_member_id;
 
-  v_connected :=
-    exists (
-      select 1
-      from public.strava_connections sc
-      where sc.member_id = v_member_id
-    );
+  v_connected := v_conn.member_id is not null;
+
+  select count(*)::integer
+  into v_activity_count
+  from public.activities a
+  where a.member_id = v_member_id
+    and a.deleted_at is null;
 
   return jsonb_build_object(
     'connected', v_connected,
@@ -396,7 +402,21 @@ begin
         || coalesce(v_member.nachname, '')
       ),
     'connected_at', v_member.strava_connected_at,
-    'last_sync_at', v_last_sync,
+    'last_sync_at', v_conn.last_sync_at,
+    'imported_activity_count',
+      coalesce(
+        v_conn.imported_activity_count,
+        v_activity_count,
+        0
+      ),
+    'sync_status',
+      case
+        when not v_connected then null
+        else coalesce(v_conn.sync_status, 'pending')
+      end,
+    'sync_error_message', v_conn.sync_error_message,
+    'initial_sync_completed',
+      v_conn.initial_sync_completed_at is not null,
     'publish_feed', coalesce(v_member.publish_feed, false),
     'publish_rankings', coalesce(v_member.publish_rankings, false),
     'contribute_to_club_goals',
@@ -472,25 +492,9 @@ security definer
 set search_path = public
 set row_security = off
 as $$
-declare
-  v_member_id bigint;
 begin
-  v_member_id :=
-    public.strava_assert_club_member();
-
-  if not exists (
-    select 1
-    from public.strava_connections
-    where member_id = v_member_id
-  ) then
-    raise exception 'Bitte zuerst Strava verbinden.';
-  end if;
-
-  return jsonb_build_object(
-    'ok', false,
-    'message',
-      'Manuelle Synchronisation wird mit der Strava-Anbindung freigeschaltet.'
-  );
+  raise exception
+    'Synchronisation erfolgt automatisch. Bei Fehlern „Synchronisierung erneut versuchen“ im Profil nutzen.';
 end;
 $$;
 

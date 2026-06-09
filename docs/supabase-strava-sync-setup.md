@@ -3,28 +3,42 @@
 Voraussetzungen:
 
 - [`supabase-strava.sql`](supabase-strava.sql) ausgeführt
+- [`supabase-strava-sync-status.sql`](supabase-strava-sync-status.sql) ausgeführt *(Sync-Status-Spalten)*
 - OAuth deployt ([`supabase-strava-setup.md`](supabase-strava-setup.md))
 
-Eine Edge Function **`strava-sync`** übernimmt:
+## Betriebsmodell (wartungsfrei)
 
-| Anfrage | Auslöser | Verhalten |
-|---------|----------|-----------|
-| **GET** | Strava Webhook-Validierung | `hub.challenge` zurückgeben |
-| **POST** (ohne JWT) | Strava Webhook-Event | Aktivität importieren / soft-delete, Stats neu |
-| **POST** + JWT | Button „Jetzt synchronisieren“ | Aktivitäten der letzten ~400 Tage importieren |
+| Phase | Auslöser | Verhalten |
+|-------|----------|-----------|
+| **Erstverbindung** | OAuth-Callback | Initial-Import automatisch (`STRAVA_SYNC_DAYS`, Standard 400) |
+| **Laufend** | Strava-Webhooks | Einzelaktivität create/update/delete |
+| **Sicherheitsnetz** | Nächtlicher Cron | Reconcile letzte 30 Tage (`STRAVA_RECONCILE_DAYS`) |
+| **Fehlerfall** | Profil-Button | „Synchronisierung erneut versuchen“ (nur bei Fehler sichtbar) |
 
-Code: [`supabase-edge-strava-sync.ts`](supabase-edge-strava-sync.ts)
+Kein permanenter „Jetzt synchronisieren“-Button.
+
+Code: [`supabase-edge-strava-sync.ts`](supabase-edge-strava-sync.ts)  
+OAuth-Callback (Initial-Trigger): [`supabase-edge-strava-oauth-callback.ts`](supabase-edge-strava-oauth-callback.ts)
 
 ---
 
-## 1. Edge Function deployen
+## 1. SQL
 
-1. **Edge Functions** → **Deploy a new function**
-2. **Slug exakt:** `strava-sync`
-3. Code aus [`supabase-edge-strava-sync.ts`](supabase-edge-strava-sync.ts) einfügen → **Deploy**
-4. **Verify JWT:** **AUS**
+Im **SQL Editor** ausführen:
 
-Callback-URL (für Webhook):
+1. [`supabase-strava.sql`](supabase-strava.sql) *(falls noch nicht)*
+2. [`supabase-strava-sync-status.sql`](supabase-strava-sync-status.sql) *(neu: `sync_status`, `imported_activity_count`, …)*
+
+---
+
+## 2. Edge Functions deployen
+
+| Slug | Datei | Verify JWT |
+|------|-------|------------|
+| `strava-oauth-callback` | `supabase-edge-strava-oauth-callback.ts` | AUS |
+| `strava-sync` | `supabase-edge-strava-sync.ts` | AUS |
+
+Callback-URL (Webhook + Cron):
 
 ```text
 https://eazizesytrnknbgrnggj.supabase.co/functions/v1/strava-sync
@@ -32,24 +46,21 @@ https://eazizesytrnknbgrnggj.supabase.co/functions/v1/strava-sync
 
 ---
 
-## 2. Secrets
-
-**Dashboard → Edge Functions → Secrets** (zusätzlich zu OAuth):
+## 3. Secrets
 
 | Secret | Wert | Pflicht |
 |--------|------|---------|
-| `STRAVA_WEBHOOK_VERIFY_TOKEN` | Zufälliger langer String (z. B. 32+ Zeichen) | **Ja** (Webhook) |
-| `STRAVA_SYNC_DAYS` | Tage zurück für manuellen Import (Standard: `400`) | Nein |
+| `STRAVA_WEBHOOK_VERIFY_TOKEN` | Zufälliger String | Webhook |
+| `STRAVA_INTERNAL_SECRET` | Zufälliger String | Initial-Sync aus OAuth *(Fallback: Service-Role-Key)* |
+| `STRAVA_CRON_SECRET` | Zufälliger String | Nächtlicher Reconcile |
+| `STRAVA_SYNC_DAYS` | Initial-Import (Standard `400`) | Nein |
+| `STRAVA_RECONCILE_DAYS` | Nacht-Abgleich (Standard `30`) | Nein |
 
 Bereits vorhanden: `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `SITE_URL`.
 
 ---
 
-## 3. Webhook bei Strava anlegen (einmalig)
-
-**Vor dem POST:** Function deployen und `STRAVA_WEBHOOK_VERIFY_TOKEN` setzen.
-
-Strava sendet sofort eine **GET**-Validierung an die Callback-URL. Die Function antwortet mit `{"hub.challenge":"…"}`.
+## 4. Webhook bei Strava (einmalig)
 
 ```bash
 curl -X POST "https://www.strava.com/api/v3/push_subscriptions" \
@@ -59,47 +70,39 @@ curl -X POST "https://www.strava.com/api/v3/push_subscriptions" \
   -F verify_token=DEIN_STRAVA_WEBHOOK_VERIFY_TOKEN
 ```
 
-Erfolg: JSON mit `id` der Subscription.
+---
 
-**Fehler `not verifiable`:** Callback-URL muss per HTTPS erreichbar sein; Verify-Token muss exakt passen. Supabase-Edge-URLs sind in der Regel unkritisch.
+## 5. Nächtlicher Reconcile (Cron)
 
-Bestehende Subscription prüfen:
+Täglich z. B. **03:00 Uhr** — per externem Cron oder Supabase **pg_cron** + `pg_net`:
 
 ```bash
-curl -G "https://www.strava.com/api/v3/push_subscriptions" \
-  --data-urlencode "client_id=DEINE_CLIENT_ID" \
-  --data-urlencode "client_secret=DEIN_CLIENT_SECRET"
+curl -X POST "https://eazizesytrnknbgrnggj.supabase.co/functions/v1/strava-sync" \
+  -H "X-Strava-Cron-Secret: DEIN_STRAVA_CRON_SECRET"
 ```
 
----
-
-## 4. Manueller Sync (Profil)
-
-1. Mitglied → `/profil/` → Tab **Strava**
-2. **Jetzt synchronisieren** → POST an `strava-sync` mit JWT
-3. Importiert Aktivitäten (Standard: letzte 400 Tage, inkrementell danach) **im Hintergrund**
-4. Ruft `rebuild_member_stats` + `refresh_club_stats` auf
-5. Setzt `strava_connections.last_sync_at` — die Profilansicht aktualisiert sich nach Abschluss automatisch
-
-Nach dem Website-Deploy (JS-Update) nutzt der Button die Edge Function direkt — die RPC `request_strava_sync` ist obsolet.
+Prüft alle verbundenen Mitglieder (`sync_status` active/error) und gleicht die **letzten 30 Tage** ab.
 
 ---
 
-## 5. Webhook-Ereignisse
+## 6. Profil-UI
 
-Strava sendet bei `activity` + `create` / `update` / `delete`:
+Nach Verbindung zeigt der Strava-Tab automatisch:
 
-- **create/update:** Einzelaktivität von Strava laden → upsert in `activities`
-- **delete:** `deleted_at` setzen (Soft Delete)
-- Stats werden pro Event neu berechnet
+- Verbunden seit
+- Letzte Synchronisierung (Datum + Uhrzeit)
+- Importierte Aktivitäten (Anzahl)
+- Status: **✓ Aktiv** / Import läuft … / Fehler
 
-Nur Athleten mit Eintrag in `strava_connections` werden verarbeitet.
+Button **„Synchronisierung erneut versuchen“** nur bei `sync_status = error` (oder hängendem Initial-Import).
 
 ---
 
-## 6. Test
+## 7. Test
 
-Webhook-Validierung (lokal simuliert):
+1. Strava verbinden → Toast „Aktivitäten werden automatisch importiert …“
+2. Status wechselt: Import läuft … → ✓ Aktiv
+3. Webhook-Validierung:
 
 ```bash
 curl -G "https://eazizesytrnknbgrnggj.supabase.co/functions/v1/strava-sync" \
@@ -108,14 +111,10 @@ curl -G "https://eazizesytrnknbgrnggj.supabase.co/functions/v1/strava-sync" \
   --data-urlencode "hub.challenge=test123"
 ```
 
-Erwartung: `{"hub.challenge":"test123"}`
-
-Manueller Sync: Profil → Strava → **Jetzt synchronisieren** (nach Strava-Verbindung).
-
 ---
 
-## 7. Nächster Schritt
+## 8. Nächster Schritt
 
-Schritt 7–10: Öffentliches `/aktivitaeten/`-Portal (Feed, Detail, Rankings).
+Schritt 7–10: Öffentliches `/aktivitaeten/`-Portal.
 
 Siehe [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md).

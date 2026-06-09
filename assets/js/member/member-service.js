@@ -312,10 +312,7 @@ async function fetchMemberProfile() {
 
 function formatStravaDateTime(value) {
 
-  if (
-    !value
-    || typeof formatDateLong !== 'function'
-  ) {
+  if (!value) {
     return '—';
   }
 
@@ -326,9 +323,68 @@ function formatStravaDateTime(value) {
     return '—';
   }
 
-  return formatDateLong(
-    date.toISOString().slice(0, 10)
-  );
+  const datePart =
+    typeof formatDateLong === 'function'
+      ? formatDateLong(
+        date.toISOString().slice(0, 10)
+      )
+      : date.toLocaleDateString('de-DE');
+
+  const hours =
+    String(date.getHours())
+      .padStart(2, '0');
+
+  const minutes =
+    String(date.getMinutes())
+      .padStart(2, '0');
+
+  return `${datePart} ${hours}:${minutes}`;
+
+}
+
+function formatStravaStatusLabel(status) {
+
+  const syncStatus =
+    status?.syncStatus || '';
+
+  if (syncStatus === 'active') {
+    return '✓ Aktiv';
+  }
+
+  if (syncStatus === 'syncing') {
+    return 'Import läuft …';
+  }
+
+  if (syncStatus === 'error') {
+    return 'Fehler';
+  }
+
+  if (syncStatus === 'pending') {
+    return 'Wird vorbereitet …';
+  }
+
+  return '—';
+
+}
+
+function stravaNeedsRetry(status) {
+
+  if (!status?.connected) {
+    return false;
+  }
+
+  if (status.syncStatus === 'error') {
+    return true;
+  }
+
+  if (
+    !status.initialSyncCompleted
+    && status.syncStatus === 'pending'
+  ) {
+    return true;
+  }
+
+  return false;
 
 }
 
@@ -386,6 +442,13 @@ async function fetchStravaProfileStatus() {
         String(data.display_name || '').trim(),
       connectedAt: data.connected_at || null,
       lastSyncAt: data.last_sync_at || null,
+      importedActivityCount:
+        Number(data.imported_activity_count) || 0,
+      syncStatus: data.sync_status || null,
+      syncErrorMessage:
+        data.sync_error_message || null,
+      initialSyncCompleted:
+        data.initial_sync_completed === true,
       publishFeed: data.publish_feed === true,
       publishRankings: data.publish_rankings === true,
       contributeToClubGoals:
@@ -423,6 +486,13 @@ async function updateStravaVisibility(
       String(data.display_name || '').trim(),
     connectedAt: data.connected_at || null,
     lastSyncAt: data.last_sync_at || null,
+    importedActivityCount:
+      Number(data.imported_activity_count) || 0,
+    syncStatus: data.sync_status || null,
+    syncErrorMessage:
+      data.sync_error_message || null,
+    initialSyncCompleted:
+      data.initial_sync_completed === true,
     publishFeed: data.publish_feed === true,
     publishRankings: data.publish_rankings === true,
     contributeToClubGoals:
@@ -447,14 +517,15 @@ async function disconnectStravaAccount() {
 
 }
 
-async function requestStravaSync() {
+async function retryStravaSync() {
 
   const functionSlug =
     window.siteConfig.functions.stravaSync;
 
   const data =
     await callMemberEdgeFunction(
-      functionSlug
+      functionSlug,
+      { retry: true }
     );
 
   return {
@@ -464,12 +535,16 @@ async function requestStravaSync() {
       data?.message
       || (
         data?.ok
-          ? 'Synchronisation abgeschlossen.'
-          : 'Synchronisation fehlgeschlagen.'
-      ),
-    imported: data?.imported ?? null,
-    last_sync_at: data?.last_sync_at ?? null
+          ? 'Synchronisierung erneut gestartet.'
+          : 'Synchronisierung fehlgeschlagen.'
+      )
   };
+
+}
+
+async function requestStravaSync() {
+
+  return retryStravaSync();
 
 }
 
@@ -482,13 +557,15 @@ function sleep(ms) {
 }
 
 async function waitForStravaSyncCompletion(
-  previousLastSyncAt,
+  previousState,
   maxWaitMs = 120000
 ) {
 
   const startedAt = Date.now();
-  const previous =
-    previousLastSyncAt || null;
+  const previousSyncAt =
+    previousState?.lastSyncAt || null;
+  const wasCompleted =
+    previousState?.initialSyncCompleted === true;
 
   while (Date.now() - startedAt < maxWaitMs) {
 
@@ -497,16 +574,43 @@ async function waitForStravaSyncCompletion(
     const profile =
       await fetchStravaProfileStatus();
 
-    const lastSyncAt =
-      profile?.status?.lastSyncAt || null;
+    const status =
+      profile?.status || {};
+
+    if (status.syncStatus === 'error') {
+      return {
+        completed: false,
+        error:
+          status.syncErrorMessage
+          || 'Synchronisation fehlgeschlagen.'
+      };
+    }
 
     if (
-      lastSyncAt
-      && lastSyncAt !== previous
+      status.syncStatus === 'active'
+      && (
+        status.initialSyncCompleted
+        || (
+          status.lastSyncAt
+          && status.lastSyncAt !== previousSyncAt
+        )
+      )
     ) {
       return {
         completed: true,
-        lastSyncAt
+        status
+      };
+    }
+
+    if (
+      wasCompleted
+      && status.syncStatus === 'active'
+      && status.lastSyncAt
+      && status.lastSyncAt !== previousSyncAt
+    ) {
+      return {
+        completed: true,
+        status
       };
     }
 
@@ -514,7 +618,7 @@ async function waitForStravaSyncCompletion(
 
   return {
     completed: false,
-    lastSyncAt: null
+    status: null
   };
 
 }

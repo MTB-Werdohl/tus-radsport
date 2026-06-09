@@ -544,6 +544,24 @@ a:hover {
   color: #ffe0e0;
 }
 
+.member-strava-status--active {
+  color: #1b7f3a;
+  font-weight: 600;
+}
+
+.member-strava-status--error {
+  color: #ffb4b4;
+  font-weight: 600;
+}
+
+.member-strava-status--pending {
+  color: #ccc;
+}
+
+.member-strava-retry-btn {
+  margin-top: 0.75rem;
+}
+
 .member-strava-visibility-form {
   display: grid;
   gap: 14px;

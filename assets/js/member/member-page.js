@@ -62,9 +62,9 @@ function showStravaReturnNotice() {
   if (result === 'connected') {
 
     showMemberToast(
-      'Strava erfolgreich verbunden.',
+      'Strava verbunden. Aktivitäten werden automatisch importiert …',
       'success',
-      5000
+      6000
     );
 
   }
@@ -99,6 +99,52 @@ function showStravaReturnNotice() {
     {},
     '',
     `${window.location.pathname}`
+  );
+
+}
+
+async function maybePollInitialStravaSync(member) {
+
+  const status =
+    profileStravaState?.status;
+
+  if (
+    !status?.connected
+    || status.initialSyncCompleted
+  ) {
+    return;
+  }
+
+  if (
+    status.syncStatus !== 'syncing'
+    && status.syncStatus !== 'pending'
+  ) {
+    return;
+  }
+
+  const completion =
+    await waitForStravaSyncCompletion(status);
+
+  if (completion.completed) {
+
+    showMemberToast(
+      'Strava-Import abgeschlossen.',
+      'success',
+      5000
+    );
+
+  } else if (completion.error) {
+
+    showMemberToast(
+      completion.error,
+      'error',
+      6000
+    );
+
+  }
+
+  await reloadStravaProfileView(
+    getCurrentMember() || member
   );
 
 }
@@ -353,6 +399,13 @@ async function reloadStravaProfileView(
 
   setupConsentInfoDialogs();
 
+  if (
+    typeof isClubMember === 'function'
+    && isClubMember(member)
+  ) {
+    void maybePollInitialStravaSync(member);
+  }
+
 }
 
 function bindMemberProfileTabEvents() {
@@ -497,40 +550,39 @@ function bindStravaProfileEvents(
 
   }
 
-  const syncBtn =
+  const retrySyncBtn =
     document.getElementById(
-      'strava-sync-btn'
+      'strava-retry-sync-btn'
     );
 
-  if (syncBtn) {
+  if (retrySyncBtn) {
 
-    syncBtn.addEventListener(
+    retrySyncBtn.addEventListener(
       'click',
       async () => {
 
-        syncBtn.disabled = true;
+        retrySyncBtn.disabled = true;
 
         try {
 
-          const previousLastSyncAt =
-            profileStravaState?.status?.lastSyncAt
-            || null;
+          const previousState =
+            profileStravaState?.status || {};
 
           const result =
-            await requestStravaSync();
+            await retryStravaSync();
 
           showMemberToast(
             result?.message
-              || 'Synchronisation gestartet.',
+              || 'Synchronisierung gestartet.',
             result?.ok ? 'success' : 'error',
             5000
           );
 
-          if (result?.ok && result?.started) {
+          if (result?.ok) {
 
             const completion =
               await waitForStravaSyncCompletion(
-                previousLastSyncAt
+                previousState
               );
 
             if (completion.completed) {
@@ -539,19 +591,16 @@ function bindStravaProfileEvents(
                 'success',
                 5000
               );
-            } else {
+            } else if (completion.error) {
               showMemberToast(
-                'Synchronisation läuft noch. '
-                + 'Bitte in Kürze erneut prüfen.',
-                'success',
+                completion.error,
+                'error',
                 6000
               );
             }
 
             await reloadStravaProfileView(member);
 
-          } else if (result?.ok) {
-            await reloadStravaProfileView(member);
           }
 
         } catch (error) {
@@ -560,13 +609,13 @@ function bindStravaProfileEvents(
 
           showMemberToast(
             error.message
-              || 'Synchronisation fehlgeschlagen.',
+              || 'Synchronisierung fehlgeschlagen.',
             'error'
           );
 
         }
 
-        syncBtn.disabled = false;
+        retrySyncBtn.disabled = false;
 
       }
     );
@@ -1003,6 +1052,13 @@ async function loadMemberProfilePage() {
   setupConsentInfoDialogs();
 
   showLoginCallbackNotice(member);
+
+  if (
+    typeof isClubMember === 'function'
+    && isClubMember(member)
+  ) {
+    void maybePollInitialStravaSync(member);
+  }
 
 }
 

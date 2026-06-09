@@ -478,33 +478,82 @@ function renderStravaProfilePanel(
 
   }
 
-  const displayName =
-    status.displayName
-    || 'Unbekannt';
+  const needsRetry =
+    stravaNeedsRetry(status);
+
+  const statusLabel =
+    formatStravaStatusLabel(status);
+
+  const statusClass =
+    status.syncStatus === 'active'
+      ? 'member-strava-status--active'
+      : (
+        status.syncStatus === 'error'
+          ? 'member-strava-status--error'
+          : 'member-strava-status--pending'
+      );
+
+  const activityCount =
+    Number(status.importedActivityCount) || 0;
 
   return `
 <section class="member-profile-section-block">
 
-  <h2>Verbindung</h2>
+  <h2>Strava verbunden</h2>
 
   <dl class="member-profile-list">
 
     <div class="member-profile-row">
-      <dt>Verbunden mit</dt>
-      <dd>${escapeMemberHtml(displayName)}</dd>
-    </div>
-
-    <div class="member-profile-row">
-      <dt>Seit</dt>
+      <dt>Verbunden seit</dt>
       <dd>${escapeMemberHtml(formatStravaDateTime(status.connectedAt))}</dd>
     </div>
 
     <div class="member-profile-row">
-      <dt>Letzte Synchronisation</dt>
+      <dt>Letzte Synchronisierung</dt>
       <dd>${escapeMemberHtml(formatStravaDateTime(status.lastSyncAt))}</dd>
     </div>
 
+    <div class="member-profile-row">
+      <dt>Importierte Aktivitäten</dt>
+      <dd>${escapeMemberHtml(String(activityCount))}</dd>
+    </div>
+
+    <div class="member-profile-row">
+      <dt>Status</dt>
+      <dd class="member-strava-status ${statusClass}">
+        ${escapeMemberHtml(statusLabel)}
+      </dd>
+    </div>
+
   </dl>
+
+  ${
+    status.syncErrorMessage
+    && status.syncStatus === 'error'
+      ? `<p class="member-strava-hint member-strava-hint--error">
+          ${escapeMemberHtml(status.syncErrorMessage)}
+        </p>`
+      : ''
+  }
+
+  ${
+    needsRetry
+      ? `<button
+          type="button"
+          id="strava-retry-sync-btn"
+          class="member-save-btn member-strava-retry-btn">
+          Synchronisierung erneut versuchen
+        </button>`
+      : ''
+  }
+
+  ${
+    status.syncStatus === 'syncing'
+      ? `<p class="member-strava-hint">
+          Deine Strava-Aktivitäten werden importiert. Das kann einige Minuten dauern.
+        </p>`
+      : ''
+  }
 
 </section>
 
@@ -553,26 +602,6 @@ function renderStravaProfilePanel(
     <p id="strava-visibility-status" class="member-save-status" hidden></p>
 
   </form>
-
-</section>
-
-<section class="member-profile-section-block">
-
-  <h2>Synchronisation</h2>
-
-  <p class="member-strava-hint">
-    Holt neue und geänderte Aktivitäten von Strava.
-    Änderungen in Strava werden so ins Portal übernommen.
-  </p>
-
-  <button
-    type="button"
-    id="strava-sync-btn"
-    class="member-save-btn">
-
-    Jetzt synchronisieren
-
-  </button>
 
 </section>
 

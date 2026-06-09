@@ -1,6 +1,6 @@
 // @ts-nocheck
 // Slug exakt: strava-sync — Verify JWT = AUS
-// Dashboard: gesamten Inhalt einfügen (docs/supabase-edge-strava-sync.ts)
+// Dashboard: docs/supabase-edge-strava-sync.ts
 
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
@@ -14,6 +14,7 @@ const corsHeaders = {
 };
 
 const DEFAULT_SYNC_DAYS = 400;
+const DEFAULT_RECONCILE_DAYS = 30;
 const TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000;
 const MAX_ACTIVITY_PAGES = 10;
 const ACTIVITIES_PER_PAGE = 200;
@@ -33,6 +34,42 @@ function jsonResponse(
       }
     }
   );
+
+}
+
+function getReconcileDays() {
+
+  const raw =
+    Number(Deno.env.get('STRAVA_RECONCILE_DAYS'));
+
+  if (
+    Number.isFinite(raw)
+    && raw > 0
+    && raw <= 365
+  ) {
+    return Math.floor(raw);
+  }
+
+  return DEFAULT_RECONCILE_DAYS;
+
+}
+
+function getInternalSecret() {
+
+  return (
+    Deno.env.get('STRAVA_INTERNAL_SECRET')
+    || Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+    || ''
+  ).trim();
+
+}
+
+function getCronSecret() {
+
+  return (
+    Deno.env.get('STRAVA_CRON_SECRET')
+    || ''
+  ).trim();
 
 }
 
@@ -319,31 +356,6 @@ async function rebuildStats(
 
 }
 
-async function updateLastSyncAt(
-  supabaseAdmin,
-  memberId
-) {
-
-  const nowIso =
-    new Date().toISOString();
-
-  const { error } =
-    await supabaseAdmin
-      .from('strava_connections')
-      .update({
-        last_sync_at: nowIso,
-        updated_at: nowIso
-      })
-      .eq('member_id', memberId);
-
-  if (error) {
-    throw error;
-  }
-
-  return nowIso;
-
-}
-
 async function fetchStravaActivitiesSince(
   accessToken,
   afterUnix
@@ -483,7 +495,8 @@ async function getConnectionByAthleteId(
 
 function computeSyncAfterUnix(
   connection,
-  syncDays
+  syncDays,
+  mode
 ) {
 
   const windowStart =
@@ -493,7 +506,11 @@ function computeSyncAfterUnix(
       / 1000
     );
 
-  if (!connection?.last_sync_at) {
+  if (
+    mode === 'reconcile'
+    || mode === 'initial'
+    || !connection?.last_sync_at
+  ) {
     return windowStart;
   }
 
@@ -510,13 +527,170 @@ function computeSyncAfterUnix(
 
 }
 
+async function countImportedActivities(
+  supabaseAdmin,
+  memberId
+) {
+
+  const { count, error } =
+    await supabaseAdmin
+      .from('activities')
+      .select('*', {
+        count: 'exact',
+        head: true
+      })
+      .eq('member_id', memberId)
+      .is('deleted_at', null);
+
+  if (error) {
+    throw error;
+  }
+
+  return count || 0;
+
+}
+
+async function setSyncStatus(
+  supabaseAdmin,
+  memberId,
+  status,
+  errorMessage
+) {
+
+  const { error } =
+    await supabaseAdmin
+      .from('strava_connections')
+      .update({
+        sync_status: status,
+        sync_error_message: errorMessage || null,
+        updated_at: new Date().toISOString()
+      })
+      .eq('member_id', memberId);
+
+  if (error) {
+    throw error;
+  }
+
+}
+
+async function completeSyncSuccess(
+  supabaseAdmin,
+  memberId,
+  mode
+) {
+
+  const activityCount =
+    await countImportedActivities(
+      supabaseAdmin,
+      memberId
+    );
+
+  const nowIso =
+    new Date().toISOString();
+
+  const update = {
+    sync_status: 'active',
+    sync_error_message: null,
+    imported_activity_count: activityCount,
+    last_sync_at: nowIso,
+    updated_at: nowIso
+  };
+
+  if (mode === 'initial' || mode === 'retry') {
+    update.initial_sync_completed_at = nowIso;
+  }
+
+  const { error } =
+    await supabaseAdmin
+      .from('strava_connections')
+      .update(update)
+      .eq('member_id', memberId);
+
+  if (error) {
+    throw error;
+  }
+
+  return {
+    imported: activityCount,
+    last_sync_at: nowIso
+  };
+
+}
+
+async function runMemberSyncJob(
+  memberId,
+  mode
+) {
+
+  const supabaseAdmin =
+    getServiceClient();
+
+  try {
+
+    await setSyncStatus(
+      supabaseAdmin,
+      memberId,
+      'syncing',
+      null
+    );
+
+    const connection =
+      await getConnectionByMemberId(
+        supabaseAdmin,
+        memberId
+      );
+
+    if (!connection) {
+      throw new Error(
+        'Strava-Verbindung nicht gefunden.'
+      );
+    }
+
+    await syncMemberActivities(
+      supabaseAdmin,
+      memberId,
+      connection,
+      mode
+    );
+
+    return await completeSyncSuccess(
+      supabaseAdmin,
+      memberId,
+      mode
+    );
+
+  } catch (error) {
+
+    console.error(
+      `Sync failed (${mode}) for member ${memberId}:`,
+      error
+    );
+
+    await setSyncStatus(
+      supabaseAdmin,
+      memberId,
+      'error',
+      error?.message
+      || 'Synchronisation fehlgeschlagen.'
+    );
+
+    throw error;
+
+  }
+
+}
+
 async function syncMemberActivities(
   supabaseAdmin,
   memberId,
-  connection
+  connection,
+  mode = 'initial'
 ) {
 
-  const syncDays = getSyncDays();
+  const syncDays =
+    mode === 'reconcile'
+      ? getReconcileDays()
+      : getSyncDays();
 
   const accessToken =
     await ensureValidAccessToken(
@@ -527,7 +701,8 @@ async function syncMemberActivities(
   const afterUnix =
     computeSyncAfterUnix(
       connection,
-      syncDays
+      syncDays,
+      mode
     );
 
   const activities =
@@ -536,8 +711,7 @@ async function syncMemberActivities(
       afterUnix
     );
 
-  let imported = 0;
-  const rows = [];
+  let rows = [];
 
   for (const activity of activities) {
 
@@ -557,8 +731,6 @@ async function syncMemberActivities(
       rows
     );
 
-    imported = rows.length;
-
   }
 
   await rebuildStats(
@@ -566,15 +738,8 @@ async function syncMemberActivities(
     memberId
   );
 
-  const lastSyncAt =
-    await updateLastSyncAt(
-      supabaseAdmin,
-      memberId
-    );
-
   return {
-    imported,
-    last_sync_at: lastSyncAt
+    imported: rows.length
   };
 
 }
@@ -601,9 +766,10 @@ async function syncSingleActivity(
       memberId
     );
 
-    await updateLastSyncAt(
+    await completeSyncSuccess(
       supabaseAdmin,
-      memberId
+      memberId,
+      'reconcile'
     );
 
     return;
@@ -638,9 +804,10 @@ async function syncSingleActivity(
     memberId
   );
 
-  await updateLastSyncAt(
+  await completeSyncSuccess(
     supabaseAdmin,
-    memberId
+    memberId,
+    'reconcile'
   );
 
 }
@@ -796,11 +963,161 @@ async function handleWebhookEvent(event) {
 
   } catch (error) {
     console.error('Webhook sync failed:', error);
+
+    if (event?.owner_id) {
+
+      try {
+
+        const supabaseAdmin =
+          getServiceClient();
+
+        const connection =
+          await getConnectionByAthleteId(
+            supabaseAdmin,
+            Number(event.owner_id)
+          );
+
+        if (connection?.member_id) {
+
+          await setSyncStatus(
+            supabaseAdmin,
+            connection.member_id,
+            'error',
+            error?.message
+            || 'Webhook-Synchronisation fehlgeschlagen.'
+          );
+
+        }
+
+      } catch (statusError) {
+        console.error(statusError);
+      }
+
+    }
+
   }
 
 }
 
-async function handleManualSync(req) {
+async function handleInternalSync(req) {
+
+  const secret =
+    req.headers.get('X-Strava-Internal-Secret')
+    || '';
+
+  const expected =
+    getInternalSecret();
+
+  if (
+    !expected
+    || secret !== expected
+  ) {
+    return jsonResponse({ error: 'Forbidden' }, 403);
+  }
+
+  let body = {};
+
+  try {
+    body = await req.json();
+  } catch (_error) {
+    return jsonResponse({ error: 'Invalid JSON' }, 400);
+  }
+
+  const memberId =
+    Number(body?.member_id);
+
+  const mode =
+    String(body?.mode || 'initial');
+
+  if (
+    !Number.isFinite(memberId)
+    || memberId <= 0
+  ) {
+    return jsonResponse({ error: 'Invalid member_id' }, 400);
+  }
+
+  const waitUntil =
+    globalThis.EdgeRuntime?.waitUntil
+    || ((_promise) => {});
+
+  waitUntil(
+    runMemberSyncJob(memberId, mode)
+  );
+
+  return jsonResponse({
+    ok: true,
+    started: true
+  });
+
+}
+
+async function handleNightlyReconcile(req) {
+
+  const secret =
+    req.headers.get('X-Strava-Cron-Secret')
+    || '';
+
+  const expected =
+    getCronSecret();
+
+  if (
+    !expected
+    || secret !== expected
+  ) {
+    return jsonResponse({ error: 'Forbidden' }, 403);
+  }
+
+  const supabaseAdmin =
+    getServiceClient();
+
+  const { data: connections, error } =
+    await supabaseAdmin
+      .from('strava_connections')
+      .select('member_id')
+      .in('sync_status', ['active', 'error']);
+
+  if (error) {
+    return jsonResponse(
+      { error: error.message },
+      500
+    );
+  }
+
+  const members =
+    connections || [];
+
+  const waitUntil =
+    globalThis.EdgeRuntime?.waitUntil
+    || ((_promise) => {});
+
+  waitUntil(
+    (async () => {
+
+      for (const row of members) {
+
+        try {
+          await runMemberSyncJob(
+            row.member_id,
+            'reconcile'
+          );
+        } catch (_error) {
+          // Fehler bereits in runMemberSyncJob protokolliert
+        }
+
+      }
+
+    })()
+  );
+
+  return jsonResponse({
+    ok: true,
+    started: true,
+    members: members.length
+  });
+
+}
+
+async function handleUserRetrySync(req) {
 
   const authHeader =
     req.headers.get('Authorization');
@@ -893,43 +1210,30 @@ async function handleManualSync(req) {
     }, 400);
   }
 
+  if (connection.sync_status === 'syncing') {
+    return jsonResponse({
+      ok: true,
+      started: true,
+      message: 'Synchronisation läuft bereits.'
+    });
+  }
+
   const waitUntil =
     globalThis.EdgeRuntime?.waitUntil
     || ((_promise) => {});
 
   waitUntil(
-    (async () => {
-
-      try {
-
-        const freshConnection =
-          await getConnectionByMemberId(
-            supabaseAdmin,
-            member.id
-          );
-
-        if (!freshConnection) {
-          return;
-        }
-
-        await syncMemberActivities(
-          supabaseAdmin,
-          member.id,
-          freshConnection
-        );
-
-      } catch (error) {
-        console.error('Background sync failed:', error);
-      }
-
-    })()
+    runMemberSyncJob(
+      member.id,
+      'retry'
+    )
   );
 
   return jsonResponse({
     ok: true,
     started: true,
     message:
-      'Synchronisation gestartet. Das kann einen Moment dauern.'
+      'Synchronisierung erneut gestartet.'
   });
 
 }
@@ -948,11 +1252,25 @@ Deno.serve(async (req) => {
     return jsonResponse({ error: 'Method not allowed' }, 405);
   }
 
+  const cronSecret =
+    req.headers.get('X-Strava-Cron-Secret');
+
+  if (cronSecret) {
+    return handleNightlyReconcile(req);
+  }
+
+  const internalSecret =
+    req.headers.get('X-Strava-Internal-Secret');
+
+  if (internalSecret) {
+    return handleInternalSync(req);
+  }
+
   const authHeader =
     req.headers.get('Authorization');
 
   if (authHeader?.startsWith('Bearer ')) {
-    return handleManualSync(req);
+    return handleUserRetrySync(req);
   }
 
   let event = {};

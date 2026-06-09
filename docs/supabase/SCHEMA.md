@@ -37,6 +37,10 @@ Nur serverseitig (kein Client-SELECT). Tokens für OAuth.
 | `strava_athlete_id` | bigint UNIQUE | Strava Athlete (Admin/Debug) |
 | `access_token`, `refresh_token` | text | nur Edge Functions / definer |
 | `token_expires_at`, `last_sync_at` | timestamptz | |
+| `sync_status` | text | `pending` \| `syncing` \| `active` \| `error` |
+| `sync_error_message` | text | letzter Fehler (Profil) |
+| `imported_activity_count` | integer | Anzeige Profil |
+| `initial_sync_completed_at` | timestamptz | Erstimport abgeschlossen |
 | `created_at`, `updated_at` | timestamptz | |
 
 ## `activities`

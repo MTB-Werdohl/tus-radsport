@@ -3,13 +3,11 @@
 // NICHT im SQL Editor ausführen — TypeScript für Edge Function!
 //
 // Deploy:
-//   Supabase Dashboard → Edge Functions → Create function
-//   Slug exakt: strava-oauth-callback  (URL-Pfad, siehe site-config.js)
-//   Code: gesamten Inhalt dieser Datei einfügen → Deploy
+//   Supabase Dashboard → Edge Functions → strava-oauth-callback
+//   Slug exakt: strava-oauth-callback
+//   Verify JWT = AUS
 //
-// WICHTIG (Browser/CORS): Verify JWT = AUS
-//   Strava leitet den Browser per GET hierher (kein JWT im Redirect).
-//
+// Startet nach OAuth automatisch den Initial-Import (strava-sync).
 // Setup: docs/supabase-strava-setup.md
 // ============================================================================
 
@@ -179,6 +177,103 @@ async function exchangeStravaCode(code) {
 
 }
 
+async function triggerInitialSync(
+  supabaseAdmin,
+  memberId
+) {
+
+  const supabaseUrl =
+    (Deno.env.get('SUPABASE_URL') || '')
+      .replace(/\/$/, '');
+
+  const secret =
+    (
+      Deno.env.get('STRAVA_INTERNAL_SECRET')
+      || Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+      || ''
+    ).trim();
+
+  if (!supabaseUrl || !secret) {
+
+    await supabaseAdmin
+      .from('strava_connections')
+      .update({
+        sync_status: 'error',
+        sync_error_message:
+          'Initial-Import konnte nicht gestartet werden (Konfiguration).',
+        updated_at: new Date().toISOString()
+      })
+      .eq('member_id', memberId);
+
+    console.error(
+      'Initial sync: missing SUPABASE_URL or STRAVA_INTERNAL_SECRET.'
+    );
+
+    return;
+
+  }
+
+  try {
+
+    const response =
+      await fetch(
+        `${supabaseUrl}/functions/v1/strava-sync`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Strava-Internal-Secret': secret
+          },
+          body: JSON.stringify({
+            member_id: memberId,
+            mode: 'initial'
+          })
+        }
+      );
+
+    if (!response.ok) {
+
+      const payload =
+        await response.json().catch(() => ({}));
+
+      await supabaseAdmin
+        .from('strava_connections')
+        .update({
+          sync_status: 'error',
+          sync_error_message:
+            payload?.error
+            || 'Initial-Import konnte nicht gestartet werden.',
+          updated_at: new Date().toISOString()
+        })
+        .eq('member_id', memberId);
+
+      console.error(
+        'Initial sync trigger failed:',
+        payload?.error
+        || response.status
+      );
+
+    }
+
+  } catch (error) {
+
+    await supabaseAdmin
+      .from('strava_connections')
+      .update({
+        sync_status: 'error',
+        sync_error_message:
+          error?.message
+          || 'Initial-Import konnte nicht gestartet werden.',
+        updated_at: new Date().toISOString()
+      })
+      .eq('member_id', memberId);
+
+    console.error('Initial sync trigger failed:', error);
+
+  }
+
+}
+
 Deno.serve(async (req) => {
 
   if (req.method === 'OPTIONS') {
@@ -301,6 +396,11 @@ Deno.serve(async (req) => {
           access_token: accessToken,
           refresh_token: refreshToken,
           token_expires_at: tokenExpiresAt,
+          sync_status: 'syncing',
+          sync_error_message: null,
+          imported_activity_count: 0,
+          initial_sync_completed_at: null,
+          last_sync_at: null,
           updated_at: nowIso
         });
 
@@ -320,6 +420,21 @@ Deno.serve(async (req) => {
     if (memberError) {
       throw memberError;
     }
+
+    const waitUntil =
+      globalThis.EdgeRuntime?.waitUntil
+      || ((_promise) => {});
+
+    waitUntil(
+      (async () => {
+
+        await triggerInitialSync(
+          supabaseAdmin,
+          memberId
+        );
+
+      })()
+    );
 
     return redirectToProfile({
       strava: 'connected'
