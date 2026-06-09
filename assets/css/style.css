@@ -1739,16 +1739,6 @@ h2 { font-weight: 600; }
   text-decoration: underline;
 }
 
-.news-card {
-  margin-bottom: 2.5rem;
-  padding-bottom: 2rem;
-  border-bottom: 1px solid #e5e5e5;
-}
-
-.news-card:last-child {
-  border-bottom: none;
-}
-
 .news-body iframe {
   max-width: 100%;
   border: none;

@@ -3,7 +3,7 @@ layout: default
 title: "Login & Teilnahme"
 permalink: /mitglieder-hilfe/
 center_prose: true
-description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, Teilnahme an Terminen, Profil pflegen, externe Anmeldung."
+description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, Teilnahme an Terminen, Profil pflegen, privat ohne Strava, externe Anmeldung."
 ---
 
 <div class="about-page member-help-page">
@@ -92,6 +92,74 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
 </section>
 
 <section class="about-section">
+  <h2>Anmelden ohne Strava — privat im Aktivitätsportal</h2>
+  <p>
+    Unter <a href="{{ '/aktivitaeten/' | relative_url }}">Aktivitäten</a> können
+    Vereinsmitglieder freiwillig Ausfahrtsdaten teilen (Feed, Rankings, Vereinsziele).
+    <strong>Du musst dafür kein Strava-Konto verbinden.</strong> Wer sich nur normal
+    anmeldet und Strava ignoriert, erscheint dort <strong>nicht</strong> — ohne
+    weitere Einstellung.
+  </p>
+
+  <h3>So meldest du dich an (ohne Strava)</h3>
+  <ol class="help-steps">
+    <li>
+      Oben rechts auf <strong>„Mitglieder“</strong> klicken und deine
+      <strong>E-Mail-Adresse</strong> eingeben (vom Verein hinterlegt).
+    </li>
+    <li>
+      Den <strong>Login-Link</strong> aus der E-Mail im gleichen Browser öffnen.
+    </li>
+    <li>
+      Unter <a href="{{ '/profil/' | relative_url }}">Profil</a> findest du deine
+      Stammdaten. Den Tab <strong>Strava</strong> musst du <strong>nicht</strong>
+      öffnen — „Mit Strava verbinden“ ist optional.
+    </li>
+  </ol>
+  <p>
+    Damit kannst du interne Termine sehen, abstimmen und dein Profil pflegen —
+    <strong>ohne</strong> dass Ausfahrtsdaten öffentlich werden.
+  </p>
+
+  <h3>Privat bleiben, wenn Strava schon verbunden ist</h3>
+  <p>
+    Hast du Strava bereits verbunden, steuerst du die <strong>Sichtbarkeit</strong>
+    getrennt auf der Profilseite:
+  </p>
+  <ol class="help-steps">
+    <li>
+      <a href="{{ '/profil/' | relative_url }}">Profil</a> öffnen → Tab
+      <strong>Strava</strong>
+    </li>
+    <li>
+      Im Abschnitt <strong>„Sichtbarkeit“</strong> alle drei Häkchen
+      <strong>entfernen</strong>:
+      <ul>
+        <li>Im Aktivitätsfeed erscheinen</li>
+        <li>In Rankings erscheinen</li>
+        <li>Zu Vereinszielen beitragen</li>
+      </ul>
+    </li>
+    <li>
+      Auf <strong>„Sichtbarkeit speichern“</strong> klicken
+    </li>
+  </ol>
+  <p>
+    Deine importierten Aktivitäten bleiben intern gespeichert, solange Strava
+    verbunden ist — sie erscheinen aber <strong>nicht</strong> öffentlich. Für
+    vollständige Trennung: im selben Tab unten
+    <strong>„Verbindung trennen“</strong> — dann werden importierte Daten aus
+    dem Vereinsportal entfernt (in Strava selbst ändert sich nichts).
+  </p>
+  <p>
+    Details zum Datenschutz:
+    <a href="{{ '/datenschutz/' | relative_url }}#strava-aktivitaeten">
+      Datenschutzerklärung, Abschnitt 12.7
+    </a>
+  </p>
+</section>
+
+<section class="about-section">
   <h2>Profil aktuell halten</h2>
   <p>
     Unter <a href="{{ '/profil' | relative_url }}">Mein Profil</a> siehst du,
@@ -164,6 +232,7 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
   <h2>Kurz zusammengefasst</h2>
   <ul>
     <li><strong>Vereinsmitglied:</strong> E-Mail oben rechts → Link in der Mail → eingeloggt</li>
+    <li><strong>Ohne Strava:</strong> Strava-Tab ignorieren → nicht im Aktivitätsportal sichtbar</li>
     <li><strong>Teilnehmen:</strong> eingeloggt sein, dann am Termin/News abstimmen</li>
     <li><strong>Profil:</strong> Daten und Erreichbarkeit prüfen</li>
     <li><strong>Problem:</strong> falsche oder fehlende E-Mail → <a href="mailto:{{ site.contact.email }}"> kontaktieren</a></li>

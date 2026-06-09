@@ -26,7 +26,7 @@ Internet: https://www.tusjahnwerdohl.de
 
 Der Schutz personenbezogener Daten ist uns wichtig.
 
-Diese Website dient der Information über die Abteilung Radsport des TuS Jahn Werdohl e.V. Die Seiten werden als statische Website bereitgestellt. Für den **Mitgliederbereich**, die Verwaltung von Vereinsinhalten, **Feedback/Abstimmungen**, **externe Anmeldungen** (z. B. Trainingslager) und die **Tröte** (kurze Mitteilung auf der Startseite) nutzen wir zusätzlich einen Backend-Dienst (Supabase, siehe Abschnitt 11).
+Diese Website dient der Information über die Abteilung Radsport des TuS Jahn Werdohl e.V. Die Seiten werden als statische Website bereitgestellt. Für den **Mitgliederbereich**, die Verwaltung von Vereinsinhalten, **Feedback/Abstimmungen**, **externe Anmeldungen** (z. B. Trainingslager), die **Tröte** (kurze Mitteilung auf der Startseite) und optional das **öffentliche Aktivitätsportal** (Strava-Ausfahrten, nur mit Einwilligung der Mitglieder) nutzen wir zusätzlich einen Backend-Dienst (Supabase, siehe Abschnitt 11).
 
 Personenbezogene Daten werden nur verarbeitet, soweit dies für die Mitgliedschaft, die Nutzung des Mitgliederbereichs, eine Anmeldung zu Vereinsangeboten, eine Einwilligung oder eine gesetzliche Grundlage erforderlich ist.
 
@@ -199,6 +199,7 @@ Beim Aufruf von Seiten mit Mitgliederfunktionen oder beim Speichern von Inhalten
 - Vereins-News, Termine und Galerie-Bilder (inkl. Metadaten und Mediendateien)
 - Mitgliederstammdaten (siehe Abschnitt 12)
 - Feedback und Abstimmungen (siehe Abschnitt 12.6)
+- optional importierte Strava-Aktivitäten und Sichtbarkeits-Einstellungen (siehe Abschnitt 12.7)
 - letzte Mitteilung für die **Tröte** auf der Startseite (`site_state.last_push`, siehe Abschnitt 13)
 
 Rechtsgrundlagen:
@@ -344,6 +345,48 @@ Rechtsgrundlagen:
 - Art. 6 Abs. 1 lit. b DSGVO — Durchführung der Anmeldung/Abstimmung
 - Art. 6 Abs. 1 lit. f DSGVO — Organisation und Auswertung durch den Vorstand
 
+### 12.7 Strava-Anbindung und öffentliches Aktivitätsportal (optional) {#strava-aktivitaeten}
+
+Unter [mtb-werdohl.de/aktivitaeten/](https://www.mtb-werdohl.de/aktivitaeten/) können **freiwillig geteilte** Ausfahrtsdaten von Vereinsmitgliedern angezeigt werden (Feed, Rankings, Vereinsziele). **Ohne aktive Freigabe erscheinst du dort nicht.**
+
+Die Strava-Anbindung ist **freiwillig** und nur für **Vereinsmitglieder** (Rollen „Mitglied“ oder „Vorstand“) über **Mein Profil → Strava** möglich. **Mitglieder ohne Strava-Verbindung** werden im Aktivitätsportal nicht angezeigt; der normale Mitglieder-Login allein veröffentlicht keine Ausfahrtsdaten.
+
+**Verbindung herstellen:** Du wirst zu Strava weitergeleitet und erteilst dort die Freigabe. Anschließend werden Aktivitäten in unsere Datenbank importiert und bei Bedarf automatisch aktualisiert (Webhooks, Hintergrund-Synchronisation).
+
+**Verarbeitete Daten bei Verbindung:**
+
+- OAuth-Zugangsdaten (Access- und Refresh-Token, Ablaufzeit) — nur **serverseitig** gespeichert, nicht im Browser
+- technische Strava-Athlete-ID (Zuordnung zum Vereinsprofil)
+- importierte Aktivitätsdaten, insbesondere: Art der Aktivität, Bezeichnung, Startdatum/-zeit, Distanz, Fahrzeit, Höhenmeter, optional Streckenpolyline und Foto-URL
+- Zeitpunkte der Verbindung, letzten Synchronisation und Sichtbarkeits-Einstellungen (`publish_feed`, `publish_rankings`, `contribute_to_club_goals`)
+
+**Drittanbieter Strava:**
+
+Strava, Inc.  
+208 Utah Street  
+San Francisco, CA 94103  
+USA
+
+Beim Verbinden und bei der Synchronisation werden Daten an Strava-Server übermittelt bzw. von dort abgerufen. Weitere Informationen: [Strava Privacy Policy](https://www.strava.com/legal/privacy)
+
+**Öffentliche Anzeige — getrennte Freigaben, standardmäßig aus:**
+
+Auf der Profilseite kannst du **unabhängig voneinander** freigeben:
+
+- **Aktivitätsfeed** — öffentlich sichtbar, **letzte 90 Tage**, mit Vor- und Nachname
+- **Rankings** — eigene Statistiken in Monats- und Jahres-Rankings
+- **Vereinsziele** — Beitrag zu aggregierten Vereinsstatistiken
+
+Ohne gesetzte Häkchen bleiben importierte Aktivitäten **nicht öffentlich** sichtbar, werden aber gespeichert, solange die Strava-Verbindung besteht (für eine spätere Freigabe).
+
+**Verbindung trennen:** Beendet die Anbindung. Importierte Aktivitäten werden aus Feed, Rankings und Vereinszielen entfernt; OAuth-Tokens werden gelöscht. In deinem Strava-Konto selbst ändert sich nichts.
+
+Rechtsgrundlagen:
+
+- Art. 6 Abs. 1 lit. a DSGVO — freiwillige Strava-Verbindung und Sichtbarkeits-Freigaben
+- Art. 6 Abs. 1 lit. b DSGVO — Nutzung im Rahmen der Vereinsmitgliedschaft
+- Art. 6 Abs. 1 lit. f DSGVO — Betrieb des optionalen Aktivitätsportals
+
 ---
 
 ## 13. Tröte (Mitteilung auf der Startseite)
@@ -396,6 +439,8 @@ Es werden keine Cookies zu Werbe- oder Analysezwecken gesetzt.
 - **Mitgliederstammdaten (Mitglied / Vorstand):** für die Dauer der Mitgliedschaft; danach Löschung oder Einschränkung, soweit keine gesetzlichen Aufbewahrungspflichten entgegenstehen.
 - **Externe Teilnehmer (Rolle „public“):** bis zur Löschung durch dich (Profil), den Vorstand oder auf Anfrage; nach Löschung nur noch anonyme technische ID ohne Personenbezug, soweit Abstimmungen ausgewertet werden.
 - **Feedback-Antworten:** für die Dauer des jeweiligen Termins/Anlasses und der Auswertung durch den Vorstand; bei Account-Löschung bleiben Antworten **anonym** erhalten (ohne Name/Kommentar), Löschung auf Anfrage möglich.
+- **Strava-Verbindung und importierte Aktivitäten:** bis zur Trennung der Verbindung, Löschung des Mitgliedskontos oder auf Anfrage; OAuth-Tokens werden bei Trennung gelöscht.
+- **Öffentlich freigegebene Aktivitäten im Feed:** Anzeige höchstens **90 Tage** zurück; danach nicht mehr im Feed, ggf. weiter in Rankings oder Vereinszielen je nach gespeicherter Freigabe.
 - **Auth-Session:** bis zum Logout, Ablauf der Session oder Ungültigkeit des Login-Links.
 - **Tröte (`site_state.last_push`):** bis der Vorstand eine neue Mitteilung veröffentlicht oder den Eintrag entfernt.
 - **Local Storage im Browser** (z. B. `lastSeenPush`) und **Session Storage** (z. B. `publicFeedbackReturnUrl`, `publicRegistrationPending`): bis du die Website-Daten im Browser löschst, der Tab geschlossen wird oder der Eintrag überschrieben wird.

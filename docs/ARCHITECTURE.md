@@ -40,7 +40,7 @@ Beispiele: `about.md`, `training.md`, `kodex.md`
 | Kalender | `#calendar`, `#event-cards` | FullCalendar + `calendar/*` |
 | Termin-Detail | `#event`, `#event-feedback` | `event-service` → `event-render` → `event-page` + `feedback/*` |
 | News-Liste | `#news-cards` | `news-service` → `render-cards` → `news-page` |
-| News-Detail | `#news`, `#news-feedback` | `news-detail-service` → `news-detail-render` → `news-detail-page` + `feedback/*` |
+| News-Detail | `#news`, `#news-feedback` | `news-service` → `news-detail-render` → `news-detail-page` + `feedback/*` |
 | Galerie | `#gallery-grid` | `gallery-service` → `gallery-render` → `gallery-page` |
 | Galerie-Detail | `#gallery-images` | `gallery-service` → `gallery-render` → `gallery-detail-page` |
 
@@ -220,7 +220,7 @@ feedback-render.js              → UI je type; Gate für public_voting
 feedback-init.js                → initFeedbackModule({ entityType, entityId, container })
 ```
 
-Detail-Seiten rufen nur `initFeedbackModule()` auf — kein Feedback-Code in `event-service` / `news-detail-service`.
+Detail-Seiten rufen nur `initFeedbackModule()` auf — kein Feedback-Code in `event-service` / `news-service`.
 
 **Admin:** `admin/js/feedback-module-form.js` in Termin-/News-Bearbeitung (optional, zusammen mit Speichern). Schalter **Öffentliche Abstimmung** (`public_voting`). Auswertung: `admin/feedback.html`, `admin/feedback_results.html?module_id=…` (CSV-Export). Mitglieder-Löschung = Anonymisierung (`anonymize_member` + Edge Function).
 
