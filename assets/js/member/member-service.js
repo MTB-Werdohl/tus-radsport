@@ -449,16 +449,26 @@ async function disconnectStravaAccount() {
 
 async function requestStravaSync() {
 
-  const { data, error } =
-    await window.supabaseClient.rpc(
-      'request_strava_sync'
+  const functionSlug =
+    window.siteConfig.functions.stravaSync;
+
+  const data =
+    await callMemberEdgeFunction(
+      functionSlug
     );
 
-  if (error) {
-    throw error;
-  }
-
-  return data;
+  return {
+    ok: data?.ok === true,
+    message:
+      data?.message
+      || (
+        data?.ok
+          ? 'Synchronisation abgeschlossen.'
+          : 'Synchronisation fehlgeschlagen.'
+      ),
+    imported: data?.imported ?? null,
+    last_sync_at: data?.last_sync_at ?? null
+  };
 
 }
 

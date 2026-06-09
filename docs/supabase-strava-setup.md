@@ -89,6 +89,8 @@ Erwartung: **HTTP 200**, CORS-Header.
 
 ## 6. Nächster Schritt
 
-Schritt 5–6: Webhook + `strava-sync` (Button „Jetzt synchronisieren“).
+Schritt 5–6 (Sync + Webhook): [`supabase-strava-sync-setup.md`](supabase-strava-sync-setup.md)
+
+Danach Schritt 7–10: Öffentliches `/aktivitaeten/`-Portal (Feed, Detail, Rankings).
 
 Siehe [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md).
