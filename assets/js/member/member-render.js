@@ -250,11 +250,43 @@ function renderMemberProfileTabsNav(
   activeTab
 ) {
 
-  const profilActive =
-    activeTab !== 'strava';
+  const tabs = [
+    {
+      id: 'profil',
+      label: 'Profil'
+    },
+    {
+      id: 'aktivitaeten',
+      label: 'Meine Aktivitäten'
+    },
+    {
+      id: 'strava',
+      label: 'Strava'
+    }
+  ];
 
-  const stravaActive =
-    activeTab === 'strava';
+  const buttons =
+    tabs.map((tab) => {
+
+      const isActive =
+        activeTab === tab.id;
+
+      return `
+  <button
+    type="button"
+    class="member-profile-tab${isActive ? ' is-active' : ''}"
+    role="tab"
+    id="member-profile-tab-btn-${tab.id}"
+    aria-selected="${isActive ? 'true' : 'false'}"
+    aria-controls="member-profile-tab-${tab.id}"
+    data-profile-tab="${tab.id}">
+
+    ${tab.label}
+
+  </button>
+      `;
+
+    }).join('');
 
   return `
 <nav
@@ -262,33 +294,232 @@ function renderMemberProfileTabsNav(
   role="tablist"
   aria-label="Profilbereiche">
 
-  <button
-    type="button"
-    class="member-profile-tab${profilActive ? ' is-active' : ''}"
-    role="tab"
-    id="member-profile-tab-btn-profil"
-    aria-selected="${profilActive ? 'true' : 'false'}"
-    aria-controls="member-profile-tab-profil"
-    data-profile-tab="profil">
-
-    Profil
-
-  </button>
-
-  <button
-    type="button"
-    class="member-profile-tab${stravaActive ? ' is-active' : ''}"
-    role="tab"
-    id="member-profile-tab-btn-strava"
-    aria-selected="${stravaActive ? 'true' : 'false'}"
-    aria-controls="member-profile-tab-strava"
-    data-profile-tab="strava">
-
-    Strava
-
-  </button>
+  ${buttons}
 
 </nav>
+  `;
+
+}
+
+function renderMemberActivitiesPanelShell(
+  stravaState
+) {
+
+  const connected =
+    stravaState?.available
+    && stravaState?.status?.connected;
+
+  if (!connected) {
+
+    return `
+<section class="member-profile-section-block">
+
+  <h2>Meine Aktivitäten</h2>
+
+  <p class="member-strava-hint">
+    Hier siehst du deine importierten Strava-Touren — privat für dich,
+    unabhängig vom öffentlichen Aktivitätsportal.
+  </p>
+
+  <p class="member-strava-hint">
+    Verbinde zuerst Strava im Tab <strong>Strava</strong>, damit Touren
+    importiert werden können.
+  </p>
+
+</section>
+    `;
+
+  }
+
+  return `
+<section class="member-profile-section-block">
+
+  <h2>Meine Aktivitäten</h2>
+
+  <p class="member-strava-hint">
+    Alle importierten Touren — nur für dich sichtbar. Im öffentlichen Feed
+    erscheinen nur Touren der letzten 90 Tage, wenn du im Tab Strava
+    <strong>„Im Aktivitätsfeed erscheinen“</strong> aktiviert hast.
+  </p>
+
+  <div id="member-activities-list">
+    <p>Aktivitäten werden geladen …</p>
+  </div>
+
+</section>
+  `;
+
+}
+
+function renderMemberActivitiesList(
+  container,
+  payload
+) {
+
+  if (!container) {
+    return;
+  }
+
+  const activities =
+    payload?.activities || [];
+
+  const feedDays =
+    Number(payload?.feedDays) || 90;
+
+  if (!activities.length) {
+
+    container.innerHTML = `
+<p class="member-strava-hint">
+  Noch keine Aktivitäten importiert. Neue Touren erscheinen nach dem
+  nächsten Strava-Sync automatisch hier.
+</p>
+    `;
+
+    return;
+
+  }
+
+  const cards =
+    activities.map((activity) => {
+
+      const title =
+        activity.activity_name
+        || activity.activity_type
+        || 'Aktivität';
+
+      const inPublicFeed =
+        activity.in_public_feed === true;
+
+      const badge =
+        inPublicFeed
+          ? `<span class="member-activity-badge member-activity-badge--public">
+              Im Feed sichtbar
+            </span>`
+          : `<span class="member-activity-badge member-activity-badge--private">
+              Privat
+            </span>`;
+
+      const stats = `
+<dl class="aktivitaeten-stats">
+
+  <div>
+    <dt>Distanz</dt>
+    <dd>${escapeMemberHtml(
+      typeof formatActivityDistance === 'function'
+        ? formatActivityDistance(activity.distance_m)
+        : '—'
+    )}</dd>
+  </div>
+
+  <div>
+    <dt>Zeit</dt>
+    <dd>${escapeMemberHtml(
+      typeof formatActivityDuration === 'function'
+        ? formatActivityDuration(activity.moving_time_s)
+        : '—'
+    )}</dd>
+  </div>
+
+  <div>
+    <dt>Höhenmeter</dt>
+    <dd>${escapeMemberHtml(
+      typeof formatActivityElevation === 'function'
+        ? formatActivityElevation(activity.elevation_gain_m)
+        : '—'
+    )}</dd>
+  </div>
+
+</dl>
+      `;
+
+      if (
+        inPublicFeed
+        && typeof getActivityUrl === 'function'
+      ) {
+
+        const url =
+          getActivityUrl(activity.id);
+
+        return `
+<article class="aktivitaeten-card member-activity-card">
+
+  <a
+    class="aktivitaeten-card-link"
+    href="${escapeMemberHtml(url)}">
+
+    <div class="aktivitaeten-card-head">
+
+      <h3 class="aktivitaeten-card-title">
+        ${escapeMemberHtml(title)}
+      </h3>
+
+      <p class="aktivitaeten-card-meta">
+        ${escapeMemberHtml(
+          typeof formatActivityDateTime === 'function'
+            ? formatActivityDateTime(activity.start_date)
+            : '—'
+        )}
+        · ${badge}
+      </p>
+
+    </div>
+
+    ${stats}
+
+  </a>
+
+</article>
+        `;
+
+      }
+
+      return `
+<article class="aktivitaeten-card member-activity-card">
+
+  <div class="member-activity-card-inner">
+
+    <div class="aktivitaeten-card-head">
+
+      <h3 class="aktivitaeten-card-title">
+        ${escapeMemberHtml(title)}
+      </h3>
+
+      <p class="aktivitaeten-card-meta">
+        ${escapeMemberHtml(
+          typeof formatActivityDateTime === 'function'
+            ? formatActivityDateTime(activity.start_date)
+            : '—'
+        )}
+        · ${badge}
+      </p>
+
+    </div>
+
+    ${stats}
+
+  </div>
+
+</article>
+      `;
+
+    }).join('');
+
+  const feedHint =
+    payload?.publishFeed
+      ? `<p class="member-strava-hint member-activity-feed-hint">
+          Feed-Freigabe ist aktiv — Touren der letzten ${feedDays} Tage
+          können öffentlich sein (Badge „Im Feed sichtbar“).
+        </p>`
+      : `<p class="member-strava-hint member-activity-feed-hint">
+          Feed-Freigabe ist aus — alle Touren bleiben privat, auch wenn
+          Strava verbunden ist.
+        </p>`;
+
+  container.innerHTML = `
+${feedHint}
+<div class="member-activities-list">
+  ${cards}
+</div>
   `;
 
 }
@@ -767,9 +998,21 @@ ${renderMemberProfileTabsNav(activeTab)}
   role="tabpanel"
   aria-labelledby="member-profile-tab-btn-profil"
   data-profile-panel="profil"
-  ${activeTab === 'strava' ? 'hidden' : ''}>
+  ${activeTab !== 'profil' ? 'hidden' : ''}>
 
   ${renderClubMemberProfilContent(member)}
+
+</div>
+
+<div
+  id="member-profile-tab-aktivitaeten"
+  class="member-profile-tab-panel"
+  role="tabpanel"
+  aria-labelledby="member-profile-tab-btn-aktivitaeten"
+  data-profile-panel="aktivitaeten"
+  ${activeTab !== 'aktivitaeten' ? 'hidden' : ''}>
+
+  ${renderMemberActivitiesPanelShell(stravaState)}
 
 </div>
 

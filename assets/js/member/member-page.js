@@ -336,6 +336,60 @@ function setupConsentInfoDialogs() {
 
 let profileStravaState = null;
 let profileActiveTab = 'profil';
+let memberActivitiesLoaded = false;
+
+async function loadMemberActivitiesIfNeeded(
+  force = false
+) {
+
+  const container =
+    document.getElementById(
+      'member-activities-list'
+    );
+
+  if (!container) {
+    return;
+  }
+
+  if (
+    memberActivitiesLoaded
+    && !force
+  ) {
+    return;
+  }
+
+  container.innerHTML = `
+<p>Aktivitäten werden geladen …</p>
+  `;
+
+  try {
+
+    const payload =
+      await fetchMemberActivities();
+
+    memberActivitiesLoaded = true;
+
+    renderMemberActivitiesList(
+      container,
+      payload
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    container.innerHTML = `
+<p class="member-strava-hint member-strava-hint--error">
+  ${escapeMemberHtml(
+    error?.message
+    || 'Aktivitäten konnten nicht geladen werden.'
+  )}
+</p>
+    `;
+
+  }
+
+}
 
 function switchMemberProfileTab(
   tabId
@@ -371,6 +425,10 @@ function switchMemberProfileTab(
 
     });
 
+  if (tabId === 'aktivitaeten') {
+    void loadMemberActivitiesIfNeeded();
+  }
+
 }
 
 async function reloadStravaProfileView(
@@ -386,6 +444,8 @@ async function reloadStravaProfileView(
 
   profileStravaState =
     await fetchStravaProfileStatus();
+
+  memberActivitiesLoaded = false;
 
   renderMemberProfile(
     member,
@@ -404,6 +464,11 @@ async function reloadStravaProfileView(
     && isClubMember(member)
   ) {
     void maybePollInitialStravaSync(member);
+
+    if (profileActiveTab === 'aktivitaeten') {
+      void loadMemberActivitiesIfNeeded(true);
+    }
+
   }
 
 }
@@ -523,6 +588,8 @@ function bindStravaProfileEvents(
               'Sichtbarkeit gespeichert.';
             visibilityStatus.hidden = false;
           }
+
+          memberActivitiesLoaded = false;
 
           showMemberToast(
             'Sichtbarkeit gespeichert.',
@@ -1058,6 +1125,11 @@ async function loadMemberProfilePage() {
     && isClubMember(member)
   ) {
     void maybePollInitialStravaSync(member);
+
+    if (profileActiveTab === 'aktivitaeten') {
+      void loadMemberActivitiesIfNeeded(true);
+    }
+
   }
 
 }

@@ -75,6 +75,8 @@ Website: `/aktivitaeten/`, Navigation „Aktivitäten“, JS unter `assets/js/ak
 
 Mitglieder steuern Sichtbarkeit im Profil → Tab Strava (Feed / Rankings / Vereinsziele getrennt).
 
+**Profil — Meine Aktivitäten:** [`supabase-strava-member-activities.sql`](../supabase-strava-member-activities.sql) — RPC `get_member_activities(p_limit)` (nur `authenticated`, eigene importierte Touren inkl. Feed-Badge).
+
 ### Edge Function `anonymize-member-account` deployen
 
 1. Zuerst SQL: [`supabase-members-anonymize.sql`](../supabase-members-anonymize.sql) im **SQL Editor** ausführen.

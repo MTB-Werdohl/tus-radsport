@@ -162,8 +162,10 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
 <section class="about-section">
   <h2>Profil aktuell halten</h2>
   <p>
-    Unter <a href="{{ '/profil' | relative_url }}">Mein Profil</a> siehst du,
-    welche Daten der Verein für dich gespeichert hat. Bitte prüfe regelmäßig:
+    Unter <a href="{{ '/profil/' | relative_url }}">Mein Profil</a> siehst du,
+    welche Daten der Verein für dich gespeichert hat. Mit Strava-Verbindung
+    findest du importierte Touren im Tab <strong>Meine Aktivitäten</strong>.
+    Bitte prüfe regelmäßig:
   </p>
   <ul>
     <li>Telefonnummer und Adresse — erreichbar bleiben</li>

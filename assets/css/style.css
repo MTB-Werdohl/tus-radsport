@@ -502,6 +502,7 @@ a:hover {
 
 .member-profile-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
@@ -629,6 +630,45 @@ a:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.member-activities-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 1rem;
+}
+
+.member-activity-card {
+  margin: 0;
+}
+
+.member-activity-card-inner {
+  padding: 1.25rem 1.5rem;
+}
+
+.member-activity-feed-hint {
+  margin-bottom: 0;
+}
+
+.member-activity-badge {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.member-activity-badge--public {
+  background: rgba(76, 175, 80, 0.18);
+  color: #9be7a3;
+}
+
+.member-activity-badge--private {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.65);
 }
 
 .member-edit-form {

@@ -502,6 +502,56 @@ async function updateStravaVisibility(
 
 }
 
+async function fetchMemberActivities(
+  limit = 100
+) {
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'get_member_activities',
+      {
+        p_limit: limit
+      }
+    );
+
+  if (error) {
+
+    const message =
+      String(error.message || '');
+
+    if (
+      message.includes('Could not find the function')
+      || error.code === 'PGRST202'
+    ) {
+      throw new Error(
+        'Aktivitäten sind serverseitig noch nicht eingerichtet. '
+        + 'Im Supabase SQL Editor docs/supabase-strava-member-activities.sql ausführen.'
+      );
+    }
+
+    throw error;
+
+  }
+
+  const activities =
+    Array.isArray(data?.activities)
+      ? data.activities
+      : (
+        data?.activities
+        && typeof data.activities === 'object'
+          ? Object.values(data.activities)
+          : []
+      );
+
+  return {
+    publishFeed: data?.publish_feed === true,
+    feedDays:
+      Number(data?.feed_days) || 90,
+    activities
+  };
+
+}
+
 async function disconnectStravaAccount() {
 
   const { data, error } =

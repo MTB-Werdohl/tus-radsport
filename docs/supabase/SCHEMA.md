@@ -75,6 +75,17 @@ Voraggregierte Werte; Rankings/Feed lesen vorberechnete Daten. Vereinsziele: nur
 
 SQL: [`supabase-strava-public.sql`](../supabase-strava-public.sql)
 
+### Profil-RPCs (Mitglied)
+
+| RPC | Grant | Zweck |
+|-----|-------|--------|
+| `get_strava_profile_status()` | authenticated | Strava-Tab: Verbindung, Sync, Sichtbarkeits-Flags |
+| `update_strava_visibility(...)` | authenticated | Feed / Rankings / Vereinsziele |
+| `disconnect_strava()` | authenticated | Verbindung trennen |
+| `get_member_activities(p_limit)` | authenticated | Tab „Meine Aktivitäten“ — eigene Touren, Badge `in_public_feed` |
+
+SQL Profil-Aktivitäten: [`supabase-strava-member-activities.sql`](../supabase-strava-member-activities.sql)
+
 ## `News`
 
 | Spalte | Hinweis |
