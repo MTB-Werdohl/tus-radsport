@@ -86,6 +86,16 @@ window.getFunctionUrl = function (name) {
 
 };
 
+window.getActivityUrl = function (id) {
+
+  if (!id) {
+    return '/aktivitaeten/';
+  }
+
+  return `/aktivitaeten/${encodeURIComponent(id)}/`;
+
+};
+
 window.getEventUrl = function (slug) {
 
   if (!slug) {

@@ -58,7 +58,22 @@ Nach Frontend-Deploy: [`supabase-drop-web-push.sql`](../supabase-drop-web-push.s
 | `send-admin-email` | [`supabase-edge-send-admin-email.ts`](../supabase-edge-send-admin-email.ts) — Vorstand-E-Mails; Setup: [`supabase-admin-email-setup.md`](../supabase-admin-email-setup.md) |
 | `strava-oauth-start` | [`supabase-edge-strava-oauth-start.ts`](../supabase-edge-strava-oauth-start.ts) — POST + JWT; liefert Strava-Authorize-URL — Setup: [`supabase-strava-setup.md`](../supabase-strava-setup.md) |
 | `strava-oauth-callback` | [`supabase-edge-strava-oauth-callback.ts`](../supabase-edge-strava-oauth-callback.ts) — GET; Token-Austausch, speichert `strava_connections`, Redirect `/profil/?strava=connected` |
-| `strava-sync` | [`supabase-edge-strava-sync.ts`](../supabase-edge-strava-sync.ts) — Webhook + manueller Sync — Setup: [`supabase-strava-sync-setup.md`](../supabase-strava-sync-setup.md) |
+| `strava-sync` | [`supabase-edge-strava-sync.ts`](../supabase-edge-strava-sync.ts) — Webhook + Sync — Setup: [`supabase-strava-sync-setup.md`](../supabase-strava-sync-setup.md) |
+
+## Strava — Öffentliches Portal (Schritt 7–10)
+
+SQL: [`supabase-strava-public.sql`](../supabase-strava-public.sql) im **SQL Editor** ausführen.
+
+| RPC | Zweck |
+|-----|--------|
+| `get_public_activity_feed(p_days)` | Feed `/aktivitaeten/` — `publish_feed`, 90 Tage |
+| `get_public_activity_detail(uuid, p_days)` | Detail `/aktivitaeten/{uuid}/` |
+| `get_public_member_rankings(year, month?)` | Rankings — `publish_rankings` |
+| `get_public_club_stats(year, month?)` | Vereinsziele — `contribute_to_club_goals` |
+
+Website: `/aktivitaeten/`, Navigation „Aktivitäten“, JS unter `assets/js/aktivitaeten/`.
+
+Mitglieder steuern Sichtbarkeit im Profil → Tab Strava (Feed / Rankings / Vereinsziele getrennt).
 
 ### Edge Function `anonymize-member-account` deployen
 

@@ -56,6 +56,26 @@ layout: null
 
       }
 
+      const aktivitaetenMatch =
+        path.match(
+          /^\/aktivitaeten\/([^/]+)$/
+        );
+
+      if (aktivitaetenMatch) {
+
+        window.location.replace(
+          '/aktivitaeten-detail.html?id='
+          + encodeURIComponent(
+            decodeURIComponent(
+              aktivitaetenMatch[1]
+            )
+          )
+        );
+
+        return;
+
+      }
+
       window.location.replace('/');
 
     })();

@@ -214,8 +214,12 @@ set search_path = public
 set row_security = off
 as $$
 begin
-  delete from public.club_stats_month;
-  delete from public.club_stats_year;
+  -- Supabase blockiert DELETE ohne WHERE (safe delete)
+  delete from public.club_stats_month
+  where true;
+
+  delete from public.club_stats_year
+  where true;
 
   insert into public.club_stats_month (
     year,

@@ -2,6 +2,8 @@
     url: "/kalender"
   - title: "News"
     url: "/news"
+  - title: "Aktivitäten"
+    url: "/aktivitaeten"
   - title: "Über uns"
     url: "/about"
   - title: "Ausfahrt"

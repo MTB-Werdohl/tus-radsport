@@ -27,7 +27,8 @@ OAuth-Callback (Initial-Trigger): [`supabase-edge-strava-oauth-callback.ts`](sup
 Im **SQL Editor** ausführen:
 
 1. [`supabase-strava.sql`](supabase-strava.sql) *(falls noch nicht)*
-2. [`supabase-strava-sync-status.sql`](supabase-strava-sync-status.sql) *(neu: `sync_status`, `imported_activity_count`, …)*
+2. [`supabase-strava-sync-status.sql`](supabase-strava-sync-status.sql) *(Sync-Status-Spalten)*
+3. Bei Fehler **„DELETE requires a WHERE clause“**: [`supabase-strava-safe-delete-fix.sql`](supabase-strava-safe-delete-fix.sql)
 
 ---
 
@@ -115,6 +116,6 @@ curl -G "https://eazizesytrnknbgrnggj.supabase.co/functions/v1/strava-sync" \
 
 ## 8. Nächster Schritt
 
-Schritt 7–10: Öffentliches `/aktivitaeten/`-Portal.
+SQL: [`supabase-strava-public.sql`](supabase-strava-public.sql) → Website deployen → `/aktivitaeten/` testen.
 
 Siehe [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md).

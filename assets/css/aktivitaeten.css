@@ -1,0 +1,164 @@
+.aktivitaeten-hero {
+  max-width: 900px;
+  margin: 0 auto 1.5rem;
+  padding: 0 1rem;
+}
+
+.aktivitaeten-lead {
+  color: #ccc;
+  margin-top: 0.5rem;
+}
+
+#aktivitaeten-portal {
+  max-width: 900px;
+  margin: 0 auto 3rem;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.aktivitaeten-section {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+}
+
+.aktivitaeten-section h2 {
+  margin-top: 0;
+}
+
+.aktivitaeten-section h3 {
+  margin: 1.25rem 0 0.75rem;
+  font-size: 1.05rem;
+}
+
+.aktivitaeten-hint {
+  color: #bbb;
+  margin: 0.5rem 0 1rem;
+}
+
+.aktivitaeten-hint--error {
+  color: #ffb4b4;
+}
+
+.aktivitaeten-feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.aktivitaeten-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.aktivitaeten-card-link {
+  display: block;
+  padding: 1rem 1.1rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.aktivitaeten-card-link:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.aktivitaeten-card-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+}
+
+.aktivitaeten-card-meta,
+.aktivitaeten-detail-meta {
+  color: #bbb;
+  margin: 0;
+}
+
+.aktivitaeten-stats,
+.aktivitaeten-detail-stats,
+.aktivitaeten-club-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem 1rem;
+  margin: 0.85rem 0 0;
+}
+
+.aktivitaeten-detail-stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 1.25rem;
+}
+
+.aktivitaeten-club-stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.aktivitaeten-stats dt,
+.aktivitaeten-detail-stats dt,
+.aktivitaeten-club-stats dt {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #999;
+}
+
+.aktivitaeten-stats dd,
+.aktivitaeten-detail-stats dd,
+.aktivitaeten-club-stats dd {
+  margin: 0.15rem 0 0;
+  font-weight: 600;
+}
+
+.aktivitaeten-table-wrap {
+  overflow-x: auto;
+}
+
+.aktivitaeten-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.aktivitaeten-table th,
+.aktivitaeten-table td {
+  padding: 0.55rem 0.65rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: left;
+}
+
+.aktivitaeten-table th {
+  color: #aaa;
+  font-weight: 600;
+}
+
+.aktivitaeten-rank {
+  width: 2.5rem;
+  color: #ccc;
+}
+
+.aktivitaeten-club-block + .aktivitaeten-club-block {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.aktivitaeten-back a {
+  color: #ccc;
+}
+
+.aktivitaeten-detail h1 {
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 640px) {
+
+  .aktivitaeten-stats,
+  .aktivitaeten-detail-stats,
+  .aktivitaeten-club-stats {
+    grid-template-columns: 1fr;
+  }
+
+}

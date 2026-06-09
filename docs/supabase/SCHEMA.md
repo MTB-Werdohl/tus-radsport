@@ -64,6 +64,17 @@ Import aus Strava; UUID in URLs (`/aktivitaeten/{uuid}/`).
 
 Voraggregierte Werte; Rankings/Feed lesen vorberechnete Daten. Vereinsziele: nur Mitglieder mit `contribute_to_club_goals`.
 
+### Öffentliche RPCs (Schritt 7–10)
+
+| RPC | Grant | Filter |
+|-----|-------|--------|
+| `get_public_activity_feed(p_days)` | anon, authenticated | `publish_feed`, 90 Tage, nicht soft-deleted |
+| `get_public_activity_detail(uuid, p_days)` | anon, authenticated | wie Feed |
+| `get_public_member_rankings(year, month?)` | anon, authenticated | `publish_rankings` |
+| `get_public_club_stats(year, month?)` | anon, authenticated | nur `contribute_to_club_goals` in Stats |
+
+SQL: [`supabase-strava-public.sql`](../supabase-strava-public.sql)
+
 ## `News`
 
 | Spalte | Hinweis |
