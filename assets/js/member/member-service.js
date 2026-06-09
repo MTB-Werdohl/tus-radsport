@@ -459,6 +459,7 @@ async function requestStravaSync() {
 
   return {
     ok: data?.ok === true,
+    started: data?.started === true,
     message:
       data?.message
       || (
@@ -468,6 +469,52 @@ async function requestStravaSync() {
       ),
     imported: data?.imported ?? null,
     last_sync_at: data?.last_sync_at ?? null
+  };
+
+}
+
+function sleep(ms) {
+
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+
+}
+
+async function waitForStravaSyncCompletion(
+  previousLastSyncAt,
+  maxWaitMs = 120000
+) {
+
+  const startedAt = Date.now();
+  const previous =
+    previousLastSyncAt || null;
+
+  while (Date.now() - startedAt < maxWaitMs) {
+
+    await sleep(3000);
+
+    const profile =
+      await fetchStravaProfileStatus();
+
+    const lastSyncAt =
+      profile?.status?.lastSyncAt || null;
+
+    if (
+      lastSyncAt
+      && lastSyncAt !== previous
+    ) {
+      return {
+        completed: true,
+        lastSyncAt
+      };
+    }
+
+  }
+
+  return {
+    completed: false,
+    lastSyncAt: null
   };
 
 }
@@ -567,9 +614,20 @@ async function callMemberEdgeFunction(
   }
 
   throw new Error(
-    message
-    || invokeResult.error.message
-    || 'Server-Funktion fehlgeschlagen.'
+    (
+      typeof formatEdgeFunctionTransportError
+        === 'function'
+      && isEdgeFunctionTransportError(
+        message
+        || invokeResult.error.message
+      )
+    )
+      ? formatEdgeFunctionTransportError(functionSlug)
+      : (
+        message
+        || invokeResult.error.message
+        || 'Server-Funktion fehlgeschlagen.'
+      )
   );
 
 }

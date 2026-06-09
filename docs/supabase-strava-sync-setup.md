@@ -77,9 +77,9 @@ curl -G "https://www.strava.com/api/v3/push_subscriptions" \
 
 1. Mitglied → `/profil/` → Tab **Strava**
 2. **Jetzt synchronisieren** → POST an `strava-sync` mit JWT
-3. Importiert Aktivitäten (Standard: letzte 400 Tage, inkrementell danach)
+3. Importiert Aktivitäten (Standard: letzte 400 Tage, inkrementell danach) **im Hintergrund**
 4. Ruft `rebuild_member_stats` + `refresh_club_stats` auf
-5. Setzt `strava_connections.last_sync_at`
+5. Setzt `strava_connections.last_sync_at` — die Profilansicht aktualisiert sich nach Abschluss automatisch
 
 Nach dem Website-Deploy (JS-Update) nutzt der Button die Edge Function direkt — die RPC `request_strava_sync` ist obsolet.
 

@@ -249,21 +249,34 @@ function mapStravaActivityRow(
 
 }
 
-async function upsertActivityRow(
+async function upsertActivityRows(
   supabaseAdmin,
-  row
+  rows
 ) {
 
-  const { error } =
-    await supabaseAdmin
-      .from('activities')
-      .upsert(
-        row,
-        { onConflict: 'strava_activity_id' }
-      );
+  const batchSize = 50;
 
-  if (error) {
-    throw error;
+  for (
+    let index = 0;
+    index < rows.length;
+    index += batchSize
+  ) {
+
+    const batch =
+      rows.slice(index, index + batchSize);
+
+    const { error } =
+      await supabaseAdmin
+        .from('activities')
+        .upsert(
+          batch,
+          { onConflict: 'strava_activity_id' }
+        );
+
+    if (error) {
+      throw error;
+    }
+
   }
 
 }
@@ -536,21 +549,27 @@ async function syncMemberActivities(
     );
 
   let imported = 0;
+  const rows = [];
 
   for (const activity of activities) {
 
-    const row =
+    rows.push(
       mapStravaActivityRow(
         activity,
         memberId
-      );
-
-    await upsertActivityRow(
-      supabaseAdmin,
-      row
+      )
     );
 
-    imported += 1;
+  }
+
+  if (rows.length > 0) {
+
+    await upsertActivityRows(
+      supabaseAdmin,
+      rows
+    );
+
+    imported = rows.length;
 
   }
 
@@ -621,9 +640,9 @@ async function syncSingleActivity(
       memberId
     );
 
-  await upsertActivityRow(
+  await upsertActivityRows(
     supabaseAdmin,
-    row
+    [row]
   );
 
   await rebuildStats(
@@ -886,30 +905,43 @@ async function handleManualSync(req) {
     }, 400);
   }
 
-  const result =
-    await syncMemberActivities(
-      supabaseAdmin,
-      member.id,
-      connection
-    );
+  const waitUntil =
+    globalThis.EdgeRuntime?.waitUntil
+    || ((_promise) => {});
 
-  const count =
-    result.imported;
+  waitUntil(
+    (async () => {
 
-  const message =
-    count === 0
-      ? 'Keine neuen Aktivitäten im Sync-Zeitraum.'
-      : (
-        count === 1
-          ? '1 Aktivität synchronisiert.'
-          : `${count} Aktivitäten synchronisiert.`
-      );
+      try {
+
+        const freshConnection =
+          await getConnectionByMemberId(
+            supabaseAdmin,
+            member.id
+          );
+
+        if (!freshConnection) {
+          return;
+        }
+
+        await syncMemberActivities(
+          supabaseAdmin,
+          member.id,
+          freshConnection
+        );
+
+      } catch (error) {
+        console.error('Background sync failed:', error);
+      }
+
+    })()
+  );
 
   return jsonResponse({
     ok: true,
-    message,
-    imported: count,
-    last_sync_at: result.last_sync_at
+    started: true,
+    message:
+      'Synchronisation gestartet. Das kann einen Moment dauern.'
   });
 
 }

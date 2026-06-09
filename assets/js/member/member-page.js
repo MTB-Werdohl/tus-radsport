@@ -512,6 +512,10 @@ function bindStravaProfileEvents(
 
         try {
 
+          const previousLastSyncAt =
+            profileStravaState?.status?.lastSyncAt
+            || null;
+
           const result =
             await requestStravaSync();
 
@@ -522,7 +526,31 @@ function bindStravaProfileEvents(
             5000
           );
 
-          if (result?.ok) {
+          if (result?.ok && result?.started) {
+
+            const completion =
+              await waitForStravaSyncCompletion(
+                previousLastSyncAt
+              );
+
+            if (completion.completed) {
+              showMemberToast(
+                'Synchronisation abgeschlossen.',
+                'success',
+                5000
+              );
+            } else {
+              showMemberToast(
+                'Synchronisation läuft noch. '
+                + 'Bitte in Kürze erneut prüfen.',
+                'success',
+                6000
+              );
+            }
+
+            await reloadStravaProfileView(member);
+
+          } else if (result?.ok) {
             await reloadStravaProfileView(member);
           }
 
