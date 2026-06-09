@@ -1,10 +1,13 @@
-  - title: "Kalender"
-    url: "/kalender"
-  - title: "News"
-    url: "/news"
-  - title: "Aktivitäten"
-    url: "/aktivitaeten"
   - title: "Verein"
     url: "/verein"
   - title: "Netzwerk"
     url: "/netzwerk"
+  - title: "Aktivitäten"
+    url: "/aktivitaeten"
+  - title: "Kalender"
+    url: "/kalender"
+  - title: "News"
+    url: "/news"
+
+
+
