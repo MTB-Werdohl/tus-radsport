@@ -1,3 +1,7 @@
+// @ts-nocheck
+// Slug exakt: anonymize-member-account — Verify JWT = AUS
+// Dashboard: gesamten Inhalt einfügen (docs/supabase-edge-anonymize-member-account.ts)
+
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
 import { createClient } from 'npm:@supabase/supabase-js@2';

@@ -40,6 +40,69 @@ function closeMemberConsentModal(modal) {
 
 }
 
+function showStravaReturnNotice() {
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const result =
+    params.get('strava');
+
+  if (!result) {
+    return;
+  }
+
+  profileActiveTab = 'strava';
+
+  const reason =
+    params.get('reason');
+
+  if (result === 'connected') {
+
+    showMemberToast(
+      'Strava erfolgreich verbunden.',
+      'success',
+      5000
+    );
+
+  }
+
+  if (result === 'error') {
+
+    const messages = {
+      access_denied:
+        'Strava-Verbindung abgebrochen.',
+      athlete_linked:
+        'Dieses Strava-Konto ist bereits mit einem anderen Mitglied verbunden.',
+      invalid_state:
+        'Die Anmeldung ist abgelaufen. Bitte erneut versuchen.',
+      missing_code:
+        'Strava hat keine Bestätigung gesendet.',
+      token_payload:
+        'Strava-Antwort unvollständig.',
+      server:
+        'Verbindung fehlgeschlagen. Bitte später erneut versuchen.'
+    };
+
+    showMemberToast(
+      messages[reason]
+      || 'Strava-Verbindung fehlgeschlagen.',
+      'error',
+      6000
+    );
+
+  }
+
+  window.history.replaceState(
+    {},
+    '',
+    `${window.location.pathname}`
+  );
+
+}
+
 function showLoginCallbackNotice(member) {
 
   const section =
@@ -326,13 +389,27 @@ function bindStravaProfileEvents(
 
     connectBtn.addEventListener(
       'click',
-      () => {
+      async () => {
 
-        showMemberToast(
-          'Die Strava-Anbindung wird als Nächstes eingerichtet (OAuth).',
-          'success',
-          5000
-        );
+        connectBtn.disabled = true;
+
+        try {
+
+          await beginStravaConnect();
+
+        } catch (error) {
+
+          console.error(error);
+
+          showMemberToast(
+            error.message
+              || 'Strava-Verbindung fehlgeschlagen.',
+            'error'
+          );
+
+          connectBtn.disabled = false;
+
+        }
 
       }
     );
@@ -868,6 +945,8 @@ async function loadMemberProfilePage() {
 
   document.title =
     `Mein Profil · MTB Werdohl`;
+
+  showStravaReturnNotice();
 
   if (
     typeof isClubMember === 'function'

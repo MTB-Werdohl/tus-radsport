@@ -54,6 +54,7 @@ window.siteConfig = {
     sendAdminEmail: 'send-admin-email',
     anonymizeMemberAccount: 'anonymize-member-account',
     stravaOAuthStart: 'strava-oauth-start',
+    stravaOAuthCallback: 'strava-oauth-callback',
     stravaSync: 'strava-sync'
   },
 
@@ -77,7 +78,11 @@ window.siteConfig = {
 
 window.getFunctionUrl = function (name) {
 
-  return `${window.siteConfig.functionsUrl}/${window.siteConfig.functions[name]}`;
+  const slug =
+    window.siteConfig.functions[name]
+    || name;
+
+  return `${window.siteConfig.functionsUrl}/${slug}`;
 
 };
 

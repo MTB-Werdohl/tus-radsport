@@ -56,13 +56,14 @@ Nach Frontend-Deploy: [`supabase-drop-web-push.sql`](../supabase-drop-web-push.s
 |----------|----------------------|
 | `anonymize-member-account` | [`supabase-edge-anonymize-member-account.ts`](../supabase-edge-anonymize-member-account.ts) — **Edge Function deployen, nicht SQL!** JWT; Self (public) oder Vorstand `{ member_id }`; ruft `anonymize_member()` + löscht Auth-User |
 | `send-admin-email` | [`supabase-edge-send-admin-email.ts`](../supabase-edge-send-admin-email.ts) — Vorstand-E-Mails; Setup: [`supabase-admin-email-setup.md`](../supabase-admin-email-setup.md) |
-| `strava-oauth-start` | *(geplant)* OAuth-Start + Callback |
-| `strava-sync` | *(geplant)* Manueller Sync + Webhook-Verarbeitung |
+| `strava-oauth-start` | [`supabase-edge-strava-oauth-start.ts`](../supabase-edge-strava-oauth-start.ts) — POST + JWT; liefert Strava-Authorize-URL — Setup: [`supabase-strava-setup.md`](../supabase-strava-setup.md) |
+| `strava-oauth-callback` | [`supabase-edge-strava-oauth-callback.ts`](../supabase-edge-strava-oauth-callback.ts) — GET; Token-Austausch, speichert `strava_connections`, Redirect `/profil/?strava=connected` |
+| `strava-sync` | *(geplant Schritt 6)* Manueller Sync + Webhook-Verarbeitung |
 
 ### Edge Function `anonymize-member-account` deployen
 
 1. Zuerst SQL: [`supabase-members-anonymize.sql`](../supabase-members-anonymize.sql) im **SQL Editor** ausführen.
-2. **Edge Functions** → **Deploy a new function** (oder CLI, siehe unten).
+2. **Edge Functions** → **Deploy a new function**.
 3. **Slug / Name exakt:** `anonymize-member-account` — die Website ruft `/functions/v1/anonymize-member-account` auf. Ein auto-generierter Slug wie `bright-function` führt zu **404/CORS**.
 4. Code aus [`supabase-edge-anonymize-member-account.ts`](../supabase-edge-anonymize-member-account.ts) oder [`supabase/functions/anonymize-member-account/index.ts`](../../supabase/functions/anonymize-member-account/index.ts).
 5. **Deploy**

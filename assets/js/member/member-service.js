@@ -461,3 +461,125 @@ async function requestStravaSync() {
   return data;
 
 }
+
+async function readEdgeFunctionError(
+  error
+) {
+
+  if (
+    typeof readFunctionInvokeError
+      === 'function'
+  ) {
+
+    const payload =
+      await readFunctionInvokeError(error);
+
+    if (payload?.error) {
+      return payload.error;
+    }
+
+  }
+
+  return error?.message || null;
+
+}
+
+async function callMemberEdgeFunction(
+  functionSlug,
+  body
+) {
+
+  const { data: { session } } =
+    await window.supabaseClient.auth.getSession();
+
+  if (!session?.access_token) {
+    throw new Error('Nicht angemeldet.');
+  }
+
+  const invokeResult =
+    await window.supabaseClient.functions.invoke(
+      functionSlug,
+      { body: body || {} }
+    );
+
+  if (!invokeResult.error) {
+
+    if (invokeResult.data?.error) {
+      throw new Error(invokeResult.data.error);
+    }
+
+    return invokeResult.data;
+
+  }
+
+  const message =
+    await readEdgeFunctionError(
+      invokeResult.error
+    );
+
+  const transportFailed =
+    typeof isEdgeFunctionTransportError
+      === 'function'
+    && isEdgeFunctionTransportError(
+      message || invokeResult.error.message
+    );
+
+  if (transportFailed) {
+
+    const response =
+      await fetch(
+        getFunctionUrl(functionSlug),
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization:
+              `Bearer ${session.access_token}`,
+            apikey:
+              window.siteConfig.supabaseAnonKey
+          },
+          body: JSON.stringify(body || {})
+        }
+      );
+
+    const result =
+      typeof readFunctionFetchResult
+        === 'function'
+        ? await readFunctionFetchResult(response)
+        : { error: new Error('Unbekannter Fehler') };
+
+    if (result?.error) {
+      throw result.error;
+    }
+
+    return result.data;
+
+  }
+
+  throw new Error(
+    message
+    || invokeResult.error.message
+    || 'Server-Funktion fehlgeschlagen.'
+  );
+
+}
+
+async function beginStravaConnect() {
+
+  const functionSlug =
+    window.siteConfig.functions.stravaOAuthStart;
+
+  const data =
+    await callMemberEdgeFunction(
+      functionSlug
+    );
+
+  if (!data?.url) {
+    throw new Error(
+      'Keine Strava-Weiterleitung erhalten.'
+    );
+  }
+
+  window.location.href = data.url;
+
+}

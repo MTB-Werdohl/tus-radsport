@@ -1,3 +1,7 @@
+// @ts-nocheck
+// Slug exakt: send-admin-email — Verify JWT = AUS
+// Dashboard: gesamten Inhalt einfügen (docs/supabase-edge-send-admin-email.ts)
+
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
 
 import { createClient } from 'npm:@supabase/supabase-js@2';

@@ -6,3 +6,9 @@ verify_jwt = false
 
 [functions.send-admin-email]
 verify_jwt = false
+
+[functions.strava-oauth-start]
+verify_jwt = false
+
+[functions.strava-oauth-callback]
+verify_jwt = false
