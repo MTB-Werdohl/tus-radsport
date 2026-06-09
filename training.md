@@ -8,12 +8,12 @@ permalink: /training/
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="refresh" content="0; url=/ausfahrt/">
-  <link rel="canonical" href="/ausfahrt/">
+  <meta http-equiv="refresh" content="0; url=/verein/?tab=ausfahrt">
+  <link rel="canonical" href="/verein/?tab=ausfahrt">
   <title>Weiterleitung · MTB Werdohl</title>
-  <script>location.replace('/ausfahrt/');</script>
+  <script>location.replace('/verein/?tab=ausfahrt');</script>
 </head>
 <body>
-  <p><a href="/ausfahrt/">Weiter zur Seite Ausfahrt</a></p>
+  <p><a href="/verein/?tab=ausfahrt">Weiter zum Bereich Verein — Ausfahrt</a></p>
 </body>
 </html>

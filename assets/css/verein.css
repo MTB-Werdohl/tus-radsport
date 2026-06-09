@@ -1,0 +1,45 @@
+.verein-hero {
+  max-width: 900px;
+  margin: 0 auto 1.5rem;
+  padding: 0 1rem;
+}
+
+#verein-portal {
+  max-width: 900px;
+  margin: 0 auto 3rem;
+  padding: 0 1rem;
+}
+
+.verein-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.verein-tab {
+  margin: 0;
+  padding: 10px 16px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.75);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.verein-tab:hover {
+  color: #fff;
+}
+
+.verein-tab.is-active {
+  color: #fff;
+  border-bottom-color: var(--header-bg);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.verein-tab-panel[hidden] {
+  display: none !important;
+}

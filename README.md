@@ -63,7 +63,8 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Trö
 | `/news-detail.html?slug=…` | `news-detail.html` | News-Detail |
 | `/galerie/` | `galerie.md` | Galerie-Übersicht |
 | `/galerie-detail.html?slug=…` | `galerie-detail.html` | Galerie-Detail |
-| `/about`, `/training`, `/kodex`, … | jeweilige `.md` | Statische Infoseiten |
+| `/verein/` | `verein.md` + `_includes/verein/*` | Verein (Über uns, Ausfahrt, Kodex) |
+| `/about`, `/ausfahrt`, `/kodex`, `/training` | Redirects | Weiterleitung auf `/verein/?tab=…` |
 | `/profil/` | `profil.md` | Mitgliederprofil (Magic Link) — Setup: [`docs/supabase-members-setup.md`](docs/supabase-members-setup.md) |
 | `/admin/` | `admin/index.html` | Vorstand-Dashboard (Magic Link in Navbar) |
 

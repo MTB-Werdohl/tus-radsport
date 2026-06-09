@@ -73,12 +73,12 @@ description: Radsportabteilung TuS Jahn Werdohl — gemeinsam MTB, Gravel & E-Bi
 
   <div class="home-discover-grid">
 
-    <a class="card" href="{{ '/about' | relative_url }}">
+    <a class="card" href="{{ '/verein/' | relative_url }}?tab=about">
       <h3>Über uns</h3>
       <p>Wer wir sind, wie wir ticken und warum bei uns Gemeinschaft vor Leistung steht.</p>
     </a>
 
-    <a class="card" href="{{ '/ausfahrt' | relative_url }}">
+    <a class="card" href="{{ '/verein/' | relative_url }}?tab=ausfahrt">
       <h3>Ausfahrt</h3>
       <p>Wann wir unterwegs sind, wo wir starten und was dich auf unseren Ausfahrten erwartet.</p>
     </a>
