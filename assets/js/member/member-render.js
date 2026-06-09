@@ -246,94 +246,58 @@ function renderConsentBlock(
 
 }
 
-function renderMemberProfile(
-  member
+function renderMemberProfileTabsNav(
+  activeTab
 ) {
 
-  const container =
-    document.getElementById(
-      'member-profile'
-    );
+  const profilActive =
+    activeTab !== 'strava';
 
-  if (!container || !member) {
-    return;
-  }
+  const stravaActive =
+    activeTab === 'strava';
 
-  if (isPublicParticipant(member)) {
-
-    container.innerHTML = `
-
-<section class="member-profile-section-block">
-
-  <h2>Externe Anmeldung</h2>
-
-  <p class="member-public-hint">
-    Du bist als externer Teilnehmer registriert — kein Vereinsmitglied.
-    Du kannst dich an Veranstaltungen anmelden und teilnehmen.
-  </p>
-
-  <dl class="member-profile-list">
-
-    <div class="member-profile-row">
-      <dt>Vorname</dt>
-      <dd>${formatMemberField(member.vorname)}</dd>
-    </div>
-
-    <div class="member-profile-row">
-      <dt>Nachname</dt>
-      <dd>${formatMemberField(member.nachname)}</dd>
-    </div>
-
-    <div class="member-profile-row">
-      <dt>E-Mail</dt>
-      <dd>${formatMemberField(member.email)}</dd>
-    </div>
-
-    <div class="member-profile-row">
-      <dt>Telefon</dt>
-      <dd>${formatMemberField(member.telefonnummer)}</dd>
-    </div>
-
-  </dl>
-
-</section>
-
-<section class="member-profile-section-block member-profile-actions">
-
-  <button type="button" id="member-logout-btn" class="member-logout-btn">
-    Logout
-  </button>
-
-</section>
-
-<section class="member-profile-section-block member-profile-delete">
-
-  <h2>Account löschen</h2>
-
-  <p class="member-delete-hint">
-    Deine personenbezogenen Daten (Name, E-Mail, Telefon) werden entfernt.
-    Bereits abgegebene Abstimmungen bleiben <strong>anonym</strong> gezählt,
-    damit Auswertungen korrekt bleiben (z.&nbsp;B. Teilnehmerzahl einer Tour).
-  </p>
+  return `
+<nav
+  class="member-profile-tabs"
+  role="tablist"
+  aria-label="Profilbereiche">
 
   <button
     type="button"
-    id="member-delete-account-btn"
-    class="member-delete-account-btn">
+    class="member-profile-tab${profilActive ? ' is-active' : ''}"
+    role="tab"
+    id="member-profile-tab-btn-profil"
+    aria-selected="${profilActive ? 'true' : 'false'}"
+    aria-controls="member-profile-tab-profil"
+    data-profile-tab="profil">
 
-    Account löschen
+    Profil
 
   </button>
 
-</section>
+  <button
+    type="button"
+    class="member-profile-tab${stravaActive ? ' is-active' : ''}"
+    role="tab"
+    id="member-profile-tab-btn-strava"
+    aria-selected="${stravaActive ? 'true' : 'false'}"
+    aria-controls="member-profile-tab-strava"
+    data-profile-tab="strava">
 
-    `;
+    Strava
 
-    return;
+  </button>
 
-  }
+</nav>
+  `;
 
-  container.innerHTML = `
+}
+
+function renderClubMemberProfilContent(
+  member
+) {
+
+  return `
 
 <section class="member-profile-section-block">
 
@@ -449,6 +413,348 @@ function renderMemberProfile(
   </button>
 
 </section>
+
+  `;
+
+}
+
+function renderStravaProfilePanel(
+  stravaState
+) {
+
+  if (
+    !stravaState?.available
+  ) {
+
+    const message =
+      stravaState?.error?.message
+      || 'Strava ist derzeit nicht verfügbar.';
+
+    return `
+<section class="member-profile-section-block">
+
+  <h2>Strava</h2>
+
+  <p class="member-strava-hint member-strava-hint--error">
+    ${escapeMemberHtml(message)}
+  </p>
+
+</section>
+    `;
+
+  }
+
+  const status =
+    stravaState.status || {};
+
+  if (!status.connected) {
+
+    return `
+<section class="member-profile-section-block">
+
+  <h2>Strava verbinden</h2>
+
+  <p class="member-strava-hint">
+    Verbinde dein Strava-Konto, damit deine Ausfahrten im Vereins-Aktivitätsportal
+    erscheinen können — freiwillig und jederzeit trennbar.
+  </p>
+
+  <p class="member-strava-hint">
+    Du entscheidest getrennt, ob du im <strong>Feed</strong>, in
+    <strong>Rankings</strong> oder bei <strong>Vereinszielen</strong> erscheinst.
+  </p>
+
+  <button
+    type="button"
+    id="strava-connect-btn"
+    class="member-save-btn member-strava-connect-btn">
+
+    Mit Strava verbinden
+
+  </button>
+
+</section>
+    `;
+
+  }
+
+  const displayName =
+    status.displayName
+    || 'Unbekannt';
+
+  return `
+<section class="member-profile-section-block">
+
+  <h2>Verbindung</h2>
+
+  <dl class="member-profile-list">
+
+    <div class="member-profile-row">
+      <dt>Verbunden mit</dt>
+      <dd>${escapeMemberHtml(displayName)}</dd>
+    </div>
+
+    <div class="member-profile-row">
+      <dt>Seit</dt>
+      <dd>${escapeMemberHtml(formatStravaDateTime(status.connectedAt))}</dd>
+    </div>
+
+    <div class="member-profile-row">
+      <dt>Letzte Synchronisation</dt>
+      <dd>${escapeMemberHtml(formatStravaDateTime(status.lastSyncAt))}</dd>
+    </div>
+
+  </dl>
+
+</section>
+
+<section class="member-profile-section-block">
+
+  <h2>Sichtbarkeit</h2>
+
+  <p class="member-strava-hint">
+    Diese Einstellungen steuern nur die <strong>Anzeige</strong>.
+    Deine importierten Aktivitäten bleiben gespeichert, solange Strava verbunden ist.
+  </p>
+
+  <form id="strava-visibility-form" class="member-strava-visibility-form">
+
+    <label class="member-strava-checkbox">
+      <input
+        type="checkbox"
+        name="publish_feed"
+        ${status.publishFeed ? 'checked' : ''}>
+      Im Aktivitätsfeed erscheinen
+      <span class="member-strava-checkbox-note">
+        Öffentlich, letzte 90 Tage — Vorname und Nachname
+      </span>
+    </label>
+
+    <label class="member-strava-checkbox">
+      <input
+        type="checkbox"
+        name="publish_rankings"
+        ${status.publishRankings ? 'checked' : ''}>
+      In Rankings erscheinen
+    </label>
+
+    <label class="member-strava-checkbox">
+      <input
+        type="checkbox"
+        name="contribute_to_club_goals"
+        ${status.contributeToClubGoals ? 'checked' : ''}>
+      Zu Vereinszielen beitragen
+    </label>
+
+    <button type="submit" class="member-save-btn">
+      Sichtbarkeit speichern
+    </button>
+
+    <p id="strava-visibility-status" class="member-save-status" hidden></p>
+
+  </form>
+
+</section>
+
+<section class="member-profile-section-block">
+
+  <h2>Synchronisation</h2>
+
+  <p class="member-strava-hint">
+    Holt neue und geänderte Aktivitäten von Strava.
+    Änderungen in Strava werden so ins Portal übernommen.
+  </p>
+
+  <button
+    type="button"
+    id="strava-sync-btn"
+    class="member-save-btn">
+
+    Jetzt synchronisieren
+
+  </button>
+
+</section>
+
+<section class="member-profile-section-block member-strava-disconnect">
+
+  <h2>Verbindung trennen</h2>
+
+  <p class="member-strava-hint">
+    Beendet die Strava-Anbindung. Importierte Aktivitäten werden aus Feed,
+    Rankings und Vereinszielen entfernt.
+  </p>
+
+  <button
+    type="button"
+    id="strava-disconnect-btn"
+    class="member-strava-disconnect-btn">
+
+    Verbindung trennen
+
+  </button>
+
+  <div
+    id="strava-disconnect-warning"
+    class="member-strava-disconnect-warning"
+    hidden>
+
+    <p class="member-strava-warning-text">
+      <strong>Achtung:</strong> Alle importierten Strava-Aktivitäten werden
+      aus dem Vereinsportal entfernt. Feed, Rankings und Vereinsziele
+      werden zurückgesetzt. In Strava selbst ändert sich nichts.
+    </p>
+
+    <div class="member-strava-disconnect-actions">
+
+      <button
+        type="button"
+        id="strava-disconnect-cancel-btn"
+        class="member-logout-btn">
+
+        Abbrechen
+
+      </button>
+
+      <button
+        type="button"
+        id="strava-disconnect-confirm-btn"
+        class="member-strava-disconnect-btn">
+
+        Ja, Verbindung trennen
+
+      </button>
+
+    </div>
+
+  </div>
+
+</section>
+  `;
+
+}
+
+function renderMemberProfile(
+  member,
+  options
+) {
+
+  const stravaState =
+    options?.stravaState || null;
+
+  const activeTab =
+    options?.activeTab || 'profil';
+
+  const container =
+    document.getElementById(
+      'member-profile'
+    );
+
+  if (!container || !member) {
+    return;
+  }
+
+  if (isPublicParticipant(member)) {
+
+    container.innerHTML = `
+
+<section class="member-profile-section-block">
+
+  <h2>Externe Anmeldung</h2>
+
+  <p class="member-public-hint">
+    Du bist als externer Teilnehmer registriert — kein Vereinsmitglied.
+    Du kannst dich an Veranstaltungen anmelden und teilnehmen.
+  </p>
+
+  <dl class="member-profile-list">
+
+    <div class="member-profile-row">
+      <dt>Vorname</dt>
+      <dd>${formatMemberField(member.vorname)}</dd>
+    </div>
+
+    <div class="member-profile-row">
+      <dt>Nachname</dt>
+      <dd>${formatMemberField(member.nachname)}</dd>
+    </div>
+
+    <div class="member-profile-row">
+      <dt>E-Mail</dt>
+      <dd>${formatMemberField(member.email)}</dd>
+    </div>
+
+    <div class="member-profile-row">
+      <dt>Telefon</dt>
+      <dd>${formatMemberField(member.telefonnummer)}</dd>
+    </div>
+
+  </dl>
+
+</section>
+
+<section class="member-profile-section-block member-profile-actions">
+
+  <button type="button" id="member-logout-btn" class="member-logout-btn">
+    Logout
+  </button>
+
+</section>
+
+<section class="member-profile-section-block member-profile-delete">
+
+  <h2>Account löschen</h2>
+
+  <p class="member-delete-hint">
+    Deine personenbezogenen Daten (Name, E-Mail, Telefon) werden entfernt.
+    Bereits abgegebene Abstimmungen bleiben <strong>anonym</strong> gezählt,
+    damit Auswertungen korrekt bleiben (z.&nbsp;B. Teilnehmerzahl einer Tour).
+  </p>
+
+  <button
+    type="button"
+    id="member-delete-account-btn"
+    class="member-delete-account-btn">
+
+    Account löschen
+
+  </button>
+
+</section>
+
+    `;
+
+    return;
+
+  }
+
+  container.innerHTML = `
+
+${renderMemberProfileTabsNav(activeTab)}
+
+<div
+  id="member-profile-tab-profil"
+  class="member-profile-tab-panel"
+  role="tabpanel"
+  aria-labelledby="member-profile-tab-btn-profil"
+  data-profile-panel="profil"
+  ${activeTab === 'strava' ? 'hidden' : ''}>
+
+  ${renderClubMemberProfilContent(member)}
+
+</div>
+
+<div
+  id="member-profile-tab-strava"
+  class="member-profile-tab-panel"
+  role="tabpanel"
+  aria-labelledby="member-profile-tab-btn-strava"
+  data-profile-panel="strava"
+  ${activeTab !== 'strava' ? 'hidden' : ''}>
+
+  ${renderStravaProfilePanel(stravaState)}
+
+</div>
 
   `;
 

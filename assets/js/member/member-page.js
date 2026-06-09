@@ -225,6 +225,349 @@ function setupConsentInfoDialogs() {
 
 }
 
+let profileStravaState = null;
+let profileActiveTab = 'profil';
+
+function switchMemberProfileTab(
+  tabId
+) {
+
+  profileActiveTab = tabId;
+
+  document
+    .querySelectorAll('[data-profile-tab]')
+    .forEach((button) => {
+
+      const isActive =
+        button.dataset.profileTab === tabId;
+
+      button.classList.toggle(
+        'is-active',
+        isActive
+      );
+
+      button.setAttribute(
+        'aria-selected',
+        isActive ? 'true' : 'false'
+      );
+
+    });
+
+  document
+    .querySelectorAll('[data-profile-panel]')
+    .forEach((panel) => {
+
+      panel.hidden =
+        panel.dataset.profilePanel !== tabId;
+
+    });
+
+}
+
+async function reloadStravaProfileView(
+  member
+) {
+
+  if (
+    typeof isClubMember === 'function'
+    && !isClubMember(member)
+  ) {
+    return;
+  }
+
+  profileStravaState =
+    await fetchStravaProfileStatus();
+
+  renderMemberProfile(
+    member,
+    {
+      stravaState: profileStravaState,
+      activeTab: profileActiveTab
+    }
+  );
+
+  bindMemberProfileEvents(member);
+
+  setupConsentInfoDialogs();
+
+}
+
+function bindMemberProfileTabEvents() {
+
+  document
+    .querySelectorAll('[data-profile-tab]')
+    .forEach((button) => {
+
+      button.addEventListener(
+        'click',
+        () => {
+
+          switchMemberProfileTab(
+            button.dataset.profileTab
+          );
+
+        }
+      );
+
+    });
+
+}
+
+function bindStravaProfileEvents(
+  member
+) {
+
+  const connectBtn =
+    document.getElementById(
+      'strava-connect-btn'
+    );
+
+  if (connectBtn) {
+
+    connectBtn.addEventListener(
+      'click',
+      () => {
+
+        showMemberToast(
+          'Die Strava-Anbindung wird als Nächstes eingerichtet (OAuth).',
+          'success',
+          5000
+        );
+
+      }
+    );
+
+  }
+
+  const visibilityForm =
+    document.getElementById(
+      'strava-visibility-form'
+    );
+
+  const visibilityStatus =
+    document.getElementById(
+      'strava-visibility-status'
+    );
+
+  if (visibilityForm) {
+
+    visibilityForm.addEventListener(
+      'submit',
+      async (event) => {
+
+        event.preventDefault();
+
+        const submitBtn =
+          visibilityForm.querySelector(
+            '[type="submit"]'
+          );
+
+        if (submitBtn) {
+          submitBtn.disabled = true;
+        }
+
+        if (visibilityStatus) {
+          visibilityStatus.hidden = true;
+        }
+
+        try {
+
+          const formData =
+            new FormData(visibilityForm);
+
+          profileStravaState = {
+            available: true,
+            status:
+              await updateStravaVisibility({
+                publishFeed:
+                  formData.get('publish_feed') === 'on',
+                publishRankings:
+                  formData.get('publish_rankings') === 'on',
+                contributeToClubGoals:
+                  formData.get('contribute_to_club_goals') === 'on'
+              })
+          };
+
+          if (visibilityStatus) {
+            visibilityStatus.textContent =
+              'Sichtbarkeit gespeichert.';
+            visibilityStatus.hidden = false;
+          }
+
+          showMemberToast(
+            'Sichtbarkeit gespeichert.',
+            'success',
+            3000
+          );
+
+        } catch (error) {
+
+          console.error(error);
+
+          showMemberToast(
+            'Speichern fehlgeschlagen.',
+            'error'
+          );
+
+        }
+
+        if (submitBtn) {
+          submitBtn.disabled = false;
+        }
+
+      }
+    );
+
+  }
+
+  const syncBtn =
+    document.getElementById(
+      'strava-sync-btn'
+    );
+
+  if (syncBtn) {
+
+    syncBtn.addEventListener(
+      'click',
+      async () => {
+
+        syncBtn.disabled = true;
+
+        try {
+
+          const result =
+            await requestStravaSync();
+
+          showMemberToast(
+            result?.message
+              || 'Synchronisation gestartet.',
+            result?.ok ? 'success' : 'error',
+            5000
+          );
+
+          if (result?.ok) {
+            await reloadStravaProfileView(member);
+          }
+
+        } catch (error) {
+
+          console.error(error);
+
+          showMemberToast(
+            error.message
+              || 'Synchronisation fehlgeschlagen.',
+            'error'
+          );
+
+        }
+
+        syncBtn.disabled = false;
+
+      }
+    );
+
+  }
+
+  const disconnectBtn =
+    document.getElementById(
+      'strava-disconnect-btn'
+    );
+
+  const disconnectWarning =
+    document.getElementById(
+      'strava-disconnect-warning'
+    );
+
+  const disconnectCancelBtn =
+    document.getElementById(
+      'strava-disconnect-cancel-btn'
+    );
+
+  const disconnectConfirmBtn =
+    document.getElementById(
+      'strava-disconnect-confirm-btn'
+    );
+
+  if (
+    disconnectBtn
+    && disconnectWarning
+  ) {
+
+    disconnectBtn.addEventListener(
+      'click',
+      () => {
+
+        disconnectWarning.hidden = false;
+        disconnectBtn.hidden = true;
+
+      }
+    );
+
+  }
+
+  if (
+    disconnectCancelBtn
+    && disconnectWarning
+    && disconnectBtn
+  ) {
+
+    disconnectCancelBtn.addEventListener(
+      'click',
+      () => {
+
+        disconnectWarning.hidden = true;
+        disconnectBtn.hidden = false;
+
+      }
+    );
+
+  }
+
+  if (disconnectConfirmBtn) {
+
+    disconnectConfirmBtn.addEventListener(
+      'click',
+      async () => {
+
+        disconnectConfirmBtn.disabled = true;
+
+        try {
+
+          await disconnectStravaAccount();
+
+          showMemberToast(
+            'Strava-Verbindung getrennt.',
+            'success',
+            4000
+          );
+
+          profileActiveTab = 'strava';
+
+          await reloadStravaProfileView(
+            getCurrentMember() || member
+          );
+
+        } catch (error) {
+
+          console.error(error);
+
+          showMemberToast(
+            error.message
+              || 'Trennen fehlgeschlagen.',
+            'error'
+          );
+
+          disconnectConfirmBtn.disabled = false;
+
+        }
+
+      }
+    );
+
+  }
+
+}
+
 function bindMemberProfileEvents(
   member
 ) {
@@ -234,11 +577,28 @@ function bindMemberProfileEvents(
     const currentMember =
       getCurrentMember();
 
+    if (
+      typeof isClubMember === 'function'
+      && isClubMember(currentMember)
+    ) {
+
+      await reloadStravaProfileView(
+        currentMember
+      );
+
+      return;
+
+    }
+
     renderMemberProfile(currentMember);
 
     bindMemberProfileEvents(currentMember);
 
   }
+
+  bindMemberProfileTabEvents();
+
+  bindStravaProfileEvents(member);
 
   const form =
     document.getElementById(
@@ -509,7 +869,27 @@ async function loadMemberProfilePage() {
   document.title =
     `Mein Profil · MTB Werdohl`;
 
-  renderMemberProfile(member);
+  if (
+    typeof isClubMember === 'function'
+    && isClubMember(member)
+  ) {
+
+    profileStravaState =
+      await fetchStravaProfileStatus();
+
+    renderMemberProfile(
+      member,
+      {
+        stravaState: profileStravaState,
+        activeTab: profileActiveTab
+      }
+    );
+
+  } else {
+
+    renderMemberProfile(member);
+
+  }
 
   bindMemberProfileEvents(member);
 

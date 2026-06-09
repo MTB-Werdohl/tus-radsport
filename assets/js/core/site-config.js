@@ -21,7 +21,12 @@ window.siteConfig = {
     members: 'members',
     boardDocuments: 'board_documents',
     feedbackModules: 'feedback_modules',
-    feedbackAnswers: 'feedback_answers'
+    feedbackAnswers: 'feedback_answers',
+    activities: 'activities',
+    memberStatsMonth: 'member_stats_month',
+    memberStatsYear: 'member_stats_year',
+    clubStatsMonth: 'club_stats_month',
+    clubStatsYear: 'club_stats_year'
   },
 
   feedback: {
@@ -47,7 +52,13 @@ window.siteConfig = {
 
   functions: {
     sendAdminEmail: 'send-admin-email',
-    anonymizeMemberAccount: 'anonymize-member-account'
+    anonymizeMemberAccount: 'anonymize-member-account',
+    stravaOAuthStart: 'strava-oauth-start',
+    stravaSync: 'strava-sync'
+  },
+
+  strava: {
+    feedDays: 90
   },
 
   siteStateKeys: {

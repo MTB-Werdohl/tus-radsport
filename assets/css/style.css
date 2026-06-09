@@ -500,6 +500,119 @@ a:hover {
   color: #fff;
 }
 
+.member-profile-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.member-profile-tab {
+  margin: 0;
+  padding: 10px 16px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.75);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.member-profile-tab:hover {
+  color: #fff;
+}
+
+.member-profile-tab.is-active {
+  color: #fff;
+  border-bottom-color: var(--header-bg);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.member-profile-tab-panel[hidden] {
+  display: none !important;
+}
+
+.member-strava-hint {
+  margin: 0 0 14px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.member-strava-hint--error {
+  color: #ffe0e0;
+}
+
+.member-strava-visibility-form {
+  display: grid;
+  gap: 14px;
+}
+
+.member-strava-checkbox {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px 10px;
+  align-items: start;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.member-strava-checkbox input {
+  margin-top: 3px;
+}
+
+.member-strava-checkbox-note {
+  grid-column: 2;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.member-strava-connect-btn {
+  margin-top: 4px;
+}
+
+.member-strava-disconnect {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 8px;
+}
+
+.member-strava-disconnect-btn {
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 120, 120, 0.45);
+  border-radius: 8px;
+  background: rgba(180, 40, 40, 0.25);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.member-strava-disconnect-btn:hover {
+  background: rgba(180, 40, 40, 0.4);
+}
+
+.member-strava-disconnect-warning {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: rgba(180, 40, 40, 0.15);
+  border: 1px solid rgba(255, 120, 120, 0.35);
+}
+
+.member-strava-warning-text {
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+
+.member-strava-disconnect-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .member-edit-form {
   display: grid;
   gap: 12px;

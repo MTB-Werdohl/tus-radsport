@@ -21,6 +21,44 @@ Stand: Projekt MTB Werdohl. Spalten aus Code + Supabase; bei Abweichungen Dashbo
 | `bilder_eingewilligt_am` | date | |
 | `anonymized_at` | timestamptz | gesetzt nach Account-Löschung; `id` bleibt für `feedback_answers` |
 | `last_login_at` | timestamptz | letzter erfolgreicher Magic-Link-Login (Admin: grün/rot) |
+| `strava_connected_at` | timestamptz | letzte Strava-Verbindung (Profil-Anzeige) |
+| `strava_sync_enabled` | boolean | Sync aktiv (intern) |
+| `publish_feed` | boolean | im öffentlichen Feed (90 Tage) |
+| `publish_rankings` | boolean | in Rankings |
+| `contribute_to_club_goals` | boolean | fließt in Vereinsstatistiken ein |
+
+## `strava_connections`
+
+Nur serverseitig (kein Client-SELECT). Tokens für OAuth.
+
+| Spalte | Typ | Hinweis |
+|--------|-----|---------|
+| `member_id` | bigint PK | → `members.id` |
+| `strava_athlete_id` | bigint UNIQUE | Strava Athlete (Admin/Debug) |
+| `access_token`, `refresh_token` | text | nur Edge Functions / definer |
+| `token_expires_at`, `last_sync_at` | timestamptz | |
+| `created_at`, `updated_at` | timestamptz | |
+
+## `activities`
+
+Import aus Strava; UUID in URLs (`/aktivitaeten/{uuid}/`).
+
+| Spalte | Typ | Hinweis |
+|--------|-----|---------|
+| `id` | uuid PK | öffentliche Detail-URL |
+| `strava_activity_id` | bigint UNIQUE | Strava Source of Truth |
+| `member_id` | bigint | → `members.id` |
+| `activity_type`, `activity_name` | text | |
+| `distance_m`, `moving_time_s`, `elevation_gain_m` | numeric/int | |
+| `start_date` | timestamptz | Feed: letzte 90 Tage |
+| `map_summary_polyline`, `activity_photo_url` | text | MVP: gespeichert, nicht angezeigt |
+| `deleted_at` | timestamptz | Soft Delete (Strava-Trennung) |
+
+**Sichtbarkeit:** Feed/Rankings/Ziele über `members.publish_*` — Opt-ins ändern nur Anzeige, nicht Löschung (außer `disconnect_strava`).
+
+## `member_stats_month` / `member_stats_year` / `club_stats_month` / `club_stats_year`
+
+Voraggregierte Werte; Rankings/Feed lesen vorberechnete Daten. Vereinsziele: nur Mitglieder mit `contribute_to_club_goals`.
 
 ## `News`
 

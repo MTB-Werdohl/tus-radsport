@@ -188,7 +188,22 @@ function normalizeMemberRow(row) {
       row.rolle || MEMBER_ROLE_MITGLIED,
 
     anonymized_at:
-      row.anonymized_at || null
+      row.anonymized_at || null,
+
+    strava_connected_at:
+      row.strava_connected_at || null,
+
+    publish_feed:
+      row.publish_feed === true,
+
+    publish_rankings:
+      row.publish_rankings === true,
+
+    contribute_to_club_goals:
+      row.contribute_to_club_goals === true,
+
+    strava_sync_enabled:
+      row.strava_sync_enabled === true
 
   };
 
@@ -292,5 +307,157 @@ async function fetchMemberProfile() {
   return fetchMemberByEmail(
     session.user.email
   );
+
+}
+
+function formatStravaDateTime(value) {
+
+  if (
+    !value
+    || typeof formatDateLong !== 'function'
+  ) {
+    return '—';
+  }
+
+  const date =
+    new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return '—';
+  }
+
+  return formatDateLong(
+    date.toISOString().slice(0, 10)
+  );
+
+}
+
+async function fetchStravaProfileStatus() {
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'get_strava_profile_status'
+    );
+
+  if (error) {
+
+    const message =
+      String(error.message || '');
+
+    if (
+      message.includes('Could not find the function')
+      || error.code === 'PGRST202'
+    ) {
+
+      return {
+        available: false,
+        error: new Error(
+          'Strava ist serverseitig noch nicht eingerichtet. '
+          + 'Im Supabase SQL Editor docs/supabase-strava.sql ausführen.'
+        )
+      };
+
+    }
+
+    if (
+      message.includes('Nur Vereinsmitglieder')
+    ) {
+      return {
+        available: false,
+        error: error
+      };
+
+    }
+
+    console.error(error);
+
+    return {
+      available: false,
+      error: error
+    };
+
+  }
+
+  return {
+    available: true,
+    status: {
+      connected: data.connected === true,
+      displayName:
+        String(data.display_name || '').trim(),
+      connectedAt: data.connected_at || null,
+      lastSyncAt: data.last_sync_at || null,
+      publishFeed: data.publish_feed === true,
+      publishRankings: data.publish_rankings === true,
+      contributeToClubGoals:
+        data.contribute_to_club_goals === true,
+      syncEnabled: data.strava_sync_enabled === true
+    }
+  };
+
+}
+
+async function updateStravaVisibility(
+  flags
+) {
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'update_strava_visibility',
+      {
+        p_publish_feed:
+          flags.publishFeed === true,
+        p_publish_rankings:
+          flags.publishRankings === true,
+        p_contribute_to_club_goals:
+          flags.contributeToClubGoals === true
+      }
+    );
+
+  if (error) {
+    throw error;
+  }
+
+  return {
+    connected: data.connected === true,
+    displayName:
+      String(data.display_name || '').trim(),
+    connectedAt: data.connected_at || null,
+    lastSyncAt: data.last_sync_at || null,
+    publishFeed: data.publish_feed === true,
+    publishRankings: data.publish_rankings === true,
+    contributeToClubGoals:
+      data.contribute_to_club_goals === true,
+    syncEnabled: data.strava_sync_enabled === true
+  };
+
+}
+
+async function disconnectStravaAccount() {
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'disconnect_strava'
+    );
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+
+}
+
+async function requestStravaSync() {
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'request_strava_sync'
+    );
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
 
 }
