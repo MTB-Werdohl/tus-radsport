@@ -18,12 +18,6 @@ description: "Radsportabteilung TuS Jahn Werdohl — Über uns, Ausfahrten und u
     fetchpriority="high">
 </figure>
 
-<section class="verein-hero">
-
-  <h1>Verein</h1>
-
-</section>
-
 <div id="verein-portal">
 
   <div

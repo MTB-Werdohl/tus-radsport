@@ -8,17 +8,6 @@ load_aktivitaeten_css: true
 description: "Aktivitätsfeed, Rankings und Vereinsstatistiken der MTB-Abteilung TuS Jahn Werdohl."
 ---
 
-<section class="aktivitaeten-hero">
-
-  <h1>Aktivitäten</h1>
-
-  <p class="aktivitaeten-lead">
-    Ausfahrten und Statistiken unserer Mitglieder — freiwillig
-    geteilt über Strava.
-  </p>
-
-</section>
-
 <div id="aktivitaeten-portal">
 
   <div
