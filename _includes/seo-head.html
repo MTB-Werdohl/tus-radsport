@@ -5,6 +5,8 @@
 {% assign seo_url = page.url | absolute_url %}
 {% assign seo_type = page.seo_type | default: site.seo.type | default: "website" %}
 {% assign seo_image_alt = page.image_alt | default: site.seo.image_alt | default: seo_title %}
+{% assign seo_image_width = page.image_width | default: site.seo.image_width %}
+{% assign seo_image_height = page.image_height | default: site.seo.image_height %}
 
 <meta name="description" content="{{ seo_description | xml_escape }}">
 
@@ -17,9 +19,9 @@
 <meta property="og:url" content="{{ seo_url }}">
 <meta property="og:type" content="{{ seo_type }}">
 <meta property="og:image" content="{{ seo_image }}">
-{% if site.seo.image_width and site.seo.image_height %}
-<meta property="og:image:width" content="{{ site.seo.image_width }}">
-<meta property="og:image:height" content="{{ site.seo.image_height }}">
+{% if seo_image_width and seo_image_height %}
+<meta property="og:image:width" content="{{ seo_image_width }}">
+<meta property="og:image:height" content="{{ seo_image_height }}">
 {% endif %}
 <meta property="og:image:alt" content="{{ seo_image_alt | xml_escape }}">
 
