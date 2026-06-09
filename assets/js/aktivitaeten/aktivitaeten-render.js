@@ -25,16 +25,14 @@ function renderActivityFeed(
   if (!activities?.length) {
 
     container.innerHTML = `
-<section class="aktivitaeten-section">
-
-  <h2>Aktivitätsfeed</h2>
+<div class="aktivitaeten-section">
 
   <p class="aktivitaeten-hint">
     In den letzten ${feedDays} Tagen sind noch keine
     öffentlichen Aktivitäten eingetragen.
   </p>
 
-</section>
+</div>
     `;
 
     return;
@@ -117,9 +115,7 @@ function renderActivityFeed(
     }).join('');
 
   container.innerHTML = `
-<section class="aktivitaeten-section">
-
-  <h2>Aktivitätsfeed</h2>
+<div class="aktivitaeten-section">
 
   <p class="aktivitaeten-hint">
     Öffentliche Ausfahrten der letzten ${feedDays} Tage
@@ -130,7 +126,7 @@ function renderActivityFeed(
     ${cards}
   </div>
 
-</section>
+</div>
   `;
 
 }
@@ -231,9 +227,7 @@ function renderMemberRankings(
     `Gesamt ${period.year}`;
 
   container.innerHTML = `
-<section class="aktivitaeten-section">
-
-  <h2>Rankings</h2>
+<div class="aktivitaeten-section">
 
   <p class="aktivitaeten-hint">
     Mitglieder mit Ranking-Einwilligung — sortiert nach Distanz.
@@ -249,7 +243,7 @@ function renderMemberRankings(
     yearTitle
   )}
 
-</section>
+</div>
   `;
 
 }
@@ -324,9 +318,7 @@ function renderClubStats(
   }
 
   container.innerHTML = `
-<section class="aktivitaeten-section">
-
-  <h2>Vereinsziele</h2>
+<div class="aktivitaeten-section">
 
   <p class="aktivitaeten-hint">
     Summe aller Aktivitäten von Mitgliedern, die zu
@@ -346,7 +338,7 @@ function renderClubStats(
     `Gesamt ${period.year}`
   )}
 
-</section>
+</div>
   `;
 
 }

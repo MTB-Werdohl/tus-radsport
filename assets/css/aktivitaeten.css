@@ -13,9 +13,44 @@
   max-width: 900px;
   margin: 0 auto 3rem;
   padding: 0 1rem;
+}
+
+.aktivitaeten-tabs {
   display: flex;
-  flex-direction: column;
-  gap: 2rem;
+  gap: 8px;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.aktivitaeten-tab {
+  margin: 0;
+  padding: 10px 16px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  border-radius: 8px 8px 0 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.75);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.aktivitaeten-tab:hover {
+  color: #fff;
+}
+
+.aktivitaeten-tab.is-active {
+  color: #fff;
+  border-bottom-color: var(--header-bg);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.aktivitaeten-tab-panel[hidden] {
+  display: none !important;
+}
+
+.aktivitaeten-tab-panel .aktivitaeten-section {
+  margin-top: 0;
 }
 
 .aktivitaeten-section {

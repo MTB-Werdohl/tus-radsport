@@ -1,5 +1,7 @@
 async function loadAktivitaetenPortal() {
 
+  bindAktivitaetenTabEvents();
+
   const feedDays =
     getActivityFeedDays();
 
@@ -86,3 +88,56 @@ document.addEventListener(
   'DOMContentLoaded',
   loadAktivitaetenPortal
 );
+
+function switchAktivitaetenTab(tabId) {
+
+  document
+    .querySelectorAll('[data-aktivitaeten-tab]')
+    .forEach((button) => {
+
+      const isActive =
+        button.dataset.aktivitaetenTab === tabId;
+
+      button.classList.toggle(
+        'is-active',
+        isActive
+      );
+
+      button.setAttribute(
+        'aria-selected',
+        isActive ? 'true' : 'false'
+      );
+
+    });
+
+  document
+    .querySelectorAll('[data-aktivitaeten-panel]')
+    .forEach((panel) => {
+
+      panel.hidden =
+        panel.dataset.aktivitaetenPanel !== tabId;
+
+    });
+
+}
+
+function bindAktivitaetenTabEvents() {
+
+  document
+    .querySelectorAll('[data-aktivitaeten-tab]')
+    .forEach((button) => {
+
+      button.addEventListener(
+        'click',
+        () => {
+
+          switchAktivitaetenTab(
+            button.dataset.aktivitaetenTab
+          );
+
+        }
+      );
+
+    });
+
+}
