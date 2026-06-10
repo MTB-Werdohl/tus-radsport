@@ -655,6 +655,29 @@ h3 {
   font-weight: 600;
 }
 
+#admin .admin-feedback-section {
+  margin: 24px 0;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+#admin .admin-feedback-section h2 {
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+}
+
+.admin-feedback-checkboxes {
+  margin-bottom: 16px;
+}
+
+.admin-feedback-config {
+  margin-bottom: 12px;
+}
+
+.admin-form-save {
+  margin-top: 8px;
+}
+
 .member-admin-form label {
   display: block;
   margin-bottom: 15px;
@@ -781,16 +804,22 @@ h3 {
   border-radius: 0;
 }
 
+.admin-draft-card:hover {
+  background: rgba(46, 139, 87, 0.35);
+}
+
 .admin-draft-card-link {
   display: block;
+  flex: 1;
+  min-width: 0;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: color 0.2s ease;
 }
 
-.admin-draft-card-link:hover {
-  background: rgba(46, 139, 87, 0.35);
+.admin-draft-card:hover .admin-draft-card-link {
+  color: #fff;
 }
 
 .admin-draft-preview-actions {

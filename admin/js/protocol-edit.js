@@ -233,8 +233,12 @@ async function loadProtocolEdit() {
     data.meeting_date || '';
 
   document.getElementById('meeting_label').value =
-    data.meeting_label
-    || PROTOCOL_MEETING_LABELS[0];
+    data.meeting_label === 'Beschluss'
+      ? 'Hauptversammlung'
+      : (
+        data.meeting_label
+        || PROTOCOL_MEETING_LABELS[0]
+      );
 
   document.getElementById('scope').value =
     data.scope

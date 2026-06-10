@@ -4,6 +4,52 @@ const params =
 const editId =
   params.get('id');
 
+function extractTerminTimeFromDate(value) {
+
+  if (!value) {
+    return '';
+  }
+
+  const text =
+    String(value);
+
+  if (text.length < 16) {
+    return '';
+  }
+
+  const timePart =
+    text.slice(11, 16);
+
+  if (
+    timePart === '00:00'
+  ) {
+    return '';
+  }
+
+  return timePart;
+
+}
+
+function combineTerminDateTime(
+  dateOnly,
+  time
+) {
+
+  if (!dateOnly) {
+    return null;
+  }
+
+  const datePart =
+    dateOnly.slice(0, 10);
+
+  if (time) {
+    return `${datePart}T${time}`;
+  }
+
+  return `${datePart}T00:00:00`;
+
+}
+
 function toggleRecurring() {
 
   const recurring =
@@ -63,7 +109,7 @@ async function loadEvent() {
 
   document.getElementById('date').value =
     data.date
-      ? data.date.substring(0, 16)
+      ? data.date.substring(0, 10)
       : '';
 
   document.getElementById('endDate').value =
@@ -71,6 +117,11 @@ async function loadEvent() {
 
   document.getElementById('location').value =
     data.location || '';
+
+  document.getElementById('startTime').value =
+    data.startTime
+    || extractTerminTimeFromDate(data.date)
+    || '';
 
   populateTerminCategorySelect(
     document.getElementById('category'),
@@ -125,9 +176,6 @@ async function loadEvent() {
   document.getElementById('sichtbarkeit').value =
     data.sichtbarkeit
     || window.siteConfig.visibility.public;
-
-  document.getElementById('startTime').value =
-    data.startTime || '';
 
   document.getElementById('startRecur').value =
     data.startRecur || '';
@@ -384,7 +432,10 @@ async function saveEvent() {
     date:
       recurring
         ? null
-        : date || null,
+        : combineTerminDateTime(
+          date,
+          startTime
+        ),
 
     endDate:
       recurring
@@ -402,9 +453,7 @@ async function saveEvent() {
     recurring,
 
     startTime:
-      recurring
-        ? startTime
-        : null,
+      startTime || null,
 
     startRecur:
       recurring

@@ -200,20 +200,37 @@ function formatTerminDayRange(
 
 function getTerminTimeLabel(event, date) {
 
+  if (event?.startTime) {
+
+    return String(event.startTime).slice(0, 5);
+
+  }
+
   if (event?.recurring) {
-    return event.startTime || '';
+    return '';
+  }
+
+  if (!event?.date) {
+    return '';
   }
 
   const source =
     date || new Date(event.date);
 
-  return source.toLocaleTimeString(
-    'de-DE',
-    {
-      hour: '2-digit',
-      minute: '2-digit'
-    }
-  );
+  const label =
+    source.toLocaleTimeString(
+      'de-DE',
+      {
+        hour: '2-digit',
+        minute: '2-digit'
+      }
+    );
+
+  if (label === '00:00') {
+    return '';
+  }
+
+  return label;
 
 }
 

@@ -262,14 +262,14 @@ async function loadDraftsList() {
       drafts
         .map((draft) => `
 
-          <a
-            class="event-card admin-draft-card admin-draft-card-link"
-            href="${escapeAdminHtml(getDraftPreviewUrl(draft))}"
-          >
+          <div class="event-card admin-draft-card">
 
             <div class="event-header">
 
-              <div>
+              <a
+                class="admin-draft-card-link"
+                href="${escapeAdminHtml(getDraftPreviewUrl(draft))}"
+              >
 
                 <strong>
                   ${escapeAdminHtml(draft.title)}
@@ -289,14 +289,31 @@ async function loadDraftsList() {
 
                 </div>
 
+              </a>
+
+              <div class="actions">
+
+                <button
+                  type="button"
+                  class="delete-button"
+                  data-draft-type="${escapeAdminHtml(draft.type)}"
+                  data-draft-id="${draft.id}"
+                  title="Entwurf löschen">
+
+                  🗑
+
+                </button>
+
               </div>
 
             </div>
 
-          </a>
+          </div>
 
         `)
         .join('');
+
+    bindDraftListActions(container);
 
   } catch (error) {
 
@@ -311,6 +328,117 @@ async function loadDraftsList() {
       )
       + '</p>';
 
+  }
+
+}
+
+function bindDraftListActions(container) {
+
+  container
+    .querySelectorAll('[data-draft-id]')
+    .forEach((button) => {
+
+      button.addEventListener(
+        'click',
+        (event) => {
+
+          event.preventDefault();
+          event.stopPropagation();
+
+          void deleteAdminDraft({
+            type: button.dataset.draftType,
+            id: Number(button.dataset.draftId)
+          });
+
+        }
+      );
+
+    });
+
+}
+
+async function deleteAdminDraft(draft) {
+
+  if (
+    !draft?.id
+    || (
+      draft.type !== 'news'
+      && draft.type !== 'event'
+    )
+  ) {
+    return;
+  }
+
+  const typeLabel =
+    getDraftTypeLabel(draft.type);
+
+  const confirmDelete =
+    confirm(
+      `${typeLabel}-Entwurf wirklich löschen?`
+    );
+
+  if (!confirmDelete) {
+    return;
+  }
+
+  const entityType =
+    draft.type === 'event'
+      ? window.siteConfig.feedback.entityTypes.event
+      : window.siteConfig.feedback.entityTypes.news;
+
+  if (
+    typeof deleteFeedbackForEntity === 'function'
+  ) {
+
+    const feedbackResult =
+      await deleteFeedbackForEntity(
+        entityType,
+        draft.id
+      );
+
+    if (feedbackResult?.error) {
+
+      alert(
+        'Entwurf konnte nicht gelöscht werden: '
+        + 'Das zugehörige Feedback-Modul konnte nicht entfernt werden.'
+      );
+
+      return;
+
+    }
+
+  }
+
+  const table =
+    draft.type === 'event'
+      ? window.siteConfig.tables.termine
+      : window.siteConfig.tables.news;
+
+  const { error } =
+    await window.supabaseClient
+      .from(table)
+      .delete()
+      .eq('id', draft.id);
+
+  if (error) {
+
+    console.error(error);
+
+    alert(
+      error.message
+      || 'Löschen fehlgeschlagen.'
+    );
+
+    return;
+
+  }
+
+  await loadDraftsList();
+
+  if (
+    typeof loadDraftDashboardCard === 'function'
+  ) {
+    void loadDraftDashboardCard();
   }
 
 }

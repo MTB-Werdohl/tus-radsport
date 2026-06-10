@@ -15,7 +15,7 @@ const PROTOCOL_MEETING_LABELS = [
   'Vorstandssitzung',
   'Beiratssitzung',
   'Information',
-  'Beschluss'
+  'Hauptversammlung'
 ];
 
 function getProtocolTableName() {
@@ -47,9 +47,14 @@ function formatProtocolDate(value) {
 
 function formatProtocolTitle(row) {
 
-  const label =
+  const rawLabel =
     row?.meeting_label
     || 'Vorstandssitzung';
+
+  const label =
+    rawLabel === 'Beschluss'
+      ? 'Hauptversammlung'
+      : rawLabel;
 
   const dateLabel =
     formatProtocolDate(row?.meeting_date);

@@ -58,6 +58,14 @@ title: Termin bearbeiten
 
 </label>
 
+<section class="admin-feedback-section">
+
+  <h2>Feedback (optional)</h2>
+
+  <div id="feedback-admin-form-wrap"></div>
+
+</section>
+
 <div id="singleFields">
 
   <div class="row">
@@ -65,7 +73,7 @@ title: Termin bearbeiten
     <label class="admin-field">
       Start
       <input id="date"
-             type="datetime-local">
+             type="date">
     </label>
 
     <label class="admin-field">
@@ -76,55 +84,10 @@ title: Termin bearbeiten
 
   </div>
 
-  <label class="admin-field">
-    Ort
-    <input id="location"
-           placeholder="Ort">
-  </label>
-
   <p class="admin-hint">
     Enddatum leer lassen für eintägige Termine.
     Für Mehrtages-Termine z.&nbsp;B. 23.05.–28.05. Enddatum setzen.
   </p>
-
-</div>
-
-<div class="row">
-
-  <label class="admin-field">
-    Kategorie
-    <select id="category">
-      <option value="">
-        Kategorie wählen…
-      </option>
-    </select>
-  </label>
-
-  <label class="admin-field">
-    Bild
-    <input id="imageFile"
-           type="file"
-           accept="image/*">
-    <div id="currentImage"></div>
-  </label>
-
-</div>
-
-<div class="row">
-
-  <label class="admin-field">
-    Komoot Link
-    <input id="komoot"
-           placeholder="Komoot Link">
-  </label>
-
-  <label class="admin-field">
-    GPX
-    <input id="gpxFile"
-           type="file"
-           accept=".gpx">
-    <div id="currentGpx"></div>
-  </label>
 
 </div>
 
@@ -172,12 +135,6 @@ title: Termin bearbeiten
       </select>
     </label>
 
-    <label class="admin-field">
-      Uhrzeit
-      <input id="startTime"
-             type="time">
-    </label>
-
   </div>
 
   <div class="row">
@@ -218,6 +175,61 @@ title: Termin bearbeiten
 
 </div>
 
+<div class="row">
+
+  <label class="admin-field">
+    Uhrzeit
+    <input id="startTime"
+           type="time">
+  </label>
+
+  <label class="admin-field">
+    Ort
+    <input id="location"
+           placeholder="Ort">
+  </label>
+
+</div>
+
+<div class="row">
+
+  <label class="admin-field">
+    Kategorie
+    <select id="category">
+      <option value="">
+        Kategorie wählen…
+      </option>
+    </select>
+  </label>
+
+  <label class="admin-field">
+    Bild
+    <input id="imageFile"
+           type="file"
+           accept="image/*">
+    <div id="currentImage"></div>
+  </label>
+
+</div>
+
+<div class="row">
+
+  <label class="admin-field">
+    Komoot Link
+    <input id="komoot"
+           placeholder="Komoot Link">
+  </label>
+
+  <label class="admin-field">
+    GPX
+    <input id="gpxFile"
+           type="file"
+           accept=".gpx">
+    <div id="currentGpx"></div>
+  </label>
+
+</div>
+
 <label class="admin-field">
   Inhalt
   <textarea id="content"
@@ -243,17 +255,13 @@ title: Termin bearbeiten
   </select>
 </label>
 
-<button id="save-event" type="button">
+<button id="save-event"
+        type="button"
+        class="admin-form-save">
+
   Speichern
+
 </button>
-
-<section class="admin-feedback-section">
-
-  <h2>Feedback (optional)</h2>
-
-  <div id="feedback-admin-form-wrap"></div>
-
-</section>
 
   </div>
 

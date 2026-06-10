@@ -298,6 +298,16 @@ function toggleFeedbackAdminPollFields() {
       'feedback-admin-type'
     )?.value;
 
+  const configWrap =
+    document.getElementById(
+      'feedback-admin-config'
+    );
+
+  configWrap?.classList.toggle(
+    'hidden',
+    !enabled
+  );
+
   const pollWrap =
     document.getElementById(
       'feedback-admin-poll-wrap'
@@ -308,6 +318,16 @@ function toggleFeedbackAdminPollFields() {
     !enabled
     || type
       !== window.siteConfig.feedback.types.poll
+  );
+
+  const publicVotingWrap =
+    document.getElementById(
+      'feedback-admin-public-voting-wrap'
+    );
+
+  publicVotingWrap?.classList.toggle(
+    'hidden',
+    !enabled
   );
 
 }
@@ -668,81 +688,101 @@ function mountFeedbackAdminForm(mountId) {
 
   mount.innerHTML = `
 
-<label class="admin-field admin-field--inline">
+<div class="admin-feedback-checkboxes">
 
-  <input
-    id="feedback-admin-enabled"
-    type="checkbox"
-    class="checkbox">
+  <label class="admin-field admin-field--inline">
 
-  Feedback aktivieren
+    <input
+      id="feedback-admin-enabled"
+      type="checkbox"
+      class="checkbox">
 
-</label>
+    Feedback aktivieren
 
-<label class="admin-field">
-  Typ
-  <select id="feedback-admin-type">
-
-    <option value="yes_maybe">
-      Ja / Vielleicht
-    </option>
-
-    <option value="yes_no_comment">
-      Ja / Nein + Kommentar
-    </option>
-
-    <option value="poll">
-      Umfrage
-    </option>
-
-  </select>
-</label>
-
-<label class="admin-field">
-  Frage
-  <input
-    id="feedback-admin-question"
-    type="text"
-    placeholder="z. B. Wer fährt mit?">
-</label>
-
-<label class="admin-field admin-field--inline">
-
-  <input
-    id="feedback-admin-public-voting"
-    type="checkbox"
-    class="checkbox">
-
-  Öffentliche Abstimmung (externe Teilnehmer mit Name/E-Mail, Rolle „public“)
-
-</label>
-
-<p class="admin-hint">
-  Standard: nur Vereinsmitglieder. Öffentlich: Pop-up → Bestätigungs-Link per E-Mail → erst nach Klick Eintrag in der DB, dann abstimmen.
-</p>
-
-<div
-  id="feedback-admin-poll-wrap"
-  class="hidden">
+  </label>
 
   <p class="admin-hint">
-    Antworten, die Mitglieder auf der Website sehen. Die interne ID wird automatisch erzeugt.
+    Teilnahme-Button auf der Termin- bzw. News-Seite — nur sichtbar,
+    wenn aktiviert.
   </p>
 
-  <div
-    id="feedback-admin-options"
-    class="admin-feedback-options">
+  <div id="feedback-admin-public-voting-wrap">
+
+    <label class="admin-field admin-field--inline">
+
+      <input
+        id="feedback-admin-public-voting"
+        type="checkbox"
+        class="checkbox">
+
+      Öffentliche Abstimmung (externe Teilnehmer mit Name/E-Mail, Rolle „public“)
+
+    </label>
+
+    <p class="admin-hint">
+      Standard: nur Vereinsmitglieder. Öffentlich: Pop-up → Bestätigungs-Link
+      per E-Mail → erst nach Klick Eintrag in der DB, dann abstimmen.
+    </p>
 
   </div>
 
-  <button
-    id="feedback-admin-add-option"
-    type="button"
-    class="secondary-button">
+</div>
 
-    Option hinzufügen
+<div
+  id="feedback-admin-config"
+  class="hidden admin-feedback-config">
 
-  </button>
+  <label class="admin-field">
+    Typ
+    <select id="feedback-admin-type">
+
+      <option value="yes_maybe">
+        Ja / Vielleicht
+      </option>
+
+      <option value="yes_no_comment">
+        Ja / Nein + Kommentar
+      </option>
+
+      <option value="poll">
+        Umfrage
+      </option>
+
+    </select>
+  </label>
+
+  <label class="admin-field">
+    Frage
+    <input
+      id="feedback-admin-question"
+      type="text"
+      placeholder="z. B. Wer fährt mit?">
+  </label>
+
+  <div
+    id="feedback-admin-poll-wrap"
+    class="hidden">
+
+    <p class="admin-hint">
+      Antworten, die Mitglieder auf der Website sehen. Die interne ID wird automatisch erzeugt.
+    </p>
+
+    <div
+      id="feedback-admin-options"
+      class="admin-feedback-options">
+
+    </div>
+
+    <button
+      id="feedback-admin-add-option"
+      type="button"
+      class="secondary-button">
+
+      Option hinzufügen
+
+    </button>
+
+  </div>
 
 </div>
 
@@ -751,7 +791,7 @@ function mountFeedbackAdminForm(mountId) {
 </p>
 
 <p class="admin-hint">
-  Wird zusammen mit „Speichern“ oben gesichert.
+  Wird zusammen mit „Speichern“ am Ende des Formulars gesichert.
 </p>
 
 `;

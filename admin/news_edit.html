@@ -42,48 +42,69 @@ title: News bearbeiten
 
   <div class="member-admin-form">
 
-    <label>
-      Titel
-      <input id="title" type="text">
-    </label>
+<label class="admin-field">
+  Titel
+  <input id="title"
+         type="text"
+         placeholder="Titel">
+</label>
 
-    <label>
-      Kurztext
-      <textarea id="excerpt" rows="3"></textarea>
-    </label>
+<section class="admin-feedback-section">
 
-    <label>
-      Inhalt
-      <textarea id="content" rows="8"></textarea>
-    </label>
+  <h2>Feedback (optional)</h2>
 
-    <label>
-      Bild
-      <input id="imageFile" type="file" accept="image/*">
-    </label>
+  <div id="feedback-admin-form-wrap"></div>
 
-    <div id="currentImage"></div>
+</section>
 
-    <label>
-      Sichtbarkeit
-      <select id="sichtbarkeit">
-        <option value="draft">Entwurf (nur Vorstand)</option>
-        <option value="public">Öffentlich</option>
-        <option value="members">Nur Mitglieder</option>
-      </select>
-    </label>
+<label class="admin-field">
+  Kurztext
+  <textarea id="excerpt"
+            rows="3"
+            placeholder="Kurztext"></textarea>
+</label>
 
-    <button id="save-news" type="button">
-      Speichern
-    </button>
+<label class="admin-field">
+  Inhalt
+  <textarea id="content"
+            rows="8"
+            placeholder="Inhalt"></textarea>
+</label>
 
-    <section class="admin-feedback-section">
+<label class="admin-field">
+  Bild
+  <input id="imageFile"
+         type="file"
+         accept="image/*">
+  <div id="currentImage"></div>
+</label>
 
-      <h2>Feedback (optional)</h2>
+<label class="admin-field">
+  Sichtbarkeit
+  <select id="sichtbarkeit">
 
-      <div id="feedback-admin-form-wrap"></div>
+    <option value="draft">
+      Entwurf (nur Vorstand)
+    </option>
 
-    </section>
+    <option value="public">
+      Öffentlich
+    </option>
+
+    <option value="members">
+      Nur Mitglieder
+    </option>
+
+  </select>
+</label>
+
+<button id="save-news"
+        type="button"
+        class="admin-form-save">
+
+  Speichern
+
+</button>
 
   </div>
 
