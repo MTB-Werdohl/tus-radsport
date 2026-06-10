@@ -62,10 +62,15 @@ async function fetchNewsList() {
 
 async function fetchPublishedNews() {
 
-  const member =
+  const current =
     typeof getCurrentMember === 'function'
       ? getCurrentMember()
       : null;
+
+  const member =
+    typeof getViewerMember === 'function'
+      ? getViewerMember(current)
+      : current;
 
   return fetchNewsForViewer(member);
 
@@ -111,10 +116,15 @@ async function fetchNewsBySlug(
 
 async function fetchNews(slug) {
 
-  const member =
+  const current =
     typeof getCurrentMember === 'function'
       ? getCurrentMember()
       : null;
+
+  const member =
+    typeof getViewerMember === 'function'
+      ? getViewerMember(current)
+      : current;
 
   return fetchNewsBySlug(
     slug,

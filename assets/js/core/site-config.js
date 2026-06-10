@@ -63,7 +63,11 @@ window.siteConfig = {
   },
 
   siteStateKeys: {
-    lastPush: 'last_push'
+    lastPush: 'last_push',
+    siteBanner: 'site_banner',
+    saisonMode: 'saison_mode',
+    landingHints: 'landing_hints',
+    siteOverlay: 'site_overlay'
   },
 
   visibility: {
@@ -72,7 +76,7 @@ window.siteConfig = {
     draft: 'draft'
   },
 
-  adminJsVersion: '20260546'
+  adminJsVersion: '20260547'
 
 };
 

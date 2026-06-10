@@ -73,10 +73,15 @@ async function initFeedbackModule(options) {
 
   }
 
+  const viewerMember =
+    typeof getViewerMember === 'function'
+      ? getViewerMember(member)
+      : member;
+
   if (
     !shouldShowFeedbackToViewer(
       module,
-      member
+      viewerMember
     )
   ) {
     container.innerHTML = '';
@@ -85,12 +90,12 @@ async function initFeedbackModule(options) {
 
   let ownAnswer = null;
 
-  if (member?.id) {
+  if (viewerMember?.id) {
 
     ownAnswer =
       await fetchOwnFeedbackAnswer(
         module.id,
-        member.id
+        viewerMember.id
       );
 
   }
@@ -99,7 +104,7 @@ async function initFeedbackModule(options) {
     container,
     module,
     ownAnswer,
-    member,
+    viewerMember,
     options?.entityVisibility ?? null
   );
 

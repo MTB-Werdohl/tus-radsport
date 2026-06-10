@@ -16,7 +16,7 @@ async function ensureVorstandSession(
       session.user.email
     );
 
-  if (!member || !isVorstand(member)) {
+  if (!member || !isRealVorstand(member)) {
     return null;
   }
 

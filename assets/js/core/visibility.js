@@ -124,6 +124,31 @@ function viewerIncludesDrafts(member) {
 async function ensureContentViewerMember() {
 
   if (
+    typeof getViewerMember === 'function'
+  ) {
+
+    const current =
+      typeof getCurrentMember === 'function'
+        ? getCurrentMember()
+        : null;
+
+    const viewer =
+      getViewerMember(current);
+
+    if (viewer) {
+      return viewer;
+    }
+
+    if (
+      typeof isAdminPreviewActive === 'function'
+      && isAdminPreviewActive()
+    ) {
+      return null;
+    }
+
+  }
+
+  if (
     typeof getCurrentMember === 'function'
     && getCurrentMember()
   ) {

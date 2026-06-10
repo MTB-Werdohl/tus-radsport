@@ -2193,3 +2193,133 @@ max-width:none;
 }
 
 }
+
+/* Phase 5 — Rollen-Vorschau */
+
+.admin-preview-banner {
+  position: sticky;
+  top: 0;
+  z-index: 10000;
+  background: #1a1a1a;
+  color: #fff;
+  border-bottom: 3px solid #ed1c24;
+}
+
+.admin-preview-banner__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0.65rem 1rem;
+}
+
+.admin-preview-banner__text {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.admin-preview-banner__end {
+  border: 1px solid #fff;
+  background: transparent;
+  color: #fff;
+  padding: 0.35rem 0.85rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.admin-preview-banner__end:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+body.admin-preview-active .member-admin-link {
+  display: none !important;
+}
+
+/* Phase 5 — Website-Hinweise */
+
+.site-global-banner {
+  padding: 0.65rem 1rem;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.site-global-banner--info {
+  background: #e8f4fd;
+  color: #0b3d5c;
+}
+
+.site-global-banner--warning {
+  background: #fff3cd;
+  color: #664d03;
+}
+
+.site-global-banner__link {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.site-saison-banner {
+  padding: 0.75rem 1rem;
+  text-align: center;
+  background: #f5f5f5;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  font-size: 0.95rem;
+}
+
+body.site-saison-pause .cta-btn,
+body.site-saison-pause .home-hero-cta,
+body.site-saison-pause .mitfahren-hero__cta {
+  opacity: 0.55;
+  filter: grayscale(0.12);
+}
+
+.home-quick-facts__link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.home-quick-facts__link:hover {
+  text-decoration: underline;
+}
+
+.site-content-overlay {
+  border: none;
+  padding: 0;
+  max-width: min(92vw, 32rem);
+  border-radius: 8px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.site-content-overlay::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.site-content-overlay__inner {
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.site-content-overlay__title {
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
+}
+
+.site-content-overlay__text {
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+
+.site-content-overlay__close {
+  border: 0;
+  background: #ed1c24;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font: inherit;
+}

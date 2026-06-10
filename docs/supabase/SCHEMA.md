@@ -119,7 +119,17 @@ Metadaten + `image_path` (öffentliche Storage-URL).
 
 ## `site_state`
 
-Key-Value (JSONB). Für die **Tröte** auf der Startseite: `key = 'last_push'`, `value` = `{ title, body, url, sent_at }`. Nur eine aktuelle Mitteilung; Vorstand überschreibt beim Veröffentlichen.
+Key-Value (JSONB). Vorstand schreibt per Client (RLS).
+
+| Key | Zweck |
+|-----|--------|
+| `last_push` | Tröte — `{ title, body, url, sent_at }` |
+| `site_banner` | Globale Hinweisleiste — `{ active, text, url?, style, starts_at?, ends_at?, updated_at }` |
+| `saison_mode` | Saison aktiv / pause — `{ mode, message, starts_at?, ends_at?, updated_at }` |
+| `landing_hints` | Startseiten-Hinweise — `{ items: [{ text, url?, active }], updated_at }` |
+| `site_overlay` | Modal für alle — `{ active, title, text, dismissible, starts_at?, ends_at?, updated_at }` |
+
+Öffentliches SELECT: `last_push` + Phase-5-Keys (siehe `supabase-site-content.sql`).
 
 ## `feedback_modules` / `feedback_answers`
 

@@ -156,8 +156,8 @@ function handleAdminLoginIntent() {
 
   if (
     member
-    && typeof isVorstand === 'function'
-    && isVorstand(member)
+    && typeof isRealVorstand === 'function'
+    && isRealVorstand(member)
   ) {
 
     const returnUrl =

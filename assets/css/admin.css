@@ -1098,3 +1098,47 @@ h3 {
 .admin-protocol-view .admin-draft-preview__body {
   margin-top: 8px;
 }
+
+.site-content-admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.site-content-admin-tab {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+  padding: 0.5rem 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.site-content-admin-tab.is-active {
+  background: rgba(46, 139, 87, 0.85);
+  border-color: transparent;
+}
+
+.site-content-admin-panel form {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 36rem;
+}
+
+.site-landing-item {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+}
+
+.admin-preview-page .admin-preview-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}

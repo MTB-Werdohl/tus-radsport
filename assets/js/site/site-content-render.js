@@ -1,0 +1,299 @@
+function renderGlobalSiteBanner(
+  banner
+) {
+
+  const container =
+    document.getElementById(
+      'site-global-banner'
+    );
+
+  if (!container) {
+    return;
+  }
+
+  if (
+    !banner
+    || !isSiteContentScheduleActive(banner)
+    || !banner.text
+  ) {
+
+    container.hidden = true;
+    container.innerHTML = '';
+
+    return;
+
+  }
+
+  const styleClass =
+    banner.style === 'warning'
+      ? 'site-global-banner--warning'
+      : 'site-global-banner--info';
+
+  const inner =
+    banner.url
+      ? `<a
+          class="site-global-banner__link"
+          href="${escapeSiteContentHtml(banner.url)}">
+          ${escapeSiteContentHtml(banner.text)}
+        </a>`
+      : `<span class="site-global-banner__text">
+          ${escapeSiteContentHtml(banner.text)}
+        </span>`;
+
+  container.hidden = false;
+
+  container.innerHTML = `
+<div
+  class="site-global-banner ${styleClass}"
+  role="status">
+
+  ${inner}
+
+</div>
+  `.trim();
+
+}
+
+function applySaisonMode(
+  saison
+) {
+
+  document.body.classList.remove(
+    'site-saison-pause'
+  );
+
+  const saisonBannerTarget =
+    document.getElementById(
+      'site-saison-banner'
+    );
+
+  if (saisonBannerTarget) {
+    saisonBannerTarget.innerHTML = '';
+    saisonBannerTarget.hidden = true;
+  }
+
+  if (
+    !saison
+    || !isSiteContentScheduleActive({
+      active: true,
+      starts_at: saison.starts_at,
+      ends_at: saison.ends_at
+    })
+  ) {
+    return;
+  }
+
+  if (saison.mode !== 'pause') {
+    return;
+  }
+
+  document.body.classList.add(
+    'site-saison-pause'
+  );
+
+  if (
+    !saison.message
+    || !saisonBannerTarget
+  ) {
+    return;
+  }
+
+  saisonBannerTarget.hidden = false;
+
+  saisonBannerTarget.innerHTML = `
+<div
+  class="site-saison-banner"
+  role="status">
+
+  ${escapeSiteContentHtml(saison.message)}
+
+</div>
+  `.trim();
+
+}
+
+function renderLandingHints(
+  landingHints
+) {
+
+  const container =
+    document.getElementById(
+      'home-quick-facts'
+    );
+
+  if (!container) {
+    return;
+  }
+
+  const items =
+    (landingHints?.items || [])
+      .filter((item) =>
+        item.active && item.text
+      );
+
+  if (!items.length) {
+    return;
+  }
+
+  container.innerHTML =
+    items
+      .map((item) => {
+
+        if (item.url) {
+
+          return `
+<a
+  class="home-quick-facts__link"
+  href="${escapeSiteContentHtml(item.url)}">
+
+  <strong>${escapeSiteContentHtml(item.text)}</strong>
+
+</a>
+          `.trim();
+
+        }
+
+        return `
+<strong>${escapeSiteContentHtml(item.text)}</strong>
+        `.trim();
+
+      })
+      .join('');
+
+}
+
+function renderSiteOverlay(
+  overlay
+) {
+
+  const existing =
+    document.getElementById(
+      'site-content-overlay'
+    );
+
+  if (existing) {
+    existing.remove();
+  }
+
+  if (
+    !overlay
+    || !isSiteContentScheduleActive(overlay)
+    || !overlay.text
+    || isSiteOverlayDismissed(overlay)
+  ) {
+    return;
+  }
+
+  const dialog =
+    document.createElement('dialog');
+
+  dialog.id = 'site-content-overlay';
+  dialog.className =
+    'site-content-overlay';
+
+  dialog.innerHTML = `
+<form method="dialog" class="site-content-overlay__form">
+
+  <div class="site-content-overlay__inner">
+
+    ${
+      overlay.title
+        ? `<h2 class="site-content-overlay__title">
+            ${escapeSiteContentHtml(overlay.title)}
+          </h2>`
+        : ''
+    }
+
+    <p class="site-content-overlay__text">
+      ${escapeSiteContentHtml(overlay.text)}
+    </p>
+
+    ${
+      overlay.dismissible
+        ? `<button
+            type="submit"
+            class="site-content-overlay__close">
+
+            Schließen
+
+          </button>`
+        : ''
+    }
+
+  </div>
+
+</form>
+  `.trim();
+
+  document.body.appendChild(dialog);
+
+  if (overlay.dismissible) {
+
+    dialog
+      .querySelector('form')
+      ?.addEventListener(
+        'submit',
+        (event) => {
+
+          event.preventDefault();
+
+          markSiteOverlayDismissed(overlay);
+
+          dialog.close();
+          dialog.remove();
+
+        }
+      );
+
+  }
+
+  if (
+    typeof dialog.showModal === 'function'
+  ) {
+    dialog.showModal();
+  }
+
+}
+
+async function initPublicSiteContent() {
+
+  if (
+    typeof fetchPublicSiteContent
+      !== 'function'
+  ) {
+    return;
+  }
+
+  try {
+
+    const content =
+      await fetchPublicSiteContent();
+
+    renderGlobalSiteBanner(
+      content.banner
+    );
+
+    applySaisonMode(
+      content.saison
+    );
+
+    renderLandingHints(
+      content.landingHints
+    );
+
+    renderSiteOverlay(
+      content.overlay
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+}
+
+document.addEventListener(
+  'DOMContentLoaded',
+  initPublicSiteContent
+);

@@ -48,7 +48,11 @@ async function refreshTermineAfterMemberLogin() {
   ) {
 
     window.contentViewerMember =
-      getCurrentMember();
+      typeof getViewerMember === 'function'
+        ? getViewerMember(
+          getCurrentMember()
+        )
+        : getCurrentMember();
 
   } else if (
     typeof ensureContentViewerMember
@@ -138,6 +142,22 @@ async function refreshTermineAfterMemberLogin() {
 window.addEventListener(
   'member-session-ready',
   () => {
+
+    void refreshTermineAfterMemberLogin();
+
+  }
+);
+
+window.addEventListener(
+  'admin-preview-changed',
+  () => {
+
+    if (
+      typeof syncContentViewerMember
+        === 'function'
+    ) {
+      syncContentViewerMember();
+    }
 
     void refreshTermineAfterMemberLogin();
 

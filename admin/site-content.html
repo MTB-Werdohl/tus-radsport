@@ -1,0 +1,326 @@
+---
+layout: null
+title: Website-Hinweise
+---
+
+<!doctype html>
+
+<html lang="de">
+
+<head>
+
+{% include admin-head.html %}
+
+  <script src="/assets/js/site/site-content-state.js?v={{ site.admin_js_version }}"></script>
+
+</head>
+
+<body>
+
+<div id="admin">
+
+  <div class="page-header">
+
+    <div>
+
+      <h1>
+        Website-Hinweise
+      </h1>
+
+      <p>
+        Banner, Saisonmodus, Landing-Hinweise und Overlay
+      </p>
+
+    </div>
+
+    <a href="/admin/"
+       class="back-button">
+
+      ← Dashboard
+
+    </a>
+
+  </div>
+
+  <div class="site-content-admin">
+
+    <nav
+      class="site-content-admin-tabs"
+      aria-label="Bereiche">
+
+      <button
+        type="button"
+        class="site-content-admin-tab is-active"
+        data-site-content-tab="banner">
+
+        Banner
+
+      </button>
+
+      <button
+        type="button"
+        class="site-content-admin-tab"
+        data-site-content-tab="saison">
+
+        Saisonmodus
+
+      </button>
+
+      <button
+        type="button"
+        class="site-content-admin-tab"
+        data-site-content-tab="landing">
+
+        Landing-Hinweise
+
+      </button>
+
+      <button
+        type="button"
+        class="site-content-admin-tab"
+        data-site-content-tab="overlay">
+
+        Overlay
+
+      </button>
+
+    </nav>
+
+    <section
+      class="site-content-admin-panel"
+      data-site-content-panel="banner">
+
+      <form id="site-banner-form">
+
+        <label>
+          <input
+            type="checkbox"
+            id="site-banner-active"
+            name="active">
+          Banner aktiv
+        </label>
+
+        <label for="site-banner-text">
+          Text
+        </label>
+
+        <textarea
+          id="site-banner-text"
+          rows="3"
+          maxlength="500"></textarea>
+
+        <label for="site-banner-url">
+          Link (optional)
+        </label>
+
+        <input
+          type="text"
+          id="site-banner-url"
+          placeholder="/training/">
+
+        <label for="site-banner-style">
+          Stil
+        </label>
+
+        <select id="site-banner-style">
+          <option value="info">Info</option>
+          <option value="warning">Warnung</option>
+        </select>
+
+        <label for="site-banner-starts">
+          Von (optional)
+        </label>
+
+        <input
+          type="datetime-local"
+          id="site-banner-starts">
+
+        <label for="site-banner-ends">
+          Bis (optional)
+        </label>
+
+        <input
+          type="datetime-local"
+          id="site-banner-ends">
+
+        <button type="submit">
+          Banner speichern
+        </button>
+
+      </form>
+
+      <p
+        id="site-banner-status"
+        class="admin-hint"></p>
+
+    </section>
+
+    <section
+      class="site-content-admin-panel"
+      data-site-content-panel="saison"
+      hidden>
+
+      <form id="site-saison-form">
+
+        <label for="site-saison-mode">
+          Status
+        </label>
+
+        <select id="site-saison-mode">
+          <option value="active">Saison aktiv</option>
+          <option value="pause">Saisonpause</option>
+        </select>
+
+        <label for="site-saison-message">
+          Hinweistext
+        </label>
+
+        <textarea
+          id="site-saison-message"
+          rows="3"
+          maxlength="500"></textarea>
+
+        <label for="site-saison-starts">
+          Von (optional)
+        </label>
+
+        <input
+          type="datetime-local"
+          id="site-saison-starts">
+
+        <label for="site-saison-ends">
+          Bis (optional)
+        </label>
+
+        <input
+          type="datetime-local"
+          id="site-saison-ends">
+
+        <button type="submit">
+          Saisonmodus speichern
+        </button>
+
+      </form>
+
+      <p
+        id="site-saison-status"
+        class="admin-hint"></p>
+
+    </section>
+
+    <section
+      class="site-content-admin-panel"
+      data-site-content-panel="landing"
+      hidden>
+
+      <form id="site-landing-form">
+
+        <p class="admin-hint">
+          Maximal 5 kurze Hinweise für die Startseite.
+          Leer lassen = statischer Jekyll-Text bleibt sichtbar.
+        </p>
+
+        <div id="site-landing-items"></div>
+
+        <button
+          type="button"
+          id="site-landing-add"
+          class="new-button">
+
+          Hinweis hinzufügen
+
+        </button>
+
+        <button type="submit">
+          Landing-Hinweise speichern
+        </button>
+
+      </form>
+
+      <p
+        id="site-landing-status"
+        class="admin-hint"></p>
+
+    </section>
+
+    <section
+      class="site-content-admin-panel"
+      data-site-content-panel="overlay"
+      hidden>
+
+      <form id="site-overlay-form">
+
+        <label>
+          <input
+            type="checkbox"
+            id="site-overlay-active"
+            name="active">
+          Overlay aktiv
+        </label>
+
+        <label for="site-overlay-title">
+          Titel
+        </label>
+
+        <input
+          type="text"
+          id="site-overlay-title"
+          maxlength="120">
+
+        <label for="site-overlay-text">
+          Text
+        </label>
+
+        <textarea
+          id="site-overlay-text"
+          rows="4"
+          maxlength="800"></textarea>
+
+        <label>
+          <input
+            type="checkbox"
+            id="site-overlay-dismissible"
+            checked>
+          Besucher können schließen
+        </label>
+
+        <label for="site-overlay-starts">
+          Von (optional)
+        </label>
+
+        <input
+          type="datetime-local"
+          id="site-overlay-starts">
+
+        <label for="site-overlay-ends">
+          Bis (optional)
+        </label>
+
+        <input
+          type="datetime-local"
+          id="site-overlay-ends">
+
+        <button type="submit">
+          Overlay speichern
+        </button>
+
+      </form>
+
+      <p
+        id="site-overlay-status"
+        class="admin-hint"></p>
+
+    </section>
+
+  </div>
+
+</div>
+
+<script src="/admin/js/site-content-admin.js?v={{ site.admin_js_version }}"></script>
+<script>
+requireAdminSession(initSiteContentAdminPage);
+</script>
+
+</body>
+
+</html>

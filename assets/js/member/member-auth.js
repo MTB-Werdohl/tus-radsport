@@ -16,7 +16,14 @@ function refreshMemberNav() {
   if (
     typeof updateMemberNav === 'function'
   ) {
-    updateMemberNav(currentMember);
+
+    const viewer =
+      typeof getViewerMember === 'function'
+        ? getViewerMember(currentMember)
+        : currentMember;
+
+    updateMemberNav(viewer);
+
   }
 
 }

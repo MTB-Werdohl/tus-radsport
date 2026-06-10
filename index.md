@@ -39,7 +39,7 @@ description: Radsportabteilung TuS Jahn Werdohl — gemeinsam MTB, Gravel & E-Bi
       Jetzt anfragen (WhatsApp)
     </a>
 
-    <p class="home-quick-facts">
+    <p class="home-quick-facts" id="home-quick-facts">
       <strong>After-Work Tour · jeden Dienstag 18:00 · Brüninghausplatz, Werdohl</strong>
     </p>
   </div>

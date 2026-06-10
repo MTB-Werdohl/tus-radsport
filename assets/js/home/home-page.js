@@ -115,9 +115,17 @@ async function loadHomeTeasers() {
   try {
 
     const member =
-      typeof getCurrentMember === 'function'
-        ? getCurrentMember()
-        : null;
+      typeof getViewerMember === 'function'
+        ? getViewerMember(
+          typeof getCurrentMember === 'function'
+            ? getCurrentMember()
+            : null
+        )
+        : (
+          typeof getCurrentMember === 'function'
+            ? getCurrentMember()
+            : null
+        );
 
     const news =
       await fetchNewsForViewer(member);
@@ -160,6 +168,22 @@ async function initHomePage() {
   await loadHomeTeasers();
 
 }
+
+window.addEventListener(
+  'admin-preview-changed',
+  () => {
+
+    if (
+      typeof syncContentViewerMember
+        === 'function'
+    ) {
+      syncContentViewerMember();
+    }
+
+    void loadHomeTeasers();
+
+  }
+);
 
 document.addEventListener(
   'DOMContentLoaded',
