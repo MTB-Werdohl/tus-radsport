@@ -247,37 +247,8 @@ async function loadFeedbackList() {
       modules
     );
 
-  const validModules = [];
-  const orphanedModules = [];
-
-  modules.forEach((module) => {
-
-    const entity =
-      getFeedbackEntityFromMap(
-        entityMap,
-        module
-      );
-
-    if (entity) {
-      validModules.push(module);
-    } else {
-      orphanedModules.push(module);
-    }
-
-  });
-
-  if (orphanedModules.length) {
-
-    await Promise.all(
-      orphanedModules.map((module) =>
-        deleteFeedbackForEntity(
-          module.entity_type,
-          module.entity_id
-        )
-      )
-    );
-
-  }
+  const validModules =
+    modules.slice();
 
   if (!validModules.length) {
 

@@ -75,6 +75,8 @@ async function loadEvent() {
     entityType:
       window.siteConfig.feedback.entityTypes.event,
     entityId: event.id,
+    entityVisibility:
+      event.sichtbarkeit,
     container: 'event-feedback'
   });
 

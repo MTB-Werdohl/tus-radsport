@@ -183,6 +183,9 @@ datesSet(info){
 
     calendar.render();
 
+    window.__siteCalendar =
+      calendar;
+
   }
 
 );

@@ -1159,6 +1159,12 @@ async function loadMemberProfilePage() {
 
   }
 
+  if (
+    handleMemberReturnRedirect(member)
+  ) {
+    return;
+  }
+
   document.title =
     `Mein Profil · MTB Werdohl`;
 

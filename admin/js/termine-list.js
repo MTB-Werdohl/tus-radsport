@@ -293,23 +293,6 @@ async function deleteEvent(id) {
     return;
   }
 
-  const feedbackResult =
-    await deleteFeedbackForEntity(
-      window.siteConfig.feedback.entityTypes.event,
-      id
-    );
-
-  if (feedbackResult?.error) {
-
-    alert(
-      'Termin konnte nicht gelöscht werden: ' +
-      'Das zugehörige Feedback-Modul konnte nicht entfernt werden.'
-    );
-
-    return;
-
-  }
-
   const { error } =
     await window.supabaseClient
       .from(window.siteConfig.tables.termine)
@@ -319,6 +302,10 @@ async function deleteEvent(id) {
   if (error) {
 
     console.error(error);
+
+    alert(
+      'Termin konnte nicht gelöscht werden.'
+    );
 
     return;
 

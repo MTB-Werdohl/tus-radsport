@@ -175,7 +175,7 @@ async function loadEvent() {
 
   document.getElementById('sichtbarkeit').value =
     data.sichtbarkeit
-    || window.siteConfig.visibility.public;
+    || window.siteConfig.visibility.draft;
 
   document.getElementById('startRecur').value =
     data.startRecur || '';
@@ -485,7 +485,7 @@ async function saveEvent() {
       document
         .getElementById('sichtbarkeit')
         .value
-      || window.siteConfig.visibility.public
+      || window.siteConfig.visibility.draft
 
   };
 

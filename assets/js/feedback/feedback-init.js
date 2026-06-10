@@ -26,6 +26,8 @@ async function initFeedbackModule(options) {
     {
       entityType,
       entityId,
+      entityVisibility:
+        options?.entityVisibility ?? null,
       container:
         typeof options?.container === 'string'
           ? options.container
@@ -97,7 +99,8 @@ async function initFeedbackModule(options) {
     container,
     module,
     ownAnswer,
-    member
+    member,
+    options?.entityVisibility ?? null
   );
 
 }

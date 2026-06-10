@@ -68,6 +68,8 @@ await initFeedbackModule({
   entityType:
     window.siteConfig.feedback.entityTypes.news,
   entityId: data.id,
+  entityVisibility:
+    data.sichtbarkeit,
   container: 'news-feedback'
 });
 

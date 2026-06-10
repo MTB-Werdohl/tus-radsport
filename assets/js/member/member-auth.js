@@ -1,6 +1,9 @@
 const MEMBER_ERROR_NOT_FOUND =
   'Kein Vereinsmitglied gefunden.';
 
+const MEMBER_RETURN_URL_KEY =
+  'memberReturnUrl';
+
 let currentMember = null;
 let toastTimer = null;
 
@@ -716,6 +719,174 @@ async function isMemberEmail(email) {
 
 }
 
+function isSafeMemberReturnUrl(url) {
+
+  if (
+    !url
+    || typeof url !== 'string'
+  ) {
+    return false;
+  }
+
+  const trimmed =
+    url.trim();
+
+  if (
+    !trimmed.startsWith('/')
+    || trimmed.startsWith('//')
+  ) {
+    return false;
+  }
+
+  if (
+    trimmed.startsWith('/profil')
+  ) {
+    return false;
+  }
+
+  return true;
+
+}
+
+function rememberMemberReturnUrl(url) {
+
+  const value =
+    url
+    || (
+      window.location.pathname
+      + window.location.search
+    );
+
+  if (
+    isSafeMemberReturnUrl(value)
+  ) {
+
+    sessionStorage.setItem(
+      MEMBER_RETURN_URL_KEY,
+      value
+    );
+
+  }
+
+}
+
+function resolveMemberMagicLinkRedirectTo() {
+
+  const base =
+    `${window.siteConfig.siteUrl}/profil/`;
+
+  const adminReturn =
+    sessionStorage.getItem('adminReturnUrl');
+
+  if (
+    adminReturn
+    && adminReturn.startsWith('/admin')
+  ) {
+
+    return (
+      `${base}?next=${encodeURIComponent(adminReturn)}`
+    );
+
+  }
+
+  const storedReturn =
+    sessionStorage.getItem(
+      MEMBER_RETURN_URL_KEY
+    );
+
+  const currentReturn =
+    isSafeMemberReturnUrl(
+      window.location.pathname
+      + window.location.search
+    )
+      ? (
+        window.location.pathname
+        + window.location.search
+      )
+      : null;
+
+  const memberReturn =
+    storedReturn
+    || currentReturn;
+
+  if (
+    memberReturn
+    && isSafeMemberReturnUrl(memberReturn)
+  ) {
+
+    return (
+      `${base}?next=${encodeURIComponent(memberReturn)}`
+    );
+
+  }
+
+  return base;
+
+}
+
+function handleMemberReturnRedirect(member) {
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  let nextUrl =
+    params.get('next');
+
+  if (!nextUrl) {
+
+    nextUrl =
+      sessionStorage.getItem(
+        MEMBER_RETURN_URL_KEY
+      );
+
+  }
+
+  if (
+    !nextUrl
+    || !isSafeMemberReturnUrl(nextUrl)
+  ) {
+    return false;
+  }
+
+  if (
+    nextUrl.startsWith('/admin')
+  ) {
+
+    if (
+      typeof isVorstand === 'function'
+      && isVorstand(member)
+    ) {
+
+      sessionStorage.removeItem(
+        'adminReturnUrl'
+      );
+
+      sessionStorage.removeItem(
+        MEMBER_RETURN_URL_KEY
+      );
+
+      window.location.replace(nextUrl);
+
+      return true;
+
+    }
+
+    return false;
+
+  }
+
+  sessionStorage.removeItem(
+    MEMBER_RETURN_URL_KEY
+  );
+
+  window.location.replace(nextUrl);
+
+  return true;
+
+}
+
 async function sendMemberMagicLink(email) {
 
   const normalized =
@@ -744,21 +915,10 @@ async function sendMemberMagicLink(email) {
 
   }
 
-  const adminReturn =
-    sessionStorage.getItem('adminReturnUrl');
+  rememberMemberReturnUrl();
 
-  let emailRedirectTo =
-    `${window.siteConfig.siteUrl}/profil/`;
-
-  if (
-    adminReturn
-    && adminReturn.startsWith('/admin')
-  ) {
-
-    emailRedirectTo +=
-      `?next=${encodeURIComponent(adminReturn)}`;
-
-  }
+  const emailRedirectTo =
+    resolveMemberMagicLinkRedirectTo();
 
   const { error } =
     await window.supabaseClient.auth.signInWithOtp({

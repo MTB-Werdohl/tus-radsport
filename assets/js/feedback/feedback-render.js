@@ -12,6 +12,18 @@ function escapeFeedbackHtml(value) {
 
 }
 
+function isFeedbackEntityPublic(
+  entityVisibility
+) {
+
+  return (
+    entityVisibility === 'public'
+    || entityVisibility
+      === window.siteConfig.visibility.public
+  );
+
+}
+
 function shouldShowFeedbackToViewer(
   module,
   member
@@ -22,17 +34,6 @@ function shouldShowFeedbackToViewer(
     || module.enabled === false
   ) {
     return false;
-  }
-
-  if (
-    module.public_voting !== true
-  ) {
-
-    return (
-      typeof isClubMember === 'function'
-      && isClubMember(member)
-    );
-
   }
 
   return true;
@@ -306,11 +307,13 @@ function canVoteOnFeedbackModule(
 
 function shouldShowPublicGate(
   module,
-  member
+  member,
+  entityVisibility
 ) {
 
   return (
-    module?.public_voting === true
+    isFeedbackEntityPublic(entityVisibility)
+    && module?.public_voting === true
     && !canVoteOnFeedbackModule(
       module,
       member
@@ -336,7 +339,8 @@ function renderFeedbackModule(
   container,
   module,
   ownAnswer,
-  member
+  member,
+  entityVisibility
 ) {
 
   if (!container || !module) {
@@ -364,7 +368,8 @@ function renderFeedbackModule(
   const showPublicGate =
     shouldShowPublicGate(
       module,
-      member
+      member,
+      entityVisibility
     );
 
   const type =
@@ -450,7 +455,8 @@ ${
     bindFeedbackModuleEvents(
       container,
       module,
-      member
+      member,
+      entityVisibility
     );
   } else if (showPublicGate) {
     bindFeedbackPublicGateEvents(container);
@@ -496,7 +502,8 @@ function showFeedbackStatus(
 function bindFeedbackModuleEvents(
   container,
   module,
-  member
+  member,
+  entityVisibility
 ) {
 
   const identity =
@@ -544,7 +551,8 @@ function bindFeedbackModuleEvents(
       container,
       module,
       null,
-      member
+      member,
+      entityVisibility
     );
 
     showFeedbackStatus(
@@ -632,7 +640,8 @@ function bindFeedbackModuleEvents(
         container,
         module,
         result.data,
-        member
+        member,
+        entityVisibility
       );
 
       showFeedbackStatus(
