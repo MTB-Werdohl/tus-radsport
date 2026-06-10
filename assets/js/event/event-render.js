@@ -17,11 +17,18 @@ function renderEvent(
     `${event.title}
     · MTB Werdohl`;
 
+  const calendarBackUrl =
+    typeof getCalendarUrl === 'function'
+      ? getCalendarUrl()
+      : '/kalender/';
+
   wrapper.innerHTML = `
 
 <div class="event-page">
 
-<div class="event-meta">
+<header class="event-header">
+
+<div class="event-header__title">
 
 <h1 class="event-title">
 
@@ -32,7 +39,25 @@ ${formatContentCardTitle(
 
 </h1>
 
+<div class="event-header__actions">
+
+<a
+  class="event-back-link"
+  href="${calendarBackUrl}">
+
+← Zurück
+
+</a>
+
 <div id="share"></div>
+
+</div>
+
+</div>
+
+<div class="event-header__main">
+
+<div class="event-header__when">
 
 <h2 class="event-date">
 
@@ -68,7 +93,7 @@ event.location
 
 `
 
-<p>
+<p class="event-location">
 
 📍
 
@@ -83,6 +108,16 @@ ${event.location}
 }
 
 </div>
+
+<div
+  id="event-feedback"
+  class="event-header__feedback">
+
+</div>
+
+</div>
+
+</header>
 
 ${
 
@@ -124,11 +159,9 @@ event.content || ''
 
 <div class="event-back">
 
-<a href="${
-  typeof getCalendarUrl === 'function'
-    ? getCalendarUrl()
-    : '/kalender/'
-}">
+<a
+  class="event-back-link"
+  href="${calendarBackUrl}">
 
 ← Zurück
 
