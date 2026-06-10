@@ -542,6 +542,79 @@ a:hover {
   max-width: 700px;
 }
 
+.member-votes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.member-votes-section + .member-votes-section {
+  margin-top: 8px;
+}
+
+.member-votes-section__heading {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.member-votes-divider {
+  margin: 0;
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.member-votes-section__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.member-votes-section__empty {
+  margin: 0;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.95rem;
+}
+
+.member-votes-pagination-wrap {
+  margin-top: 4px;
+}
+
+.member-votes-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+}
+
+.member-votes-pagination__info {
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.92rem;
+}
+
+.member-votes-pagination__btn {
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transition: background 0.2s ease;
+}
+
+.member-votes-pagination__btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.member-votes-pagination__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .member-strava-hint {
   margin: 0 0 14px;
   line-height: 1.5;

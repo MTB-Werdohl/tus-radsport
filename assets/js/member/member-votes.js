@@ -1,3 +1,8 @@
+const MEMBER_VOTES_POLLS_PAGE_SIZE = 5;
+
+let memberVotesGroupedCache = null;
+let memberVotesPollsPage = 1;
+
 function isTerminStillUpcoming(termin) {
 
   const today =
@@ -96,7 +101,54 @@ function formatMemberVoteAnswerLine(
 
 }
 
-async function fetchMemberUpcomingVotes(
+function buildMemberVoteItem(
+  answerRow,
+  module,
+  entity
+) {
+
+  const isEvent =
+    module.entity_type
+    === window.siteConfig.feedback.entityTypes.event;
+
+  const answerLabel =
+    module.type
+    === window.siteConfig.feedback.types.poll
+      ? formatFeedbackPollAnswerDisplay(
+        module,
+        answerRow
+      )
+      : formatFeedbackAnswerLabel(
+        module,
+        answerRow.answer
+      );
+
+  return {
+    answerRow,
+    module,
+    entity,
+    answerLabel,
+    url:
+      getFeedbackEntityPageUrl(
+        module.entity_type,
+        entity.slug
+      ),
+    dateLabel:
+      isEvent
+        ? formatCardDate(entity)
+        : null,
+    sortDate:
+      isEvent
+        ? getTerminSortDate(entity)
+        : null,
+    updatedAt:
+      answerRow.updated_at
+      || answerRow.created_at
+  };
+
+}
+
+async function fetchMemberVotesGrouped(
   memberId
 ) {
 
@@ -115,7 +167,8 @@ async function fetchMemberUpcomingVotes(
       modules
     );
 
-  const items = [];
+  const termine = [];
+  const abstimmungen = [];
 
   (answers || []).forEach((answerRow) => {
 
@@ -139,55 +192,39 @@ async function fetchMemberUpcomingVotes(
       return;
     }
 
+    const item =
+      buildMemberVoteItem(
+        answerRow,
+        module,
+        entity
+      );
+
     const isEvent =
       module.entity_type
       === window.siteConfig.feedback.entityTypes.event;
 
-    if (
-      isEvent
-      && !isTerminStillUpcoming(entity)
-    ) {
+    if (isEvent) {
+
+      if (
+        isTerminStillUpcoming(entity)
+      ) {
+        termine.push(item);
+      }
+
       return;
+
     }
 
-    const answerLabel =
-      module.type
-      === window.siteConfig.feedback.types.poll
-        ? formatFeedbackPollAnswerDisplay(
-          module,
-          answerRow
-        )
-        : formatFeedbackAnswerLabel(
-          module,
-          answerRow.answer
-        );
-
-    items.push({
-      answerRow,
-      module,
-      entity,
-      answerLabel,
-      url:
-        getFeedbackEntityPageUrl(
-          module.entity_type,
-          entity.slug
-        ),
-      dateLabel:
-        isEvent
-          ? formatCardDate(entity)
-          : null,
-      sortDate:
-        isEvent
-          ? getTerminSortDate(entity)
-          : null,
-      updatedAt:
-        answerRow.updated_at
-        || answerRow.created_at
-    });
+    if (
+      module.entity_type
+      === window.siteConfig.feedback.entityTypes.news
+    ) {
+      abstimmungen.push(item);
+    }
 
   });
 
-  items.sort((left, right) => {
+  termine.sort((left, right) => {
 
     if (
       left.sortDate
@@ -207,34 +244,319 @@ async function fetchMemberUpcomingVotes(
       return 1;
     }
 
-    return (
-      new Date(right.updatedAt)
-      - new Date(left.updatedAt)
-    );
+    return 0;
 
   });
 
-  return items;
+  abstimmungen.sort((left, right) => (
+    new Date(right.updatedAt)
+    - new Date(left.updatedAt)
+  ));
+
+  return {
+    termine,
+    abstimmungen
+  };
 
 }
 
-function renderMemberVotesList(
+async function fetchMemberUpcomingVotes(
+  memberId
+) {
+
+  const grouped =
+    await fetchMemberVotesGrouped(
+      memberId
+    );
+
+  return [
+    ...grouped.termine,
+    ...grouped.abstimmungen
+  ];
+
+}
+
+function normalizeMemberVotesPage(
+  page,
+  totalItems,
+  pageSize
+) {
+
+  const size =
+    Math.max(
+      1,
+      Number(pageSize) || 1
+    );
+
+  const totalPages =
+    Math.max(
+      1,
+      Math.ceil(totalItems / size)
+    );
+
+  const safePage =
+    Math.min(
+      Math.max(
+        1,
+        Number(page) || 1
+      ),
+      totalPages
+    );
+
+  return {
+    page: safePage,
+    totalPages,
+    pageSize: size
+  };
+
+}
+
+function paginateMemberVotesItems(
+  items,
+  page,
+  pageSize
+) {
+
+  const totalItems =
+    items.length;
+
+  const normalized =
+    normalizeMemberVotesPage(
+      page,
+      totalItems,
+      pageSize
+    );
+
+  const startIndex =
+    (normalized.page - 1)
+    * normalized.pageSize;
+
+  return {
+    items:
+      items.slice(
+        startIndex,
+        startIndex + normalized.pageSize
+      ),
+    page: normalized.page,
+    totalPages: normalized.totalPages,
+    totalItems,
+    pageSize: normalized.pageSize
+  };
+
+}
+
+function renderMemberVoteCard(item) {
+
+  const title =
+    formatContentCardTitle(
+      escapeMemberHtml(
+        item.entity.title || 'Ohne Titel'
+      ),
+      item.entity.sichtbarkeit
+    );
+
+  const answerLine =
+    formatMemberVoteAnswerLine(
+      item.module,
+      item.answerRow,
+      escapeMemberHtml(
+        item.answerLabel
+      )
+    );
+
+  const metaParts = [];
+
+  if (item.dateLabel) {
+    metaParts.push(
+      `🗓️ ${escapeMemberHtml(item.dateLabel)}`
+    );
+  }
+
+  metaParts.push(answerLine);
+
+  const cardClass =
+    contentVisibilityCardClass(
+      item.entity.sichtbarkeit
+    );
+
+  return `
+<article class="${cardClass} member-vote-card">
+  <a href="${escapeMemberHtml(item.url)}">
+    <div>
+      <h3>${title}</h3>
+      <p>${metaParts.join(' · ')}</p>
+    </div>
+  </a>
+</article>
+  `;
+
+}
+
+function renderMemberVotesCards(items) {
+
+  if (!items.length) {
+    return '';
+  }
+
+  return items
+    .map(renderMemberVoteCard)
+    .join('');
+
+}
+
+function renderMemberVotesPagination(
   container,
-  items
+  totalItems,
+  currentPage
 ) {
 
   if (!container) {
     return;
   }
 
-  if (!items.length) {
+  const normalized =
+    normalizeMemberVotesPage(
+      currentPage,
+      totalItems,
+      MEMBER_VOTES_POLLS_PAGE_SIZE
+    );
+
+  if (
+    totalItems
+    <= MEMBER_VOTES_POLLS_PAGE_SIZE
+  ) {
+
+    container.innerHTML = '';
+    container.hidden = true;
+
+    return;
+
+  }
+
+  container.hidden = false;
+
+  container.innerHTML = `
+
+<div class="member-votes-pagination">
+
+  <button
+    type="button"
+    class="member-votes-pagination__btn member-votes-pagination__prev"
+    ${normalized.page <= 1 ? 'disabled' : ''}>
+
+    ← Zurück
+
+  </button>
+
+  <span class="member-votes-pagination__info">
+    Seite ${normalized.page} von ${normalized.totalPages}
+  </span>
+
+  <button
+    type="button"
+    class="member-votes-pagination__btn member-votes-pagination__next"
+    ${normalized.page >= normalized.totalPages ? 'disabled' : ''}>
+
+    Weiter →
+
+  </button>
+
+</div>
+
+  `;
+
+  container
+    .querySelector('.member-votes-pagination__prev')
+    ?.addEventListener('click', () => {
+
+      renderMemberVotesList(
+        document.getElementById(
+          'member-votes-list'
+        ),
+        memberVotesGroupedCache,
+        normalized.page - 1
+      );
+
+    });
+
+  container
+    .querySelector('.member-votes-pagination__next')
+    ?.addEventListener('click', () => {
+
+      renderMemberVotesList(
+        document.getElementById(
+          'member-votes-list'
+        ),
+        memberVotesGroupedCache,
+        normalized.page + 1
+      );
+
+    });
+
+}
+
+function renderMemberVotesSection(
+  heading,
+  itemsHtml,
+  emptyText
+) {
+
+  const body =
+    itemsHtml
+      ? `<div class="member-votes-section__cards">${itemsHtml}</div>`
+      : `<p class="member-votes-section__empty">${escapeMemberHtml(emptyText)}</p>`;
+
+  return `
+<section class="member-votes-section">
+
+  <h3 class="member-votes-section__heading">
+    ${escapeMemberHtml(heading)}
+  </h3>
+
+  <hr class="member-votes-divider" aria-hidden="true">
+
+  ${body}
+
+</section>
+  `;
+
+}
+
+function renderMemberVotesList(
+  container,
+  grouped,
+  pollsPage = 1
+) {
+
+  if (!container) {
+    return;
+  }
+
+  const termine =
+    grouped?.termine || [];
+
+  const abstimmungen =
+    grouped?.abstimmungen || [];
+
+  memberVotesGroupedCache = grouped;
+  memberVotesPollsPage =
+    normalizeMemberVotesPage(
+      pollsPage,
+      abstimmungen.length,
+      MEMBER_VOTES_POLLS_PAGE_SIZE
+    ).page;
+
+  if (
+    !termine.length
+    && !abstimmungen.length
+  ) {
 
     container.innerHTML = `
 <article class="calendar-card">
   <div>
     <h3>Keine Abstimmungen</h3>
     <p>
-      Zu kommenden Terminen hast du derzeit nichts abgestimmt.
+      Zu kommenden Terminen und News hast du derzeit nichts abgestimmt.
     </p>
   </div>
 </article>
@@ -244,54 +566,40 @@ function renderMemberVotesList(
 
   }
 
-  container.innerHTML =
-    items
-      .map((item) => {
+  const pagedPolls =
+    paginateMemberVotesItems(
+      abstimmungen,
+      memberVotesPollsPage,
+      MEMBER_VOTES_POLLS_PAGE_SIZE
+    );
 
-        const title =
-          formatContentCardTitle(
-            escapeMemberHtml(
-              item.entity.title || 'Ohne Titel'
-            ),
-            item.entity.sichtbarkeit
-          );
+  container.innerHTML = `
 
-        const answerLine =
-          formatMemberVoteAnswerLine(
-            item.module,
-            item.answerRow,
-            escapeMemberHtml(
-              item.answerLabel
-            )
-          );
+${renderMemberVotesSection(
+  'Termine',
+  renderMemberVotesCards(termine),
+  'Keine anstehenden Termine mit deiner Antwort.'
+)}
 
-        const metaParts = [];
+${renderMemberVotesSection(
+  'Abstimmungen',
+  renderMemberVotesCards(pagedPolls.items),
+  'Keine Abstimmungen auf News.'
+)}
 
-        if (item.dateLabel) {
-          metaParts.push(
-            `🗓️ ${escapeMemberHtml(item.dateLabel)}`
-          );
-        }
+<div
+  id="member-votes-polls-pagination"
+  class="member-votes-pagination-wrap"
+  hidden></div>
 
-        metaParts.push(answerLine);
+  `;
 
-        const cardClass =
-          contentVisibilityCardClass(
-            item.entity.sichtbarkeit
-          );
-
-        return `
-<article class="${cardClass} member-vote-card">
-  <a href="${escapeMemberHtml(item.url)}">
-    <div>
-      <h3>${title}</h3>
-      <p>${metaParts.join(' · ')}</p>
-    </div>
-  </a>
-</article>
-        `;
-
-      })
-      .join('');
+  renderMemberVotesPagination(
+    container.querySelector(
+      '#member-votes-polls-pagination'
+    ),
+    abstimmungen.length,
+    pagedPolls.page
+  );
 
 }

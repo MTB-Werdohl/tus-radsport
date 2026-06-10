@@ -313,7 +313,7 @@ function renderMemberVotesPanelShell() {
   <h2>Abstimmungen</h2>
 
   <p class="member-strava-hint">
-    Deine Antworten zu kommenden Terminen und News — nur für dich sichtbar.
+    Kommende Termine (nächster zuerst) und deine News-Abstimmungen — nur für dich sichtbar.
   </p>
 
   <div

@@ -372,8 +372,8 @@ async function loadMemberVotesIfNeeded(
 
   try {
 
-    const items =
-      await fetchMemberUpcomingVotes(
+    const grouped =
+      await fetchMemberVotesGrouped(
         member.id
       );
 
@@ -381,7 +381,8 @@ async function loadMemberVotesIfNeeded(
 
     renderMemberVotesList(
       container,
-      items
+      grouped,
+      1
     );
 
   } catch (error) {
