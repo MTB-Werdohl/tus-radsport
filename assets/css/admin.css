@@ -953,12 +953,25 @@ h3 {
 }
 
 .admin-protocol-folder-row-shell {
-  max-width: min(50vw, 28rem);
   width: 100%;
-  display: flex;
+  max-width: min(50vw, 28rem);
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr) 1.75rem;
   align-items: center;
   gap: 6px;
   min-height: 36px;
+}
+
+@media (max-width: 767px) {
+
+  .admin-protocol-folder-row-shell {
+    max-width: 100%;
+  }
+
+}
+
+.admin-protocol-folder-row-shell--view {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .admin-protocol-folder-file-row,
@@ -967,7 +980,6 @@ h3 {
 }
 
 .admin-protocol-folder-dir-title {
-  flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -980,12 +992,17 @@ h3 {
 
 .admin-protocol-folder-drag-handle {
   cursor: grab;
-  opacity: 0.75;
+  opacity: 0.85;
   user-select: none;
   touch-action: none;
-  flex-shrink: 0;
-  width: 1.1rem;
-  text-align: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.95rem;
   line-height: 1;
 }
 
@@ -1010,12 +1027,11 @@ h3 {
   padding: 0;
   cursor: pointer;
   line-height: 1;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  margin-left: auto;
+  justify-self: end;
 }
 
 .admin-protocol-folder-delete:hover {
@@ -1036,13 +1052,12 @@ h3 {
 
 .admin-protocol-folder-file {
   display: block;
-  padding: 8px 12px;
+  padding: 8px 10px;
   border-radius: 8px;
   background: rgba(46, 139, 87, 0.85);
   color: #fff;
   text-decoration: none;
   font-weight: 600;
-  flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;

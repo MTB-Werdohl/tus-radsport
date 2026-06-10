@@ -37,7 +37,11 @@ function createProtocolFolderDragHandle() {
 
   handle.className =
     'admin-protocol-folder-drag-handle';
-  handle.textContent = '⠿';
+  handle.textContent = '☰';
+  handle.setAttribute(
+    'aria-hidden',
+    'true'
+  );
   handle.title =
     'Ziehen zum Verschieben';
 
@@ -311,7 +315,7 @@ function appendProtocolViewTreeNode(
 
     const row =
       createProtocolFolderRowShell(
-        'admin-protocol-folder-file-row'
+        'admin-protocol-folder-file-row admin-protocol-folder-row-shell--view'
       );
 
     const link =
@@ -404,8 +408,80 @@ function bindProtocolFolderTreeEdit(
 
   let dragPayload = null;
   let touchDragPayload = null;
+  let draggedElement = null;
+  let hasActiveDropTarget = false;
   let activeDropFolder = null;
-  let lastPointer = null;
+  let dropHandled = false;
+
+  function onDocumentDragOver(event) {
+
+    if (!dragPayload) {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (event.dataTransfer) {
+      event.dataTransfer.dropEffect = 'move';
+    }
+
+    updateDropTargetFromPoint(
+      event.clientX,
+      event.clientY
+    );
+
+  }
+
+  function onDocumentDrop(event) {
+
+    if (!dragPayload) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    dropHandled = true;
+
+    handleDrop(
+      hasActiveDropTarget
+        ? activeDropFolder
+        : null
+    );
+
+  }
+
+  function startDocumentDragListeners() {
+
+    document.addEventListener(
+      'dragover',
+      onDocumentDragOver,
+      true
+    );
+
+    document.addEventListener(
+      'drop',
+      onDocumentDrop,
+      true
+    );
+
+  }
+
+  function stopDocumentDragListeners() {
+
+    document.removeEventListener(
+      'dragover',
+      onDocumentDragOver,
+      true
+    );
+
+    document.removeEventListener(
+      'drop',
+      onDocumentDrop,
+      true
+    );
+
+  }
 
   function clearDropTargets() {
 
@@ -417,6 +493,7 @@ function bindProtocolFolderTreeEdit(
       );
     });
 
+    hasActiveDropTarget = false;
     activeDropFolder = null;
 
   }
@@ -460,16 +537,20 @@ function bindProtocolFolderTreeEdit(
 
     clearDropTargets();
 
+    const payload =
+      dragPayload
+      || touchDragPayload;
+
     if (
       !isValidDropTarget(
-        dragPayload
-        || touchDragPayload,
+        payload,
         targetFolderRelativePath
       )
     ) {
       return;
     }
 
+    hasActiveDropTarget = true;
     activeDropFolder =
       targetFolderRelativePath;
 
@@ -489,18 +570,19 @@ function bindProtocolFolderTreeEdit(
 
   function finishDrag() {
 
-    dragPayload = null;
-    touchDragPayload = null;
-    lastPointer = null;
-    clearDropTargets();
-
-    root.querySelectorAll(
-      '.admin-protocol-folder-draggable--dragging'
-    ).forEach((element) => {
-      element.classList.remove(
+    if (draggedElement) {
+      draggedElement.style.pointerEvents = '';
+      draggedElement.classList.remove(
         'admin-protocol-folder-draggable--dragging'
       );
-    });
+      draggedElement = null;
+    }
+
+    dragPayload = null;
+    touchDragPayload = null;
+    dropHandled = false;
+    clearDropTargets();
+    stopDocumentDragListeners();
 
   }
 
@@ -551,18 +633,52 @@ function bindProtocolFolderTreeEdit(
 
   }
 
+  function resolveDropTargetFromPoint(
+    clientX,
+    clientY
+  ) {
+
+    if (
+      typeof clientX !== 'number'
+      || typeof clientY !== 'number'
+    ) {
+      return null;
+    }
+
+    const previousPointerEvents =
+      draggedElement
+        ? draggedElement.style.pointerEvents
+        : null;
+
+    if (draggedElement) {
+      draggedElement.style.pointerEvents =
+        'none';
+    }
+
+    const element =
+      document.elementFromPoint(
+        clientX,
+        clientY
+      );
+
+    if (draggedElement) {
+      draggedElement.style.pointerEvents =
+        previousPointerEvents || '';
+    }
+
+    return getProtocolFolderDropTarget(
+      element
+    );
+
+  }
+
   function updateDropTargetFromPoint(
     clientX,
     clientY
   ) {
 
-    lastPointer = {
-      x: clientX,
-      y: clientY
-    };
-
     highlightDropTarget(
-      resolveProtocolFolderDropTarget(
+      resolveDropTargetFromPoint(
         clientX,
         clientY
       )
@@ -581,6 +697,8 @@ function bindProtocolFolderTreeEdit(
       return;
     }
 
+    dropHandled = false;
+
     const fileRow =
       event.target.closest(
         '[data-entry-key]'
@@ -594,9 +712,19 @@ function bindProtocolFolderTreeEdit(
           fileRow.dataset.entryKey
       };
 
+      draggedElement = fileRow;
+      startDocumentDragListeners();
+
       fileRow.classList.add(
         'admin-protocol-folder-draggable--dragging'
       );
+
+      window.requestAnimationFrame(() => {
+        if (draggedElement) {
+          draggedElement.style.pointerEvents =
+            'none';
+        }
+      });
 
       event.dataTransfer.effectAllowed =
         'move';
@@ -623,9 +751,20 @@ function bindProtocolFolderTreeEdit(
           folderSummary.dataset.folderPath
       };
 
+      draggedElement =
+        folderSummary;
+      startDocumentDragListeners();
+
       folderSummary.classList.add(
         'admin-protocol-folder-draggable--dragging'
       );
+
+      window.requestAnimationFrame(() => {
+        if (draggedElement) {
+          draggedElement.style.pointerEvents =
+            'none';
+        }
+      });
 
       event.dataTransfer.effectAllowed =
         'move';
@@ -641,49 +780,9 @@ function bindProtocolFolderTreeEdit(
 
   root.addEventListener('dragend', () => {
 
-    window.setTimeout(finishDrag, 0);
-
-  });
-
-  root.addEventListener('dragover', (event) => {
-
-    if (!dragPayload) {
-      return;
+    if (!dropHandled) {
+      finishDrag();
     }
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    event.dataTransfer.dropEffect =
-      'move';
-
-    updateDropTargetFromPoint(
-      event.clientX,
-      event.clientY
-    );
-
-  });
-
-  root.addEventListener('drop', (event) => {
-
-    if (!dragPayload) {
-      return;
-    }
-
-    event.preventDefault();
-    event.stopPropagation();
-
-    const target =
-      resolveProtocolFolderDropTarget(
-        event.clientX,
-        event.clientY
-      );
-
-    handleDrop(
-      target !== null
-        ? target
-        : activeDropFolder
-    );
 
   });
 
@@ -726,6 +825,7 @@ function bindProtocolFolderTreeEdit(
 
       dragPayload =
         touchDragPayload;
+      draggedElement = fileRow;
 
       fileRow.classList.add(
         'admin-protocol-folder-draggable--dragging'
@@ -750,6 +850,8 @@ function bindProtocolFolderTreeEdit(
 
       dragPayload =
         touchDragPayload;
+      draggedElement =
+        folderSummary;
 
       folderSummary.classList.add(
         'admin-protocol-folder-draggable--dragging'
@@ -800,29 +902,10 @@ function bindProtocolFolderTreeEdit(
     dragPayload =
       touchDragPayload;
 
-    const touch =
-      event.changedTouches[0];
-
-    if (touch) {
-
-      updateDropTargetFromPoint(
-        touch.clientX,
-        touch.clientY
-      );
-
-    }
-
     handleDrop(
-      activeDropFolder !== null
+      hasActiveDropTarget
         ? activeDropFolder
-        : (
-          lastPointer
-            ? resolveProtocolFolderDropTarget(
-              lastPointer.x,
-              lastPointer.y
-            )
-            : null
-        )
+        : null
     );
 
   });
@@ -881,7 +964,7 @@ function renderProtocolFolderTreeEdit(
   hint.className =
     'admin-hint admin-protocol-folder-edit-hint';
   hint.textContent =
-    'Dateien und Ordner per Drag-and-Drop verschieben (auch mobil). Mit 🗑 einzelne Einträge löschen.';
+    'Mit ☰ ziehen und auf einen markierten Ordner loslassen. Mit 🗑 löschen.';
 
   root.appendChild(hint);
 
