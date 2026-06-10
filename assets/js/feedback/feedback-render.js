@@ -239,7 +239,7 @@ ${optionsHtml}
 
 <button
   type="button"
-  class="feedback-save">
+  class="feedback-poll-save">
 
 Speichern
 
@@ -470,14 +470,34 @@ function bindFeedbackPublicGateEvents(container) {
 
 }
 
+function showFeedbackStatus(
+  container,
+  message,
+  isError
+) {
+
+  const statusEl =
+    container.querySelector(
+      '#feedback-status'
+    );
+
+  if (!statusEl) {
+    return;
+  }
+
+  statusEl.innerHTML =
+    renderFeedbackStatus(
+      message,
+      isError
+    );
+
+}
+
 function bindFeedbackModuleEvents(
   container,
   module,
   member
 ) {
-
-  const statusEl =
-    container.querySelector('#feedback-status');
 
   const identity =
     member?.id
@@ -491,11 +511,11 @@ function bindFeedbackModuleEvents(
 
     if (!identity?.memberId) {
 
-      statusEl.innerHTML =
-        renderFeedbackStatus(
-          'Bitte zuerst per E-Mail-Link anmelden.',
-          true
-        );
+      showFeedbackStatus(
+        container,
+        'Bitte zuerst per E-Mail-Link anmelden.',
+        true
+      );
 
       return;
 
@@ -509,28 +529,28 @@ function bindFeedbackModuleEvents(
 
     if (result?.error) {
 
-      statusEl.innerHTML =
-        renderFeedbackStatus(
-          result.error.message
-            || 'Zurückziehen fehlgeschlagen.',
-          true
-        );
+      showFeedbackStatus(
+        container,
+        result.error.message
+          || 'Zurückziehen fehlgeschlagen.',
+        true
+      );
 
       return;
 
     }
-
-    statusEl.innerHTML =
-      renderFeedbackStatus(
-        'Abstimmung zurückgezogen.',
-        false
-      );
 
     renderFeedbackModule(
       container,
       module,
       null,
       member
+    );
+
+    showFeedbackStatus(
+      container,
+      'Abstimmung zurückgezogen.',
+      false
     );
 
   }
@@ -540,77 +560,162 @@ function bindFeedbackModuleEvents(
     comment
   ) {
 
-    if (
-      isFeedbackAnswerWithdrawal(
-        module,
-        answer,
-        comment
-      )
-    ) {
+    try {
 
-      await withdrawAnswer();
+      if (
+        isFeedbackAnswerWithdrawal(
+          module,
+          answer,
+          comment
+        )
+      ) {
 
-      return;
+        await withdrawAnswer();
 
-    }
+        return;
 
-    const validationError =
-      validateFeedbackAnswer(
-        module,
-        answer,
-        comment
-      );
+      }
 
-    if (validationError) {
+      const validationError =
+        validateFeedbackAnswer(
+          module,
+          answer,
+          comment
+        );
 
-      statusEl.innerHTML =
-        renderFeedbackStatus(
+      if (validationError) {
+
+        showFeedbackStatus(
+          container,
           validationError,
           true
         );
 
-      return;
+        return;
 
-    }
+      }
 
-    if (!identity?.memberId) {
+      if (!identity?.memberId) {
 
-      statusEl.innerHTML =
-        renderFeedbackStatus(
+        showFeedbackStatus(
+          container,
           'Bitte zuerst per E-Mail-Link anmelden.',
           true
         );
 
-      return;
+        return;
 
-    }
+      }
 
-    const result =
-      await saveFeedbackAnswer(
-        module.id,
-        identity,
-        answer,
-        comment
-      );
+      const result =
+        await saveFeedbackAnswer(
+          module.id,
+          identity,
+          answer,
+          comment
+        );
 
-    if (result?.error) {
+      if (result?.error) {
 
-      statusEl.innerHTML =
-        renderFeedbackStatus(
+        showFeedbackStatus(
+          container,
           result.error.message
             || 'Speichern fehlgeschlagen.',
           true
         );
 
-      return;
+        return;
 
-    }
+      }
 
-    statusEl.innerHTML =
-      renderFeedbackStatus(
+      renderFeedbackModule(
+        container,
+        module,
+        result.data,
+        member
+      );
+
+      showFeedbackStatus(
+        container,
         'Antwort gespeichert.',
         false
       );
+
+    } catch (error) {
+
+      console.error(error);
+
+      showFeedbackStatus(
+        container,
+        'Speichern fehlgeschlagen.',
+        true
+      );
+
+    }
+
+  }
+
+  async function handlePollSaveClick() {
+
+    const saveButton =
+      container.querySelector(
+        '.feedback-poll-save'
+      );
+
+    if (saveButton?.disabled) {
+      return;
+    }
+
+    if (saveButton) {
+      saveButton.disabled = true;
+    }
+
+    try {
+
+      const config =
+        normalizeFeedbackPollConfig(
+          module.config
+        );
+
+      const selected =
+        [
+          ...container.querySelectorAll(
+            '.feedback-poll input:checked'
+          )
+        ].map((input) => input.value);
+
+      const freeTextSelected =
+        selected.includes(
+          FEEDBACK_POLL_FREETEXT_OPTION_ID
+        );
+
+      const comment =
+        freeTextSelected
+          ? container
+            .querySelector('.feedback-freetext')
+            ?.value
+            ?.trim()
+          || null
+          : null;
+
+      const answer =
+        serializeFeedbackPollAnswer(
+          selected,
+          config.multiple
+        );
+
+      await persistAnswer(
+        answer,
+        comment
+      );
+
+    } finally {
+
+      if (saveButton) {
+        saveButton.disabled = false;
+      }
+
+    }
 
   }
 
@@ -670,53 +775,10 @@ function bindFeedbackModuleEvents(
     });
 
   container
-    .querySelector('.feedback-save')
-    ?.addEventListener('click', async () => {
+    .querySelector('.feedback-poll-save')
+    ?.addEventListener('click', () => {
 
-      if (
-        type
-        !== window.siteConfig.feedback.types.poll
-      ) {
-        return;
-      }
-
-      const config =
-        normalizeFeedbackPollConfig(
-          module.config
-        );
-
-      const selected =
-        [
-          ...container.querySelectorAll(
-            '.feedback-poll input:checked'
-          )
-        ].map((input) => input.value);
-
-      const freeTextSelected =
-        selected.includes(
-          FEEDBACK_POLL_FREETEXT_OPTION_ID
-        );
-
-      const comment =
-        freeTextSelected
-          ? container
-            .querySelector('.feedback-freetext')
-            ?.value
-            ?.trim()
-          || null
-          : null;
-
-      const answer =
-        serializeFeedbackPollAnswer(
-          selected,
-          config.multiple
-            || config.allowFreeText
-        );
-
-      await persistAnswer(
-        answer,
-        comment
-      );
+      void handlePollSaveClick();
 
     });
 
@@ -725,6 +787,11 @@ function bindFeedbackModuleEvents(
     === window.siteConfig.feedback.types.poll
   ) {
 
+    const pollConfig =
+      normalizeFeedbackPollConfig(
+        module.config
+      );
+
     syncFeedbackFreeTextInputVisibility(
       container
     );
@@ -732,9 +799,7 @@ function bindFeedbackModuleEvents(
     container
       .querySelectorAll(
         `[name="${
-          normalizeFeedbackPollConfig(
-            module.config
-          ).multiple
+          pollConfig.multiple
             ? 'feedback-poll-option'
             : 'feedback-poll'
         }"]`
@@ -742,6 +807,41 @@ function bindFeedbackModuleEvents(
       .forEach((input) => {
 
         input.addEventListener('change', () => {
+
+          if (
+            pollConfig.multiple
+            && input.checked
+          ) {
+
+            const isFreeText =
+              input.hasAttribute(
+                'data-feedback-freetext-option'
+              );
+
+            if (isFreeText) {
+
+              container
+                .querySelectorAll(
+                  '.feedback-poll input:not([data-feedback-freetext-option])'
+                )
+                .forEach((other) => {
+                  other.checked = false;
+                });
+
+            } else {
+
+              const freeTextOption =
+                container.querySelector(
+                  '[data-feedback-freetext-option]'
+                );
+
+              if (freeTextOption) {
+                freeTextOption.checked = false;
+              }
+
+            }
+
+          }
 
           syncFeedbackFreeTextInputVisibility(
             container

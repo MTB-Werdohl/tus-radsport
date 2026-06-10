@@ -49,7 +49,8 @@ margin-bottom: 12px;
 }
 
 .feedback-btn,
-.feedback-save {
+.feedback-save,
+.feedback-poll-save {
 
 border: none;
 
@@ -70,14 +71,16 @@ transition: background 0.2s ease;
 }
 
 .feedback-btn:hover,
-.feedback-save:hover {
+.feedback-save:hover,
+.feedback-poll-save:hover {
 
 background: rgba(35, 58, 82, 0.95);
 
 }
 
 .feedback-btn.is-active,
-.feedback-save.is-active {
+.feedback-save.is-active,
+.feedback-poll-save.is-active {
 
 background: #ed1c24;
 
@@ -773,7 +776,8 @@ flex-direction: column;
 }
 
 .feedback-btn,
-.feedback-save {
+.feedback-save,
+.feedback-poll-save {
 
 width: 100%;
 

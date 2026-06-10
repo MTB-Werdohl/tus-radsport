@@ -336,6 +336,19 @@ function getDefaultFeedbackQuestion(
 
 }
 
+function resolveFeedbackModuleType(module) {
+
+  if (
+    module?.type
+    === 'yes_no_comment'
+  ) {
+    return window.siteConfig.feedback.types.yesMaybe;
+  }
+
+  return module?.type;
+
+}
+
 function validateFeedbackAnswer(
   module,
   answer,
@@ -343,7 +356,7 @@ function validateFeedbackAnswer(
 ) {
 
   const type =
-    module?.type;
+    resolveFeedbackModuleType(module);
 
   const value =
     String(answer || '')
@@ -433,7 +446,7 @@ function validateFeedbackAnswer(
       !hasFreeTextOption
       && freeText
     ) {
-      return 'Freitext nur mit der Freitext-Option möglich.';
+      return 'Freitext nur mit der Freitext-Option wählbar.';
     }
 
     return null;
@@ -451,7 +464,7 @@ function isFeedbackAnswerWithdrawal(
 ) {
 
   const type =
-    module?.type;
+    resolveFeedbackModuleType(module);
 
   if (
     type
@@ -475,6 +488,13 @@ function isFeedbackAnswerWithdrawal(
       FEEDBACK_POLL_FREETEXT_OPTION_ID
     );
 
+  const regularCount =
+    selected.filter(
+      (id) =>
+        id
+        !== FEEDBACK_POLL_FREETEXT_OPTION_ID
+    ).length;
+
   const freeText =
     String(comment || '')
       .trim();
@@ -482,6 +502,7 @@ function isFeedbackAnswerWithdrawal(
   if (
     hasFreeTextOption
     && !freeText
+    && regularCount === 0
   ) {
     return true;
   }
