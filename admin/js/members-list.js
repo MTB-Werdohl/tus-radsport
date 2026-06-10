@@ -195,22 +195,70 @@ function getMemberSearchTerm() {
 
 }
 
+function isAnonymizedMember(member) {
+
+  return Boolean(member?.anonymized_at);
+
+}
+
+function getVisibleMembers(members) {
+
+  return (members || [])
+    .filter((item) =>
+      !isAnonymizedMember(item)
+    );
+
+}
+
+function memberMatchesSearch(
+  member,
+  search
+) {
+
+  if (!search) {
+    return true;
+  }
+
+  const tokens =
+    search
+      .split(/\s+/)
+      .map((part) =>
+        part.trim()
+      )
+      .filter(Boolean);
+
+  if (!tokens.length) {
+    return true;
+  }
+
+  const vorname =
+    String(member?.vorname || '')
+      .toLowerCase();
+
+  const nachname =
+    String(member?.nachname || '')
+      .toLowerCase();
+
+  const fullName =
+    `${vorname} ${nachname}`.trim();
+
+  return tokens.every((token) =>
+    vorname.includes(token)
+    || nachname.includes(token)
+    || fullName.includes(token)
+  );
+
+}
+
 function filterMembersBySearch(members) {
 
   const search =
     getMemberSearchTerm();
 
-  return (members || []).filter((item) => {
-
-    if (!search) {
-      return true;
-    }
-
-    return item.vorname
-      ?.toLowerCase()
-      .includes(search);
-
-  });
+  return getVisibleMembers(members)
+    .filter((item) =>
+      memberMatchesSearch(item, search)
+    );
 
 }
 
@@ -242,10 +290,39 @@ function renderMembersList(members) {
   const filtered =
     filterMembersBySearch(members);
 
+  const visible =
+    getVisibleMembers(members);
+
   const container =
     document.getElementById('members');
 
   container.innerHTML = '';
+
+  if (!filtered.length) {
+
+    if (getMemberSearchTerm()) {
+
+      container.innerHTML =
+        '<p class="admin-hint">Keine Treffer.</p>';
+
+    } else if (
+      visible.length === 0
+      && (members || []).length
+    ) {
+
+      container.innerHTML =
+        '<p class="admin-hint">Keine aktiven Mitglieder — anonymisierte Einträge werden nicht angezeigt.</p>';
+
+    } else {
+
+      container.innerHTML =
+        '<p class="admin-hint">Noch keine Mitglieder angelegt.</p>';
+
+    }
+
+    return;
+
+  }
 
   filtered.forEach(item => {
 
