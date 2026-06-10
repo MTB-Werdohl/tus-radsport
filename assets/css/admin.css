@@ -949,20 +949,33 @@ h3 {
   cursor: pointer;
   font-weight: 600;
   list-style: none;
+  display: block;
+}
+
+.admin-protocol-folder-row-shell {
+  max-width: min(50vw, 28rem);
+  width: 100%;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  min-height: 36px;
+}
+
+.admin-protocol-folder-file-row,
+.admin-protocol-folder-dir-label {
+  box-sizing: border-box;
 }
 
 .admin-protocol-folder-dir-title {
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .admin-protocol-folder-file-row {
   margin-left: 4px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .admin-protocol-folder-drag-handle {
@@ -970,6 +983,10 @@ h3 {
   opacity: 0.75;
   user-select: none;
   touch-action: none;
+  flex-shrink: 0;
+  width: 1.1rem;
+  text-align: center;
+  line-height: 1;
 }
 
 .admin-protocol-folder-draggable--dragging {
@@ -978,7 +995,7 @@ h3 {
 
 .admin-protocol-folder-drop-target--active {
   outline: 2px dashed rgba(46, 139, 87, 0.9);
-  outline-offset: 4px;
+  outline-offset: 2px;
   border-radius: 8px;
 }
 
@@ -987,9 +1004,18 @@ h3 {
   background: rgba(160, 60, 60, 0.85);
   color: #fff;
   border-radius: 6px;
-  padding: 4px 8px;
+  width: 1.75rem;
+  height: 1.75rem;
+  min-width: 1.75rem;
+  padding: 0;
   cursor: pointer;
   line-height: 1;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .admin-protocol-folder-delete:hover {
@@ -1009,9 +1035,7 @@ h3 {
 }
 
 .admin-protocol-folder-file {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  display: block;
   padding: 8px 12px;
   border-radius: 8px;
   background: rgba(46, 139, 87, 0.85);
@@ -1019,6 +1043,10 @@ h3 {
   text-decoration: none;
   font-weight: 600;
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .admin-protocol-folder-file:hover {
