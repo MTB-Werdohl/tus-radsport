@@ -622,6 +622,10 @@ async function uploadProtocolFileToFolder(
   const storagePath =
     `${getProtocolStorageFolder(documentId)}/${relative}`;
 
+  await removeProtocolStoragePaths(
+    [storagePath]
+  );
+
   const { error } =
     await window.supabaseClient
       .storage
@@ -631,7 +635,7 @@ async function uploadProtocolFileToFolder(
         file,
         {
           cacheControl: '3600',
-          upsert: true
+          upsert: false
         }
       );
 
@@ -685,14 +689,56 @@ async function moveProtocolStoragePath(
   const bucket =
     window.siteConfig.storage.media;
 
-  const { error } =
-    await window.supabaseClient
+  const storage =
+    window.supabaseClient
       .storage
-      .from(bucket)
-      .move(fromPath, toPath);
+      .from(bucket);
 
-  if (error) {
-    throw error;
+  const { error: moveError } =
+    await storage.move(
+      fromPath,
+      toPath
+    );
+
+  if (!moveError) {
+    return toPath;
+  }
+
+  console.warn(
+    'Storage move fehlgeschlagen, Copy-Fallback:',
+    moveError
+  );
+
+  const { data, error: downloadError } =
+    await storage.download(fromPath);
+
+  if (downloadError) {
+    throw downloadError;
+  }
+
+  await removeProtocolStoragePaths(
+    [toPath]
+  );
+
+  const { error: uploadError } =
+    await storage.upload(
+      toPath,
+      data,
+      {
+        cacheControl: '3600',
+        upsert: false
+      }
+    );
+
+  if (uploadError) {
+    throw uploadError;
+  }
+
+  const { error: removeError } =
+    await storage.remove([fromPath]);
+
+  if (removeError) {
+    throw removeError;
   }
 
   return toPath;

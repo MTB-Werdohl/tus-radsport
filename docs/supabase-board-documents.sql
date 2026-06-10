@@ -80,3 +80,19 @@ create policy media_vorstand_delete_protocols
     and name like 'protocols/%'
     and public.is_vorstand()
   );
+
+-- Verschieben/Umbenennen (storage.move, upsert)
+drop policy if exists media_update_vorstand on storage.objects;
+
+create policy media_update_vorstand
+  on storage.objects
+  for update
+  to authenticated
+  using (
+    bucket_id = 'media'
+    and public.is_vorstand()
+  )
+  with check (
+    bucket_id = 'media'
+    and public.is_vorstand()
+  );

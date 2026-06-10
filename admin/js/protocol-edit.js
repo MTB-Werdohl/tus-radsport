@@ -259,8 +259,15 @@ async function persistProtocolFiles() {
 
     console.error(error);
 
+    const detail =
+      error?.message
+      || error?.error
+      || '';
+
     alert(
-      'Dateien konnten nicht gespeichert werden.'
+      detail
+        ? `Dateien konnten nicht gespeichert werden:\n\n${detail}`
+        : 'Dateien konnten nicht gespeichert werden.'
     );
 
     return false;
