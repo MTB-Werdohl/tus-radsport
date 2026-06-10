@@ -59,7 +59,18 @@ function formatProtocolTitle(row) {
   const dateLabel =
     formatProtocolDate(row?.meeting_date);
 
-  return `${label} vom ${dateLabel}`;
+  const baseTitle =
+    `${label} vom ${dateLabel}`;
+
+  const subject =
+    String(row?.subject || '')
+      .trim();
+
+  if (!subject) {
+    return baseTitle;
+  }
+
+  return `${baseTitle} - ${subject}`;
 
 }
 

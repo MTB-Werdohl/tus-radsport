@@ -8,6 +8,7 @@ create table if not exists public.board_documents (
   meeting_label text not null default 'Vorstandssitzung',
   scope text not null default 'abteilung'
     check (scope in ('abteilung', 'hauptverein')),
+  subject text not null default '',
   content text not null default '',
   protocol_pdf_path text,
   attachments jsonb not null default '[]'::jsonb,
@@ -20,6 +21,9 @@ comment on table public.board_documents is
 
 comment on column public.board_documents.scope is
   'abteilung = Radsportabteilung; hauptverein = TuS / Beirat.';
+
+comment on column public.board_documents.subject is
+  'Kurzbeschreibung für Listen- und Detailtitel, z. B. Trikots.';
 
 comment on column public.board_documents.attachments is
   'Legacy: [{ "path": "protocols/..." }]. Neue Dateien liegen unter protocols/{id}/ im Storage.';

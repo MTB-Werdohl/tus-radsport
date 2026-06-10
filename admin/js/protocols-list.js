@@ -76,6 +76,7 @@ async function loadProtocols() {
 
         const haystack = [
           formatProtocolTitle(item),
+          item.subject,
           getProtocolScopeLabel(item.scope),
           item.content
         ]

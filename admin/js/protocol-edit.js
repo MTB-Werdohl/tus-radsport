@@ -261,6 +261,9 @@ async function loadProtocolEdit() {
     data.scope
     || PROTOCOL_SCOPE_ABTEILUNG;
 
+  document.getElementById('subject').value =
+    data.subject || '';
+
   document.getElementById('content').value =
     data.content || '';
 
@@ -310,6 +313,12 @@ async function saveProtocolEdit() {
       .getElementById('content')
       .value;
 
+  const subject =
+    document
+      .getElementById('subject')
+      .value
+      .trim();
+
   const hasFolderReplace =
     Boolean(pendingFolderReplace?.length);
 
@@ -327,6 +336,7 @@ async function saveProtocolEdit() {
     meeting_date: meetingDate,
     meeting_label: meetingLabel,
     scope,
+    subject,
     content,
     updated_at: new Date().toISOString()
   };

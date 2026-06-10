@@ -36,7 +36,7 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Mitglieder letzter Login:** [`supabase-members-last-login.sql`](../supabase-members-last-login.sql) — Spalte `last_login_at`, RPC `touch_member_last_login()` beim Magic-Link-Login; einmaliges Backfill aus `auth.users`.
 
-**Protokolle (Vorstand):** [`supabase-board-documents.sql`](../supabase-board-documents.sql) — Tabelle `board_documents`, PDFs unter `protocols/` im Storage (nur Vorstand lesbar).
+**Protokolle (Vorstand):** [`supabase-board-documents.sql`](../supabase-board-documents.sql) — Tabelle `board_documents`, PDFs unter `protocols/` im Storage (nur Vorstand lesbar). **Kurzbeschreibung in Listen:** [`supabase-board-documents-subject.sql`](../supabase-board-documents-subject.sql) — Spalte `subject` (Feld „Inhalt“ im Admin).
 
 **Strava / Aktivitätenportal (MVP Schritt 4+2):** [`supabase-strava.sql`](../supabase-strava.sql) — `strava_connections`, `activities`, Stats-Tabellen, Profil-RPCs (`get_strava_profile_status`, `update_strava_visibility`, `disconnect_strava`). OAuth/Webhook/Sync: Edge Functions folgen — Setup: [`supabase-strava-setup.md`](../supabase-strava-setup.md).
 
