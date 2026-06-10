@@ -181,19 +181,24 @@ function renderFeedbackPoll(
   const freeTextHtml =
     config.allowFreeText
       ? `
-<label class="feedback-comment-label">
+<div class="feedback-freetext-wrap">
 
-${escapeFeedbackHtml(config.freeTextLabel)}
+  <label class="feedback-freetext-label">
 
-<textarea
-  class="feedback-comment feedback-freetext"
-  rows="3"
-  maxlength="500"
-  placeholder="Optional">${escapeFeedbackHtml(
-    ownAnswer?.comment || ''
-  )}</textarea>
+    ${escapeFeedbackHtml(config.freeTextLabel)}
 
-</label>
+    <input
+      type="text"
+      class="feedback-freetext"
+      maxlength="500"
+      placeholder="Optional"
+      value="${escapeFeedbackHtml(
+        ownAnswer?.comment || ''
+      )}">
+
+  </label>
+
+</div>
 `
       : '';
 
@@ -303,6 +308,24 @@ function renderFeedbackModule(
   const type =
     resolveFeedbackModuleType(module);
 
+  const pollConfig =
+    type
+    === window.siteConfig.feedback.types.poll
+      ? normalizeFeedbackPollConfig(
+        module.config
+      )
+      : null;
+
+  const multipleHint =
+    canVote
+    && pollConfig?.multiple
+      ? `
+<p class="feedback-question-hint">
+  Mehrfachauswahl möglich
+</p>
+`
+      : '';
+
   let body = '';
 
   if (canVote) {
@@ -342,6 +365,8 @@ function renderFeedbackModule(
 ${escapeFeedbackHtml(module.question)}
 
 </h2>
+
+${multipleHint}
 
 ${
   canVote
