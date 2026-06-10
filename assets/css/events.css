@@ -98,6 +98,38 @@
   color: #ffb4b4;
 }
 
+.event-header__feedback .feedback-question-hint,
+.event-header__feedback .feedback-poll-option,
+.event-header__feedback .feedback-poll-option span,
+.event-header__feedback .feedback-freetext-label,
+.event-header__feedback .feedback-comment-label {
+  color: #ffffff;
+}
+
+.event-header__feedback .feedback-question-hint {
+  opacity: 0.88;
+}
+
+.event-header__feedback .feedback-poll-save {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+}
+
+.event-header__feedback .feedback-poll-save:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.event-header__feedback .feedback-freetext {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.event-header__feedback .feedback-freetext::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
 @media (min-width: 768px) {
 
   .event-header__main {

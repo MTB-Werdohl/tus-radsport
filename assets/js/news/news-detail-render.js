@@ -37,7 +37,7 @@ ${formatContentCardTitle(
   class="event-back-link"
   href="/news/">
 
-← Zurück zur Newsübersicht
+← Zurück
 
 </a>
 

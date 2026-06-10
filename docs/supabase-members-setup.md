@@ -123,8 +123,8 @@ Ohne funktionierenden SMTP kommt **kein** Login-Link an.
 2. E-Mail eingeben, die **in `members.email` steht**
 3. Toast: „Login-Link wurde an deine E-Mail gesendet.“
 4. E-Mail öffnen, Link klicken
-5. Weiterleitung auf `/profil/` mit Vorname, Nachname, …
-6. Navbar: „Hallo {Vorname} · Mein Profil · Logout“
+5. Weiterleitung auf `/profil/` (oder auf die Seite aus `?next=` / gespeicherter Rückkehr-URL nach externer Abstimmung)
+6. Navbar: „Hallo {Vorname} · Mein Profil“ (Logout im Profil-Tab)
 
 **Fehler „Kein Vereinsmitglied gefunden“ nach Klick auf den Link:**
 
@@ -186,7 +186,7 @@ Spalte `sichtbarkeit` mit Werten `public`, `members`, `draft`.
 
 SQL: [`supabase-content-visibility.sql`](supabase-content-visibility.sql)
 
-Im Admin beim Anlegen/Bearbeiten von News und Terminen auswählen. Bestehende News wurden aus `published` migriert; Termine standardmäßig `public`.
+Im Admin beim Anlegen/Bearbeiten von News und Terminen auswählen. Bestehende News wurden aus `published` migriert. **Neue Termine** starten im Admin als **Entwurf** (`draft`); News weiterhin je nach Formular-Default prüfen.
 
 ---
 
@@ -210,13 +210,12 @@ Datenschutz: [`../datenschutz.md`](../datenschutz.md) §12.5 / §12.6
 - [ ] `members.email` für alle Mitglieder gesetzt
 - [ ] [`supabase-members-auth.sql`](supabase-members-auth.sql) ausgeführt (inkl. **UPDATE-Policy** für Profil speichern)
 - [ ] `check_member_email('test@…')` → `true` für bekannte E-Mail
-- [ ] Site URL + Redirect URLs gesetzt
+- [ ] Site URL + Redirect URLs gesetzt (`/profil/`, `/**`; `/admin/` optional, nicht nötig für Login)
 - [ ] E-Mail-Provider / SMTP konfiguriert
 - [ ] [`supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql) ausgeführt (Vorstand-RLS)
 - [ ] Mindestens ein Test-Vorstand mit `rolle = 'Vorstand'`
-- [ ] Redirect URL `/admin/` gesetzt
 - [ ] Magic Link kommt an und `/profil/` funktioniert
-- [ ] Vorstand: `/admin/` nach Magic Link erreichbar
+- [ ] Vorstand: `/admin/` über Navbar nach Magic Link erreichbar
 - [ ] Mitglied ohne Vorstand-Rolle: kein Admin-Zugang
 - [ ] *(optional Feedback public)* RUNBOOK-Feedback-Skripte + `anonymize-member-account` deployt, Test Registrierung → Abstimmung → Account löschen
 

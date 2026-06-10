@@ -103,7 +103,10 @@ function isRegisteredEventAnswer(
       .toLowerCase();
 
   if (moduleType === 'yes_maybe') {
-    return value === 'yes';
+    return (
+      value === 'yes'
+      || value === 'maybe'
+    );
   }
 
   if (moduleType === 'yes_no_comment') {

@@ -38,8 +38,11 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Trö
 │       ├── event/       # Termin-Detailseite
 │       ├── news/        # News-Liste & Detail
 │       ├── gallery/     # Galerie
+│       ├── feedback/    # Abstimmungen (Termin/News)
 │       ├── member/      # Mitglieder-Login (Magic Link)
+│       ├── aktivitaeten/ # Strava-Feed (öffentlich)
 │       └── push/        # Tröte (state.js, widget.js)
+├── mitglieder-hilfe.md  # Hilfe für Mitglieder (Login, Abstimmung, Profil)
 ├── *.md, *.html         # Öffentliche Seiten (Jekyll)
 ├── scripts/
 │   └── generate-pages.js   # OG-Seiten für WhatsApp (CI)
@@ -65,7 +68,8 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Trö
 | `/galerie-detail.html?slug=…` | `galerie-detail.html` | Galerie-Detail |
 | `/verein/` | `verein.md` + `_includes/verein/*` | Verein (Über uns, Ausfahrt, Kodex) |
 | `/about`, `/ausfahrt`, `/kodex`, `/training` | Redirects | Weiterleitung auf `/verein/?tab=…` |
-| `/profil/` | `profil.md` | Mitgliederprofil (Magic Link) — Setup: [`docs/supabase-members-setup.md`](docs/supabase-members-setup.md) |
+| `/profil/` | `profil.md` | Mitgliederprofil (Magic Link) — Hilfe: [`mitglieder-hilfe.md`](mitglieder-hilfe.md) · Setup: [`docs/supabase-members-setup.md`](docs/supabase-members-setup.md) |
+| `/aktivitaeten/` | `aktivitaeten/` | Strava-Aktivitäten-Feed (optional, SQL: RUNBOOK) |
 | `/admin/` | `admin/index.html` | Vorstand-Dashboard (Magic Link in Navbar) |
 
 Navigation: `_data/navigation.yml`
@@ -76,8 +80,9 @@ Navigation: `_data/navigation.yml`
 
 Unter `/admin/` (nicht in der Hauptnavigation verlinkt; Footer-Link).
 
-- **Termine** — Tabelle `Termine`, Bilder/GPX in Storage `media`
-- **News** — Tabelle `News` (`sichtbarkeit`)
+- **Termine** — Tabelle `Termine`, Bilder/GPX in Storage `media`; optional Feedback-Modul
+- **News** — Tabelle `News` (`sichtbarkeit`); optional Feedback-Modul
+- **Feedback** — Auswertung, CSV; Löschung über DB-Kaskade beim Entity-Löschen
 - **Galerien** — `galleries` + `gallery_images`
 - **Mitglieder** — `members` (CRUD, Rolle Vorstand/Mitglied)
 - **Tröte** — `site_state.last_push` (Admin: `/admin/push.html`)
@@ -102,7 +107,8 @@ Rollen & Sichtbarkeit: [`docs/supabase-vorstand-roles.sql`](docs/supabase-vorsta
 | `galleries` | Tabelle | Galerie-Metadaten |
 | `gallery_images` | Tabelle | Bilder pro Galerie |
 | `site_state` | Tabelle | Tröte: letzte Mitteilung (`last_push`) |
-| `members` | Tabelle | Vereinsmitglieder (`rolle`: Mitglied / Vorstand) |
+| `members` | Tabelle | Vereinsmitglieder (`rolle`: Mitglied / Vorstand / public) |
+| `feedback_modules` / `feedback_answers` | Tabellen | Abstimmungen an Terminen/News |
 | `media` | Storage | Uploads (Bilder, GPX) |
 
 Frontend-Konfiguration: `assets/js/core/site-config.js` (URL, Keys, Tabellennamen, Storage, Edge Functions). Anon-Key ist öffentlich — Schutz nur über **RLS** in Supabase.

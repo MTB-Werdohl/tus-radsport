@@ -38,9 +38,9 @@ Beispiele: `about.md`, `training.md`, `kodex.md`
 | Seite | Container | Skript-Kette |
 |-------|-----------|----------------|
 | Kalender | `#calendar`, `#event-cards` | FullCalendar + `calendar/*` |
-| Termin-Detail | `#event`, `#event-feedback` | `event-service` → `event-render` → `event-page` + `feedback/*` |
+| Termin-Detail | `#event` (Feedback im Header) | `event-service` → `event-render` → `event-page` + `feedback/*` |
 | News-Liste | `#news-cards` | `news-service` → `render-cards` → `news-page` |
-| News-Detail | `#news`, `#news-feedback` | `news-service` → `news-detail-render` → `news-detail-page` + `feedback/*` |
+| News-Detail | `#news` (Feedback im Header) | `news-service` → `news-detail-render` → `news-detail-page` + `feedback/*` |
 | Galerie | `#gallery-grid` | `gallery-service` → `gallery-render` → `gallery-page` |
 | Galerie-Detail | `#gallery-images` | `gallery-service` → `gallery-render` → `gallery-detail-page` |
 
@@ -72,9 +72,9 @@ Optionale Frontmatter-Flags:
 | Datei | Aufgabe |
 |-------|---------|
 | `member-service.js` | Abfrage Tabelle `members`, Rollen-Hilfen |
-| `member-auth.js` | Session, Magic Link, Logout, Validierung; externe Registrierung nach Magic Link |
+| `member-auth.js` | Session, Magic Link, Logout, Validierung; Rückkehr-URL (`memberReturnUrl`, `?next=`) nach Login |
 | `member-account.js` | Account-Löschung (Anonymisierung) via Edge Function |
-| `member-nav.js` | Header-UI (Login / Profil / Logout) |
+| `member-nav.js` | Header-UI (Login / Profil) |
 | `member-render.js` | Profilseite rendern (Mitglied + public) |
 | `member-page.js` | Profilseite initialisieren |
 
@@ -216,13 +216,13 @@ Kein anonymes Abstimmen; DB-Eintrag erst nach E-Mail-Bestätigung.
 feedback-types.js               → Validierung, poll option_id
 feedback-public-registration.js → Externe Registrierung, Magic Link, sessionStorage
 feedback-service.js             → Supabase load/upsert + RPC
-feedback-render.js              → UI je type; Gate für public_voting
-feedback-init.js                → initFeedbackModule({ entityType, entityId, container })
+feedback-render.js              → UI je type; Gate nur bei public + public_voting
+feedback-init.js                → initFeedbackModule({ entityType, entityId, entityVisibility, container })
 ```
 
-Detail-Seiten rufen nur `initFeedbackModule()` auf — kein Feedback-Code in `event-service` / `news-service`.
+Detail-Seiten: Abstimmung im **Seiten-Header** (Termin neben Datum, News neben Titel), nicht am Ende des Artikels. Nach Login: Kalender-Cache wird geleert (`termine-loader.js` → `member-session-ready`).
 
-**Admin:** `admin/js/feedback-module-form.js` in Termin-/News-Bearbeitung (optional, zusammen mit Speichern). Schalter **Öffentliche Abstimmung** (`public_voting`). Auswertung: `admin/feedback.html`, `admin/feedback_results.html?module_id=…` (CSV-Export). Mitglieder-Löschung = Anonymisierung (`anonymize_member` + Edge Function).
+**Admin:** `admin/js/feedback-module-form.js` in Termin-/News-Bearbeitung (optional, zusammen mit Speichern). Neuer Termin default **Entwurf**. Schalter **Öffentliche Abstimmung** (`public_voting`) — Gäste-Registrierung nur wenn zusätzlich `sichtbarkeit=public`. Mitglieder-E-Mail im Admin **nicht änderbar** (Login-Bindung). Auswertung: `admin/feedback.html`, `admin/feedback_results.html?module_id=…` (CSV-Export). Termin-E-Mails: Ja **und** Vielleicht (`send-admin-email`). Mitglieder-Löschung = Anonymisierung (`anonymize_member` + Edge Function).
 
 Typen v1: `yes_maybe`, `yes_no_comment`, `poll` — Poll speichert `option_id` in `answer`, nicht Anzeige-Text.
 

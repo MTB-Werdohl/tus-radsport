@@ -58,7 +58,7 @@ Nach Frontend-Deploy: [`supabase-drop-web-push.sql`](../supabase-drop-web-push.s
 | Funktion | Referenz / Verhalten |
 |----------|----------------------|
 | `anonymize-member-account` | [`supabase-edge-anonymize-member-account.ts`](../supabase-edge-anonymize-member-account.ts) — **Edge Function deployen, nicht SQL!** JWT; Self (public) oder Vorstand `{ member_id }`; ruft `anonymize_member()` + löscht Auth-User |
-| `send-admin-email` | [`supabase-edge-send-admin-email.ts`](../supabase-edge-send-admin-email.ts) — Vorstand-E-Mails; Setup: [`supabase-admin-email-setup.md`](../supabase-admin-email-setup.md) |
+| `send-admin-email` | [`supabase-edge-send-admin-email.ts`](../supabase-edge-send-admin-email.ts) — Vorstand-E-Mails; Termin-Empfänger: **Ja und Vielleicht** bei `yes_maybe`; Setup: [`supabase-admin-email-setup.md`](../supabase-admin-email-setup.md) — **nach Code-Änderung neu deployen** |
 | `strava-oauth-start` | [`supabase-edge-strava-oauth-start.ts`](../supabase-edge-strava-oauth-start.ts) — POST + JWT; liefert Strava-Authorize-URL — Setup: [`supabase-strava-setup.md`](../supabase-strava-setup.md) |
 | `strava-oauth-callback` | [`supabase-edge-strava-oauth-callback.ts`](../supabase-edge-strava-oauth-callback.ts) — GET; Token-Austausch, speichert `strava_connections`, Redirect `/profil/?strava=connected` |
 | `strava-sync` | [`supabase-edge-strava-sync.ts`](../supabase-edge-strava-sync.ts) — Webhook + Sync — Setup: [`supabase-strava-sync-setup.md`](../supabase-strava-sync-setup.md) |
@@ -127,6 +127,21 @@ Schreibzugriffe auf `site_state` (`last_push`) für die Tröte: Vorstand direkt 
 - **Neu:** Skripte 0→4 der Reihe nach.
 - **Bereits live:** Einzelne Skripte erneut ausführen ist idempotent (`drop policy if exists` …).
 - **`is_vorstand()` / `is_member()`:** nutzen `SET row_security = off` — bei Problemen mit Admin-Listen erneut [`supabase-vorstand-roles.sql`](../supabase-vorstand-roles.sql) bzw. [`supabase-content-visibility.sql`](../supabase-content-visibility.sql) ausführen.
+
+## Go-live Checkliste (Website + Supabase)
+
+Vor dem produktiven Start einmal durchgehen:
+
+| Bereich | Aktion |
+|---------|--------|
+| **SQL Feedback** | [`supabase-feedback-cascade-delete.sql`](../supabase-feedback-cascade-delete.sql) + [`supabase-feedback-answers-delete-own.sql`](../supabase-feedback-answers-delete-own.sql) ausgeführt |
+| **Edge `send-admin-email`** | Code deployt; Termin-Mails zählen **Ja + Vielleicht** (Preview in Admin = tatsächlicher Versand) |
+| **Edge `anonymize-member-account`** | Deployt, JWT Verify **OFF**; Test Account löschen |
+| **Redirect URLs** | `/profil/`, `/**`, ggf. `/event.html`, `/news-detail.html` für Rückkehr nach Magic Link |
+| **Smoke-Test** | Öffentlicher Termin + Abstimmung; Mitglieder-only Termin; Entwurf nur Vorstand; Kalender nach Login aktualisiert |
+| **Mitglieder-Hilfe** | [`mitglieder-hilfe.md`](../../mitglieder-hilfe.md) verlinkt / Inhalt stimmt mit UI |
+
+Details: [`../supabase-members-setup.md`](../supabase-members-setup.md), [`../supabase-admin-email-setup.md`](../supabase-admin-email-setup.md).
 
 ## Siehe auch
 

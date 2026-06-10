@@ -420,6 +420,7 @@ Zur technischen Funktion können Informationen **lokal im Browser** gespeichert 
 - **Supabase Auth-Session** — damit du eingeloggt bleibst (Magic Link)
 - **lastSeenPush** — ob die Tröte-Mitteilung auf der Website bereits als gelesen markiert wurde
 - **publicFeedbackReturnUrl** — Rückkehr-Adresse nach Magic Link bei externer Abstimmung (Session Storage, bis Tab geschlossen oder überschrieben)
+- **memberReturnUrl** — Rückkehr nach normalem Mitglieder-Login (z. B. `?next=` auf Termin/News), Session Storage
 - **publicRegistrationPending** — vorübergehend Name/Telefon bis E-Mail bestätigt ist (Session Storage, bis Registrierung abgeschlossen oder Account gelöscht)
 
 Diese Speicherung dient ausschließlich der technischen Funktion der Website und des Mitgliederbereichs. Es werden **keine** Analyse-, Marketing- oder Tracking-Cookies gesetzt.
@@ -443,7 +444,7 @@ Es werden keine Cookies zu Werbe- oder Analysezwecken gesetzt.
 - **Öffentlich freigegebene Aktivitäten im Feed:** Anzeige höchstens **90 Tage** zurück; danach nicht mehr im Feed, ggf. weiter in Rankings oder Vereinszielen je nach gespeicherter Freigabe.
 - **Auth-Session:** bis zum Logout, Ablauf der Session oder Ungültigkeit des Login-Links.
 - **Tröte (`site_state.last_push`):** bis der Vorstand eine neue Mitteilung veröffentlicht oder den Eintrag entfernt.
-- **Local Storage im Browser** (z. B. `lastSeenPush`) und **Session Storage** (z. B. `publicFeedbackReturnUrl`, `publicRegistrationPending`): bis du die Website-Daten im Browser löschst, der Tab geschlossen wird oder der Eintrag überschrieben wird.
+- **Local Storage im Browser** (z. B. `lastSeenPush`) und **Session Storage** (z. B. `publicFeedbackReturnUrl`, `memberReturnUrl`, `publicRegistrationPending`): bis du die Website-Daten im Browser löschst, der Tab geschlossen wird oder der Eintrag überschrieben wird.
 - **Server- und Verbindungslogs der Hosting-/Backend-Anbieter:** gemäß deren Richtlinien; auf diese Logs hat der Verein in der Regel keinen direkten Zugriff.
 
 ---

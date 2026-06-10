@@ -54,7 +54,7 @@ Wenn **SMTP_HOST** gesetzt ist, wird SMTP bevorzugt. Sonst **RESEND_API_KEY**.
 | Modus | Bedeutung |
 |-------|-----------|
 | **Einzelmitglied** | Eine Person mit Kontakt-Einwilligung |
-| **Termin** | Angemeldete Teilnehmer des Termins (Feedback-Modul): `Ja` bei Ja/Vielleicht und Ja/Nein; bei Umfrage alle Antworten |
+| **Termin** | Teilnehmer mit Antwort **Ja** oder **Vielleicht** (Modul `yes_maybe`, Einwilligung Kontakt); bei Umfrage (`poll`) alle mit Antwort |
 | **Alle** | Alle Mitglieder mit Kontakt-Einwilligung |
 
 ## 4. Test
