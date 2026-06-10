@@ -159,11 +159,9 @@ event.content || ''
 
 <div class="event-back">
 
-<a
-  class="event-back-link"
-  href="${calendarBackUrl}">
+<a href="${calendarBackUrl}">
 
-← Zurück
+← Zurück zum Kalender
 
 </a>
 

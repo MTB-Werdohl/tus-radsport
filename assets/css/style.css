@@ -778,6 +778,64 @@ opacity: 0.92;
 
 }
 
+.member-profile-guest-lead {
+
+margin: 0 0 12px;
+
+line-height: 1.5;
+
+}
+
+.member-profile-guest-hint {
+
+margin: 0 0 20px;
+
+line-height: 1.45;
+
+opacity: 0.88;
+
+}
+
+.member-profile-guest-actions {
+
+display: flex;
+
+flex-wrap: wrap;
+
+align-items: center;
+
+gap: 12px 20px;
+
+}
+
+.member-profile-help-link {
+
+color: #fff;
+
+font-weight: 600;
+
+opacity: 0.9;
+
+}
+
+.member-profile-help-link:hover {
+
+opacity: 1;
+
+text-decoration: underline;
+
+}
+
+.member-troete-hint {
+
+margin: 0;
+
+line-height: 1.45;
+
+opacity: 0.88;
+
+}
+
 .member-save-status {
   margin: 0;
   font-size: 0.875rem;

@@ -28,8 +28,9 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
   <p>Mit deinem Login kannst du außerdem:</p>
   <ul>
     <li>
-      bei Terminen und News auf <strong>„Teilnehmen“</strong> klicken und
-      deine Antwort abgeben (Ja / Vielleicht / Nein oder Abstimmungen)
+      bei Terminen und News <strong>abstimmen</strong> (z.&nbsp;B.
+      <strong>Ja</strong> / <strong>Vielleicht</strong> bei Terminen oder
+      Umfragen bei News)
     </li>
     <li>
       dein <strong>Profil</strong> einsehen und fehlende Angaben ergänzen
@@ -60,8 +61,9 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
     </li>
     <li>
       Danach bist du angemeldet. In der Kopfzeile steht
-      <strong>„Hallo … · Profil · Logout“</strong>. Unter
-      <a href="{{ '/profil' | relative_url }}">Profil</a> findest du deine Daten.
+      <strong>„Hallo … · Profil“</strong>. Unter
+      <a href="{{ '/profil' | relative_url }}">Profil</a> findest du deine Daten
+      und kannst dich dort <strong>abmelden</strong>.
     </li>
   </ol>
   <p>
@@ -74,14 +76,19 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
   <h2>Teilnahme &amp; Abstimmungen</h2>
   <p>
     Bei vielen Terminen im <a href="{{ '/kalender/' | relative_url }}">Kalender</a>
-    und bei News gibt es einen Button <strong>„Teilnehmen“</strong> (oder eine
-    Abstimmung). So meldest du dich zu Ausfahrten an oder gibst deine Meinung ab.
+    und bei News gibt es eine <strong>Abstimmung</strong> direkt beim Beitrag
+    (z.&nbsp;B. „Bist du dabei?“ oder eine Umfrage).
   </p>
   <h3>Als Vereinsmitglied</h3>
   <p>
     Du musst <strong>eingeloggt</strong> sein. Wenn du noch nicht angemeldet bist,
-    wirst du zum Login aufgefordert — E-Mail eingeben, Link aus der Mail öffnen,
-    dann zurück zum Termin und erneut „Teilnehmen“ wählen.
+    erscheint ein Hinweis zum Login — E-Mail eingeben, Link aus der Mail öffnen.
+    Danach landest du automatisch wieder auf der Seite, von der du kamst.
+  </p>
+  <p>
+    <strong>Antwort ändern oder zurückziehen:</strong> Andere Option wählen und
+    speichern. Bei Terminen (Ja/Vielleicht) kannst du die aktive Schaltfläche
+    erneut antippen, um deine Abstimmung zurückzuziehen.
   </p>
   <h3>Warum E-Mail?</h3>
   <p>
@@ -236,6 +243,7 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
     <li><strong>Vereinsmitglied:</strong> E-Mail oben rechts → Link in der Mail → eingeloggt</li>
     <li><strong>Ohne Strava:</strong> Strava-Tab ignorieren → nicht im Aktivitätsportal sichtbar</li>
     <li><strong>Teilnehmen:</strong> eingeloggt sein, dann am Termin/News abstimmen</li>
+    <li><strong>Abmelden:</strong> nur auf der Profilseite</li>
     <li><strong>Profil:</strong> Daten und Erreichbarkeit prüfen</li>
     <li><strong>Problem:</strong> falsche oder fehlende E-Mail → <a href="mailto:{{ site.contact.email }}"> kontaktieren</a></li>
     <li><strong>Gast:</strong> Formular → E-Mail bestätigen → abstimmen — bis Account gelöscht</li>

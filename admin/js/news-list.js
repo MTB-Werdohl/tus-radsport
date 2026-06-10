@@ -64,6 +64,10 @@ async function loadNews() {
 
     console.error(error);
 
+    alert(
+      'News konnten nicht geladen werden.'
+    );
+
     return;
 
   }

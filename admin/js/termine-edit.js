@@ -101,6 +101,9 @@ async function loadEvent() {
 
   if (error) {
     console.error(error);
+    alert(
+      'Termin konnte nicht geladen werden.'
+    );
     return;
   }
 
@@ -141,7 +144,7 @@ async function loadEvent() {
 
       <p>Aktuelles Bild:</p>
 
-      <img src="${data.image}"
+      <img src="${safeMediaUrl(data.image)}"
            class="preview-image">
 
     `;
@@ -321,9 +324,7 @@ async function saveEvent() {
       .files[0];
 
   const slug =
-    title
-      .toLowerCase()
-      .replaceAll(' ', '-');
+    buildAdminSlug(title);
 
   let parsedExclude = [];
 
@@ -392,6 +393,13 @@ async function saveEvent() {
       image =
         imageData.publicUrl;
 
+    } else {
+
+      alert(
+        'Bild-Upload fehlgeschlagen: '
+        + (error.message || 'Unbekannter Fehler')
+      );
+
     }
 
   }
@@ -417,6 +425,13 @@ async function saveEvent() {
 
       gpx =
         gpxData.publicUrl;
+
+    } else {
+
+      alert(
+        'GPX-Upload fehlgeschlagen: '
+        + (error.message || 'Unbekannter Fehler')
+      );
 
     }
 

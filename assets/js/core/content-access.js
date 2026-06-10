@@ -91,7 +91,7 @@ function getContentAccessTexts(
       && isClubMember(member);
 
     let hint =
-      'Bitte melden Sie sich als Vereinsmitglied an — Login oben rechts unter „Mitglieder“.';
+      'Bitte melde dich als Vereinsmitglied an — Login oben rechts unter „Mitglieder“.';
 
     if (
       loggedIn
@@ -99,7 +99,7 @@ function getContentAccessTexts(
     ) {
 
       hint =
-        'Ihr Konto hat keinen Zugriff auf interne Inhalte. Vereinsmitglieder melden sich mit der hinterlegten Vereins-E-Mail an.';
+        'Dein Konto hat keinen Zugriff auf interne Inhalte. Vereinsmitglieder melden sich mit der hinterlegten Vereins-E-Mail an.';
 
     }
 
@@ -107,7 +107,7 @@ function getContentAccessTexts(
       title:
         '🔒 Nur für Mitglieder',
       message:
-        'Sie sind hier richtig, aber aufgrund fehlender Berechtigung wird der Inhalt nicht angezeigt.',
+        'Du bist hier richtig, aber aufgrund fehlender Berechtigung wird der Inhalt nicht angezeigt.',
       hint
     };
 

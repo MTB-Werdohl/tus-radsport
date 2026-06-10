@@ -336,6 +336,13 @@ async function initMemberEdit() {
     fillMemberForm(data);
     showConsentInfo(data);
 
+    const emailInput =
+      document.getElementById('email');
+
+    if (emailInput) {
+      emailInput.readOnly = true;
+    }
+
     document
       .getElementById('export-member-pdf')
       ?.classList.remove('hidden');
@@ -580,8 +587,30 @@ async function saveMember() {
 
   }
 
+  if (
+    editId
+    && normalizedEmail
+    && originalEmail
+    && normalizedEmail
+      !== originalEmail.trim().toLowerCase()
+  ) {
+
+    alert(
+      'Die E-Mail ist an den Login gebunden und kann hier nicht geändert werden. '
+      + 'Bitte Vorstand/Admin kontaktieren, damit Mitgliedsdaten und Login-Adresse '
+      + 'gemeinsam angepasst werden.'
+    );
+
+    return;
+
+  }
+
   const payload =
     buildMemberPayload(fields);
+
+  if (editId) {
+    delete payload.email;
+  }
 
   let error;
 
@@ -613,20 +642,6 @@ async function saveMember() {
     alert(error.message);
 
     return;
-
-  }
-
-  const emailChanged =
-    editId
-    && normalizedEmail
-    && normalizedEmail
-      !== originalEmail.trim().toLowerCase();
-
-  if (emailChanged) {
-
-    alert(
-      'E-Mail geändert. Das Mitglied muss sich mit der neuen Adresse neu anmelden.'
-    );
 
   }
 

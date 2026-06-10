@@ -193,6 +193,10 @@ async function loadEvents() {
 
     console.error(error);
 
+    alert(
+      'Termine konnten nicht geladen werden.'
+    );
+
     return;
 
   }

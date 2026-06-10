@@ -99,8 +99,14 @@ function buildAdminSlug(title) {
   return String(title || '')
     .trim()
     .toLowerCase()
+    .replace(/ä/g, 'ae')
+    .replace(/ö/g, 'oe')
+    .replace(/ü/g, 'ue')
+    .replace(/ß/g, 'ss')
     .replaceAll(' ', '-')
-    .replace(/[^\w-]+/g, '');
+    .replace(/[^\w-]+/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
 
 }
 

@@ -28,6 +28,10 @@ async function loadNews() {
 
     console.error(error);
 
+    alert(
+      'News konnte nicht geladen werden.'
+    );
+
     return;
 
   }
@@ -143,6 +147,13 @@ async function saveNews() {
 
       image =
         imageData.publicUrl;
+
+    } else {
+
+      alert(
+        'Bild-Upload fehlgeschlagen: '
+        + (error.message || 'Unbekannter Fehler')
+      );
 
     }
 

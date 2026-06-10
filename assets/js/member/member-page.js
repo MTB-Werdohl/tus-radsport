@@ -1149,11 +1149,7 @@ async function loadMemberProfilePage() {
 
   if (!member) {
 
-    window.setTimeout(() => {
-
-      window.location.href = '/';
-
-    }, 2500);
+    renderMemberProfileGuestLogin();
 
     return;
 

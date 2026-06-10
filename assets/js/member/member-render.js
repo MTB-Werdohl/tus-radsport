@@ -665,6 +665,18 @@ function renderClubMemberProfilContent(
 
 </section>
 
+<section class="member-profile-section-block member-profile-troete-hint">
+
+  <h2>Vereinsinfos</h2>
+
+  <p class="member-troete-hint">
+    Aktuelle Hinweise vom Verein erscheinen unten rechts als
+    <strong>Tröte</strong> auf jeder Seite — dort findest du kurze
+    Mitteilungen des Vorstands.
+  </p>
+
+</section>
+
 <section class="member-profile-section-block member-profile-actions">
 
   <button type="button" id="member-logout-btn" class="member-logout-btn">
@@ -1069,6 +1081,82 @@ ${renderMemberProfileTabsNav(activeTab)}
 </div>
 
   `;
+
+}
+
+function renderMemberProfileGuestLogin() {
+
+  const container =
+    document.getElementById(
+      'member-profile'
+    );
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = `
+
+<section class="member-profile-guest">
+
+  <h2>Anmeldung erforderlich</h2>
+
+  <p class="member-profile-guest-lead">
+    Bitte melde dich an, um dein Profil zu sehen und zu bearbeiten.
+  </p>
+
+  <p class="member-profile-guest-hint">
+    E-Mail-Adresse oben rechts unter
+    <strong>„Mitglieder“</strong> eingeben — du erhältst einen Login-Link per Mail.
+    Den Link im gleichen Browser öffnen.
+  </p>
+
+  <div class="member-profile-guest-actions">
+
+    <button
+      type="button"
+      id="member-profile-open-login"
+      class="member-save-btn">
+
+      Login-Bereich öffnen
+
+    </button>
+
+    <a
+      href="/mitglieder-hilfe/"
+      class="member-profile-help-link">
+
+      Anleitung: Login &amp; Teilnahme
+
+    </a>
+
+  </div>
+
+</section>
+
+  `;
+
+  document
+    .getElementById('member-profile-open-login')
+    ?.addEventListener('click', () => {
+
+      if (
+        typeof openMemberAuthPanel
+          === 'function'
+      ) {
+        openMemberAuthPanel();
+      }
+
+      const emailInput =
+        document.getElementById(
+          'member-email'
+        );
+
+      if (emailInput) {
+        emailInput.focus();
+      }
+
+    });
 
 }
 

@@ -1,22 +1,28 @@
 function renderNewsDetail(
   data
-){
+) {
 
-  const wrapper=
-
+  const wrapper =
     document.getElementById(
       'news'
     );
 
-  wrapper.innerHTML=`
+  if (
+    !wrapper
+    || !data
+  ) {
+    return;
+  }
 
-<article
-class="news-page"
->
+  wrapper.innerHTML = `
 
-<h1
-class="news-title"
->
+<article class="news-page event-page">
+
+<header class="event-header news-header">
+
+<div class="news-header__intro">
+
+<h1 class="news-title">
 
 ${formatContentCardTitle(
   data.title,
@@ -25,9 +31,29 @@ ${formatContentCardTitle(
 
 </h1>
 
+<div class="event-header__actions">
+
+<a
+  class="event-back-link"
+  href="/news/">
+
+← Zurück zur Newsübersicht
+
+</a>
+
+<div id="share"></div>
+
+</div>
+
+</div>
+
 <div
-id="share"
-></div>
+  id="news-feedback"
+  class="event-header__feedback">
+
+</div>
+
+</header>
 
 ${
 
@@ -53,9 +79,7 @@ alt="${data.title}"
 
 }
 
-<div
-class="news-body"
->
+<div class="news-body">
 
 ${
 
@@ -69,13 +93,9 @@ data.content || ''
 
 </div>
 
-<div
-class="event-back"
->
+<div class="event-back">
 
-<a
-href="/news/"
->
+<a href="/news/">
 
 ← Zurück zur Newsübersicht
 
@@ -88,11 +108,8 @@ href="/news/"
 `;
 
   buildShareButton(
-
     'share',
-
     data.title
-
   );
 
 }
