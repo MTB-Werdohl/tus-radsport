@@ -19,6 +19,8 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Feedback:** [`supabase-feedback.sql`](../supabase-feedback.sql) — `feedback_modules` + `feedback_answers` (nach #2). Polymorphe `entity_type`/`entity_id` **ohne FK**; Poll-Antworten speichern `option_id` in `answer`.
 
+**Feedback Antwort zurückziehen:** [`supabase-feedback-answers-delete-own.sql`](../supabase-feedback-answers-delete-own.sql) — DELETE-Policy: Mitglieder können die eigene Antwort löschen (Umfrage/Termin freiwillig zurücknehmen).
+
 **Feedback öffentliche Abstimmung:** [`supabase-feedback-public-voting.sql`](../supabase-feedback-public-voting.sql) — Spalte `public_voting` (nach Feedback-Basis).
 
 **Feedback Kaskaden-Löschung:** [`supabase-feedback-cascade-delete.sql`](../supabase-feedback-cascade-delete.sql) — DB-Trigger: beim Löschen von Termin/News wird das zugehörige `feedback_modules`-Eintrag (inkl. Antworten) entfernt; einmalige Bereinigung verwaister Module.

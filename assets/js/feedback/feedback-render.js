@@ -487,10 +487,72 @@ function bindFeedbackModuleEvents(
   const type =
     resolveFeedbackModuleType(module);
 
+  async function withdrawAnswer() {
+
+    if (!identity?.memberId) {
+
+      statusEl.innerHTML =
+        renderFeedbackStatus(
+          'Bitte zuerst per E-Mail-Link anmelden.',
+          true
+        );
+
+      return;
+
+    }
+
+    const result =
+      await deleteFeedbackAnswer(
+        module.id,
+        identity.memberId
+      );
+
+    if (result?.error) {
+
+      statusEl.innerHTML =
+        renderFeedbackStatus(
+          result.error.message
+            || 'Zurückziehen fehlgeschlagen.',
+          true
+        );
+
+      return;
+
+    }
+
+    statusEl.innerHTML =
+      renderFeedbackStatus(
+        'Abstimmung zurückgezogen.',
+        false
+      );
+
+    renderFeedbackModule(
+      container,
+      module,
+      null,
+      member
+    );
+
+  }
+
   async function persistAnswer(
     answer,
     comment
   ) {
+
+    if (
+      isFeedbackAnswerWithdrawal(
+        module,
+        answer,
+        comment
+      )
+    ) {
+
+      await withdrawAnswer();
+
+      return;
+
+    }
 
     const validationError =
       validateFeedbackAnswer(
@@ -561,6 +623,33 @@ function bindFeedbackModuleEvents(
         const answer =
           button.dataset.feedbackAnswer;
 
+        const wasActive =
+          button.classList.contains(
+            'is-active'
+          );
+
+        if (
+          type
+          === window.siteConfig.feedback.types.yesMaybe
+          && wasActive
+        ) {
+
+          container
+            .querySelectorAll(
+              '[data-feedback-answer]'
+            )
+            .forEach((item) => {
+              item.classList.remove(
+                'is-active'
+              );
+            });
+
+          await withdrawAnswer();
+
+          return;
+
+        }
+
         container
           .querySelectorAll('[data-feedback-answer]')
           .forEach((item) => {
@@ -596,15 +685,10 @@ function bindFeedbackModuleEvents(
           module.config
         );
 
-      const inputName =
-        config.multiple
-          ? 'feedback-poll-option'
-          : 'feedback-poll';
-
       const selected =
         [
           ...container.querySelectorAll(
-            `input[name="${inputName}"]:checked`
+            '.feedback-poll input:checked'
           )
         ].map((input) => input.value);
 
@@ -626,6 +710,7 @@ function bindFeedbackModuleEvents(
         serializeFeedbackPollAnswer(
           selected,
           config.multiple
+            || config.allowFreeText
         );
 
       await persistAnswer(

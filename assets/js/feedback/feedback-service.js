@@ -112,6 +112,36 @@ async function saveFeedbackAnswer(
 
 }
 
+async function deleteFeedbackAnswer(
+  moduleId,
+  memberId
+) {
+
+  if (!moduleId || !memberId) {
+    return { ok: true };
+  }
+
+  const { error } =
+    await window.supabaseClient
+      .from(
+        window.siteConfig.tables.feedbackAnswers
+      )
+      .delete()
+      .eq('module_id', moduleId)
+      .eq('member_id', memberId);
+
+  if (error) {
+
+    console.error(error);
+
+    return { error };
+
+  }
+
+  return { ok: true };
+
+}
+
 async function canRegisterPublicParticipant(
   email
 ) {

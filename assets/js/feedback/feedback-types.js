@@ -444,6 +444,52 @@ function validateFeedbackAnswer(
 
 }
 
+function isFeedbackAnswerWithdrawal(
+  module,
+  answer,
+  comment
+) {
+
+  const type =
+    module?.type;
+
+  if (
+    type
+    !== window.siteConfig.feedback.types.poll
+  ) {
+
+    return !String(answer || '')
+      .trim();
+
+  }
+
+  const selected =
+    parseFeedbackPollAnswer(answer);
+
+  if (!selected.length) {
+    return true;
+  }
+
+  const hasFreeTextOption =
+    selected.includes(
+      FEEDBACK_POLL_FREETEXT_OPTION_ID
+    );
+
+  const freeText =
+    String(comment || '')
+      .trim();
+
+  if (
+    hasFreeTextOption
+    && !freeText
+  ) {
+    return true;
+  }
+
+  return false;
+
+}
+
 function formatFeedbackAnswerLabel(
   module,
   answerCode
