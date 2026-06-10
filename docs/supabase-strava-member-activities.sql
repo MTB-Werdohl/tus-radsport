@@ -50,6 +50,7 @@ begin
               'start_date', a.start_date,
               'in_public_feed',
                 v_publish_feed
+                and a.sport_category = 'rad'
                 and a.start_date >= (
                   now() - (v_feed_days || ' days')::interval
                 )
@@ -57,6 +58,7 @@ begin
             from public.activities a
             where a.member_id = v_member_id
               and a.deleted_at is null
+              and a.sport_category = 'rad'
             order by a.start_date desc
             limit v_limit
           ) rows

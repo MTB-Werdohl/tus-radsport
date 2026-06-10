@@ -64,12 +64,13 @@ const MEMBER_CONSENT_TEXTS = {
   },
 
   bilder: {
-    label: 'Einwilligung Bilder',
+    label: 'Einwilligung Bilder (Tourfotos & Aktivitätsbilder)',
     body:
       'Ich willige ein, dass Fotos und Videos meiner Person, die im Rahmen von Ausfahrten, '
       + 'Wettkämpfen oder Vereinsveranstaltungen entstehen, für Zwecke der '
       + 'Öffentlichkeitsarbeit der Abteilung veröffentlicht werden dürfen (insbesondere auf der '
       + 'Vereinswebsite, in sozialen Medien sowie in Presseveröffentlichungen). '
+      + 'Diese Einwilligung gilt nicht für mein freiwilliges Profilbild im Mitgliederbereich. '
       + 'Ich wurde darauf hingewiesen, dass Inhalte im Internet weltweit abrufbar sind und eine '
       + 'Weiterverwendung durch Dritte nicht ausgeschlossen werden kann.'
   }
@@ -552,11 +553,79 @@ ${feedHint}
 
 }
 
+function renderMemberAvatarProfileBlock(
+  member
+) {
+
+  const preview =
+    renderMemberAvatarHtml(
+      member,
+      'member-avatar--lg'
+    );
+
+  const hasAvatar =
+    !!member?.avatar_storage_path;
+
+  return `
+<section class="member-profile-section-block member-profile-avatar-block">
+
+  <h2>Profilbild</h2>
+
+  <div class="member-profile-avatar-row">
+
+    ${preview}
+
+    <div class="member-profile-avatar-actions">
+
+      <p class="member-strava-hint">
+        Dein Profilbild kann öffentlich in Feed, Rankings, Teilnehmerlisten
+        und auf Profilseiten erscheinen. Mit dem Upload stimmst du dieser
+        Darstellung zu.
+      </p>
+
+      <label class="member-avatar-upload-label">
+        <span class="member-save-btn member-avatar-upload-btn">
+          Profilbild hochladen
+        </span>
+        <input
+          type="file"
+          id="member-avatar-file"
+          class="member-avatar-file-input"
+          accept="image/jpeg,image/png,image/webp"
+          hidden>
+      </label>
+
+      <button
+        type="button"
+        id="member-avatar-remove-btn"
+        class="member-logout-btn member-avatar-remove-btn"
+        ${hasAvatar ? '' : 'hidden'}>
+
+        Profilbild entfernen
+
+      </button>
+
+      <p
+        id="member-avatar-status"
+        class="member-save-status"
+        hidden></p>
+
+    </div>
+
+  </div>
+
+</section>
+  `;
+
+}
+
 function renderClubMemberProfilContent(
   member
 ) {
 
   return `
+
+${renderMemberAvatarProfileBlock(member)}
 
 <section class="member-profile-section-block">
 
@@ -726,13 +795,8 @@ function renderStravaProfilePanel(
   <h2>Strava verbinden</h2>
 
   <p class="member-strava-hint">
-    Verbinde dein Strava-Konto, damit deine Ausfahrten im Vereins-Aktivitätsportal
-    erscheinen können — freiwillig und jederzeit trennbar.
-  </p>
-
-  <p class="member-strava-hint">
-    Du entscheidest getrennt, ob du im <strong>Feed</strong>, in
-    <strong>Rankings</strong> oder bei <strong>Vereinszielen</strong> erscheinst.
+    Strava verbinden — Touren werden automatisch importiert. Sichtbarkeit
+    (Feed, Rankings, Vereinsziele) stellst du unten ein.
   </p>
 
   <button
@@ -771,6 +835,20 @@ function renderStravaProfilePanel(
 <section class="member-profile-section-block">
 
   <h2>Strava verbunden</h2>
+
+  <div class="member-strava-banner">
+
+    <p>
+      <strong>Synchronisation aktiv.</strong>
+      Neue Touren werden automatisch importiert — im öffentlichen Feed nur mit
+      Häkchen „Im Feed veröffentlichen“.
+    </p>
+
+    <a href="/aktivitaeten/">
+      Zum Aktivitäts-Feed →
+    </a>
+
+  </div>
 
   <dl class="member-profile-list">
 
@@ -1102,13 +1180,11 @@ function renderMemberProfileGuestLogin() {
   <h2>Anmeldung erforderlich</h2>
 
   <p class="member-profile-guest-lead">
-    Bitte melde dich an, um dein Profil zu sehen und zu bearbeiten.
+    Melde dich an, um dein Profil zu sehen.
   </p>
 
   <p class="member-profile-guest-hint">
-    E-Mail-Adresse oben rechts unter
-    <strong>„Mitglieder“</strong> eingeben — du erhältst einen Login-Link per Mail.
-    Den Link im gleichen Browser öffnen.
+    E-Mail unter <strong>„Mitglieder“</strong> (oben rechts) — Link im gleichen Browser öffnen.
   </p>
 
   <div class="member-profile-guest-actions">

@@ -62,9 +62,9 @@ function showStravaReturnNotice() {
   if (result === 'connected') {
 
     showMemberToast(
-      'Strava verbunden. Aktivitäten werden automatisch importiert …',
+      'Strava verbunden — Touren werden importiert. Feed-Freigabe im Tab Strava aktivieren.',
       'success',
-      6000
+      8000
     );
 
   }
@@ -862,6 +862,170 @@ function bindStravaProfileEvents(
 
 }
 
+function setMemberAvatarStatus(
+  message,
+  type
+) {
+
+  const statusEl =
+    document.getElementById(
+      'member-avatar-status'
+    );
+
+  if (!statusEl) {
+    return;
+  }
+
+  statusEl.textContent = message || '';
+  statusEl.hidden = !message;
+
+  statusEl.classList.remove(
+    'member-save-status--error',
+    'member-save-status--success'
+  );
+
+  if (type === 'error') {
+    statusEl.classList.add('member-save-status--error');
+  }
+
+  if (type === 'success') {
+    statusEl.classList.add('member-save-status--success');
+  }
+
+}
+
+function bindMemberAvatarEvents(
+  member
+) {
+
+  const fileInput =
+    document.getElementById(
+      'member-avatar-file'
+    );
+
+  const removeBtn =
+    document.getElementById(
+      'member-avatar-remove-btn'
+    );
+
+  if (!fileInput) {
+    return;
+  }
+
+  fileInput.addEventListener(
+    'change',
+    async () => {
+
+      const file =
+        fileInput.files?.[0];
+
+      fileInput.value = '';
+
+      if (!file) {
+        return;
+      }
+
+      const confirmed =
+        window.confirm(
+          'Dein Profilbild wird öffentlich auf der Website angezeigt '
+          + '(Feed, Rankings, Teilnehmerlisten, Profil). '
+          + 'Möchtest du fortfahren?'
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      setMemberAvatarStatus(
+        'Profilbild wird hochgeladen …'
+      );
+
+      try {
+
+        const updated =
+          await uploadMemberAvatar(
+            file,
+            member.id
+          );
+
+        applyMemberUpdate(updated);
+
+        await reloadStravaProfileView(updated);
+
+        setMemberAvatarStatus(
+          'Profilbild gespeichert.',
+          'success'
+        );
+
+      } catch (error) {
+
+        console.error(error);
+
+        setMemberAvatarStatus(
+          error?.message
+            || 'Upload fehlgeschlagen.',
+          'error'
+        );
+
+      }
+
+    }
+  );
+
+  if (removeBtn) {
+
+    removeBtn.addEventListener(
+      'click',
+      async () => {
+
+        if (
+          !window.confirm(
+            'Profilbild wirklich entfernen?'
+          )
+        ) {
+          return;
+        }
+
+        setMemberAvatarStatus(
+          'Profilbild wird entfernt …'
+        );
+
+        try {
+
+          const updated =
+            await removeMemberAvatar(
+              getCurrentMember()
+              || member
+            );
+
+          applyMemberUpdate(updated);
+
+          await reloadStravaProfileView(updated);
+
+          setMemberAvatarStatus(
+            'Profilbild entfernt.',
+            'success'
+          );
+
+        } catch (error) {
+
+          console.error(error);
+
+          setMemberAvatarStatus(
+            error?.message
+              || 'Entfernen fehlgeschlagen.',
+            'error'
+          );
+
+        }
+
+      }
+    );
+
+  }
+
+}
+
 function bindMemberProfileEvents(
   member
 ) {
@@ -893,6 +1057,8 @@ function bindMemberProfileEvents(
   bindMemberProfileTabEvents();
 
   bindStravaProfileEvents(member);
+
+  bindMemberAvatarEvents(member);
 
   const form =
     document.getElementById(

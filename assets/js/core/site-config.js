@@ -46,7 +46,8 @@ window.siteConfig = {
   },
 
   storage: {
-    media: 'media'
+    media: 'media',
+    avatars: 'avatars'
   },
 
   functions: {

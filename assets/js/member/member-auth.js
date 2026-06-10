@@ -138,6 +138,44 @@ async function rejectInvalidMemberSession() {
 
 }
 
+function isTruthyPublicRegistrationMeta(value) {
+
+  return (
+    value === true
+    || value === 'true'
+    || value === 1
+  );
+
+}
+
+function formatPublicRegistrationRpcError(error) {
+
+  const message =
+    String(error?.message || error || '')
+      .trim();
+
+  if (!message) {
+    return (
+      'Registrierung konnte nicht abgeschlossen werden. '
+      + 'Bitte später erneut versuchen.'
+    );
+  }
+
+  if (
+    message.includes('Could not find the function')
+    || error?.code === 'PGRST202'
+  ) {
+    return (
+      'Registrierung ist serverseitig noch nicht eingerichtet. '
+      + 'Bitte den Verein kontaktieren (Supabase: '
+      + 'docs/supabase-feedback-public-email-verify.sql).'
+    );
+  }
+
+  return message;
+
+}
+
 async function ensurePublicParticipantFromSession(
   session
 ) {
@@ -215,11 +253,15 @@ async function ensurePublicParticipantFromSession(
 
   const einwilligungKontakt =
     pending?.einwilligung_kontakt === true
-    || meta.einwilligung_kontakt === true;
+    || isTruthyPublicRegistrationMeta(
+      meta.einwilligung_kontakt
+    );
 
   const einwilligungBilder =
     pending?.einwilligung_bilder === true
-    || meta.einwilligung_bilder === true;
+    || isTruthyPublicRegistrationMeta(
+      meta.einwilligung_bilder
+    );
 
   if (!einwilligungKontakt) {
 
@@ -247,6 +289,12 @@ async function ensurePublicParticipantFromSession(
   if (error) {
 
     console.error(error);
+
+    showMemberToast(
+      formatPublicRegistrationRpcError(error),
+      'error',
+      8000
+    );
 
     return null;
 
@@ -407,20 +455,9 @@ async function validateMemberSession(
 
     if (
       isAuthCallback()
-      && canCompletePublicRegistration(
-        session
-      )
-      && strict
+      && canCompletePublicRegistration(session)
     ) {
-
-      await invalidateMemberSession({
-        strict: true,
-        message:
-          'Registrierung konnte nicht abgeschlossen werden. Bitte Formular erneut ausfüllen.'
-      });
-
       return null;
-
     }
 
     await invalidateMemberSession({

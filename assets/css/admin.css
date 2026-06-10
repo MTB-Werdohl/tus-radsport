@@ -709,6 +709,11 @@ h3 {
   opacity: 0.75;
 }
 
+.admin-hint--warning {
+  color: #ffd4a8;
+  opacity: 1;
+}
+
 .member-edit-loading,
 .member-edit-status {
   margin: 0 0 16px;

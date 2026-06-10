@@ -48,6 +48,7 @@ begin
         join public.members m
           on m.id = a.member_id
         where a.deleted_at is null
+          and a.sport_category = 'rad'
           and m.anonymized_at is null
           and m.publish_feed is true
           and a.start_date >= (
@@ -112,6 +113,7 @@ begin
     on m.id = a.member_id
   where a.id = p_activity_id
     and a.deleted_at is null
+    and a.sport_category = 'rad'
     and m.anonymized_at is null
     and m.publish_feed is true
     and a.start_date >= (
@@ -180,6 +182,7 @@ begin
               on m.id = s.member_id
             where s.year = p_year
               and s.month = p_month
+              and s.sport_category = 'rad'
               and m.anonymized_at is null
               and m.publish_rankings is true
               and s.activity_count > 0
@@ -222,6 +225,7 @@ begin
           join public.members m
             on m.id = s.member_id
           where s.year = p_year
+            and s.sport_category = 'rad'
             and m.anonymized_at is null
             and m.publish_rankings is true
             and s.activity_count > 0
@@ -272,7 +276,8 @@ begin
     into v_result
     from public.club_stats_month c
     where c.year = p_year
-      and c.month = p_month;
+      and c.month = p_month
+      and c.sport_category = 'rad';
 
     return v_result;
 
@@ -287,7 +292,8 @@ begin
   )
   into v_result
   from public.club_stats_year c
-  where c.year = p_year;
+  where c.year = p_year
+    and c.sport_category = 'rad';
 
   return v_result;
 end;

@@ -8,6 +8,46 @@ function escapeAktivitaetenHtml(value) {
 
 }
 
+function memberStubFromActivityEntry(
+  entry
+) {
+
+  const fullName =
+    String(entry?.member_name || '')
+      .trim();
+
+  const parts =
+    fullName.split(/\s+/)
+      .filter(Boolean);
+
+  return {
+    member_name: fullName,
+    vorname: parts[0] || '',
+    nachname: parts.slice(1).join(' '),
+    avatar_url: entry?.avatar_url || null
+  };
+
+}
+
+function renderActivityMemberAvatar(
+  entry,
+  sizeClass
+) {
+
+  if (
+    typeof renderMemberAvatarHtml
+      !== 'function'
+  ) {
+    return '';
+  }
+
+  return renderMemberAvatarHtml(
+    memberStubFromActivityEntry(entry),
+    sizeClass || 'member-avatar--md'
+  );
+
+}
+
 function renderActivityFeed(
   activities,
   feedDays
@@ -28,8 +68,12 @@ function renderActivityFeed(
 <div class="aktivitaeten-section">
 
   <p class="aktivitaeten-hint">
-    In den letzten ${feedDays} Tagen sind noch keine
-    öffentlichen Aktivitäten eingetragen.
+    Noch keine öffentlichen Aktivitäten in den letzten ${feedDays} Tagen.
+  </p>
+
+  <p class="aktivitaeten-hint aktivitaeten-hint--cta">
+    Mitglieder: Strava im <a href="/profil/">Profil</a> verbinden und
+    „Im Feed veröffentlichen“ aktivieren.
   </p>
 
 </div>
@@ -45,6 +89,11 @@ function renderActivityFeed(
       const url =
         getActivityUrl(activity.id);
 
+      const typeLabel =
+        formatActivityTypeLabel(
+          activity.activity_type
+        );
+
       return `
 <article class="aktivitaeten-card">
 
@@ -54,24 +103,37 @@ function renderActivityFeed(
 
     <div class="aktivitaeten-card-head">
 
+      <span class="aktivitaeten-card-type">
+        ${escapeAktivitaetenHtml(typeLabel)}
+      </span>
+
       <h3 class="aktivitaeten-card-title">
         ${escapeAktivitaetenHtml(
           activity.activity_name
-          || activity.activity_type
+          || typeLabel
           || 'Aktivität'
         )}
       </h3>
 
-      <p class="aktivitaeten-card-meta">
-        ${escapeAktivitaetenHtml(
-          activity.member_name || 'Mitglied'
+      <p class="aktivitaeten-card-meta aktivitaeten-card-member">
+
+        ${renderActivityMemberAvatar(
+          activity,
+          'member-avatar--md'
         )}
-        ·
-        ${escapeAktivitaetenHtml(
-          formatActivityDateTime(
-            activity.start_date
-          )
-        )}
+
+        <span class="aktivitaeten-card-member-text">
+          ${escapeAktivitaetenHtml(
+            activity.member_name || 'Mitglied'
+          )}
+          ·
+          ${escapeAktivitaetenHtml(
+            formatActivityDateTime(
+              activity.start_date
+            )
+          )}
+        </span>
+
       </p>
 
     </div>
@@ -117,11 +179,6 @@ function renderActivityFeed(
   container.innerHTML = `
 <div class="aktivitaeten-section">
 
-  <p class="aktivitaeten-hint">
-    Öffentliche Ausfahrten der letzten ${feedDays} Tage
-    von Mitgliedern mit Feed-Einwilligung.
-  </p>
-
   <div class="aktivitaeten-feed-list">
     ${cards}
   </div>
@@ -153,10 +210,19 @@ function renderRankingsTable(
   <td class="aktivitaeten-rank">
     ${escapeAktivitaetenHtml(String(row.rank))}
   </td>
-  <td>
-    ${escapeAktivitaetenHtml(
-      row.member_name || 'Mitglied'
+  <td class="aktivitaeten-rank-member">
+
+    ${renderActivityMemberAvatar(
+      row,
+      'member-avatar--sm'
     )}
+
+    <span>
+      ${escapeAktivitaetenHtml(
+        row.member_name || 'Mitglied'
+      )}
+    </span>
+
   </td>
   <td>
     ${escapeAktivitaetenHtml(
@@ -228,10 +294,6 @@ function renderMemberRankings(
 
   container.innerHTML = `
 <div class="aktivitaeten-section">
-
-  <p class="aktivitaeten-hint">
-    Mitglieder mit Ranking-Einwilligung — sortiert nach Distanz.
-  </p>
 
   ${renderRankingsTable(
     monthRankings,
@@ -320,11 +382,6 @@ function renderClubStats(
   container.innerHTML = `
 <div class="aktivitaeten-section">
 
-  <p class="aktivitaeten-hint">
-    Summe aller Aktivitäten von Mitgliedern, die zu
-    Vereinszielen beitragen.
-  </p>
-
   ${renderBlock(
     monthStats,
     formatGermanMonthYear(
@@ -390,16 +447,34 @@ function renderActivityDetail(activity) {
     || 'Aktivität'
   )}</h1>
 
-  <p class="aktivitaeten-detail-meta">
-    ${escapeAktivitaetenHtml(
-      activity.member_name || 'Mitglied'
-    )}
+  <p class="aktivitaeten-detail-meta aktivitaeten-card-member">
+
+    <span class="aktivitaeten-card-type">
+      ${escapeAktivitaetenHtml(
+        formatActivityTypeLabel(
+          activity.activity_type
+        )
+      )}
+    </span>
     ·
-    ${escapeAktivitaetenHtml(
-      formatActivityDateTime(
-        activity.start_date
-      )
+
+    ${renderActivityMemberAvatar(
+      activity,
+      'member-avatar--md'
     )}
+
+    <span class="aktivitaeten-card-member-text">
+      ${escapeAktivitaetenHtml(
+        activity.member_name || 'Mitglied'
+      )}
+      ·
+      ${escapeAktivitaetenHtml(
+        formatActivityDateTime(
+          activity.start_date
+        )
+      )}
+    </span>
+
   </p>
 
   <dl class="aktivitaeten-detail-stats">
@@ -407,7 +482,9 @@ function renderActivityDetail(activity) {
     <div>
       <dt>Art</dt>
       <dd>${escapeAktivitaetenHtml(
-        activity.activity_type || '—'
+        formatActivityTypeLabel(
+          activity.activity_type
+        )
       )}</dd>
     </div>
 

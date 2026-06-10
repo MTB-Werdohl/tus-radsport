@@ -203,10 +203,21 @@ function renderFeedbackAnswersTable(
 
 <tr>
 
-<td>
-  ${escapeAdminHtml(
-    formatFeedbackMemberName(row)
-  )}
+<td class="feedback-admin-member-cell">
+
+  ${typeof renderMemberAvatarHtml === 'function'
+    ? renderMemberAvatarHtml(
+      row.members || {},
+      'member-avatar--sm'
+    )
+    : ''}
+
+  <span>
+    ${escapeAdminHtml(
+      formatFeedbackMemberName(row)
+    )}
+  </span>
+
 </td>
 
 <td>

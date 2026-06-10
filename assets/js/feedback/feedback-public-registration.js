@@ -172,29 +172,57 @@ function savePublicRegistrationPending(
     return;
   }
 
+  const payload = {
+    email: registration.email,
+    vorname: registration.vorname || '',
+    nachname: registration.nachname || '',
+    telefon: registration.telefon || '',
+    einwilligung_kontakt:
+      registration.einwilligung_kontakt === true,
+    einwilligung_bilder:
+      registration.einwilligung_bilder === true,
+    savedAt: Date.now()
+  };
+
   sessionStorage.setItem(
     PUBLIC_REGISTRATION_PENDING_KEY,
-    JSON.stringify({
-      email: registration.email,
-      vorname: registration.vorname || '',
-      nachname: registration.nachname || '',
-      telefon: registration.telefon || '',
-      einwilligung_kontakt:
-        registration.einwilligung_kontakt === true,
-      einwilligung_bilder:
-        registration.einwilligung_bilder === true,
-      savedAt: Date.now()
-    })
+    JSON.stringify(payload)
   );
+
+  try {
+    localStorage.setItem(
+      PUBLIC_REGISTRATION_PENDING_KEY,
+      JSON.stringify(payload)
+    );
+  } catch (error) {
+    /* ignore */
+  }
 
 }
 
-function readPublicRegistrationPending(
+function clearPublicRegistrationPending() {
+
+  sessionStorage.removeItem(
+    PUBLIC_REGISTRATION_PENDING_KEY
+  );
+
+  try {
+    localStorage.removeItem(
+      PUBLIC_REGISTRATION_PENDING_KEY
+    );
+  } catch (error) {
+    /* ignore */
+  }
+
+}
+
+function readPublicRegistrationPendingStorage(
+  storage,
   email
 ) {
 
   const raw =
-    sessionStorage.getItem(
+    storage.getItem(
       PUBLIC_REGISTRATION_PENDING_KEY
     );
 
@@ -207,12 +235,24 @@ function readPublicRegistrationPending(
     const data =
       JSON.parse(raw);
 
+    const normalizedEmail =
+      String(email || '')
+        .trim()
+        .toLowerCase();
+
     if (
       !data?.email
-      || data.email
-        !== String(email || '')
-          .trim()
-          .toLowerCase()
+      || data.email !== normalizedEmail
+    ) {
+      return null;
+    }
+
+    const maxAgeMs =
+      7 * 24 * 60 * 60 * 1000;
+
+    if (
+      data.savedAt
+      && Date.now() - data.savedAt > maxAgeMs
     ) {
       return null;
     }
@@ -227,10 +267,19 @@ function readPublicRegistrationPending(
 
 }
 
-function clearPublicRegistrationPending() {
+function readPublicRegistrationPending(
+  email
+) {
 
-  sessionStorage.removeItem(
-    PUBLIC_REGISTRATION_PENDING_KEY
+  return (
+    readPublicRegistrationPendingStorage(
+      sessionStorage,
+      email
+    )
+    || readPublicRegistrationPendingStorage(
+      localStorage,
+      email
+    )
   );
 
 }
@@ -319,8 +368,7 @@ function ensurePublicFeedbackModal() {
 
   <p class="feedback-public-modal__intro">
 
-    Deine Angaben werden erst gespeichert, wenn du den Link in der E-Mail
-    bestätigst. Erst danach kannst du abstimmen.
+    Bestätigungs-Link per E-Mail — erst danach kannst du abstimmen.
 
   </p>
 
@@ -391,9 +439,7 @@ function ensurePublicFeedbackModal() {
       </legend>
 
       <p class="feedback-public-modal__consent-hint">
-        Die Einwilligung Kontakt ist für die Registrierung erforderlich.
-        Die Einwilligung Bilder ist freiwillig — ohne sie werden keine Fotos
-        oder Videos mit dir veröffentlicht.
+        Kontakt-Einwilligung ist Pflicht. Bilder optional.
         ${escapePublicRegistrationHtml(PUBLIC_REGISTRATION_CONSENT_REVOKE)}
         <a href="/datenschutz/" target="_blank" rel="noopener noreferrer">
           Datenschutzerklärung

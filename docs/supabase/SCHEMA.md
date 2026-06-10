@@ -26,6 +26,12 @@ Stand: Projekt MTB Werdohl. Spalten aus Code + Supabase; bei Abweichungen Dashbo
 | `publish_feed` | boolean | im öffentlichen Feed (90 Tage) |
 | `publish_rankings` | boolean | in Rankings |
 | `contribute_to_club_goals` | boolean | fließt in Vereinsstatistiken ein |
+| `avatar_storage_path` | text | Pfad im Bucket `avatars`, z. B. `{member_id}/avatar.webp` |
+| `avatar_updated_at` | timestamptz | Cache-Busting, Audit |
+| `avatar_source` | text | `upload` \| `strava` \| `admin` |
+| `avatar_consent_at` | timestamptz | optional — Zustimmung durch Upload/Import |
+
+**Profilbild** ist getrennt von `einwilligung_bilder` (Tour-/Aktivitätsfotos). Upload = Einwilligung zur öffentlichen Darstellung. Rolle `public` hat kein Avatar-Feature.
 
 ## `strava_connections`
 
@@ -52,26 +58,27 @@ Import aus Strava; UUID in URLs (`/aktivitaeten/{uuid}/`).
 | `id` | uuid PK | öffentliche Detail-URL |
 | `strava_activity_id` | bigint UNIQUE | Strava Source of Truth |
 | `member_id` | bigint | → `members.id` |
-| `activity_type`, `activity_name` | text | |
+| `activity_type`, `activity_name` | text | `activity_type` = Strava-Rohwert (`sport_type` vor `type` beim Import) |
+| `sport_category` | text | `rad` \| `other` — abgeleitet via `map_strava_type_to_category()`; Filter für Feed/Rankings/Ziele |
 | `distance_m`, `moving_time_s`, `elevation_gain_m` | numeric/int | |
 | `start_date` | timestamptz | Feed: letzte 90 Tage |
 | `map_summary_polyline`, `activity_photo_url` | text | MVP: gespeichert, nicht angezeigt |
 | `deleted_at` | timestamptz | Soft Delete (Strava-Trennung) |
 
-**Sichtbarkeit:** Feed/Rankings/Ziele über `members.publish_*` — Opt-ins ändern nur Anzeige, nicht Löschung (außer `disconnect_strava`).
+**Sichtbarkeit:** Feed/Rankings/Ziele/Profil-Aktivitäten nur `sport_category = 'rad'`. Opt-ins (`members.publish_*`) steuern zusätzlich ob — nicht welche Sportart. Alle Strava-Aktivitäten werden importiert; Nicht-Rad bleibt in DB, ist aber nicht öffentlich sichtbar.
 
 ## `member_stats_month` / `member_stats_year` / `club_stats_month` / `club_stats_year`
 
-Voraggregierte Werte; Rankings/Feed lesen vorberechnete Daten. Vereinsziele: nur Mitglieder mit `contribute_to_club_goals`.
+Voraggregierte Werte nach `sport_category` (PK enthält Kategorie). Öffentliche RPCs lesen nur `sport_category = 'rad'`. Vereinsziele: nur Mitglieder mit `contribute_to_club_goals`.
 
 ### Öffentliche RPCs (Schritt 7–10)
 
 | RPC | Grant | Filter |
 |-----|-------|--------|
-| `get_public_activity_feed(p_days)` | anon, authenticated | `publish_feed`, 90 Tage, nicht soft-deleted |
-| `get_public_activity_detail(uuid, p_days)` | anon, authenticated | wie Feed |
-| `get_public_member_rankings(year, month?)` | anon, authenticated | `publish_rankings` |
-| `get_public_club_stats(year, month?)` | anon, authenticated | nur `contribute_to_club_goals` in Stats |
+| `get_public_activity_feed(p_days)` | anon, authenticated | `publish_feed`, `sport_category=rad`, 90 Tage; `avatar_url` wenn gesetzt |
+| `get_public_activity_detail(uuid, p_days)` | anon, authenticated | wie Feed; `avatar_url` wenn gesetzt |
+| `get_public_member_rankings(year, month?)` | anon, authenticated | `publish_rankings`, Stats `sport_category=rad`; `avatar_url` wenn gesetzt |
+| `get_public_club_stats(year, month?)` | anon, authenticated | Vereinsziele nur Rad (`sport_category=rad`) |
 
 SQL: [`supabase-strava-public.sql`](../supabase-strava-public.sql)
 
@@ -82,9 +89,12 @@ SQL: [`supabase-strava-public.sql`](../supabase-strava-public.sql)
 | `get_strava_profile_status()` | authenticated | Strava-Tab: Verbindung, Sync, Sichtbarkeits-Flags |
 | `update_strava_visibility(...)` | authenticated | Feed / Rankings / Vereinsziele |
 | `disconnect_strava()` | authenticated | Verbindung trennen |
-| `get_member_activities(p_limit)` | authenticated | Tab „Meine Aktivitäten“ — eigene Touren, Badge `in_public_feed` |
+| `get_member_activities(p_limit)` | authenticated | Tab „Meine Aktivitäten“ — nur Rad, Badge `in_public_feed` |
+| `get_member_profile_avatar()` | authenticated | Eigenes Profilbild-Metadaten (URL, Initialen) |
 
 SQL Profil-Aktivitäten: [`supabase-strava-member-activities.sql`](../supabase-strava-member-activities.sql)
+
+SQL Profilbilder: [`supabase/supabase-member-avatars.sql`](supabase/supabase-member-avatars.sql)
 
 ## `News`
 
@@ -195,3 +205,15 @@ Alte Poll-Antworten bleiben gültig, wenn Labels geändert werden; unbekannte `o
 ## Storage `media`
 
 Pfade z. B. `galleries/{jahr}/{slug}/…`, News/Termin-Uploads.
+
+## Storage `avatars`
+
+Profilbilder — öffentlich lesbar. Pfad: `{member_id}/avatar.webp` (WebP, max. 512×512, 1:1-Crop clientseitig).
+
+| Policy | Rolle | Bedingung |
+|--------|-------|-----------|
+| `avatars_select_public` | anon + authenticated | öffentliches SELECT |
+| `avatars_insert/update/delete_own` | authenticated | Pfad `{member_id}/…` via `get_own_member_id()` |
+| `avatars_insert/update/delete_vorstand` | Vorstand | beliebiger Pfad |
+
+`anonymize_member()` löscht Storage-Objekt und nullt `avatar_*`-Felder.

@@ -58,9 +58,8 @@ function renderFeedbackPublicGate() {
 <div class="feedback-public-gate">
 
   <p class="feedback-hint feedback-hint--public">
-    Auch als Nichtmitglied kannst du Teilnehmen. Wir bitten um kurze Registrierung,
-    damit wir wissen wer du bist und wie wir dich erreichen können.
-    Du erhältst einen Bestätigungs-Link per E-Mail - danach kannst du deine Teilnahme anmelden.
+    Als Gast kurz registrieren — Bestätigungs-Link per E-Mail, danach Teilnahme
+    anmelden.
   </p>
 
   <button

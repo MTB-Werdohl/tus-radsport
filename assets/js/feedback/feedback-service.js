@@ -185,46 +185,6 @@ async function canRegisterPublicParticipant(
 
 }
 
-async function submitPublicFeedbackAnswer(
-  moduleId,
-  registration,
-  answer,
-  comment
-) {
-
-  const { data, error } =
-    await window.supabaseClient.rpc(
-      'submit_public_feedback',
-      {
-        p_module_id: moduleId,
-        p_email: registration.email,
-        p_vorname: registration.vorname,
-        p_nachname: registration.nachname,
-        p_telefon: registration.telefon || null,
-        p_answer: answer,
-        p_comment:
-          comment
-            ? String(comment).trim()
-            : null
-      }
-    );
-
-  if (error) {
-
-    console.error(error);
-
-    return { error };
-
-  }
-
-  setPublicFeedbackEmail(
-    registration.email
-  );
-
-  return { data };
-
-}
-
 async function fetchPublicFeedbackAnswerByEmail(
   moduleId,
   email
@@ -412,7 +372,9 @@ async function fetchFeedbackAnswersForModule(
           email,
           rolle,
           anonymized_at,
-          einwilligung_kontakt
+          einwilligung_kontakt,
+          avatar_storage_path,
+          avatar_updated_at
         )
       `)
       .eq('module_id', moduleId)

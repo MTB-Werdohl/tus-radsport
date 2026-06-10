@@ -69,16 +69,21 @@ SQL: [`supabase-strava-public.sql`](../supabase-strava-public.sql) im **SQL Edit
 
 | RPC | Zweck |
 |-----|--------|
-| `get_public_activity_feed(p_days)` | Feed `/aktivitaeten/` — `publish_feed`, 90 Tage |
-| `get_public_activity_detail(uuid, p_days)` | Detail `/aktivitaeten/{uuid}/` |
-| `get_public_member_rankings(year, month?)` | Rankings — `publish_rankings` |
-| `get_public_club_stats(year, month?)` | Vereinsziele — `contribute_to_club_goals` |
+| `get_public_activity_feed(p_days)` | Feed `/aktivitaeten/` — `publish_feed`, nur Rad, 90 Tage |
+| `get_public_activity_detail(uuid, p_days)` | Detail `/aktivitaeten/{uuid}/` — nur Rad |
+| `get_public_member_rankings(year, month?)` | Rankings — `publish_rankings`, nur Rad; `avatar_url` |
+| `get_public_club_stats(year, month?)` | Vereinsziele — nur Rad-Kennzahlen |
+| `get_member_profile_avatar()` | Profil-Tab — eigenes Avatar (authenticated) |
 
 Website: `/aktivitaeten/`, Navigation „Aktivitäten“, JS unter `assets/js/aktivitaeten/`.
 
 Mitglieder steuern Sichtbarkeit im Profil → Tab Strava (Feed / Rankings / Vereinsziele getrennt).
 
 **Profil — Meine Aktivitäten:** [`supabase-strava-member-activities.sql`](../supabase-strava-member-activities.sql) — RPC `get_member_activities(p_limit)` (nur `authenticated`, eigene importierte Touren inkl. Feed-Badge).
+
+**Phase 2 — Radfokus (sport_category):** [`supabase/supabase-sport-category-rad.sql`](supabase-sport-category-rad.sql) — Spalte `sport_category`, Mapping-Funktion, Stats-Rebuild, Public-RPCs und Profil-Aktivitäten filtern auf `rad`. **Danach** Edge Function `strava-sync` neu deployen (siehe [`PHASE-2-IMPLEMENTATION.md`](../PHASE-2-IMPLEMENTATION.md)).
+
+**Phase 3 — Profilbilder:** [`supabase/supabase-member-avatars.sql`](supabase/supabase-member-avatars.sql) — `members.avatar_*`, Bucket `avatars`, Storage-RLS, Public-RPCs mit `avatar_url`, `get_member_profile_avatar()`, `anonymize_member` erweitert. Siehe [`PHASE-3-IMPLEMENTATION.md`](../PHASE-3-IMPLEMENTATION.md).
 
 ### Edge Function `anonymize-member-account` deployen
 
@@ -119,6 +124,7 @@ Falscher Slug (404): alte Test-Function im Dashboard löschen.
 | `feedback_answers` | — | SELECT/INSERT/UPDATE eigene | SELECT alle + (später Auswertung) |
 | `site_state` | SELECT `last_push` | SELECT `last_push` | ALL (Tröte) |
 | `storage.objects` (media) | SELECT | SELECT | INSERT, UPDATE, DELETE |
+| `storage.objects` (avatars) | SELECT | INSERT/UPDATE/DELETE eigenes `{member_id}/` | INSERT/UPDATE/DELETE alle |
 
 Schreibzugriffe auf `site_state` (`last_push`) für die Tröte: Vorstand direkt per Client (RLS).
 
@@ -138,8 +144,20 @@ Vor dem produktiven Start einmal durchgehen:
 | **Edge `send-admin-email`** | Code deployt; Termin-Mails zählen **Ja + Vielleicht** (Preview in Admin = tatsächlicher Versand) |
 | **Edge `anonymize-member-account`** | Deployt, JWT Verify **OFF**; Test Account löschen |
 | **Redirect URLs** | `/profil/`, `/**`, ggf. `/event.html`, `/news-detail.html` für Rückkehr nach Magic Link |
-| **Smoke-Test** | Öffentlicher Termin + Abstimmung; Mitglieder-only Termin; Entwurf nur Vorstand; Kalender nach Login aktualisiert |
+| **Smoke-Test** | Öffentlicher Termin + Abstimmung; siehe [`SMOKE-TEST-PUBLIC-REGISTRATION.md`](SMOKE-TEST-PUBLIC-REGISTRATION.md) |
 | **Mitglieder-Hilfe** | [`mitglieder-hilfe.md`](../../mitglieder-hilfe.md) verlinkt / Inhalt stimmt mit UI |
+| **Public-Registrierung** | SQL + Frontend; Details [`PUBLIC-REGISTRATION.md`](PUBLIC-REGISTRATION.md) |
+
+## Public-Registrierung — Troubleshooting
+
+| Symptom | Prüfen |
+|---------|--------|
+| Gate fehlt | `Termine.sichtbarkeit=public`, `feedback_modules.public_voting=true`, `enabled=true` |
+| RPC-Fehler im Browser | `can_register_public_participant`, `complete_public_participant_registration` in Supabase SQL Editor vorhanden? |
+| Nach Magic Link keine Abstimmung | Browser-Konsole; gleicher Browser wie Formular; Redirect URL erlaubt |
+| Upsert-Fehler | [`supabase-feedback-answers-unique-fix.sql`](../supabase-feedback-answers-unique-fix.sql) |
+
+Details: [`PUBLIC-REGISTRATION.md`](PUBLIC-REGISTRATION.md)
 
 Details: [`../supabase-members-setup.md`](../supabase-members-setup.md), [`../supabase-admin-email-setup.md`](../supabase-admin-email-setup.md).
 

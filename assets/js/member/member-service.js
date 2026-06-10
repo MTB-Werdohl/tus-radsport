@@ -203,7 +203,19 @@ function normalizeMemberRow(row) {
       row.contribute_to_club_goals === true,
 
     strava_sync_enabled:
-      row.strava_sync_enabled === true
+      row.strava_sync_enabled === true,
+
+    avatar_storage_path:
+      row.avatar_storage_path || null,
+
+    avatar_updated_at:
+      row.avatar_updated_at || null,
+
+    avatar_source:
+      row.avatar_source || null,
+
+    avatar_consent_at:
+      row.avatar_consent_at || null
 
   };
 
@@ -803,5 +815,365 @@ async function beginStravaConnect() {
   }
 
   window.location.href = data.url;
+
+}
+
+function buildMemberInitials(
+  vorname,
+  nachname
+) {
+
+  const first =
+    String(vorname || '')
+      .trim()
+      .charAt(0);
+
+  const last =
+    String(nachname || '')
+      .trim()
+      .charAt(0);
+
+  const initials =
+    (first + last).toUpperCase();
+
+  return initials || '?';
+
+}
+
+function getAvatarPublicUrl(
+  storagePath,
+  updatedAt
+) {
+
+  if (!storagePath) {
+    return null;
+  }
+
+  const bucket =
+    window.siteConfig?.storage?.avatars
+    || 'avatars';
+
+  const { data } =
+    window.supabaseClient
+      .storage
+      .from(bucket)
+      .getPublicUrl(storagePath);
+
+  if (!data?.publicUrl) {
+    return null;
+  }
+
+  if (updatedAt) {
+
+    const timestamp =
+      new Date(updatedAt).getTime();
+
+    if (!Number.isNaN(timestamp)) {
+      return `${data.publicUrl}?t=${timestamp}`;
+    }
+
+  }
+
+  return data.publicUrl;
+
+}
+
+const getMemberAvatarPublicUrl =
+  getAvatarPublicUrl;
+
+function renderMemberAvatarHtml(
+  member,
+  sizeClass
+) {
+
+  const size =
+    sizeClass || 'member-avatar--md';
+
+  const name =
+    [
+      member?.vorname,
+      member?.nachname
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .trim();
+
+  const url =
+    member?.avatar_url
+    || getAvatarPublicUrl(
+      member?.avatar_storage_path,
+      member?.avatar_updated_at
+    );
+
+  if (url) {
+
+    const alt =
+      name
+        ? `Profilbild von ${name}`
+        : 'Profilbild';
+
+    return `
+<span class="member-avatar ${size}">
+  <img
+    src="${escapeMemberHtml(url)}"
+    alt="${escapeMemberHtml(alt)}"
+    loading="lazy"
+    decoding="async">
+</span>
+    `.trim();
+
+  }
+
+  const initials =
+    buildMemberInitials(
+      member?.vorname,
+      member?.nachname
+    );
+
+  return `
+<span
+  class="member-avatar member-avatar--initials ${size}"
+  aria-hidden="true"
+  title="${escapeMemberHtml(name || 'Mitglied')}">
+
+  ${escapeMemberHtml(initials)}
+
+</span>
+  `.trim();
+
+}
+
+function loadImageFromFile(
+  file
+) {
+
+  return new Promise((resolve, reject) => {
+
+    const url =
+      URL.createObjectURL(file);
+
+    const image = new Image();
+
+    image.onload = () => {
+
+      URL.revokeObjectURL(url);
+      resolve(image);
+
+    };
+
+    image.onerror = () => {
+
+      URL.revokeObjectURL(url);
+      reject(new Error('Bild konnte nicht gelesen werden.'));
+
+    };
+
+    image.src = url;
+
+  });
+
+}
+
+async function resizeAvatarFileToWebp(
+  file,
+  maxSize
+) {
+
+  const limit =
+    maxSize || 512;
+
+  const image =
+    await loadImageFromFile(file);
+
+  const sourceWidth =
+    image.naturalWidth
+    || image.width;
+
+  const sourceHeight =
+    image.naturalHeight
+    || image.height;
+
+  if (
+    !sourceWidth
+    || !sourceHeight
+  ) {
+    throw new Error('Ungültige Bildgröße.');
+  }
+
+  const cropSize =
+    Math.min(
+      sourceWidth,
+      sourceHeight
+    );
+
+  const sourceX =
+    Math.floor(
+      (sourceWidth - cropSize) / 2
+    );
+
+  const sourceY =
+    Math.floor(
+      (sourceHeight - cropSize) / 2
+    );
+
+  const canvas =
+    document.createElement('canvas');
+
+  canvas.width = limit;
+  canvas.height = limit;
+
+  const context =
+    canvas.getContext('2d');
+
+  if (!context) {
+    throw new Error('Bildverarbeitung nicht verfügbar.');
+  }
+
+  context.drawImage(
+    image,
+    sourceX,
+    sourceY,
+    cropSize,
+    cropSize,
+    0,
+    0,
+    limit,
+    limit
+  );
+
+  const blob =
+    await new Promise((resolve, reject) => {
+
+      canvas.toBlob(
+        (result) => {
+
+          if (!result) {
+            reject(new Error('Bild konnte nicht konvertiert werden.'));
+            return;
+          }
+
+          resolve(result);
+
+        },
+        'image/webp',
+        0.82
+      );
+
+    });
+
+  return blob;
+
+}
+
+async function uploadMemberAvatar(
+  file,
+  memberId
+) {
+
+  if (!file || !memberId) {
+    throw new Error('Kein Bild oder kein Mitglied.');
+  }
+
+  if (
+    file.size
+    > 2 * 1024 * 1024
+  ) {
+    throw new Error('Das Bild darf maximal 2 MB groß sein.');
+  }
+
+  const blob =
+    await resizeAvatarFileToWebp(file);
+
+  const bucket =
+    window.siteConfig?.storage?.avatars
+    || 'avatars';
+
+  const path =
+    `${memberId}/avatar.webp`;
+
+  const { error: uploadError } =
+    await window.supabaseClient.storage
+      .from(bucket)
+      .upload(
+        path,
+        blob,
+        {
+          upsert: true,
+          contentType: 'image/webp',
+          cacheControl: '3600'
+        }
+      );
+
+  if (uploadError) {
+    throw uploadError;
+  }
+
+  const nowIso =
+    new Date().toISOString();
+
+  const { data, error } =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.members)
+      .update({
+        avatar_storage_path: path,
+        avatar_updated_at: nowIso,
+        avatar_source: 'upload',
+        avatar_consent_at: nowIso
+      })
+      .eq('id', memberId)
+      .select('*')
+      .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return normalizeMemberRow(data);
+
+}
+
+async function removeMemberAvatar(
+  member
+) {
+
+  if (!member?.id) {
+    throw new Error('Kein Mitglied.');
+  }
+
+  const bucket =
+    window.siteConfig?.storage?.avatars
+    || 'avatars';
+
+  if (member.avatar_storage_path) {
+
+    const { error: removeError } =
+      await window.supabaseClient.storage
+        .from(bucket)
+        .remove([member.avatar_storage_path]);
+
+    if (removeError) {
+      throw removeError;
+    }
+
+  }
+
+  const { data, error } =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.members)
+      .update({
+        avatar_storage_path: null,
+        avatar_updated_at: null,
+        avatar_source: null,
+        avatar_consent_at: null
+      })
+      .eq('id', member.id)
+      .select('*')
+      .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return normalizeMemberRow(data);
 
 }

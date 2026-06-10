@@ -237,6 +237,37 @@ async function ensureValidAccessToken(
 
 }
 
+const RAD_SPORT_CATEGORIES = new Set([
+  'ride',
+  'mountainbikeride',
+  'gravelride',
+  'ebikeride',
+  'emountainbikeride',
+  'virtualride',
+  'handcycle',
+  'velomobile'
+]);
+
+function normalizeStravaType(type) {
+
+  return String(type || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
+
+}
+
+function mapStravaTypeToCategory(type) {
+
+  const normalized =
+    normalizeStravaType(type);
+
+  return RAD_SPORT_CATEGORIES.has(normalized)
+    ? 'rad'
+    : 'other';
+
+}
+
 function mapStravaActivityRow(
   activity,
   memberId
@@ -247,15 +278,19 @@ function mapStravaActivityRow(
     || activity?.photos?.primary?.url
     || null;
 
+  const activityType =
+    String(
+      activity.sport_type
+      || activity.type
+      || 'Workout'
+    );
+
   return {
     strava_activity_id: Number(activity.id),
     member_id: memberId,
-    activity_type:
-      String(
-        activity.type
-        || activity.sport_type
-        || 'Workout'
-      ),
+    activity_type: activityType,
+    sport_category:
+      mapStravaTypeToCategory(activityType),
     activity_name:
       String(activity.name || ''),
     distance_m:

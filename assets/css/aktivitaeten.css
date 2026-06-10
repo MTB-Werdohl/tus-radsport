@@ -67,6 +67,28 @@
   color: #ffb4b4;
 }
 
+.aktivitaeten-hint--cta a {
+  color: #fff;
+  font-weight: 600;
+}
+
+.aktivitaeten-card-type {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  background: rgba(237, 28, 36, 0.35);
+  color: #fff;
+}
+
+.aktivitaeten-card-head {
+  margin-bottom: 0.15rem;
+}
+
 .aktivitaeten-feed-list {
   display: flex;
   flex-direction: column;
@@ -100,6 +122,23 @@
 .aktivitaeten-detail-meta {
   color: #bbb;
   margin: 0;
+}
+
+.aktivitaeten-card-member {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.aktivitaeten-card-member-text {
+  min-width: 0;
+}
+
+.aktivitaeten-rank-member {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .aktivitaeten-stats,

@@ -350,6 +350,66 @@ function toggleFeedbackAdminPollFields() {
     !enabled
   );
 
+  updateFeedbackAdminPublicVotingHint();
+
+}
+
+function updateFeedbackAdminPublicVotingHint() {
+
+  const hint =
+    document.getElementById(
+      'feedback-admin-public-voting-hint'
+    );
+
+  if (
+    !hint
+    || !isFeedbackAdminEventEntity()
+  ) {
+    return;
+  }
+
+  const enabled =
+    document.getElementById(
+      'feedback-admin-enabled'
+    )?.checked;
+
+  const publicVoting =
+    document.getElementById(
+      'feedback-admin-public-voting'
+    )?.checked;
+
+  const sichtbarkeit =
+    document.getElementById('sichtbarkeit')
+      ?.value
+    || 'public';
+
+  let message = '';
+
+  if (
+    enabled
+    && publicVoting
+    && sichtbarkeit !== 'public'
+  ) {
+
+    message =
+      'Achtung: Öffentliche Abstimmung ist aktiv, der Termin ist aber nicht '
+      + 'auf „Öffentlich“ gestellt. Externe Teilnehmer sehen die Abstimmung nicht.';
+
+  } else if (
+    enabled
+    && sichtbarkeit === 'public'
+    && !publicVoting
+  ) {
+
+    message =
+      'Hinweis: Öffentlicher Termin ohne externe Abstimmung — Gäste können sich '
+      + 'nicht per Registrierungs-Popup anmelden.';
+
+  }
+
+  hint.textContent = message;
+  hint.hidden = !message;
+
 }
 
 function readFeedbackAdminPollConfig() {
@@ -542,6 +602,8 @@ function fillFeedbackAdminForm(module) {
   fillFeedbackAdminPollSettings(config);
 
   toggleFeedbackAdminPollFields();
+
+  updateFeedbackAdminPublicVotingHint();
 
 }
 
@@ -770,6 +832,14 @@ function bindFeedbackAdminEvents() {
     ?.addEventListener('change', toggleFeedbackAdminPollFields);
 
   document
+    .getElementById('feedback-admin-public-voting')
+    ?.addEventListener('change', updateFeedbackAdminPublicVotingHint);
+
+  document
+    .getElementById('sichtbarkeit')
+    ?.addEventListener('change', updateFeedbackAdminPublicVotingHint);
+
+  document
     .getElementById('feedback-admin-poll-freetext')
     ?.addEventListener('change', (event) => {
 
@@ -856,6 +926,13 @@ function mountFeedbackAdminForm(mountId) {
     <p class="admin-hint">
       Standard: nur Vereinsmitglieder. Öffentlich: Pop-up → Bestätigungs-Link
       per E-Mail → erst nach Klick Eintrag in der DB, dann abstimmen.
+    </p>
+
+    <p
+      id="feedback-admin-public-voting-hint"
+      class="admin-hint admin-hint--warning"
+      hidden>
+
     </p>
 
   </div>

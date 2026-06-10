@@ -32,6 +32,7 @@ declare
   v_auth_email text;
   v_rolle text;
   v_anonymized_at timestamptz;
+  v_avatar_path text;
 begin
   v_caller_email :=
     lower(trim(coalesce(auth.jwt()->>'email', '')));
@@ -66,11 +67,13 @@ begin
   select
     lower(trim(coalesce(email, ''))),
     lower(trim(coalesce(rolle, ''))),
-    anonymized_at
+    anonymized_at,
+    avatar_storage_path
   into
     v_auth_email,
     v_rolle,
-    v_anonymized_at
+    v_anonymized_at,
+    v_avatar_path
   from public.members
   where id = v_member_id;
 
@@ -97,6 +100,12 @@ begin
     where member_id = v_member_id;
   end if;
 
+  if v_avatar_path is not null then
+    delete from storage.objects
+    where bucket_id = 'avatars'
+      and name = v_avatar_path;
+  end if;
+
   update public.feedback_answers
   set comment = null
   where member_id = v_member_id;
@@ -118,6 +127,10 @@ begin
     kontakt_eingewilligt_am = null,
     einwilligung_bilder = false,
     bilder_eingewilligt_am = null,
+    avatar_storage_path = null,
+    avatar_updated_at = null,
+    avatar_source = null,
+    avatar_consent_at = null,
     anonymized_at = now()
   where id = v_member_id;
 

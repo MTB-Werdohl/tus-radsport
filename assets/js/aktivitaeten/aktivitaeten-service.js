@@ -143,6 +143,40 @@ async function fetchPublicClubStats(
 
 }
 
+function formatActivityTypeLabel(type) {
+
+  const key =
+    String(type || '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, '');
+
+  const labels = {
+    ride: 'Radfahren',
+    virtualride: 'Radfahren (indoor)',
+    ebikeride: 'E-Bike',
+    gravelride: 'Gravel',
+    mountainbikeride: 'Mountainbike',
+    run: 'Laufen',
+    walk: 'Gehen',
+    hike: 'Wandern',
+    swim: 'Schwimmen',
+    workout: 'Training',
+    weighttraining: 'Krafttraining'
+  };
+
+  if (labels[key]) {
+    return labels[key];
+  }
+
+  if (!type) {
+    return 'Aktivität';
+  }
+
+  return String(type);
+
+}
+
 function formatActivityDistance(
   meters
 ) {
