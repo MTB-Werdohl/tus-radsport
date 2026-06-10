@@ -310,6 +310,23 @@ function mergeProtocolManifestFolder(
 
 }
 
+function getProtocolEntryParentFolder(
+  relativePath
+) {
+
+  const parts =
+    String(relativePath || '')
+      .split('/')
+      .filter(Boolean);
+
+  if (parts.length <= 1) {
+    return '';
+  }
+
+  return parts.slice(0, -1).join('/');
+
+}
+
 function moveProtocolManifestEntry(
   manifest,
   entryKey,
@@ -326,8 +343,17 @@ function moveProtocolManifestEntry(
   }
 
   const targetFolder =
-    String(targetFolderRelativePath || '')
+    String(targetFolderRelativePath ?? '')
       .replace(/^\/+|\/+$/g, '');
+
+  const currentParent =
+    getProtocolEntryParentFolder(
+      entry.relativePath
+    );
+
+  if (targetFolder === currentParent) {
+    return false;
+  }
 
   const fileName =
     entry.relativePath.split('/').pop();
@@ -336,10 +362,6 @@ function moveProtocolManifestEntry(
     targetFolder
       ? `${targetFolder}/${fileName}`
       : fileName;
-
-  if (newRelativePath === entry.relativePath) {
-    return false;
-  }
 
   if (
     manifest.some((item) =>
@@ -552,6 +574,20 @@ function summarizeProtocolManifestChanges(
   initialSnapshot
 ) {
 
+  return summarizeProtocolManifestPendingMessage(
+    manifest,
+    deletedStoragePaths,
+    initialSnapshot
+  );
+
+}
+
+function summarizeProtocolManifestPendingMessage(
+  manifest,
+  deletedStoragePaths,
+  initialSnapshot
+) {
+
   if (
     !protocolManifestHasChanges(
       manifest,
@@ -598,10 +634,10 @@ function summarizeProtocolManifestChanges(
   }
 
   if (!parts.length) {
-    parts.push('Dateistruktur geändert');
+    return 'Dateistruktur geändert';
   }
 
-  return `Beim Speichern: ${parts.join(', ')}.`;
+  return `Noch nicht gespeichert: ${parts.join(', ')}.`;
 
 }
 

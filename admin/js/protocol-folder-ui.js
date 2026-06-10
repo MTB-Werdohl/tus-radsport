@@ -441,13 +441,7 @@ function bindProtocolFolderTreeEdit(
     event.preventDefault();
     event.stopPropagation();
 
-    dropHandled = true;
-
-    handleDrop(
-      hasActiveDropTarget
-        ? activeDropFolder
-        : null
-    );
+    executeDropIfNeeded();
 
   }
 
@@ -511,7 +505,31 @@ function bindProtocolFolderTreeEdit(
     }
 
     if (payload.type !== 'folder') {
+
+      const entry =
+        callbacks.getEntry?.(
+          payload.entryKey
+        );
+
+      if (entry) {
+
+        const currentParent =
+          getProtocolEntryParentFolder(
+            entry.relativePath
+          );
+
+        const targetFolder =
+          String(targetFolderRelativePath ?? '')
+            .replace(/^\/+|\/+$/g, '');
+
+        if (targetFolder === currentParent) {
+          return false;
+        }
+
+      }
+
       return true;
+
     }
 
     const sourceFolder =
@@ -586,9 +604,11 @@ function bindProtocolFolderTreeEdit(
 
   }
 
-  function handleDrop(
-    targetFolderRelativePath
-  ) {
+  function executeDropIfNeeded() {
+
+    if (dropHandled) {
+      return;
+    }
 
     const payload =
       dragPayload
@@ -596,14 +616,24 @@ function bindProtocolFolderTreeEdit(
 
     if (
       !payload
-      || !isValidDropTarget(
-        payload,
-        targetFolderRelativePath
-      )
+      || !hasActiveDropTarget
     ) {
-      finishDrag();
       return;
     }
+
+    const targetFolder =
+      activeDropFolder;
+
+    if (
+      !isValidDropTarget(
+        payload,
+        targetFolder
+      )
+    ) {
+      return;
+    }
+
+    dropHandled = true;
 
     let changed = false;
 
@@ -612,7 +642,7 @@ function bindProtocolFolderTreeEdit(
       changed =
         callbacks.onMoveEntry?.(
           payload.entryKey,
-          targetFolderRelativePath
+          targetFolder
         ) || false;
 
     } else if (payload.type === 'folder') {
@@ -620,7 +650,7 @@ function bindProtocolFolderTreeEdit(
       changed =
         callbacks.onMoveFolder?.(
           payload.folderRelativePath,
-          targetFolderRelativePath
+          targetFolder
         ) || false;
 
     }
@@ -630,6 +660,16 @@ function bindProtocolFolderTreeEdit(
     if (changed) {
       callbacks.onChange?.();
     }
+
+  }
+
+  function finishDragWithoutDrop() {
+
+    if (dropHandled) {
+      return;
+    }
+
+    finishDrag();
 
   }
 
@@ -780,9 +820,8 @@ function bindProtocolFolderTreeEdit(
 
   root.addEventListener('dragend', () => {
 
-    if (!dropHandled) {
-      finishDrag();
-    }
+    executeDropIfNeeded();
+    finishDragWithoutDrop();
 
   });
 
@@ -902,11 +941,8 @@ function bindProtocolFolderTreeEdit(
     dragPayload =
       touchDragPayload;
 
-    handleDrop(
-      hasActiveDropTarget
-        ? activeDropFolder
-        : null
-    );
+    executeDropIfNeeded();
+    finishDragWithoutDrop();
 
   });
 
@@ -964,7 +1000,7 @@ function renderProtocolFolderTreeEdit(
   hint.className =
     'admin-hint admin-protocol-folder-edit-hint';
   hint.textContent =
-    'Mit ☰ ziehen und auf einen markierten Ordner loslassen. Mit 🗑 löschen.';
+    'Mit ☰ ziehen und auf einen markierten Ordner loslassen. Änderungen an Dateien werden sofort gespeichert.';
 
   root.appendChild(hint);
 
@@ -998,7 +1034,9 @@ function renderProtocolFolderTreeEdit(
       onMoveFolder:
         options.onMoveFolder,
       onChange:
-        options.onChange
+        options.onChange,
+      getEntry:
+        options.getEntry
     }
   );
 

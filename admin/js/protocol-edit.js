@@ -3,7 +3,7 @@ const params =
     window.location.search
   );
 
-const editId =
+let protocolEditId =
   params.get('id');
 
 let existingProtocolFilePath =
@@ -21,10 +21,13 @@ let protocolManifestSnapshot =
 let deletedStoragePaths =
   new Set();
 
+let protocolFilesSaving =
+  false;
+
 function getProtocolEditRowSnapshot() {
 
   return {
-    id: editId,
+    id: protocolEditId,
     protocol_pdf_path:
       existingProtocolFilePath,
     attachments:
@@ -53,20 +56,58 @@ function clearPendingFileInputs() {
 
 }
 
-function markProtocolFilesDirty() {
+function getProtocolEditFormValues() {
 
-  if (window.adminUnsavedGuard) {
-    window.adminUnsavedGuard.markDirty();
-  }
+  return {
+    meeting_date:
+      document
+        .getElementById('meeting_date')
+        ?.value
+      || '',
+    meeting_label:
+      document
+        .getElementById('meeting_label')
+        ?.value
+      || PROTOCOL_MEETING_LABELS[0],
+    scope:
+      document
+        .getElementById('scope')
+        ?.value
+      || PROTOCOL_SCOPE_ABTEILUNG,
+    subject:
+      document
+        .getElementById('subject')
+        ?.value
+        .trim()
+      || '',
+    content:
+      document
+        .getElementById('content')
+        ?.value
+      || ''
+  };
 
 }
 
-function updateProtocolPendingHint() {
+function updateProtocolPendingHint(
+  message
+) {
 
   const hint =
     document.getElementById('protocol-folder-pending');
 
   if (!hint) {
+    return;
+  }
+
+  if (message) {
+    hint.textContent = message;
+    return;
+  }
+
+  if (protocolFilesSaving) {
+    hint.textContent =
+      'Dateien werden gespeichert …';
     return;
   }
 
@@ -76,6 +117,167 @@ function updateProtocolPendingHint() {
       deletedStoragePaths,
       protocolManifestSnapshot
     );
+
+}
+
+async function ensureProtocolDocumentId() {
+
+  if (protocolEditId) {
+    return protocolEditId;
+  }
+
+  const formValues =
+    getProtocolEditFormValues();
+
+  if (!formValues.meeting_date) {
+
+    alert(
+      'Bitte zuerst ein Sitzungsdatum angeben, bevor Dateien gespeichert werden können.'
+    );
+
+    return null;
+
+  }
+
+  const payload = {
+    meeting_date:
+      formValues.meeting_date,
+    meeting_label:
+      formValues.meeting_label,
+    scope:
+      formValues.scope,
+    subject:
+      formValues.subject,
+    content:
+      formValues.content,
+    protocol_pdf_path: null,
+    attachments: []
+  };
+
+  const { data, error } =
+    await window.supabaseClient
+      .from(getProtocolTableName())
+      .insert(payload)
+      .select('id')
+      .single();
+
+  if (error) {
+
+    console.error(error);
+
+    alert(
+      'Eintrag konnte nicht angelegt werden. Dateien wurden nicht gespeichert.'
+    );
+
+    return null;
+
+  }
+
+  protocolEditId =
+    String(data.id);
+
+  window.history.replaceState(
+    null,
+    '',
+    getProtocolEditUrl(protocolEditId)
+  );
+
+  document
+    .getElementById('form-title')
+    .innerText =
+      'Protokoll bearbeiten';
+
+  return protocolEditId;
+
+}
+
+async function persistProtocolFiles() {
+
+  if (protocolFilesSaving) {
+    return false;
+  }
+
+  if (
+    !protocolManifestHasChanges(
+      protocolFileManifest,
+      deletedStoragePaths,
+      protocolManifestSnapshot
+    )
+  ) {
+    updateProtocolPendingHint();
+    return true;
+
+  }
+
+  const documentId =
+    await ensureProtocolDocumentId();
+
+  if (!documentId) {
+    return false;
+
+  }
+
+  protocolFilesSaving = true;
+  updateProtocolPendingHint();
+
+  try {
+
+    await applyProtocolManifestChanges(
+      documentId,
+      protocolFileManifest,
+      deletedStoragePaths
+    );
+
+    const { error } =
+      await window.supabaseClient
+        .from(getProtocolTableName())
+        .update({
+          protocol_pdf_path: null,
+          attachments: [],
+          updated_at:
+            new Date().toISOString()
+        })
+        .eq('id', documentId);
+
+    if (error) {
+      throw error;
+    }
+
+    existingProtocolFilePath = null;
+    existingAttachments = [];
+    deletedStoragePaths =
+      new Set();
+
+    protocolManifestSnapshot =
+      snapshotProtocolManifest(
+        protocolFileManifest
+      );
+
+    return true;
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      'Dateien konnten nicht gespeichert werden.'
+    );
+
+    return false;
+
+  } finally {
+
+    protocolFilesSaving = false;
+    updateProtocolPendingHint();
+
+  }
+
+}
+
+async function afterProtocolFileManifestChange() {
+
+  await refreshProtocolFolderPreview();
+  await persistProtocolFiles();
 
 }
 
@@ -94,7 +296,7 @@ async function refreshProtocolFolderPreview() {
     container,
     {
       mode: 'edit',
-      documentId: editId,
+      documentId: protocolEditId,
       manifest: protocolFileManifest,
       onDeleteEntry(entryKey) {
 
@@ -112,8 +314,7 @@ async function refreshProtocolFolderPreview() {
           deletedStoragePaths
         );
 
-        markProtocolFilesDirty();
-        refreshProtocolFolderPreview();
+        void afterProtocolFileManifestChange();
 
       },
       onDeleteFolder(folderRelativePath) {
@@ -136,8 +337,7 @@ async function refreshProtocolFolderPreview() {
           deletedStoragePaths
         );
 
-        markProtocolFilesDirty();
-        refreshProtocolFolderPreview();
+        void afterProtocolFileManifestChange();
 
       },
       onMoveEntry(entryKey, targetFolderRelativePath) {
@@ -158,10 +358,16 @@ async function refreshProtocolFolderPreview() {
         );
 
       },
+      getEntry(entryKey) {
+
+        return protocolFileManifest.find((entry) =>
+          entry.key === entryKey
+        );
+
+      },
       onChange() {
 
-        markProtocolFilesDirty();
-        refreshProtocolFolderPreview();
+        void afterProtocolFileManifestChange();
 
       }
     }
@@ -194,8 +400,7 @@ function onProtocolSingleFilesSelected(
   );
 
   clearPendingFileInputs();
-  markProtocolFilesDirty();
-  refreshProtocolFolderPreview();
+  void afterProtocolFileManifestChange();
 
 }
 
@@ -222,8 +427,7 @@ function onProtocolFolderSelected(
   );
 
   clearPendingFileInputs();
-  markProtocolFilesDirty();
-  refreshProtocolFolderPreview();
+  void afterProtocolFileManifestChange();
 
 }
 
@@ -256,7 +460,7 @@ function resetProtocolFileManifest(
 
   protocolFileManifest =
     createProtocolManifestFromSources({
-      documentId: editId,
+      documentId: protocolEditId,
       legacyPaths,
       storedPaths
     });
@@ -275,7 +479,7 @@ async function loadProtocolEdit() {
 
   fillMeetingLabelOptions();
 
-  if (!editId) {
+  if (!protocolEditId) {
 
     resetProtocolFileManifest(
       [],
@@ -297,7 +501,7 @@ async function loadProtocolEdit() {
     await window.supabaseClient
       .from(getProtocolTableName())
       .select('*')
-      .eq('id', editId)
+      .eq('id', protocolEditId)
       .single();
 
   if (error) {
@@ -339,7 +543,9 @@ async function loadProtocolEdit() {
       }));
 
   const storedPaths =
-    await listProtocolDocumentFiles(editId);
+    await listProtocolDocumentFiles(
+      protocolEditId
+    );
 
   resetProtocolFileManifest(
     collectProtocolLegacyPaths(
@@ -354,12 +560,10 @@ async function loadProtocolEdit() {
 
 async function saveProtocolEdit() {
 
-  const meetingDate =
-    document
-      .getElementById('meeting_date')
-      .value;
+  const formValues =
+    getProtocolEditFormValues();
 
-  if (!meetingDate) {
+  if (!formValues.meeting_date) {
 
     alert('Bitte ein Sitzungsdatum angeben.');
 
@@ -367,74 +571,34 @@ async function saveProtocolEdit() {
 
   }
 
-  const meetingLabel =
-    document
-      .getElementById('meeting_label')
-      .value;
-
-  const scope =
-    document
-      .getElementById('scope')
-      .value;
-
-  const content =
-    document
-      .getElementById('content')
-      .value;
-
-  const subject =
-    document
-      .getElementById('subject')
-      .value
-      .trim();
-
-  const hasFileChanges =
-    protocolManifestHasChanges(
-      protocolFileManifest,
-      deletedStoragePaths,
-      protocolManifestSnapshot
-    );
-
-  let savedId =
-    editId;
-
   const payload = {
-    meeting_date: meetingDate,
-    meeting_label: meetingLabel,
-    scope,
-    subject,
-    content,
-    updated_at: new Date().toISOString()
+    meeting_date:
+      formValues.meeting_date,
+    meeting_label:
+      formValues.meeting_label,
+    scope:
+      formValues.scope,
+    subject:
+      formValues.subject,
+    content:
+      formValues.content,
+    updated_at:
+      new Date().toISOString()
   };
 
-  if (hasFileChanges) {
+  let savedId =
+    protocolEditId;
+
+  if (protocolEditId) {
 
     payload.protocol_pdf_path = null;
     payload.attachments = [];
-
-  } else if (editId) {
-
-    payload.protocol_pdf_path =
-      existingProtocolFilePath;
-    payload.attachments =
-      existingAttachments.map((item) => ({
-        path: item.path
-      }));
-
-  } else {
-
-    payload.protocol_pdf_path = null;
-    payload.attachments = [];
-
-  }
-
-  if (editId) {
 
     const { error } =
       await window.supabaseClient
         .from(getProtocolTableName())
         .update(payload)
-        .eq('id', editId);
+        .eq('id', protocolEditId);
 
     if (error) {
 
@@ -447,6 +611,9 @@ async function saveProtocolEdit() {
     }
 
   } else {
+
+    payload.protocol_pdf_path = null;
+    payload.attachments = [];
 
     const { data, error } =
       await window.supabaseClient
@@ -466,28 +633,23 @@ async function saveProtocolEdit() {
     }
 
     savedId =
-      data.id;
+      String(data.id);
 
   }
 
-  if (hasFileChanges) {
+  if (
+    protocolManifestHasChanges(
+      protocolFileManifest,
+      deletedStoragePaths,
+      protocolManifestSnapshot
+    )
+  ) {
 
-    try {
+    const persisted =
+      await persistProtocolFiles();
 
-      await applyProtocolManifestChanges(
-        savedId,
-        protocolFileManifest,
-        deletedStoragePaths
-      );
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert('Dateien konnten nicht gespeichert werden.');
-
+    if (!persisted) {
       return;
-
     }
 
   }
