@@ -669,14 +669,40 @@ async function uploadProtocolFilesToFolder(
 
 }
 
-async function uploadProtocolFolderReplace(
+async function moveProtocolStoragePath(
+  fromPath,
+  toPath
+) {
+
+  if (
+    !fromPath
+    || !toPath
+    || fromPath === toPath
+  ) {
+    return toPath;
+  }
+
+  const bucket =
+    window.siteConfig.storage.media;
+
+  const { error } =
+    await window.supabaseClient
+      .storage
+      .from(bucket)
+      .move(fromPath, toPath);
+
+  if (error) {
+    throw error;
+  }
+
+  return toPath;
+
+}
+
+async function uploadProtocolFolderMerge(
   documentId,
   files
 ) {
-
-  await clearProtocolStorageFolder(
-    documentId
-  );
 
   const uploaded = [];
 
@@ -686,23 +712,36 @@ async function uploadProtocolFolderReplace(
       continue;
     }
 
-    const relativePath =
-      normalizeFolderUploadRelativePath(
-        file.webkitRelativePath
-        || file.name
-      );
-
     uploaded.push(
       await uploadProtocolFileToFolder(
         documentId,
         file,
-        relativePath
+        normalizeFolderUploadRelativePath(
+          file.webkitRelativePath
+          || file.name
+        )
       )
     );
 
   }
 
   return uploaded;
+
+}
+
+async function uploadProtocolFolderReplace(
+  documentId,
+  files
+) {
+
+  await clearProtocolStorageFolder(
+    documentId
+  );
+
+  return uploadProtocolFolderMerge(
+    documentId,
+    files
+  );
 
 }
 

@@ -12,14 +12,14 @@ let existingProtocolFilePath =
 let existingAttachments =
   [];
 
-let storedFolderPaths =
+let protocolFileManifest =
   [];
 
-let pendingSingleFiles =
+let protocolManifestSnapshot =
   [];
 
-let pendingFolderReplace =
-  null;
+let deletedStoragePaths =
+  new Set();
 
 function getProtocolEditRowSnapshot() {
 
@@ -53,6 +53,14 @@ function clearPendingFileInputs() {
 
 }
 
+function markProtocolFilesDirty() {
+
+  if (window.adminUnsavedGuard) {
+    window.adminUnsavedGuard.markDirty();
+  }
+
+}
+
 function updateProtocolPendingHint() {
 
   const hint =
@@ -62,25 +70,12 @@ function updateProtocolPendingHint() {
     return;
   }
 
-  if (pendingFolderReplace?.length) {
-
-    hint.textContent =
-      `Beim Speichern werden ${pendingFolderReplace.length} Dateien aus dem Ordner hochgeladen und ersetzen alle bisherigen Dateien in diesem Protokoll-Ordner.`;
-
-    return;
-
-  }
-
-  if (pendingSingleFiles.length) {
-
-    hint.textContent =
-      `Beim Speichern werden ${pendingSingleFiles.length} Datei(en) in den Protokoll-Ordner gelegt: ${pendingSingleFiles.map((file) => file.name).join(', ')}.`;
-
-    return;
-
-  }
-
-  hint.textContent = '';
+  hint.textContent =
+    summarizeProtocolManifestChanges(
+      protocolFileManifest,
+      deletedStoragePaths,
+      protocolManifestSnapshot
+    );
 
 }
 
@@ -93,44 +88,82 @@ async function refreshProtocolFolderPreview() {
     return;
   }
 
-  const legacyPaths =
-    collectProtocolLegacyPaths(
-      getProtocolEditRowSnapshot()
-    );
-
-  let paths =
-    [
-      ...legacyPaths,
-      ...storedFolderPaths
-    ];
-
-  if (pendingFolderReplace?.length) {
-
-    paths =
-      buildProtocolPendingPreviewPaths(
-        [],
-        pendingFolderReplace
-      );
-
-  } else if (pendingSingleFiles.length) {
-
-    paths =
-      [
-        ...paths,
-        ...buildProtocolPendingPreviewPaths(
-          pendingSingleFiles,
-          null
-        )
-      ];
-
-  }
+  container.dataset.editBound = '';
 
   await renderProtocolFolderTree(
     container,
     {
       mode: 'edit',
       documentId: editId,
-      paths
+      manifest: protocolFileManifest,
+      onDeleteEntry(entryKey) {
+
+        if (
+          !confirm(
+            'Diese Datei wirklich entfernen?'
+          )
+        ) {
+          return;
+        }
+
+        removeProtocolManifestEntry(
+          protocolFileManifest,
+          entryKey,
+          deletedStoragePaths
+        );
+
+        markProtocolFilesDirty();
+        refreshProtocolFolderPreview();
+
+      },
+      onDeleteFolder(folderRelativePath) {
+
+        const folderLabel =
+          folderRelativePath
+          || 'alle Dateien in der Wurzel';
+
+        if (
+          !confirm(
+            `Ordner „${folderLabel}“ mit allen Dateien darin wirklich entfernen?`
+          )
+        ) {
+          return;
+        }
+
+        removeProtocolManifestFolder(
+          protocolFileManifest,
+          folderRelativePath,
+          deletedStoragePaths
+        );
+
+        markProtocolFilesDirty();
+        refreshProtocolFolderPreview();
+
+      },
+      onMoveEntry(entryKey, targetFolderRelativePath) {
+
+        return moveProtocolManifestEntry(
+          protocolFileManifest,
+          entryKey,
+          targetFolderRelativePath
+        );
+
+      },
+      onMoveFolder(folderRelativePath, targetFolderRelativePath) {
+
+        return moveProtocolManifestFolder(
+          protocolFileManifest,
+          folderRelativePath,
+          targetFolderRelativePath
+        );
+
+      },
+      onChange() {
+
+        markProtocolFilesDirty();
+        refreshProtocolFolderPreview();
+
+      }
     }
   );
 
@@ -154,14 +187,15 @@ function onProtocolSingleFilesSelected(
     return;
   }
 
-  pendingFolderReplace = null;
-  pendingSingleFiles.push(...files);
-  clearPendingFileInputs();
-  refreshProtocolFolderPreview();
+  addProtocolManifestFiles(
+    protocolFileManifest,
+    files,
+    deletedStoragePaths
+  );
 
-  if (window.adminUnsavedGuard) {
-    window.adminUnsavedGuard.markDirty();
-  }
+  clearPendingFileInputs();
+  markProtocolFilesDirty();
+  refreshProtocolFolderPreview();
 
 }
 
@@ -181,14 +215,15 @@ function onProtocolFolderSelected(
     return;
   }
 
-  pendingSingleFiles = [];
-  pendingFolderReplace = files;
-  clearPendingFileInputs();
-  refreshProtocolFolderPreview();
+  mergeProtocolManifestFolder(
+    protocolFileManifest,
+    files,
+    deletedStoragePaths
+  );
 
-  if (window.adminUnsavedGuard) {
-    window.adminUnsavedGuard.markDirty();
-  }
+  clearPendingFileInputs();
+  markProtocolFilesDirty();
+  refreshProtocolFolderPreview();
 
 }
 
@@ -214,11 +249,38 @@ function fillMeetingLabelOptions() {
 
 }
 
+function resetProtocolFileManifest(
+  legacyPaths,
+  storedPaths
+) {
+
+  protocolFileManifest =
+    createProtocolManifestFromSources({
+      documentId: editId,
+      legacyPaths,
+      storedPaths
+    });
+
+  protocolManifestSnapshot =
+    snapshotProtocolManifest(
+      protocolFileManifest
+    );
+
+  deletedStoragePaths =
+    new Set();
+
+}
+
 async function loadProtocolEdit() {
 
   fillMeetingLabelOptions();
 
   if (!editId) {
+
+    resetProtocolFileManifest(
+      [],
+      []
+    );
 
     await refreshProtocolFolderPreview();
 
@@ -276,8 +338,15 @@ async function loadProtocolEdit() {
         path: item.path
       }));
 
-  storedFolderPaths =
+  const storedPaths =
     await listProtocolDocumentFiles(editId);
+
+  resetProtocolFileManifest(
+    collectProtocolLegacyPaths(
+      getProtocolEditRowSnapshot()
+    ),
+    storedPaths
+  );
 
   await refreshProtocolFolderPreview();
 
@@ -319,15 +388,12 @@ async function saveProtocolEdit() {
       .value
       .trim();
 
-  const hasFolderReplace =
-    Boolean(pendingFolderReplace?.length);
-
-  const hasPendingFiles =
-    pendingSingleFiles.length > 0;
-
   const hasFileChanges =
-    hasFolderReplace
-    || hasPendingFiles;
+    protocolManifestHasChanges(
+      protocolFileManifest,
+      deletedStoragePaths,
+      protocolManifestSnapshot
+    );
 
   let savedId =
     editId;
@@ -341,23 +407,28 @@ async function saveProtocolEdit() {
     updated_at: new Date().toISOString()
   };
 
+  if (hasFileChanges) {
+
+    payload.protocol_pdf_path = null;
+    payload.attachments = [];
+
+  } else if (editId) {
+
+    payload.protocol_pdf_path =
+      existingProtocolFilePath;
+    payload.attachments =
+      existingAttachments.map((item) => ({
+        path: item.path
+      }));
+
+  } else {
+
+    payload.protocol_pdf_path = null;
+    payload.attachments = [];
+
+  }
+
   if (editId) {
-
-    if (hasFolderReplace) {
-
-      payload.protocol_pdf_path = null;
-      payload.attachments = [];
-
-    } else {
-
-      payload.protocol_pdf_path =
-        existingProtocolFilePath;
-      payload.attachments =
-        existingAttachments.map((item) => ({
-          path: item.path
-        }));
-
-    }
 
     const { error } =
       await window.supabaseClient
@@ -376,9 +447,6 @@ async function saveProtocolEdit() {
     }
 
   } else {
-
-    payload.protocol_pdf_path = null;
-    payload.attachments = [];
 
     const { data, error } =
       await window.supabaseClient
@@ -406,35 +474,17 @@ async function saveProtocolEdit() {
 
     try {
 
-      if (hasFolderReplace) {
-
-        await deleteProtocolLegacyStorage({
-          id: savedId,
-          protocol_pdf_path:
-            existingProtocolFilePath,
-          attachments:
-            existingAttachments
-        });
-
-        await uploadProtocolFolderReplace(
-          savedId,
-          pendingFolderReplace
-        );
-
-      } else if (hasPendingFiles) {
-
-        await uploadProtocolFilesToFolder(
-          savedId,
-          pendingSingleFiles
-        );
-
-      }
+      await applyProtocolManifestChanges(
+        savedId,
+        protocolFileManifest,
+        deletedStoragePaths
+      );
 
     } catch (error) {
 
       console.error(error);
 
-      alert('Dateien konnten nicht hochgeladen werden.');
+      alert('Dateien konnten nicht gespeichert werden.');
 
       return;
 

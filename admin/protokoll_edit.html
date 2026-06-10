@@ -81,8 +81,8 @@ title: Protokoll bearbeiten
 
       <p class="admin-hint">
         Zu jedem Eintrag wird automatisch ein Ordner angelegt.
-        Einzeldateien landen darin; ein Ordner-Upload ersetzt alle
-        bisherigen Dateien in diesem Ordner.
+        Dateien und Ordner kannst du per Drag-and-Drop strukturieren,
+        einzeln löschen und per Upload ergänzen.
       </p>
 
       <div id="protocol-folder-tree"></div>
@@ -102,7 +102,7 @@ title: Protokoll bearbeiten
       </label>
 
       <label>
-        Ordner hochladen (ersetzt alle Dateien)
+        Ordner hochladen (wird ergänzt)
         <input
           id="protocol-add-folder"
           type="file"
@@ -122,6 +122,7 @@ title: Protokoll bearbeiten
 </div>
 
 <script src="/admin/js/protocol-utils.js?v={{ site.admin_js_version }}"></script>
+<script src="/admin/js/protocol-manifest.js?v={{ site.admin_js_version }}"></script>
 <script src="/admin/js/protocol-folder-ui.js?v={{ site.admin_js_version }}"></script>
 <script src="/admin/js/protocol-edit.js?v={{ site.admin_js_version }}"></script>
 <script>

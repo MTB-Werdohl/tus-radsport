@@ -941,10 +941,59 @@ h3 {
   margin-left: 16px;
 }
 
+.admin-protocol-folder-edit-hint {
+  margin: 0 0 12px;
+}
+
 .admin-protocol-folder-dir-label {
   cursor: pointer;
   font-weight: 600;
   list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-protocol-folder-dir-title {
+  flex: 1;
+}
+
+.admin-protocol-folder-file-row {
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-protocol-folder-drag-handle {
+  cursor: grab;
+  opacity: 0.75;
+  user-select: none;
+  touch-action: none;
+}
+
+.admin-protocol-folder-draggable--dragging {
+  opacity: 0.55;
+}
+
+.admin-protocol-folder-drop-target--active {
+  outline: 2px dashed rgba(46, 139, 87, 0.9);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+.admin-protocol-folder-delete {
+  border: 0;
+  background: rgba(160, 60, 60, 0.85);
+  color: #fff;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.admin-protocol-folder-delete:hover {
+  background: rgba(160, 60, 60, 1);
 }
 
 .admin-protocol-folder-dir-label::-webkit-details-marker {
@@ -959,10 +1008,6 @@ h3 {
   border-left: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.admin-protocol-folder-file-row {
-  margin-left: 4px;
-}
-
 .admin-protocol-folder-file {
   display: inline-flex;
   align-items: center;
@@ -973,6 +1018,7 @@ h3 {
   color: #fff;
   text-decoration: none;
   font-weight: 600;
+  flex: 1;
 }
 
 .admin-protocol-folder-file:hover {
