@@ -6,7 +6,7 @@ const viewParams =
 const viewId =
   viewParams.get('id');
 
-async function renderProtocolFileButtons(row) {
+async function renderProtocolFileTree(row) {
 
   const container =
     document.getElementById('protocol-file-buttons');
@@ -15,64 +15,17 @@ async function renderProtocolFileButtons(row) {
     return;
   }
 
-  container.innerHTML = '';
-
   const paths =
-    collectProtocolFilePaths(row);
+    await collectProtocolAllFilePaths(row);
 
-  if (!paths.length) {
-
-    container.innerHTML =
-      '<p class="admin-hint">Keine Dateien hinterlegt.</p>';
-
-    return;
-
-  }
-
-  const buttons =
-    document.createDocumentFragment();
-
-  for (const path of paths) {
-
-    const url =
-      await getProtocolSignedUrl(path);
-
-    const label =
-      getProtocolFileLabel(path);
-
-    if (url) {
-
-      const link =
-        document.createElement('a');
-
-      link.href = url;
-      link.className =
-        'admin-protocol-file-button';
-      link.target = '_blank';
-      link.rel =
-        'noopener noreferrer';
-      link.textContent =
-        `📎 ${label}`;
-
-      buttons.appendChild(link);
-
-      continue;
-
+  await renderProtocolFolderTree(
+    container,
+    {
+      mode: 'view',
+      documentId: row?.id || null,
+      paths
     }
-
-    const fallback =
-      document.createElement('span');
-
-    fallback.className =
-      'admin-protocol-file-button admin-protocol-file-button--missing';
-    fallback.textContent =
-      `📎 ${label} (Datei nicht erreichbar)`;
-
-    buttons.appendChild(fallback);
-
-  }
-
-  container.appendChild(buttons);
+  );
 
 }
 
@@ -122,7 +75,7 @@ async function initProtocolView() {
     .href =
       getProtocolEditUrl(data.id);
 
-  await renderProtocolFileButtons(data);
+  await renderProtocolFileTree(data);
 
   const body =
     document.getElementById('protocol-view-body');

@@ -65,26 +65,41 @@ title: Protokoll bearbeiten
       <textarea id="content" rows="12"></textarea>
     </label>
 
-    <label>
-      Protokoll-Datei
-      <input id="protocolFile" type="file">
-    </label>
+    <section class="admin-protocol-files">
 
-    <div id="currentProtocolFile"></div>
+      <h2>Dateien</h2>
 
-    <section class="admin-protocol-attachments">
+      <p class="admin-hint">
+        Zu jedem Eintrag wird automatisch ein Ordner angelegt.
+        Einzeldateien landen darin; ein Ordner-Upload ersetzt alle
+        bisherigen Dateien in diesem Ordner.
+      </p>
 
-      <h2>Anhänge</h2>
+      <div id="protocol-folder-tree"></div>
 
-      <div id="attachments-list"></div>
+      <p
+        id="protocol-folder-pending"
+        class="admin-hint admin-protocol-folder-pending"
+      ></p>
 
-      <button
-        id="add-attachment"
-        type="button"
-        class="new-button"
-      >
-        ➕ Anhang hinzufügen
-      </button>
+      <label>
+        Datei hinzufügen
+        <input
+          id="protocol-add-file"
+          type="file"
+          multiple
+        >
+      </label>
+
+      <label>
+        Ordner hochladen (ersetzt alle Dateien)
+        <input
+          id="protocol-add-folder"
+          type="file"
+          webkitdirectory
+          multiple
+        >
+      </label>
 
     </section>
 
@@ -97,6 +112,7 @@ title: Protokoll bearbeiten
 </div>
 
 <script src="/admin/js/protocol-utils.js?v={{ site.admin_js_version }}"></script>
+<script src="/admin/js/protocol-folder-ui.js?v={{ site.admin_js_version }}"></script>
 <script src="/admin/js/protocol-edit.js?v={{ site.admin_js_version }}"></script>
 <script>
 requireAdminSession(initProtocolEdit);

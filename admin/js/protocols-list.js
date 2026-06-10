@@ -199,7 +199,7 @@ async function deleteProtocol(id) {
 
   const confirmDelete =
     confirm(
-      'Protokoll inkl. PDF-Dateien löschen?'
+      'Protokoll inkl. aller Dateien im Ordner löschen?'
     );
 
   if (!confirmDelete) {
@@ -209,7 +209,7 @@ async function deleteProtocol(id) {
   const { data, error: loadError } =
     await window.supabaseClient
       .from(getProtocolTableName())
-      .select('protocol_pdf_path, attachments')
+      .select('*')
       .eq('id', id)
       .single();
 
@@ -221,19 +221,21 @@ async function deleteProtocol(id) {
 
   }
 
-  const paths = [];
+  try {
 
-  if (data?.protocol_pdf_path) {
-    paths.push(data.protocol_pdf_path);
-  }
+    await deleteProtocolDocumentStorage(
+      id,
+      data
+    );
 
-  normalizeProtocolAttachments(data?.attachments)
-    .forEach((item) => {
-      paths.push(item.path);
-    });
+  } catch (error) {
 
-  for (const path of paths) {
-    await deleteProtocolStoragePath(path);
+    console.error(error);
+
+    alert('Dateien konnten nicht gelöscht werden.');
+
+    return;
+
   }
 
   const { error } =

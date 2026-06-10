@@ -12,170 +12,183 @@ let existingProtocolFilePath =
 let existingAttachments =
   [];
 
-function syncAttachmentPendingFiles() {
+let storedFolderPaths =
+  [];
 
-  document
-    .querySelectorAll('.admin-protocol-attachment-row')
-    .forEach((row) => {
+let pendingSingleFiles =
+  [];
 
-      const index =
-        Number(row.dataset.index);
+let pendingFolderReplace =
+  null;
 
-      const input =
-        row.querySelector('.attachment-file');
+function getProtocolEditRowSnapshot() {
 
-      if (
-        Number.isNaN(index)
-        || !existingAttachments[index]
-        || !input?.files[0]
-      ) {
-        return;
-      }
-
-      existingAttachments[index].pendingFile =
-        input.files[0];
-
-    });
+  return {
+    id: editId,
+    protocol_pdf_path:
+      existingProtocolFilePath,
+    attachments:
+      existingAttachments.map((item) => ({
+        path: item.path
+      }))
+  };
 
 }
 
-function bindAttachmentRowEvents(container) {
+function clearPendingFileInputs() {
 
-  container.querySelectorAll('.attachment-file').forEach((input) => {
+  const fileInput =
+    document.getElementById('protocol-add-file');
 
-    input.addEventListener('change', () => {
+  const folderInput =
+    document.getElementById('protocol-add-folder');
 
-      const row =
-        input.closest('.admin-protocol-attachment-row');
+  if (fileInput) {
+    fileInput.value = '';
+  }
 
-      const index =
-        Number(row?.dataset.index);
-
-      if (
-        Number.isNaN(index)
-        || !existingAttachments[index]
-      ) {
-        return;
-      }
-
-      existingAttachments[index].pendingFile =
-        input.files[0] || null;
-
-      const hint =
-        row.querySelector('.attachment-pending-name');
-
-      if (hint) {
-
-        hint.textContent =
-          input.files[0]
-            ? `Ausgewählt: ${input.files[0].name}`
-            : '';
-
-      }
-
-    });
-
-  });
-
-  container.querySelectorAll('.attachment-remove').forEach((button) => {
-
-    button.addEventListener('click', () => {
-
-      const row =
-        button.closest('.admin-protocol-attachment-row');
-
-      const index =
-        Number(row?.dataset.index);
-
-      if (Number.isNaN(index)) {
-        return;
-      }
-
-      syncAttachmentPendingFiles();
-      existingAttachments.splice(index, 1);
-      renderAttachmentRows();
-
-    });
-
-  });
+  if (folderInput) {
+    folderInput.value = '';
+  }
 
 }
 
-function renderAttachmentRows() {
+function updateProtocolPendingHint() {
 
-  syncAttachmentPendingFiles();
+  const hint =
+    document.getElementById('protocol-folder-pending');
+
+  if (!hint) {
+    return;
+  }
+
+  if (pendingFolderReplace?.length) {
+
+    hint.textContent =
+      `Beim Speichern werden ${pendingFolderReplace.length} Dateien aus dem Ordner hochgeladen und ersetzen alle bisherigen Dateien in diesem Protokoll-Ordner.`;
+
+    return;
+
+  }
+
+  if (pendingSingleFiles.length) {
+
+    hint.textContent =
+      `Beim Speichern werden ${pendingSingleFiles.length} Datei(en) in den Protokoll-Ordner gelegt: ${pendingSingleFiles.map((file) => file.name).join(', ')}.`;
+
+    return;
+
+  }
+
+  hint.textContent = '';
+
+}
+
+async function refreshProtocolFolderPreview() {
 
   const container =
-    document.getElementById('attachments-list');
+    document.getElementById('protocol-folder-tree');
 
   if (!container) {
     return;
   }
 
-  container.innerHTML = '';
+  const legacyPaths =
+    collectProtocolLegacyPaths(
+      getProtocolEditRowSnapshot()
+    );
 
-  existingAttachments.forEach((item, index) => {
+  let paths =
+    [
+      ...legacyPaths,
+      ...storedFolderPaths
+    ];
 
-    const currentFile =
-      item.path
-        ? getProtocolFileLabel(item.path)
-        : null;
+  if (pendingFolderReplace?.length) {
 
-    const pendingName =
-      item.pendingFile?.name || '';
+    paths =
+      buildProtocolPendingPreviewPaths(
+        [],
+        pendingFolderReplace
+      );
 
-    container.innerHTML += `
+  } else if (pendingSingleFiles.length) {
 
-      <div
-        class="admin-protocol-attachment-row"
-        data-index="${index}"
-      >
+    paths =
+      [
+        ...paths,
+        ...buildProtocolPendingPreviewPaths(
+          pendingSingleFiles,
+          null
+        )
+      ];
 
-        ${currentFile
-          ? `<p class="admin-hint">Aktuelle Datei: ${escapeAdminHtml(currentFile)}</p>`
-          : ''}
+  }
 
-        <p class="admin-hint attachment-pending-name">
-          ${pendingName
-            ? `Ausgewählt: ${escapeAdminHtml(pendingName)}`
-            : ''}
-        </p>
+  await renderProtocolFolderTree(
+    container,
+    {
+      mode: 'edit',
+      documentId: editId,
+      paths
+    }
+  );
 
-        <label>
-          ${currentFile
-            ? 'Datei ersetzen'
-            : 'Datei auswählen'}
-          <input
-            type="file"
-            class="attachment-file"
-          >
-        </label>
-
-        <button
-          type="button"
-          class="delete-button attachment-remove"
-        >
-          Anhang entfernen
-        </button>
-
-      </div>
-
-    `;
-
-  });
-
-  bindAttachmentRowEvents(container);
+  updateProtocolPendingHint();
 
 }
 
-function addAttachmentRow() {
+function onProtocolSingleFilesSelected(
+  event
+) {
 
-  existingAttachments.push({
-    path: '',
-    pendingFile: null
-  });
+  const files =
+    [
+      ...(
+        event.target.files
+        || []
+      )
+    ];
 
-  renderAttachmentRows();
+  if (!files.length) {
+    return;
+  }
+
+  pendingFolderReplace = null;
+  pendingSingleFiles.push(...files);
+  clearPendingFileInputs();
+  refreshProtocolFolderPreview();
+
+  if (window.adminUnsavedGuard) {
+    window.adminUnsavedGuard.markDirty();
+  }
+
+}
+
+function onProtocolFolderSelected(
+  event
+) {
+
+  const files =
+    [
+      ...(
+        event.target.files
+        || []
+      )
+    ];
+
+  if (!files.length) {
+    return;
+  }
+
+  pendingSingleFiles = [];
+  pendingFolderReplace = files;
+  clearPendingFileInputs();
+  refreshProtocolFolderPreview();
+
+  if (window.adminUnsavedGuard) {
+    window.adminUnsavedGuard.markDirty();
+  }
 
 }
 
@@ -206,7 +219,11 @@ async function loadProtocolEdit() {
   fillMeetingLabelOptions();
 
   if (!editId) {
+
+    await refreshProtocolFolderPreview();
+
     return;
+
   }
 
   document
@@ -253,29 +270,17 @@ async function loadProtocolEdit() {
   existingAttachments =
     normalizeProtocolAttachments(data.attachments)
       .map((item) => ({
-        path: item.path,
-        pendingFile: null
+        path: item.path
       }));
 
-  const currentFile =
-    document.getElementById('currentProtocolFile');
+  storedFolderPaths =
+    await listProtocolDocumentFiles(editId);
 
-  if (currentFile) {
-
-    currentFile.innerHTML =
-      existingProtocolFilePath
-        ? `<p class="admin-hint">Aktuelle Protokoll-Datei: ${escapeAdminHtml(getProtocolFileLabel(existingProtocolFilePath))}</p>`
-        : '';
-
-  }
-
-  renderAttachmentRows();
+  await refreshProtocolFolderPreview();
 
 }
 
 async function saveProtocolEdit() {
-
-  syncAttachmentPendingFiles();
 
   const meetingDate =
     document
@@ -305,91 +310,44 @@ async function saveProtocolEdit() {
       .getElementById('content')
       .value;
 
-  const protocolFile =
-    document
-      .getElementById('protocolFile')
-      ?.files[0];
+  const hasFolderReplace =
+    Boolean(pendingFolderReplace?.length);
 
-  let protocolPdfPath =
-    existingProtocolFilePath;
+  const hasPendingFiles =
+    pendingSingleFiles.length > 0;
 
-  if (protocolFile) {
+  const hasFileChanges =
+    hasFolderReplace
+    || hasPendingFiles;
 
-    try {
-
-      protocolPdfPath =
-        await uploadProtocolFile(protocolFile);
-
-    } catch (error) {
-
-      console.error(error);
-
-      alert('Protokoll-Datei konnte nicht hochgeladen werden.');
-
-      return;
-
-    }
-
-  }
-
-  const nextAttachments = [];
-
-  for (
-    let index = 0;
-    index < existingAttachments.length;
-    index += 1
-  ) {
-
-    const existing =
-      existingAttachments[index]
-      || { path: '', pendingFile: null };
-
-    const file =
-      existing.pendingFile
-      || null;
-
-    let path =
-      existing.path || '';
-
-    if (file) {
-
-      try {
-
-        path =
-          await uploadProtocolFile(file);
-
-      } catch (error) {
-
-        console.error(error);
-
-        alert('Anhang konnte nicht hochgeladen werden.');
-
-        return;
-
-      }
-
-    }
-
-    if (path) {
-      nextAttachments.push({ path });
-    }
-
-  }
+  let savedId =
+    editId;
 
   const payload = {
     meeting_date: meetingDate,
     meeting_label: meetingLabel,
     scope,
     content,
-    protocol_pdf_path: protocolPdfPath,
-    attachments: nextAttachments,
     updated_at: new Date().toISOString()
   };
 
-  let savedId =
-    editId;
-
   if (editId) {
+
+    if (hasFolderReplace) {
+
+      payload.protocol_pdf_path = null;
+      payload.attachments = [];
+
+    } else {
+
+      payload.protocol_pdf_path =
+        existingProtocolFilePath;
+      payload.attachments =
+        existingAttachments.map((item) => ({
+          path: item.path
+        }));
+
+    }
 
     const { error } =
       await window.supabaseClient
@@ -408,6 +366,9 @@ async function saveProtocolEdit() {
     }
 
   } else {
+
+    payload.protocol_pdf_path = null;
+    payload.attachments = [];
 
     const { data, error } =
       await window.supabaseClient
@@ -431,6 +392,46 @@ async function saveProtocolEdit() {
 
   }
 
+  if (hasFileChanges) {
+
+    try {
+
+      if (hasFolderReplace) {
+
+        await deleteProtocolLegacyStorage({
+          id: savedId,
+          protocol_pdf_path:
+            existingProtocolFilePath,
+          attachments:
+            existingAttachments
+        });
+
+        await uploadProtocolFolderReplace(
+          savedId,
+          pendingFolderReplace
+        );
+
+      } else if (hasPendingFiles) {
+
+        await uploadProtocolFilesToFolder(
+          savedId,
+          pendingSingleFiles
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert('Dateien konnten nicht hochgeladen werden.');
+
+      return;
+
+    }
+
+  }
+
   if (window.adminUnsavedGuard) {
     window.adminUnsavedGuard.markClean();
   }
@@ -441,8 +442,18 @@ async function saveProtocolEdit() {
 }
 
 document
-  .getElementById('add-attachment')
-  ?.addEventListener('click', addAttachmentRow);
+  .getElementById('protocol-add-file')
+  ?.addEventListener(
+    'change',
+    onProtocolSingleFilesSelected
+  );
+
+document
+  .getElementById('protocol-add-folder')
+  ?.addEventListener(
+    'change',
+    onProtocolFolderSelected
+  );
 
 document
   .getElementById('save-protocol')

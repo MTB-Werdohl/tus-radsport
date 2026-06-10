@@ -22,7 +22,10 @@ comment on column public.board_documents.scope is
   'abteilung = Radsportabteilung; hauptverein = TuS / Beirat.';
 
 comment on column public.board_documents.attachments is
-  'JSON-Array: [{ "path": "protocols/..." }] — Anzeigename aus Dateiname.';
+  'Legacy: [{ "path": "protocols/..." }]. Neue Dateien liegen unter protocols/{id}/ im Storage.';
+
+comment on column public.board_documents.protocol_pdf_path is
+  'Legacy: Einzelpfad. Neue Uploads nutzen den Ordner protocols/{id}/.';
 
 create index if not exists board_documents_meeting_date_idx
   on public.board_documents (meeting_date desc);

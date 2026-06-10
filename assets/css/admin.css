@@ -901,36 +901,73 @@ h3 {
   opacity: 0.92;
 }
 
-.admin-protocol-attachments {
+.admin-protocol-files {
   margin-top: 24px;
+  display: grid;
+  gap: 16px;
 }
 
-.admin-protocol-attachments h2 {
-  margin: 0 0 12px;
+.admin-protocol-files h2 {
+  margin: 0;
   font-size: 1.1rem;
 }
 
-.admin-protocol-attachment-row {
-  display: grid;
-  gap: 12px;
-  margin-bottom: 16px;
+.admin-protocol-folder-pending {
+  margin: 0;
+  color: #f0d090;
+}
+
+.admin-protocol-folder-tree {
   padding: 16px;
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.06);
 }
 
-.admin-protocol-file-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 24px;
+.admin-protocol-folder-root-label {
+  margin: 0 0 12px;
+  font-weight: 600;
 }
 
-.admin-protocol-file-button {
+.admin-protocol-folder-tree-body {
+  display: grid;
+  gap: 6px;
+}
+
+.admin-protocol-folder-dir {
+  margin-left: 0;
+}
+
+.admin-protocol-folder-dir .admin-protocol-folder-dir {
+  margin-left: 16px;
+}
+
+.admin-protocol-folder-dir-label {
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+}
+
+.admin-protocol-folder-dir-label::-webkit-details-marker {
+  display: none;
+}
+
+.admin-protocol-folder-dir-children {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 8px 12px;
+  padding-left: 12px;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.admin-protocol-folder-file-row {
+  margin-left: 4px;
+}
+
+.admin-protocol-folder-file {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: 8px 12px;
   border-radius: 8px;
   background: rgba(46, 139, 87, 0.85);
   color: #fff;
@@ -938,13 +975,23 @@ h3 {
   font-weight: 600;
 }
 
-.admin-protocol-file-button:hover {
+.admin-protocol-folder-file:hover {
   background: rgba(46, 139, 87, 1);
 }
 
-.admin-protocol-file-button--missing {
+.admin-protocol-folder-file--pending {
+  background: rgba(255, 255, 255, 0.12);
+  color: inherit;
+  font-weight: 500;
+}
+
+.admin-protocol-folder-file--missing {
   background: rgba(160, 60, 60, 0.85);
   cursor: not-allowed;
+}
+
+.admin-protocol-file-buttons {
+  margin-bottom: 24px;
 }
 
 .admin-protocol-view .admin-draft-preview__body {
