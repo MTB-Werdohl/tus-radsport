@@ -37,8 +37,23 @@ async function loadEvent() {
       member
     );
 
-  if (!event)
+  if (!event) {
+
+    await handleContentUnavailable({
+      kind: 'event',
+      slug,
+      member,
+      containerId: 'event',
+      backUrl:
+        typeof getCalendarUrl === 'function'
+          ? getCalendarUrl()
+          : '/kalender/',
+      backLabel: '← Zurück zum Kalender'
+    });
+
     return;
+
+  }
 
   if (
     typeof getCalendarViewMonth === 'function'

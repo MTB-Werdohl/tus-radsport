@@ -1,0 +1,338 @@
+function canViewerAccessVisibility(
+  visibility,
+  member
+) {
+
+  const normalized =
+    normalizeContentVisibility(
+      visibility
+    );
+
+  if (
+    normalized === CONTENT_VISIBILITY.public
+  ) {
+    return true;
+  }
+
+  if (
+    normalized === CONTENT_VISIBILITY.members
+  ) {
+
+    return (
+      typeof isClubMember === 'function'
+      && isClubMember(member)
+    );
+
+  }
+
+  if (
+    normalized === CONTENT_VISIBILITY.draft
+  ) {
+    return viewerIncludesDrafts(member);
+  }
+
+  return true;
+
+}
+
+async function resolveContentSlug(
+  kind,
+  slug
+) {
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'resolve_content_slug',
+      {
+        p_kind: kind,
+        p_slug: slug
+      }
+    );
+
+  if (error) {
+
+    console.error(error);
+
+    return null;
+
+  }
+
+  return data;
+
+}
+
+function getContentAccessTexts(
+  kind,
+  visibility,
+  member,
+  options = {}
+) {
+
+  const normalized =
+    normalizeContentVisibility(
+      visibility
+    );
+
+  const kindLabel =
+    kind === 'news'
+      ? 'Beitrag'
+      : 'Termin';
+
+  if (
+    options.fallback
+    || normalized === CONTENT_VISIBILITY.members
+  ) {
+
+    const loggedIn =
+      !!member?.id;
+
+    const clubMember =
+      typeof isClubMember === 'function'
+      && isClubMember(member);
+
+    let hint =
+      'Bitte melden Sie sich als Vereinsmitglied an — Login oben rechts unter „Mitglieder“.';
+
+    if (
+      loggedIn
+      && !clubMember
+    ) {
+
+      hint =
+        'Ihr Konto hat keinen Zugriff auf interne Inhalte. Vereinsmitglieder melden sich mit der hinterlegten Vereins-E-Mail an.';
+
+    }
+
+    return {
+      title:
+        '🔒 Nur für Mitglieder',
+      message:
+        'Sie sind hier richtig, aber aufgrund fehlender Berechtigung wird der Inhalt nicht angezeigt.',
+      hint
+    };
+
+  }
+
+  if (
+    normalized === CONTENT_VISIBILITY.draft
+  ) {
+
+    return {
+      title:
+        '📝 Noch nicht veröffentlicht',
+      message:
+        `Dieser ${kindLabel} ist noch nicht veröffentlicht.`,
+      hint:
+        'Der Inhalt ist derzeit nur für den Vorstand sichtbar.'
+    };
+
+  }
+
+  return {
+    title:
+      `${kindLabel} nicht verfügbar`,
+    message:
+      'Dieser Inhalt kann derzeit nicht angezeigt werden.',
+    hint: ''
+  };
+
+}
+
+function renderContentAccessDenied(
+  options
+) {
+
+  const {
+    containerId,
+    kind,
+    visibility,
+    member,
+    backUrl,
+    backLabel,
+    fallback
+  } = options;
+
+  const wrapper =
+    document.getElementById(
+      containerId
+    );
+
+  if (!wrapper) {
+    return;
+  }
+
+  const texts =
+    getContentAccessTexts(
+      kind,
+      visibility,
+      member,
+      { fallback }
+    );
+
+  document.title =
+    `${texts.title} · MTB Werdohl`;
+
+  wrapper.innerHTML = `
+
+<div class="event-page content-access-message">
+
+<h1>${texts.title}</h1>
+
+<p class="content-access-lead">
+${texts.message}
+</p>
+
+${
+  texts.hint
+    ? `
+<p class="content-access-hint">
+${texts.hint}
+</p>
+`
+    : ''
+}
+
+<div class="event-back">
+
+<a href="${backUrl}">
+
+${backLabel}
+
+</a>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+function renderContentNotFound(
+  options
+) {
+
+  const {
+    containerId,
+    kind,
+    backUrl,
+    backLabel
+  } = options;
+
+  const wrapper =
+    document.getElementById(
+      containerId
+    );
+
+  if (!wrapper) {
+    return;
+  }
+
+  const message =
+    kind === 'news'
+      ? 'Dieser Beitrag wurde nicht gefunden.'
+      : 'Dieser Termin wurde nicht gefunden.';
+
+  document.title =
+    `Nicht gefunden · MTB Werdohl`;
+
+  wrapper.innerHTML = `
+
+<div class="event-page content-access-message">
+
+<h1>Nicht gefunden</h1>
+
+<p class="content-access-lead">
+${message}
+</p>
+
+<div class="event-back">
+
+<a href="${backUrl}">
+
+${backLabel}
+
+</a>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+async function handleContentUnavailable(
+  options
+) {
+
+  const {
+    kind,
+    slug,
+    member,
+    containerId,
+    backUrl,
+    backLabel
+  } = options;
+
+  const meta =
+    await resolveContentSlug(
+      kind,
+      slug
+    );
+
+  if (meta?.found) {
+
+    const visibility =
+      meta.sichtbarkeit;
+
+    if (
+      !canViewerAccessVisibility(
+        visibility,
+        member
+      )
+    ) {
+
+      renderContentAccessDenied({
+        containerId,
+        kind,
+        visibility,
+        member,
+        backUrl,
+        backLabel
+      });
+
+      return;
+
+    }
+
+  }
+
+  if (
+    meta
+    && !meta.found
+  ) {
+
+    renderContentNotFound({
+      containerId,
+      kind,
+      backUrl,
+      backLabel
+    });
+
+    return;
+
+  }
+
+  renderContentAccessDenied({
+    containerId,
+    kind,
+    visibility:
+      CONTENT_VISIBILITY.members,
+    member,
+    backUrl,
+    backLabel,
+    fallback: true
+  });
+
+}

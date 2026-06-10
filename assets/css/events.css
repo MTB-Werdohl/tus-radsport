@@ -82,6 +82,27 @@
   text-decoration: underline;
 }
 
+.content-access-message {
+  color: #ffffff;
+}
+
+.content-access-message h1 {
+  color: #ffffff;
+  margin-bottom: 1rem;
+}
+
+.content-access-lead {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin: 0 0 1rem;
+}
+
+.content-access-hint {
+  line-height: 1.6;
+  margin: 0 0 1.5rem;
+  opacity: 0.88;
+}
+
 .share-button{
 
   display:flex;

@@ -41,7 +41,18 @@ await fetchNewsBySlug(
 );
 
 if(!data){
+
+await handleContentUnavailable({
+  kind: 'news',
+  slug,
+  member,
+  containerId: 'news',
+  backUrl: '/news/',
+  backLabel: '← Zurück zur Newsübersicht'
+});
+
 return;
+
 }
 
 document.title=
