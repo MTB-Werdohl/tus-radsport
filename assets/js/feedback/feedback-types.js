@@ -1,3 +1,6 @@
+const FEEDBACK_POLL_FREETEXT_ONLY =
+  '[]';
+
 function slugifyFeedbackOptionId(label) {
 
   return String(label || '')
@@ -17,46 +20,126 @@ function normalizeFeedbackPollConfig(config) {
   const rawOptions =
     config?.options;
 
-  if (!Array.isArray(rawOptions)) {
-    return { options: [] };
+  let options = [];
+
+  if (Array.isArray(rawOptions)) {
+
+    options =
+      rawOptions
+        .map((option) => {
+
+          if (typeof option === 'string') {
+            const id =
+              slugifyFeedbackOptionId(option);
+
+            return id
+              ? { id, label: option }
+              : null;
+
+          }
+
+          const id =
+            String(option?.id || '')
+              .trim();
+
+          const label =
+            String(option?.label || '')
+              .trim();
+
+          if (!id || !label) {
+            return null;
+          }
+
+          return { id, label };
+
+        })
+        .filter(Boolean);
+
   }
 
-  const options =
-    rawOptions
-      .map((option) => {
+  const freeTextLabel =
+    String(config?.freeTextLabel || '')
+      .trim()
+      || 'Freitext';
 
-        if (typeof option === 'string') {
-          const id =
-            slugifyFeedbackOptionId(option);
-
-          return id
-            ? { id, label: option }
-            : null;
-
-        }
-
-        const id =
-          String(option?.id || '')
-            .trim();
-
-        const label =
-          String(option?.label || '')
-            .trim();
-
-        if (!id || !label) {
-          return null;
-        }
-
-        return { id, label };
-
-      })
-      .filter(Boolean);
-
-  return { options };
+  return {
+    options,
+    multiple: config?.multiple === true,
+    allowFreeText: config?.allowFreeText === true,
+    freeTextLabel
+  };
 
 }
 
-function getFeedbackPollOptionLabel(module, optionId) {
+function parseFeedbackPollAnswer(answer) {
+
+  const value =
+    String(answer || '')
+      .trim();
+
+  if (!value) {
+    return [];
+  }
+
+  if (value === FEEDBACK_POLL_FREETEXT_ONLY) {
+    return [];
+  }
+
+  if (value.startsWith('[')) {
+
+    try {
+
+      const parsed =
+        JSON.parse(value);
+
+      if (Array.isArray(parsed)) {
+        return parsed
+          .map((item) =>
+            String(item || '').trim()
+          )
+          .filter(Boolean);
+      }
+
+    } catch (error) {
+
+      /* ignore invalid JSON */
+
+    }
+
+  }
+
+  return [value];
+
+}
+
+function serializeFeedbackPollAnswer(
+  selectedIds,
+  multiple
+) {
+
+  const ids =
+    (selectedIds || [])
+      .map((item) =>
+        String(item || '').trim()
+      )
+      .filter(Boolean);
+
+  if (!ids.length) {
+    return FEEDBACK_POLL_FREETEXT_ONLY;
+  }
+
+  if (multiple) {
+    return JSON.stringify(ids);
+  }
+
+  return ids[0];
+
+}
+
+function getFeedbackPollOptionLabel(
+  module,
+  optionId
+) {
 
   const config =
     normalizeFeedbackPollConfig(
@@ -73,6 +156,36 @@ function getFeedbackPollOptionLabel(module, optionId) {
 
 }
 
+function getFeedbackEntityFeedbackType(
+  entityType
+) {
+
+  if (
+    entityType
+    === window.siteConfig.feedback.entityTypes.news
+  ) {
+    return window.siteConfig.feedback.types.poll;
+  }
+
+  return window.siteConfig.feedback.types.yesMaybe;
+
+}
+
+function getDefaultFeedbackQuestion(
+  entityType
+) {
+
+  if (
+    entityType
+    === window.siteConfig.feedback.entityTypes.event
+  ) {
+    return 'Bist du dabei?';
+  }
+
+  return '';
+
+}
+
 function validateFeedbackAnswer(
   module,
   answer,
@@ -86,36 +199,19 @@ function validateFeedbackAnswer(
     String(answer || '')
       .trim();
 
-  if (!value) {
-    return 'Bitte eine Antwort wählen.';
-  }
-
   if (
     type
     === window.siteConfig.feedback.types.yesMaybe
+    || type === 'yes_no_comment'
   ) {
+
+    if (!value) {
+      return 'Bitte eine Antwort wählen.';
+    }
 
     const allowed = [
       window.siteConfig.feedback.answers.yes,
       window.siteConfig.feedback.answers.maybe
-    ];
-
-    if (!allowed.includes(value)) {
-      return 'Ungültige Antwort.';
-    }
-
-    return null;
-
-  }
-
-  if (
-    type
-    === window.siteConfig.feedback.types.yesNoComment
-  ) {
-
-    const allowed = [
-      window.siteConfig.feedback.answers.yes,
-      window.siteConfig.feedback.answers.no
     ];
 
     if (!allowed.includes(value)) {
@@ -136,14 +232,43 @@ function validateFeedbackAnswer(
         module.config
       );
 
-    const valid =
-      config.options.some(
-        (option) =>
-          option.id === value
+    const selected =
+      parseFeedbackPollAnswer(value);
+
+    const freeText =
+      String(comment || '')
+        .trim();
+
+    const validSelections =
+      selected.filter((id) =>
+        config.options.some(
+          (option) =>
+            option.id === id
+        )
       );
 
-    if (!valid) {
+    if (
+      !validSelections.length
+      && !(
+        config.allowFreeText
+        && freeText
+      )
+    ) {
+      return 'Bitte mindestens eine Antwort wählen oder Freitext ausfüllen.';
+    }
+
+    if (
+      validSelections.length
+      !== selected.length
+    ) {
       return 'Ungültige Auswahl.';
+    }
+
+    if (
+      !config.multiple
+      && validSelections.length > 1
+    ) {
+      return 'Bitte nur eine Antwort wählen.';
     }
 
     return null;
@@ -172,11 +297,40 @@ function formatFeedbackAnswerLabel(
     === window.siteConfig.feedback.types.poll
   ) {
 
-    return getFeedbackPollOptionLabel(
-      module,
-      value
-    )
-      || '(Option entfernt)';
+    if (
+      value === FEEDBACK_POLL_FREETEXT_ONLY
+    ) {
+      return 'Freitext';
+    }
+
+    const labels =
+      parseFeedbackPollAnswer(value)
+        .map((id) =>
+          getFeedbackPollOptionLabel(
+            module,
+            id
+          )
+          || '(Option entfernt)'
+        );
+
+    if (!labels.length) {
+      return '—';
+    }
+
+    return labels.join(', ');
+
+  }
+
+  if (module?.type === 'yes_no_comment') {
+
+    const legacyLabels = {
+      [window.siteConfig.feedback.answers.yes]:
+        'Ja',
+      [window.siteConfig.feedback.answers.no]:
+        'Nein (veraltet)'
+    };
+
+    return legacyLabels[value] || value;
 
   }
 
@@ -184,9 +338,7 @@ function formatFeedbackAnswerLabel(
     [window.siteConfig.feedback.answers.yes]:
       'Ja',
     [window.siteConfig.feedback.answers.maybe]:
-      'Vielleicht',
-    [window.siteConfig.feedback.answers.no]:
-      'Nein'
+      'Vielleicht'
   };
 
   return labels[value] || value;
@@ -197,11 +349,11 @@ function getFeedbackTypeLabel(type) {
 
   const labels = {
     [window.siteConfig.feedback.types.yesMaybe]:
-      'Ja / Vielleicht',
-    [window.siteConfig.feedback.types.yesNoComment]:
-      'Ja / Nein + Kommentar',
+      'Bist du dabei?',
     [window.siteConfig.feedback.types.poll]:
-      'Umfrage'
+      'Umfrage',
+    yes_no_comment:
+      'Veraltet (Ja/Nein)'
   };
 
   return labels[type] || type;
@@ -237,11 +389,14 @@ function buildFeedbackSummary(
 
     rows.forEach((row) => {
 
-      const key =
-        row.answer;
+      parseFeedbackPollAnswer(
+        row.answer
+      ).forEach((key) => {
 
-      summary.counts[key] =
-        (summary.counts[key] || 0) + 1;
+        summary.counts[key] =
+          (summary.counts[key] || 0) + 1;
+
+      });
 
     });
 
@@ -269,7 +424,7 @@ function validateFeedbackPollConfig(config) {
     normalizeFeedbackPollConfig(config);
 
   if (normalized.options.length < 2) {
-    return 'Mindestens zwei Poll-Optionen angeben.';
+    return 'Mindestens zwei Umfrage-Optionen angeben.';
   }
 
   const ids =

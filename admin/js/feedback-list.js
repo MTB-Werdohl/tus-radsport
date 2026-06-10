@@ -54,21 +54,12 @@ function renderFeedbackSummaryLines(
   if (
     module.type
     === window.siteConfig.feedback.types.yesMaybe
+    || module.type === 'yes_no_comment'
   ) {
 
     keys = [
       window.siteConfig.feedback.answers.yes,
       window.siteConfig.feedback.answers.maybe
-    ];
-
-  } else if (
-    module.type
-    === window.siteConfig.feedback.types.yesNoComment
-  ) {
-
-    keys = [
-      window.siteConfig.feedback.answers.yes,
-      window.siteConfig.feedback.answers.no
     ];
 
   } else if (

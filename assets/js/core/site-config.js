@@ -36,7 +36,6 @@ window.siteConfig = {
     },
     types: {
       yesMaybe: 'yes_maybe',
-      yesNoComment: 'yes_no_comment',
       poll: 'poll'
     },
     answers: {

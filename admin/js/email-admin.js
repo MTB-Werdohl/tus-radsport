@@ -79,10 +79,6 @@ function isRegisteredEventAnswer(
     return value === 'yes';
   }
 
-  if (moduleType === 'yes_no_comment') {
-    return value === 'yes';
-  }
-
   if (moduleType === 'poll') {
     return !!value;
   }

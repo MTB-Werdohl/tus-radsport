@@ -4,6 +4,32 @@ let feedbackAdminState = {
   entityId: null
 };
 
+function isFeedbackAdminNewsEntity() {
+
+  return (
+    feedbackAdminState.entityType
+    === window.siteConfig.feedback.entityTypes.news
+  );
+
+}
+
+function isFeedbackAdminEventEntity() {
+
+  return (
+    feedbackAdminState.entityType
+    === window.siteConfig.feedback.entityTypes.event
+  );
+
+}
+
+function getFeedbackAdminForcedType() {
+
+  return getFeedbackEntityFeedbackType(
+    feedbackAdminState.entityType
+  );
+
+}
+
 function renderFeedbackAdminPollOptions(options) {
 
   const list =
@@ -293,11 +319,6 @@ function toggleFeedbackAdminPollFields() {
       'feedback-admin-enabled'
     )?.checked;
 
-  const type =
-    document.getElementById(
-      'feedback-admin-type'
-    )?.value;
-
   const configWrap =
     document.getElementById(
       'feedback-admin-config'
@@ -316,8 +337,7 @@ function toggleFeedbackAdminPollFields() {
   pollWrap?.classList.toggle(
     'hidden',
     !enabled
-    || type
-      !== window.siteConfig.feedback.types.poll
+    || !isFeedbackAdminNewsEntity()
   );
 
   const publicVotingWrap =
@@ -371,7 +391,82 @@ function readFeedbackAdminPollConfig() {
 
   });
 
-  return { options };
+  const config = {
+    options
+  };
+
+  if (isFeedbackAdminNewsEntity()) {
+
+    config.multiple =
+      document.getElementById(
+        'feedback-admin-poll-multiple'
+      )?.checked === true;
+
+    config.allowFreeText =
+      document.getElementById(
+        'feedback-admin-poll-freetext'
+      )?.checked === true;
+
+    const freeTextLabel =
+      document.getElementById(
+        'feedback-admin-poll-freetext-label'
+      )?.value
+        .trim();
+
+    if (freeTextLabel) {
+      config.freeTextLabel = freeTextLabel;
+    }
+
+  }
+
+  return config;
+
+}
+
+function fillFeedbackAdminPollSettings(config) {
+
+  const normalized =
+    normalizeFeedbackPollConfig(config);
+
+  const multipleEl =
+    document.getElementById(
+      'feedback-admin-poll-multiple'
+    );
+
+  const freeTextEl =
+    document.getElementById(
+      'feedback-admin-poll-freetext'
+    );
+
+  const freeTextLabelEl =
+    document.getElementById(
+      'feedback-admin-poll-freetext-label'
+    );
+
+  if (multipleEl) {
+    multipleEl.checked =
+      normalized.multiple === true;
+  }
+
+  if (freeTextEl) {
+    freeTextEl.checked =
+      normalized.allowFreeText === true;
+  }
+
+  if (freeTextLabelEl) {
+    freeTextLabelEl.value =
+      normalized.freeTextLabel || 'Freitext';
+  }
+
+  const freeTextLabelWrap =
+    document.getElementById(
+      'feedback-admin-poll-freetext-label-wrap'
+    );
+
+  freeTextLabelWrap?.classList.toggle(
+    'hidden',
+    !normalized.allowFreeText
+  );
 
 }
 
@@ -382,7 +477,7 @@ function fillFeedbackAdminForm(module) {
       'feedback-admin-enabled'
     );
 
-  const typeSelect =
+  const typeInput =
     document.getElementById(
       'feedback-admin-type'
     );
@@ -392,16 +487,21 @@ function fillFeedbackAdminForm(module) {
       'feedback-admin-question'
     );
 
-  if (!enabled || !typeSelect || !questionInput) {
+  if (!enabled || !typeInput || !questionInput) {
     return;
   }
+
+  const forcedType =
+    getFeedbackAdminForcedType();
 
   if (!module) {
 
     enabled.checked = false;
-    typeSelect.value =
-      window.siteConfig.feedback.types.yesMaybe;
-    questionInput.value = '';
+    typeInput.value = forcedType;
+    questionInput.value =
+      getDefaultFeedbackQuestion(
+        feedbackAdminState.entityType
+      );
 
     document
       .getElementById(
@@ -409,6 +509,7 @@ function fillFeedbackAdminForm(module) {
       ).checked = false;
 
     renderFeedbackAdminPollOptions();
+    fillFeedbackAdminPollSettings({});
     toggleFeedbackAdminPollFields();
     return;
 
@@ -416,8 +517,12 @@ function fillFeedbackAdminForm(module) {
 
   enabled.checked =
     module.enabled !== false;
-  typeSelect.value = module.type;
-  questionInput.value = module.question || '';
+  typeInput.value = forcedType;
+  questionInput.value =
+    module.question
+    || getDefaultFeedbackQuestion(
+      feedbackAdminState.entityType
+    );
 
   document
     .getElementById(
@@ -433,6 +538,8 @@ function fillFeedbackAdminForm(module) {
   renderFeedbackAdminPollOptions(
     config.options
   );
+
+  fillFeedbackAdminPollSettings(config);
 
   toggleFeedbackAdminPollFields();
 
@@ -500,10 +607,7 @@ async function saveFeedbackAdminForEntity(
       feedbackAdminState.module;
 
     const type =
-      document.getElementById(
-        'feedback-admin-type'
-      )?.value
-      || existing.type;
+      getFeedbackAdminForcedType();
 
     const question =
       document.getElementById(
@@ -511,7 +615,9 @@ async function saveFeedbackAdminForEntity(
       )?.value
         .trim()
       || existing.question
-      || '';
+      || getDefaultFeedbackQuestion(
+        entityType
+      );
 
     let config =
       existing.config || {};
@@ -566,15 +672,19 @@ async function saveFeedbackAdminForEntity(
   }
 
   const type =
-    document.getElementById(
-      'feedback-admin-type'
-    )?.value;
+    getFeedbackAdminForcedType();
 
-  const question =
+  const questionRaw =
     document.getElementById(
       'feedback-admin-question'
     )?.value
       .trim();
+
+  let question =
+    questionRaw
+    || getDefaultFeedbackQuestion(
+      entityType
+    );
 
   if (!question) {
 
@@ -660,8 +770,19 @@ function bindFeedbackAdminEvents() {
     ?.addEventListener('change', toggleFeedbackAdminPollFields);
 
   document
-    .getElementById('feedback-admin-type')
-    ?.addEventListener('change', toggleFeedbackAdminPollFields);
+    .getElementById('feedback-admin-poll-freetext')
+    ?.addEventListener('change', (event) => {
+
+      document
+        .getElementById(
+          'feedback-admin-poll-freetext-label-wrap'
+        )
+        ?.classList.toggle(
+          'hidden',
+          !event.target.checked
+        );
+
+    });
 
   document
     .getElementById('feedback-admin-add-option')
@@ -686,6 +807,20 @@ function mountFeedbackAdminForm(mountId) {
     return;
   }
 
+  const isNews =
+    isFeedbackAdminNewsEntity();
+
+  const isEvent =
+    isFeedbackAdminEventEntity();
+
+  const forcedType =
+    getFeedbackAdminForcedType();
+
+  const typeHint =
+    isEvent
+      ? 'Termin: Ja / Vielleicht — Frage standardmäßig „Bist du dabei?“'
+      : 'News: Umfrage mit wählbaren Antworten';
+
   mount.innerHTML = `
 
 <div class="admin-feedback-checkboxes">
@@ -702,8 +837,7 @@ function mountFeedbackAdminForm(mountId) {
   </label>
 
   <p class="admin-hint">
-    Teilnahme-Button auf der Termin- bzw. News-Seite — nur sichtbar,
-    wenn aktiviert.
+    ${typeHint}. Auf der Website nur sichtbar, wenn aktiviert.
   </p>
 
   <div id="feedback-admin-public-voting-wrap">
@@ -732,40 +866,76 @@ function mountFeedbackAdminForm(mountId) {
   id="feedback-admin-config"
   class="hidden admin-feedback-config">
 
-  <label class="admin-field">
-    Typ
-    <select id="feedback-admin-type">
-
-      <option value="yes_maybe">
-        Ja / Vielleicht
-      </option>
-
-      <option value="yes_no_comment">
-        Ja / Nein + Kommentar
-      </option>
-
-      <option value="poll">
-        Umfrage
-      </option>
-
-    </select>
-  </label>
+  <input
+    id="feedback-admin-type"
+    type="hidden"
+    value="${forcedType}">
 
   <label class="admin-field">
     Frage
     <input
       id="feedback-admin-question"
       type="text"
-      placeholder="z. B. Wer fährt mit?">
+      value="${escapeAdminHtml(
+        getDefaultFeedbackQuestion(
+          feedbackAdminState.entityType
+        )
+      )}"
+      placeholder="${
+        isEvent
+          ? 'Bist du dabei?'
+          : 'z. B. Welches Trikot-Design gefällt dir?'
+      }">
   </label>
 
   <div
     id="feedback-admin-poll-wrap"
-    class="hidden">
+    class="${isNews ? '' : 'hidden'}">
 
     <p class="admin-hint">
-      Antworten, die Mitglieder auf der Website sehen. Die interne ID wird automatisch erzeugt.
+      Antwortoptionen für die Umfrage. Die interne ID wird automatisch erzeugt.
     </p>
+
+    <div class="admin-feedback-poll-settings">
+
+      <label class="admin-field admin-field--inline">
+
+        <input
+          id="feedback-admin-poll-multiple"
+          type="checkbox"
+          class="checkbox">
+
+        Mehrfachauswahl erlauben
+
+      </label>
+
+      <label class="admin-field admin-field--inline">
+
+        <input
+          id="feedback-admin-poll-freetext"
+          type="checkbox"
+          class="checkbox">
+
+        Freitextantwort anbieten
+
+      </label>
+
+      <div
+        id="feedback-admin-poll-freetext-label-wrap"
+        class="hidden admin-field">
+
+        <label>
+          Bezeichnung Freitextfeld
+          <input
+            id="feedback-admin-poll-freetext-label"
+            type="text"
+            value="Freitext"
+            placeholder="Freitext">
+        </label>
+
+      </div>
+
+    </div>
 
     <div
       id="feedback-admin-options"

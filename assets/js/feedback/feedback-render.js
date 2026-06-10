@@ -133,73 +133,6 @@ Vielleicht
 
 }
 
-function renderFeedbackYesNoComment(
-  module,
-  ownAnswer
-) {
-
-  const selected =
-    ownAnswer?.answer || '';
-
-  const yes =
-    window.siteConfig.feedback.answers.yes;
-
-  const no =
-    window.siteConfig.feedback.answers.no;
-
-  const comment =
-    ownAnswer?.comment || '';
-
-  return `
-<div class="feedback-actions">
-
-<button
-  type="button"
-  class="feedback-btn${
-    selected === yes ? ' is-active' : ''
-  }"
-  data-feedback-answer="${yes}">
-
-Ja
-
-</button>
-
-<button
-  type="button"
-  class="feedback-btn${
-    selected === no ? ' is-active' : ''
-  }"
-  data-feedback-answer="${no}">
-
-Nein
-
-</button>
-
-</div>
-
-<label class="feedback-comment-label">
-
-Kommentar (optional)
-
-<textarea
-  class="feedback-comment"
-  rows="3"
-  maxlength="500"
-  placeholder="Optionaler Kommentar">${escapeFeedbackHtml(comment)}</textarea>
-
-</label>
-
-<button
-  type="button"
-  class="feedback-save">
-
-Speichern
-
-</button>
-`;
-
-}
-
 function renderFeedbackPoll(
   module,
   ownAnswer
@@ -211,7 +144,19 @@ function renderFeedbackPoll(
     );
 
   const selected =
-    ownAnswer?.answer || '';
+    parseFeedbackPollAnswer(
+      ownAnswer?.answer
+    );
+
+  const inputType =
+    config.multiple
+      ? 'checkbox'
+      : 'radio';
+
+  const inputName =
+    config.multiple
+      ? 'feedback-poll-option'
+      : 'feedback-poll';
 
   const optionsHtml =
     config.options
@@ -220,10 +165,10 @@ function renderFeedbackPoll(
 <label class="feedback-poll-option">
 
 <input
-  type="radio"
-  name="feedback-poll"
+  type="${inputType}"
+  name="${inputName}"
   value="${escapeFeedbackHtml(option.id)}"
-  ${selected === option.id ? 'checked' : ''}
+  ${selected.includes(option.id) ? 'checked' : ''}
 >
 
 <span>${escapeFeedbackHtml(option.label)}</span>
@@ -233,12 +178,33 @@ function renderFeedbackPoll(
 `)
       .join('');
 
+  const freeTextHtml =
+    config.allowFreeText
+      ? `
+<label class="feedback-comment-label">
+
+${escapeFeedbackHtml(config.freeTextLabel)}
+
+<textarea
+  class="feedback-comment feedback-freetext"
+  rows="3"
+  maxlength="500"
+  placeholder="Optional">${escapeFeedbackHtml(
+    ownAnswer?.comment || ''
+  )}</textarea>
+
+</label>
+`
+      : '';
+
   return `
 <div class="feedback-poll">
 
 ${optionsHtml}
 
 </div>
+
+${freeTextHtml}
 
 <button
   type="button"
@@ -286,6 +252,19 @@ function shouldShowPublicGate(
 
 }
 
+function resolveFeedbackModuleType(module) {
+
+  if (
+    module?.type
+    === 'yes_no_comment'
+  ) {
+    return window.siteConfig.feedback.types.yesMaybe;
+  }
+
+  return module?.type;
+
+}
+
 function renderFeedbackModule(
   container,
   module,
@@ -322,7 +301,7 @@ function renderFeedbackModule(
     );
 
   const type =
-    module.type;
+    resolveFeedbackModuleType(module);
 
   let body = '';
 
@@ -335,17 +314,6 @@ function renderFeedbackModule(
 
       body =
         renderFeedbackYesMaybe(
-          module,
-          ownAnswer
-        );
-
-    } else if (
-      type
-      === window.siteConfig.feedback.types.yesNoComment
-    ) {
-
-      body =
-        renderFeedbackYesNoComment(
           module,
           ownAnswer
         );
@@ -428,6 +396,9 @@ function bindFeedbackModuleEvents(
     member?.id
       ? { memberId: member.id }
       : null;
+
+  const type =
+    resolveFeedbackModuleType(module);
 
   async function persistAnswer(
     answer,
@@ -512,7 +483,7 @@ function bindFeedbackModuleEvents(
         button.classList.add('is-active');
 
         if (
-          module.type
+          type
           === window.siteConfig.feedback.types.yesMaybe
         ) {
           await persistAnswer(answer, null);
@@ -526,40 +497,44 @@ function bindFeedbackModuleEvents(
     .querySelector('.feedback-save')
     ?.addEventListener('click', async () => {
 
-      let answer = null;
-      let comment = null;
-
       if (
-        module.type
-        === window.siteConfig.feedback.types.yesNoComment
+        type
+        !== window.siteConfig.feedback.types.poll
       ) {
-
-        answer =
-          container
-            .querySelector('[data-feedback-answer].is-active')
-            ?.dataset.feedbackAnswer
-          || null;
-
-        comment =
-          container
-            .querySelector('.feedback-comment')
-            ?.value
-          || null;
-
+        return;
       }
 
-      if (
-        module.type
-        === window.siteConfig.feedback.types.poll
-      ) {
+      const config =
+        normalizeFeedbackPollConfig(
+          module.config
+        );
 
-        answer =
-          container
-            .querySelector('input[name="feedback-poll"]:checked')
+      const inputName =
+        config.multiple
+          ? 'feedback-poll-option'
+          : 'feedback-poll';
+
+      const selected =
+        [
+          ...container.querySelectorAll(
+            `input[name="${inputName}"]:checked`
+          )
+        ].map((input) => input.value);
+
+      const comment =
+        config.allowFreeText
+          ? container
+            .querySelector('.feedback-freetext')
             ?.value
-          || null;
+            ?.trim()
+          || null
+          : null;
 
-      }
+      const answer =
+        serializeFeedbackPollAnswer(
+          selected,
+          config.multiple
+        );
 
       await persistAnswer(
         answer,

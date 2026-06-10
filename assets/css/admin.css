@@ -674,6 +674,13 @@ h3 {
   margin-bottom: 12px;
 }
 
+.admin-feedback-poll-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
 .admin-form-save {
   margin-top: 8px;
 }

@@ -65,6 +65,15 @@ function formatMemberVoteAnswerLine(
   answerLabel
 ) {
 
+  if (
+    module?.type
+    === window.siteConfig.feedback.types.poll
+  ) {
+
+    return `🗳️ ${answerLabel}`;
+
+  }
+
   const code =
     String(answerRow.answer || '')
       .trim();
@@ -76,11 +85,6 @@ function formatMemberVoteAnswerLine(
     === window.siteConfig.feedback.answers.yes
   ) {
     icon = '✅';
-  } else if (
-    code
-    === window.siteConfig.feedback.answers.no
-  ) {
-    icon = '❌';
   } else if (
     code
     === window.siteConfig.feedback.answers.maybe
@@ -267,7 +271,7 @@ function renderMemberVotesList(
 
         if (
           item.module.type
-          === window.siteConfig.feedback.types.yesNoComment
+          === window.siteConfig.feedback.types.poll
           && item.answerRow.comment
         ) {
           metaParts.push(
