@@ -124,7 +124,11 @@ event.content || ''
 
 <div class="event-back">
 
-<a href="/kalender/">
+<a href="${
+  typeof getCalendarUrl === 'function'
+    ? getCalendarUrl()
+    : '/kalender/'
+}">
 
 ← Zurück
 

@@ -17,6 +17,31 @@ document.addEventListener(
     let lastCalendarMonthStart =
       null;
 
+    const todayStart =
+      new Date();
+
+    todayStart.setHours(0, 0, 0, 0);
+
+    const savedMonthValue =
+      resolveCalendarViewMonth();
+
+    const savedMonthDate =
+      parseCalendarViewMonth(
+        savedMonthValue
+      );
+
+    const initialDate =
+      savedMonthDate
+      && savedMonthDate >= todayStart
+        ? savedMonthDate
+        : todayStart;
+
+    if (savedMonthDate) {
+      saveCalendarViewMonth(
+        initialDate
+      );
+    }
+
     const calendar=
 
       new FullCalendar.Calendar(
@@ -27,6 +52,8 @@ document.addEventListener(
 
           initialView:
             'dayGridMonth',
+
+          initialDate,
 
           locale:'de',
 
@@ -133,6 +160,10 @@ datesSet(info){
 
   lastCalendarMonthStart=
     currentMonthStart;
+
+  saveCalendarViewMonth(
+    currentMonthStart
+  );
 
   loadCards(
     start,

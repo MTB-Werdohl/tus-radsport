@@ -40,6 +40,18 @@ async function loadEvent() {
   if (!event)
     return;
 
+  if (
+    typeof getCalendarViewMonth === 'function'
+    && !getCalendarViewMonth()
+    && event.date
+  ) {
+
+    saveCalendarViewMonth(
+      new Date(event.date)
+    );
+
+  }
+
   renderEvent(
     event
   );
