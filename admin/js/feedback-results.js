@@ -442,26 +442,28 @@ async function loadFeedbackResults() {
   window.__feedbackResultsEntity =
     entity;
 
-  const answers =
-    await fetchFeedbackAnswersForModule(
-      module.id
-    );
+  try {
 
-  const summary =
-    buildFeedbackSummary(
-      module,
-      answers
-    );
-
-  document
-    .getElementById('feedback-results-title')
-    .textContent =
-      formatFeedbackResultsEntityTitle(
-        module,
-        entity
+    const answers =
+      await fetchFeedbackAnswersForModule(
+        module.id
       );
 
-  container.innerHTML = `
+    const summary =
+      buildFeedbackSummary(
+        module,
+        answers
+      );
+
+    document
+      .getElementById('feedback-results-title')
+      .textContent =
+        formatFeedbackResultsEntityTitle(
+          module,
+          entity
+        );
+
+    container.innerHTML = `
 
 ${renderFeedbackSummaryHtml(
   module,
@@ -497,16 +499,31 @@ ${renderFeedbackAnswersTable(
 
 `;
 
-  document
-    .getElementById('feedback-export-csv')
-    ?.addEventListener('click', () => {
+    document
+      .getElementById('feedback-export-csv')
+      ?.addEventListener('click', () => {
 
-      downloadFeedbackCsv(
-        module,
-        answers
-      );
+        downloadFeedbackCsv(
+          module,
+          answers
+        );
 
-    });
+      });
+
+  } catch (error) {
+
+    console.error(error);
+
+    container.innerHTML = `
+<p class="admin-hint admin-hint--error">
+  ${escapeAdminHtml(
+    error?.message
+    || 'Auswertung konnte nicht geladen werden.'
+  )}
+</p>
+    `;
+
+  }
 
 }
 

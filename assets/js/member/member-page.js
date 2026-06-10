@@ -1309,71 +1309,97 @@ async function loadMemberProfilePage() {
 
   renderMemberProfileLoading();
 
-  const member =
-    await ensureMemberSession({
-      strict: true
-    });
+  try {
 
-  if (!member) {
+    const member =
+      await ensureMemberSession({
+        strict: true
+      });
 
-    renderMemberProfileGuestLogin();
+    if (!member) {
 
-    return;
+      renderMemberProfileGuestLogin();
 
-  }
+      return;
 
-  if (
-    handleMemberReturnRedirect(member)
-  ) {
-    return;
-  }
+    }
 
-  document.title =
-    `Mein Profil · MTB Werdohl`;
+    if (
+      handleMemberReturnRedirect(member)
+    ) {
+      return;
+    }
 
-  showStravaReturnNotice();
+    document.title =
+      `Mein Profil · MTB Werdohl`;
 
-  if (
-    typeof isClubMember === 'function'
-    && isClubMember(member)
-  ) {
+    showStravaReturnNotice();
 
-    profileStravaState =
-      await fetchStravaProfileStatus();
+    if (
+      typeof isClubMember === 'function'
+      && isClubMember(member)
+    ) {
 
-    renderMemberProfile(
-      member,
-      {
-        stravaState: profileStravaState,
-        activeTab: profileActiveTab
+      profileStravaState =
+        await fetchStravaProfileStatus();
+
+      renderMemberProfile(
+        member,
+        {
+          stravaState: profileStravaState,
+          activeTab: profileActiveTab
+        }
+      );
+
+    } else {
+
+      renderMemberProfile(member);
+
+    }
+
+    bindMemberProfileEvents(member);
+
+    setupConsentInfoDialogs();
+
+    showLoginCallbackNotice(member);
+
+    if (
+      typeof isClubMember === 'function'
+      && isClubMember(member)
+    ) {
+      void maybePollInitialStravaSync(member);
+
+      if (profileActiveTab === 'aktivitaeten') {
+        void loadMemberActivitiesIfNeeded(true);
       }
-    );
 
-  } else {
+      if (profileActiveTab === 'abstimmungen') {
+        void loadMemberVotesIfNeeded(true);
+      }
 
-    renderMemberProfile(member);
-
-  }
-
-  bindMemberProfileEvents(member);
-
-  setupConsentInfoDialogs();
-
-  showLoginCallbackNotice(member);
-
-  if (
-    typeof isClubMember === 'function'
-    && isClubMember(member)
-  ) {
-    void maybePollInitialStravaSync(member);
-
-    if (profileActiveTab === 'aktivitaeten') {
-      void loadMemberActivitiesIfNeeded(true);
     }
 
-    if (profileActiveTab === 'abstimmungen') {
-      void loadMemberVotesIfNeeded(true);
+  } catch (error) {
+
+    console.error(error);
+
+    const container =
+      document.getElementById(
+        'member-profile'
+      );
+
+    if (!container) {
+      return;
     }
+
+    container.innerHTML = `
+<p class="member-strava-hint member-strava-hint--error">
+  ${escapeMemberHtml(
+    error?.message
+    || 'Profil konnte nicht geladen werden.'
+  )}
+</p>
+    `;
 
   }
 

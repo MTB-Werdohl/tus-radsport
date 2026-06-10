@@ -353,12 +353,25 @@ async function fetchFeedbackAnswersForModule(
   moduleId
 ) {
 
-  const { data, error } =
-    await window.supabaseClient
-      .from(
-        window.siteConfig.tables.feedbackAnswers
-      )
-      .select(`
+  const baseSelect = `
+        id,
+        answer,
+        comment,
+        created_at,
+        updated_at,
+        member_id,
+        members (
+          id,
+          vorname,
+          nachname,
+          email,
+          rolle,
+          anonymized_at,
+          einwilligung_kontakt
+        )
+      `;
+
+  const avatarSelect = `
         id,
         answer,
         comment,
@@ -376,9 +389,34 @@ async function fetchFeedbackAnswersForModule(
           avatar_storage_path,
           avatar_updated_at
         )
-      `)
+      `;
+
+  let { data, error } =
+    await window.supabaseClient
+      .from(
+        window.siteConfig.tables.feedbackAnswers
+      )
+      .select(avatarSelect)
       .eq('module_id', moduleId)
       .order('updated_at', { ascending: false });
+
+  if (
+    error
+    && /avatar_/i.test(
+      String(error.message || '')
+    )
+  ) {
+
+    ({ data, error } =
+      await window.supabaseClient
+        .from(
+          window.siteConfig.tables.feedbackAnswers
+        )
+        .select(baseSelect)
+        .eq('module_id', moduleId)
+        .order('updated_at', { ascending: false }));
+
+  }
 
   if (error) {
 

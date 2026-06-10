@@ -41,10 +41,20 @@ function renderActivityMemberAvatar(
     return '';
   }
 
-  return renderMemberAvatarHtml(
-    memberStubFromActivityEntry(entry),
-    sizeClass || 'member-avatar--md'
-  );
+  try {
+
+    return renderMemberAvatarHtml(
+      memberStubFromActivityEntry(entry),
+      sizeClass || 'member-avatar--md'
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    return '';
+
+  }
 
 }
 

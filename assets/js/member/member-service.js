@@ -7,6 +7,20 @@ const MEMBER_ROLE_MITGLIED =
 const MEMBER_ROLE_PUBLIC =
   'public';
 
+function escapeMemberHtml(value) {
+
+  if (value === null || value === undefined) {
+    return '';
+  }
+
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
+}
+
 function isVorstand(member) {
 
   if (!member?.rolle) {
