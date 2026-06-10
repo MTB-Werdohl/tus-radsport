@@ -148,6 +148,11 @@ function renderFeedbackPoll(
       ownAnswer?.answer
     );
 
+  const freeTextSelected =
+    selected.includes(
+      FEEDBACK_POLL_FREETEXT_OPTION_ID
+    );
+
   const inputType =
     config.multiple
       ? 'checkbox'
@@ -158,9 +163,50 @@ function renderFeedbackPoll(
       ? 'feedback-poll-option'
       : 'feedback-poll';
 
+  const options =
+    getFeedbackPollAllOptions(
+      module.config
+    );
+
   const optionsHtml =
-    config.options
-      .map((option) => `
+    options
+      .map((option) => {
+
+        const isFreeText =
+          option.id
+          === FEEDBACK_POLL_FREETEXT_OPTION_ID;
+
+        const isSelected =
+          selected.includes(option.id);
+
+        const freeTextInput =
+          isFreeText
+            ? `
+<div
+  class="feedback-freetext-wrap${
+    freeTextSelected ? '' : ' is-hidden'
+  }"
+  data-feedback-freetext-input>
+
+  <input
+    type="text"
+    class="feedback-freetext"
+    maxlength="500"
+    placeholder="Deine Antwort …"
+    value="${escapeFeedbackHtml(
+      ownAnswer?.comment || ''
+    )}">
+
+</div>
+`
+            : '';
+
+        return `
+<div class="feedback-poll-option-block${
+  isFreeText
+    ? ' feedback-poll-option-block--freetext'
+    : ''
+}">
 
 <label class="feedback-poll-option">
 
@@ -168,39 +214,21 @@ function renderFeedbackPoll(
   type="${inputType}"
   name="${inputName}"
   value="${escapeFeedbackHtml(option.id)}"
-  ${selected.includes(option.id) ? 'checked' : ''}
+  ${isSelected ? 'checked' : ''}
+  ${isFreeText ? 'data-feedback-freetext-option' : ''}
 >
 
 <span>${escapeFeedbackHtml(option.label)}</span>
 
 </label>
 
-`)
-      .join('');
-
-  const freeTextHtml =
-    config.allowFreeText
-      ? `
-<div class="feedback-freetext-wrap">
-
-  <label class="feedback-freetext-label">
-
-    ${escapeFeedbackHtml(config.freeTextLabel)}
-
-    <input
-      type="text"
-      class="feedback-freetext"
-      maxlength="500"
-      placeholder="Optional"
-      value="${escapeFeedbackHtml(
-        ownAnswer?.comment || ''
-      )}">
-
-  </label>
+${freeTextInput}
 
 </div>
-`
-      : '';
+`;
+
+      })
+      .join('');
 
   return `
 <div class="feedback-poll">
@@ -208,8 +236,6 @@ function renderFeedbackPoll(
 ${optionsHtml}
 
 </div>
-
-${freeTextHtml}
 
 <button
   type="button"
@@ -219,6 +245,42 @@ Speichern
 
 </button>
 `;
+
+}
+
+function syncFeedbackFreeTextInputVisibility(
+  container
+) {
+
+  const freeTextSelected =
+    !!container.querySelector(
+      '[data-feedback-freetext-option]:checked'
+    );
+
+  const wrap =
+    container.querySelector(
+      '[data-feedback-freetext-input]'
+    );
+
+  if (!wrap) {
+    return;
+  }
+
+  wrap.classList.toggle(
+    'is-hidden',
+    !freeTextSelected
+  );
+
+  if (!freeTextSelected) {
+
+    const input =
+      wrap.querySelector('.feedback-freetext');
+
+    if (input) {
+      input.value = '';
+    }
+
+  }
 
 }
 
@@ -546,8 +608,13 @@ function bindFeedbackModuleEvents(
           )
         ].map((input) => input.value);
 
+      const freeTextSelected =
+        selected.includes(
+          FEEDBACK_POLL_FREETEXT_OPTION_ID
+        );
+
       const comment =
-        config.allowFreeText
+        freeTextSelected
           ? container
             .querySelector('.feedback-freetext')
             ?.value
@@ -567,5 +634,38 @@ function bindFeedbackModuleEvents(
       );
 
     });
+
+  if (
+    type
+    === window.siteConfig.feedback.types.poll
+  ) {
+
+    syncFeedbackFreeTextInputVisibility(
+      container
+    );
+
+    container
+      .querySelectorAll(
+        `[name="${
+          normalizeFeedbackPollConfig(
+            module.config
+          ).multiple
+            ? 'feedback-poll-option'
+            : 'feedback-poll'
+        }"]`
+      )
+      .forEach((input) => {
+
+        input.addEventListener('change', () => {
+
+          syncFeedbackFreeTextInputVisibility(
+            container
+          );
+
+        });
+
+      });
+
+  }
 
 }

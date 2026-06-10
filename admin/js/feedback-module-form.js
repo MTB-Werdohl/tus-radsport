@@ -916,7 +916,7 @@ function mountFeedbackAdminForm(mountId) {
           type="checkbox"
           class="checkbox">
 
-        Freitextantwort anbieten
+        Freitext als zusätzliche Auswahl (mit Eingabefeld nach Auswahl)
 
       </label>
 
@@ -925,13 +925,17 @@ function mountFeedbackAdminForm(mountId) {
         class="hidden admin-field">
 
         <label>
-          Bezeichnung Freitextfeld
+          Bezeichnung der Freitext-Option
           <input
             id="feedback-admin-poll-freetext-label"
             type="text"
             value="Freitext"
             placeholder="Freitext">
         </label>
+
+        <p class="admin-hint">
+          Erscheint als letzte Antwortoption in der Umfrage, z.&nbsp;B. „Freitext“ oder „Anderer Ort“.
+        </p>
 
       </div>
 

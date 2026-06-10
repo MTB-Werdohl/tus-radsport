@@ -67,13 +67,10 @@ function renderFeedbackSummaryLines(
     === window.siteConfig.feedback.types.poll
   ) {
 
-    const config =
-      normalizeFeedbackPollConfig(
-        module.config
-      );
-
     keys =
-      config.options.map(
+      getFeedbackPollAllOptions(
+        module.config
+      ).map(
         (option) => option.id
       );
 
@@ -115,6 +112,53 @@ function renderFeedbackSummaryLines(
   }
 
   return lines;
+
+}
+
+function renderFeedbackFreeTextResponses(
+  module,
+  answers
+) {
+
+  if (
+    module.type
+    !== window.siteConfig.feedback.types.poll
+  ) {
+    return '';
+  }
+
+  const texts =
+    getFeedbackPollFreeTextResponses(
+      module,
+      answers
+    );
+
+  if (!texts.length) {
+    return '';
+  }
+
+  const label =
+    getFeedbackPollFreeTextOptionLabel(
+      module.config
+    );
+
+  const items =
+    texts
+      .map((text) => `
+        <li>${escapeAdminHtml(text)}</li>
+      `)
+      .join('');
+
+  return `
+    <div class="feedback-card-freetext-list">
+      <div class="feedback-card-answers-label">
+        ${escapeAdminHtml(label)} — Eingaben:
+      </div>
+      <ul class="feedback-card-freetext-items">
+        ${items}
+      </ul>
+    </div>
+  `;
 
 }
 
@@ -268,7 +312,8 @@ async function loadFeedbackList() {
         return {
           module,
           entity,
-          summary
+          summary,
+          answers
         };
 
       })
@@ -439,6 +484,10 @@ function renderFeedbackList(
         ${renderFeedbackSummaryLines(
           module,
           row.summary
+        )}
+        ${renderFeedbackFreeTextResponses(
+          module,
+          row.answers
         )}
       </div>
 

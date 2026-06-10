@@ -75,6 +75,56 @@ function formatFeedbackDateTime(value) {
 
 }
 
+function renderFeedbackFreeTextResponses(
+  module,
+  answers
+) {
+
+  if (
+    module.type
+    !== window.siteConfig.feedback.types.poll
+  ) {
+    return '';
+  }
+
+  const texts =
+    getFeedbackPollFreeTextResponses(
+      module,
+      answers
+    );
+
+  if (!texts.length) {
+    return '';
+  }
+
+  const label =
+    getFeedbackPollFreeTextOptionLabel(
+      module.config
+    );
+
+  const items =
+    texts
+      .map((text) => `
+        <li>${escapeAdminHtml(text)}</li>
+      `)
+      .join('');
+
+  return `
+<section class="feedback-admin-freetext-list">
+
+<h3>
+  ${escapeAdminHtml(label)} — Eingaben
+</h3>
+
+<ul class="feedback-card-freetext-items">
+  ${items}
+</ul>
+
+</section>
+  `;
+
+}
+
 function renderFeedbackSummaryHtml(
   module,
   summary
@@ -167,16 +217,25 @@ function renderFeedbackAnswersTable(
 
 <td>
   ${escapeAdminHtml(
-    formatFeedbackAnswerLabel(
-      module,
-      row.answer
-    )
+    module.type
+    === window.siteConfig.feedback.types.poll
+      ? formatFeedbackPollAnswerDisplay(
+        module,
+        row
+      )
+      : formatFeedbackAnswerLabel(
+        module,
+        row.answer
+      )
   )}
 </td>
 
 <td>
   ${escapeAdminHtml(
-    row.comment || '—'
+    module.type
+    === window.siteConfig.feedback.types.poll
+      ? '—'
+      : (row.comment || '—')
   )}
 </td>
 
@@ -241,11 +300,20 @@ function buildFeedbackCsv(
 
       formatFeedbackMemberName(row),
       row.members?.email || '',
-      formatFeedbackAnswerLabel(
-        module,
-        row.answer
-      ),
-      row.comment || '',
+      module.type
+      === window.siteConfig.feedback.types.poll
+        ? formatFeedbackPollAnswerDisplay(
+          module,
+          row
+        )
+        : formatFeedbackAnswerLabel(
+          module,
+          row.answer
+        ),
+      module.type
+      === window.siteConfig.feedback.types.poll
+        ? ''
+        : (row.comment || ''),
       formatFeedbackDateTime(row.updated_at)
 
     ]);
@@ -387,6 +455,11 @@ async function loadFeedbackResults() {
 ${renderFeedbackSummaryHtml(
   module,
   summary
+)}
+
+${renderFeedbackFreeTextResponses(
+  module,
+  answers
 )}
 
 <div class="feedback-admin-results-actions">

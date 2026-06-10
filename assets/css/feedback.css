@@ -633,9 +633,31 @@ color: #666;
 
 .feedback-freetext-wrap {
 
-margin: 4px 0 12px;
+margin: 2px 0 0 28px;
 
 max-width: min(100%, 360px);
+
+}
+
+.feedback-freetext-wrap.is-hidden {
+
+display: none;
+
+}
+
+.feedback-poll-option-block {
+
+display: flex;
+
+flex-direction: column;
+
+gap: 6px;
+
+}
+
+.feedback-poll-option-block--freetext {
+
+margin-top: 2px;
 
 }
 
@@ -982,6 +1004,20 @@ margin: 0;
 
 .feedback-card-answer-row strong {
   margin-left: 0.15em;
+}
+
+.feedback-card-freetext-list {
+  margin-top: 10px;
+}
+
+.feedback-card-freetext-items {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  line-height: 1.45;
+}
+
+.feedback-card-freetext-items li {
+  margin: 2px 0;
 }
 
 .feedback-card-actions {

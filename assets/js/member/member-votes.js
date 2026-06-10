@@ -151,10 +151,16 @@ async function fetchMemberUpcomingVotes(
     }
 
     const answerLabel =
-      formatFeedbackAnswerLabel(
-        module,
-        answerRow.answer
-      );
+      module.type
+      === window.siteConfig.feedback.types.poll
+        ? formatFeedbackPollAnswerDisplay(
+          module,
+          answerRow
+        )
+        : formatFeedbackAnswerLabel(
+          module,
+          answerRow.answer
+        );
 
     items.push({
       answerRow,
@@ -268,18 +274,6 @@ function renderMemberVotesList(
         }
 
         metaParts.push(answerLine);
-
-        if (
-          item.module.type
-          === window.siteConfig.feedback.types.poll
-          && item.answerRow.comment
-        ) {
-          metaParts.push(
-            `💬 ${escapeMemberHtml(
-              item.answerRow.comment
-            )}`
-          );
-        }
 
         const cardClass =
           contentVisibilityCardClass(
