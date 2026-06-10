@@ -337,6 +337,69 @@ function setupConsentInfoDialogs() {
 let profileStravaState = null;
 let profileActiveTab = 'profil';
 let memberActivitiesLoaded = false;
+let memberVotesLoaded = false;
+
+async function loadMemberVotesIfNeeded(
+  force = false
+) {
+
+  const container =
+    document.getElementById(
+      'member-votes-list'
+    );
+
+  if (!container) {
+    return;
+  }
+
+  if (
+    memberVotesLoaded
+    && !force
+  ) {
+    return;
+  }
+
+  const member =
+    getCurrentMember();
+
+  if (!member?.id) {
+    return;
+  }
+
+  container.innerHTML = `
+<p>Abstimmungen werden geladen …</p>
+  `;
+
+  try {
+
+    const items =
+      await fetchMemberUpcomingVotes(
+        member.id
+      );
+
+    memberVotesLoaded = true;
+
+    renderMemberVotesList(
+      container,
+      items
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    container.innerHTML = `
+<p class="member-strava-hint member-strava-hint--error">
+  ${escapeMemberHtml(
+    error?.message
+    || 'Abstimmungen konnten nicht geladen werden.'
+  )}
+</p>
+    `;
+
+  }
+
+}
 
 async function loadMemberActivitiesIfNeeded(
   force = false
@@ -425,6 +488,10 @@ function switchMemberProfileTab(
 
     });
 
+  if (tabId === 'abstimmungen') {
+    void loadMemberVotesIfNeeded();
+  }
+
   if (tabId === 'aktivitaeten') {
     void loadMemberActivitiesIfNeeded();
   }
@@ -446,6 +513,7 @@ async function reloadStravaProfileView(
     await fetchStravaProfileStatus();
 
   memberActivitiesLoaded = false;
+  memberVotesLoaded = false;
 
   renderMemberProfile(
     member,
@@ -467,6 +535,10 @@ async function reloadStravaProfileView(
 
     if (profileActiveTab === 'aktivitaeten') {
       void loadMemberActivitiesIfNeeded(true);
+    }
+
+    if (profileActiveTab === 'abstimmungen') {
+      void loadMemberVotesIfNeeded(true);
     }
 
   }
@@ -1128,6 +1200,10 @@ async function loadMemberProfilePage() {
 
     if (profileActiveTab === 'aktivitaeten') {
       void loadMemberActivitiesIfNeeded(true);
+    }
+
+    if (profileActiveTab === 'abstimmungen') {
+      void loadMemberVotesIfNeeded(true);
     }
 
   }

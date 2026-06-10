@@ -535,6 +535,13 @@ a:hover {
   display: none !important;
 }
 
+.member-votes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 700px;
+}
+
 .member-strava-hint {
   margin: 0 0 14px;
   line-height: 1.5;

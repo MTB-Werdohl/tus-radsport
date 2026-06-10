@@ -400,6 +400,182 @@ async function fetchFeedbackAnswersForModule(
 
 }
 
+async function fetchMemberFeedbackAnswers(
+  memberId
+) {
+
+  if (!memberId) {
+    return [];
+  }
+
+  const { data, error } =
+    await window.supabaseClient
+      .from(
+        window.siteConfig.tables.feedbackAnswers
+      )
+      .select(`
+        id,
+        answer,
+        comment,
+        created_at,
+        updated_at,
+        module_id,
+        feedback_modules (
+          id,
+          type,
+          entity_type,
+          entity_id,
+          question,
+          config
+        )
+      `)
+      .eq('member_id', memberId)
+      .order(
+        'updated_at',
+        { ascending: false }
+      );
+
+  if (error) {
+
+    console.error(error);
+
+    throw error;
+
+  }
+
+  return data || [];
+
+}
+
+async function fetchFeedbackEntityRecordsForModules(
+  modules
+) {
+
+  const map =
+    new Map();
+
+  const eventIds =
+    [
+      ...new Set(
+        (modules || [])
+          .filter((module) =>
+            module.entity_type
+            === window.siteConfig.feedback.entityTypes.event
+          )
+          .map((module) =>
+            normalizeFeedbackEntityId(
+              module.entity_id
+            )
+          )
+          .filter(Boolean)
+      )
+    ];
+
+  const newsIds =
+    [
+      ...new Set(
+        (modules || [])
+          .filter((module) =>
+            module.entity_type
+            === window.siteConfig.feedback.entityTypes.news
+          )
+          .map((module) =>
+            normalizeFeedbackEntityId(
+              module.entity_id
+            )
+          )
+          .filter(Boolean)
+      )
+    ];
+
+  if (eventIds.length) {
+
+    const { data, error } =
+      await window.supabaseClient
+        .from(window.siteConfig.tables.termine)
+        .select(`
+          id,
+          title,
+          slug,
+          date,
+          endDate,
+          durationDays,
+          recurring,
+          daysOfWeek,
+          startRecur,
+          endRecur,
+          exclude,
+          location,
+          startTime,
+          sichtbarkeit
+        `)
+        .in('id', eventIds);
+
+    if (error) {
+      console.error(error);
+    } else {
+      (data || []).forEach((row) => {
+        map.set(
+          getFeedbackEntityMapKey(
+            window.siteConfig.feedback.entityTypes.event,
+            row.id
+          ),
+          row
+        );
+      });
+    }
+
+  }
+
+  if (newsIds.length) {
+
+    const { data, error } =
+      await window.supabaseClient
+        .from(window.siteConfig.tables.news)
+        .select(
+          'id, title, slug, sichtbarkeit'
+        )
+        .in('id', newsIds);
+
+    if (error) {
+      console.error(error);
+    } else {
+      (data || []).forEach((row) => {
+        map.set(
+          getFeedbackEntityMapKey(
+            window.siteConfig.feedback.entityTypes.news,
+            row.id
+          ),
+          row
+        );
+      });
+    }
+
+  }
+
+  return map;
+
+}
+
+function getFeedbackEntityRecordFromMap(
+  entityMap,
+  module
+) {
+
+  const key =
+    getFeedbackEntityMapKey(
+      module.entity_type,
+      module.entity_id
+    );
+
+  if (!key) {
+    return null;
+  }
+
+  return entityMap.get(key) || null;
+
+}
+
 function normalizeFeedbackEntityId(entityId) {
 
   const value =

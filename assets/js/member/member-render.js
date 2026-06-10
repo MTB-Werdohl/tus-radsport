@@ -256,6 +256,10 @@ function renderMemberProfileTabsNav(
       label: 'Profil'
     },
     {
+      id: 'abstimmungen',
+      label: 'Abstimmungen'
+    },
+    {
       id: 'aktivitaeten',
       label: 'Meine Aktivitäten'
     },
@@ -297,6 +301,30 @@ function renderMemberProfileTabsNav(
   ${buttons}
 
 </nav>
+  `;
+
+}
+
+function renderMemberVotesPanelShell() {
+
+  return `
+<section class="member-profile-section-block">
+
+  <h2>Abstimmungen</h2>
+
+  <p class="member-strava-hint">
+    Deine Antworten zu kommenden Terminen und News — nur für dich sichtbar.
+  </p>
+
+  <div
+    id="member-votes-list"
+    class="member-votes-list">
+
+    <p>Abstimmungen werden geladen …</p>
+
+  </div>
+
+</section>
   `;
 
 }
@@ -1001,6 +1029,18 @@ ${renderMemberProfileTabsNav(activeTab)}
   ${activeTab !== 'profil' ? 'hidden' : ''}>
 
   ${renderClubMemberProfilContent(member)}
+
+</div>
+
+<div
+  id="member-profile-tab-abstimmungen"
+  class="member-profile-tab-panel"
+  role="tabpanel"
+  aria-labelledby="member-profile-tab-btn-abstimmungen"
+  data-profile-panel="abstimmungen"
+  ${activeTab !== 'abstimmungen' ? 'hidden' : ''}>
+
+  ${renderMemberVotesPanelShell()}
 
 </div>
 
