@@ -33,6 +33,8 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Phase 4a Hotfix (Absage FK):** [`supabase-phase4a-withdraw-answer-id-fix.sql`](../supabase-phase4a-withdraw-answer-id-fix.sql) — behebt `23503 feedback_answer_events_answer_id_fkey` bei Absage nach Ja; nur `set_event_feedback_answer_for_member` neu deployen.
 
+**Anonymisierung + zukünftige Zusagen:** [`supabase-anonymize-upcoming-feedback.sql`](../supabase-anonymize-upcoming-feedback.sql) — bei Profil-Löschung entfallen Zusagen für **zukünftige** Termine; ohne verbleibendes Feedback wird die `members`-Zeile **gelöscht**, sonst anonymisiert (vergangene Teilnahmen). Enthält einmalige Bestandsbereinigung.
+
 **Feedback Public-Registrierung (Magic Link):** [`supabase-feedback-public-registration.sql`](../supabase-feedback-public-registration.sql) — externe Teilnehmer, abstimmen erst nach Login; `submit_public_feedback` für anonym nicht mehr.
 
 **Phase 5 — Website-Hinweise:** [`supabase/supabase-site-content.sql`](supabase-site-content.sql) — öffentliches SELECT auf `site_state` für `site_banner`, `saison_mode`, `landing_hints`, `site_overlay` (nach `supabase-public-read.sql`).
@@ -49,6 +51,8 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 **Veränderungs-Zusammenfassung:** [`supabase-member-change-summary.sql`](../supabase-member-change-summary.sql) — `members.last_change_summary_seen_at`, `Termine.created_at`/`updated_at`, RPCs `get_member_change_summary()`, `touch_member_change_summary_seen()`, Hilfsfunktion `is_club_member()`.
 
 **Protokolle (Vorstand):** [`supabase-board-documents.sql`](../supabase-board-documents.sql) — Tabelle `board_documents`, PDFs unter `protocols/` im Storage (nur Vorstand lesbar). **Kurzbeschreibung in Listen:** [`supabase-board-documents-subject.sql`](../supabase-board-documents-subject.sql) — Spalte `subject` (Feld „Inhalt“ im Admin). **Dateien verschieben:** [`supabase-board-documents-storage-update.sql`](../supabase-board-documents-storage-update.sql) — Storage-Policy `UPDATE` für `move`/Umbenennen.
+
+**Admin-E-Mail Versandprotokoll:** [`supabase-admin-email-log.sql`](../supabase-admin-email-log.sql) — Tabelle `admin_email_log`, 18 Monate Retention; danach Edge `send-admin-email` neu deployen. Setup: [`supabase-admin-email-setup.md`](../supabase-admin-email-setup.md).
 
 **Strava / Aktivitätenportal (MVP Schritt 4+2):** [`supabase-strava.sql`](../supabase-strava.sql) — `strava_connections`, `activities`, Stats-Tabellen, Profil-RPCs (`get_strava_profile_status`, `update_strava_visibility`, `disconnect_strava`). OAuth/Webhook/Sync: Edge Functions folgen — Setup: [`supabase-strava-setup.md`](../supabase-strava-setup.md).
 
@@ -67,7 +71,7 @@ Nach Frontend-Deploy: [`supabase-drop-web-push.sql`](../supabase-drop-web-push.s
 | Funktion | Referenz / Verhalten |
 |----------|----------------------|
 | `anonymize-member-account` | [`supabase-edge-anonymize-member-account.ts`](../supabase-edge-anonymize-member-account.ts) — **Edge Function deployen, nicht SQL!** JWT; Self (public) oder Vorstand `{ member_id }`; ruft `anonymize_member()` + löscht Auth-User |
-| `send-admin-email` | [`supabase-edge-send-admin-email.ts`](../supabase-edge-send-admin-email.ts) — Vorstand-E-Mails; Termin-Empfänger: **Ja und Vielleicht** bei `yes_maybe`; Setup: [`supabase-admin-email-setup.md`](../supabase-admin-email-setup.md) — **nach Code-Änderung neu deployen** |
+| `send-admin-email` | [`supabase-edge-send-admin-email.ts`](../supabase-edge-send-admin-email.ts) — Vorstand-E-Mails; Termin-Empfänger: **Ja und Vielleicht** bei `yes_maybe`; Versandprotokoll → [`supabase-admin-email-log.sql`](../supabase-admin-email-log.sql); Setup: [`supabase-admin-email-setup.md`](../supabase-admin-email-setup.md) — **nach Code-Änderung neu deployen** |
 | `strava-oauth-start` | [`supabase-edge-strava-oauth-start.ts`](../supabase-edge-strava-oauth-start.ts) — POST + JWT; liefert Strava-Authorize-URL — Setup: [`supabase-strava-setup.md`](../supabase-strava-setup.md) |
 | `strava-oauth-callback` | [`supabase-edge-strava-oauth-callback.ts`](../supabase-edge-strava-oauth-callback.ts) — GET; Token-Austausch, speichert `strava_connections`, Redirect `/profil/?strava=connected` |
 | `strava-sync` | [`supabase-edge-strava-sync.ts`](../supabase-edge-strava-sync.ts) — Webhook + Sync — Setup: [`supabase-strava-sync-setup.md`](../supabase-strava-sync-setup.md) |

@@ -202,7 +202,7 @@ async function requireVorstand(req) {
   const { data: member, error: memberError } =
     await supabaseAuth
       .from('members')
-      .select('id, rolle, email')
+      .select('id, rolle, email, vorname, nachname')
       .eq(
         'email',
         user.email.trim().toLowerCase()
@@ -222,7 +222,7 @@ async function requireVorstand(req) {
 
   return {
     supabaseAdmin,
-    senderMemberId: member.id
+    senderMember: member
   };
 
 }
@@ -527,6 +527,88 @@ async function sendOneEmail(
 
 }
 
+async function buildAudienceLabel(
+  supabaseAdmin,
+  mode,
+  payload,
+  recipients
+) {
+
+  if (mode === 'all') {
+    return 'Alle Mitglieder (Kontakt-Einwilligung)';
+  }
+
+  if (mode === 'single') {
+    return recipients[0]?.name
+      || 'Einzelmitglied';
+  }
+
+  if (mode === 'event') {
+
+    const id =
+      Number(payload.event_id);
+
+    if (!Number.isFinite(id) || id <= 0) {
+      return 'Termin';
+    }
+
+    const { data, error } =
+      await supabaseAdmin
+        .from('Termine')
+        .select('title')
+        .eq('id', id)
+        .maybeSingle();
+
+    if (error) {
+      console.error(error);
+    }
+
+    if (data?.title) {
+      return `Termin: ${data.title}`;
+    }
+
+    return `Termin #${id}`;
+
+  }
+
+  return mode;
+
+}
+
+async function persistAdminEmailLog(
+  supabaseAdmin,
+  entry
+) {
+
+  try {
+
+    await supabaseAdmin.rpc(
+      'purge_admin_email_log_retention'
+    );
+
+    const { error } =
+      await supabaseAdmin
+        .from('admin_email_log')
+        .insert(entry);
+
+    if (error) {
+      console.error(
+        'admin_email_log insert failed:',
+        error
+      );
+    }
+
+  } catch (error) {
+
+    console.error(
+      'admin_email_log persist failed:',
+      error
+    );
+
+  }
+
+}
+
 Deno.serve(async (req) => {
 
   if (req.method === 'OPTIONS') {
@@ -618,8 +700,17 @@ Deno.serve(async (req) => {
     const recipients =
       resolved.recipients;
 
+    const audienceLabel =
+      await buildAudienceLabel(
+        auth.supabaseAdmin,
+        mode,
+        payload,
+        recipients
+      );
+
     let sent = 0;
     const failures = [];
+    const recipientLog = [];
 
     for (const recipient of recipients) {
 
@@ -634,15 +725,32 @@ Deno.serve(async (req) => {
 
         sent += 1;
 
+        recipientLog.push({
+          member_id: recipient.member_id,
+          email: recipient.email,
+          name: recipient.name,
+          status: 'sent'
+        });
+
       } catch (error) {
 
         console.error(error);
 
+        const message =
+          error?.message
+          || 'Senden fehlgeschlagen';
+
         failures.push({
           email: recipient.email,
-          error:
-            error?.message
-            || 'Senden fehlgeschlagen'
+          error: message
+        });
+
+        recipientLog.push({
+          member_id: recipient.member_id,
+          email: recipient.email,
+          name: recipient.name,
+          status: 'failed',
+          error: message
         });
 
       }
@@ -658,6 +766,32 @@ Deno.serve(async (req) => {
         500
       );
     }
+
+    await persistAdminEmailLog(
+      auth.supabaseAdmin,
+      {
+        sent_by_member_id:
+          auth.senderMember.id,
+        sent_by_label:
+          formatMemberName(auth.senderMember),
+        audience_mode: mode,
+        audience_label: audienceLabel,
+        target_member_id:
+          mode === 'single'
+            ? Number(payload.member_id) || null
+            : null,
+        target_event_id:
+          mode === 'event'
+            ? Number(payload.event_id) || null
+            : null,
+        subject,
+        body: bodyText,
+        recipient_count: recipients.length,
+        sent_count: sent,
+        recipients: recipientLog,
+        failures
+      }
+    );
 
     return jsonResponse({
       ok: true,

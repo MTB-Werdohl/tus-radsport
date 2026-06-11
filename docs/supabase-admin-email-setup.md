@@ -57,7 +57,18 @@ Wenn **SMTP_HOST** gesetzt ist, wird SMTP bevorzugt. Sonst **RESEND_API_KEY**.
 | **Termin** | Teilnehmer mit Antwort **Ja** oder **Vielleicht** (Modul `yes_maybe`, Einwilligung Kontakt); bei Umfrage (`poll`) alle mit Antwort |
 | **Alle** | Alle Mitglieder mit Kontakt-Einwilligung |
 
-## 4. Test
+## 4. Versandprotokoll (optional, empfohlen)
+
+SQL im **SQL Editor** ausführen: [`supabase-admin-email-log.sql`](supabase-admin-email-log.sql)
+
+- Tabelle `admin_email_log` — Betreff, Text, Empfänger, Absender, Zeitpunkt
+- Nur Vorstand lesbar (RLS)
+- **18 Monate** Aufbewahrung, danach automatische Löschung bei jedem neuen Eintrag
+- Edge Function `send-admin-email` danach **neu deployen** (schreibt Protokoll per Service Role)
+
+In `/admin/email.html` erscheint unten das **Versandprotokoll**.
+
+## 5. Test
 
 1. Frontend deployen (Cache-Version in `_config.yml`)
 2. Als Vorstand `/admin/email.html` öffnen
