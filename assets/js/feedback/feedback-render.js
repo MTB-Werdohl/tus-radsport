@@ -99,42 +99,24 @@ function renderFeedbackSubscription(
     );
 
   return `
-<p class="feedback-subscription-hint">
-  Serientermin — du kannst dich über neue Termine informieren lassen.
-</p>
 <div class="feedback-actions feedback-actions--subscription">
 
 <button
   type="button"
-  class="feedback-btn feedback-btn--subscribe${
+  class="feedback-btn feedback-btn--subscription${
     subscribed ? ' is-active' : ''
   }"
-  data-feedback-subscribe>
+  data-feedback-subscription-toggle>
 
 <span class="feedback-btn__label">
-  Informiert bleiben
+  ${
+    subscribed
+      ? 'Infos bestellt'
+      : 'Keine Infos bestellt'
+  }
 </span>
 
 </button>
-
-${
-  subscribed
-    ? `
-<p class="feedback-unsubscribe-wrap">
-
-<button
-  type="button"
-  class="feedback-unsubscribe"
-  data-feedback-unsubscribe>
-
-Nicht mehr informiert werden
-
-</button>
-
-</p>
-`
-    : ''
-}
 
 </div>
 `;
@@ -156,18 +138,16 @@ function renderFeedbackYesMaybe(
   const maybe =
     window.siteConfig.feedback.answers.maybe;
 
-  const hint =
+  const showWithdrawAsSecondButton =
     commitmentEnabled
-      ? `
-<p class="feedback-commitment-hint">
-  <strong>Ja</strong> = verbindliche Teilnahme (Organisator darf planen).
-  <strong>Vielleicht</strong> = Interesse, keine Garantie — jederzeit ohne Hürde änderbar.
-</p>
-`
-      : '';
+    && selected === yes;
+
+  const secondButtonLabel =
+    showWithdrawAsSecondButton
+      ? 'Absagen'
+      : 'Vielleicht';
 
   return `
-${hint}
 <div class="feedback-actions">
 
 <button
@@ -189,13 +169,20 @@ ${
 <button
   type="button"
   class="feedback-btn${
-    selected === maybe ? ' is-active' : ''
+    showWithdrawAsSecondButton
+      ? ' feedback-btn--withdraw'
+      : selected === maybe
+        ? ' is-active'
+        : ''
   }"
   data-feedback-answer="${maybe}">
 
-<span class="feedback-btn__label">Vielleicht</span>
+<span class="feedback-btn__label">
+  ${secondButtonLabel}
+</span>
 ${
   commitmentEnabled
+  && !showWithdrawAsSecondButton
     ? '<span class="feedback-btn__sublabel">Interesse</span>'
     : ''
 }
@@ -203,25 +190,6 @@ ${
 </button>
 
 </div>
-${
-  commitmentEnabled
-  && selected === yes
-    ? `
-<p class="feedback-cancel-yes-wrap">
-
-<button
-  type="button"
-  class="feedback-cancel-yes"
-  data-feedback-cancel-yes>
-
-Verbindliche Zusage absagen
-
-</button>
-
-</p>
-`
-    : ''
-}
 `;
 
 }
@@ -976,6 +944,9 @@ function bindFeedbackModuleEvents(
           eventCommitment: true,
           cancellationReasonCode:
             cancellation?.cancellationReasonCode
+            || null,
+          comment:
+            cancellation?.comment
             || null
         }
         : {};
@@ -1222,7 +1193,7 @@ function bindFeedbackModuleEvents(
           }
 
           await applyEventAnswer(
-            maybe,
+            null,
             cancellation
           );
 
@@ -1343,19 +1314,6 @@ function bindFeedbackModuleEvents(
 
   }
 
-  async function handleCancelYesCommitment() {
-
-    const cancellation =
-      await openFeedbackCancellationDialog();
-
-    if (!cancellation) {
-      return;
-    }
-
-    await applyEventAnswer(null, cancellation);
-
-  }
-
   if (
     subscriptionMode
     && type
@@ -1363,7 +1321,7 @@ function bindFeedbackModuleEvents(
   ) {
 
     container
-      .querySelector('[data-feedback-subscribe]')
+      .querySelector('[data-feedback-subscription-toggle]')
       ?.addEventListener('click', async () => {
 
         if (
@@ -1371,6 +1329,7 @@ function bindFeedbackModuleEvents(
             ownAnswer?.answer
           )
         ) {
+          await applyEventAnswer(null, null);
           return;
         }
 
@@ -1378,23 +1337,7 @@ function bindFeedbackModuleEvents(
 
       });
 
-    container
-      .querySelector('[data-feedback-unsubscribe]')
-      ?.addEventListener('click', async () => {
-
-        await applyEventAnswer(null, null);
-
-      });
-
   } else {
-
-  container
-    .querySelector('[data-feedback-cancel-yes]')
-    ?.addEventListener('click', () => {
-
-      void handleCancelYesCommitment();
-
-    });
 
   container
     .querySelectorAll('[data-feedback-answer]')

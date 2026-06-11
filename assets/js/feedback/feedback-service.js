@@ -202,7 +202,7 @@ async function deleteFeedbackAnswer(
     return setEventFeedbackAnswer(
       moduleId,
       null,
-      null,
+      options.comment ?? null,
       options.cancellationReasonCode
     );
 

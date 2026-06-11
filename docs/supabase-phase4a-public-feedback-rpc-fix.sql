@@ -212,6 +212,7 @@ begin
       and member_id = p_member_id;
 
     v_result := null;
+    v_answer_id := null;
 
   else
 

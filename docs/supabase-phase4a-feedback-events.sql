@@ -326,6 +326,7 @@ begin
       and member_id = v_member_id;
 
     v_result := null;
+    v_answer_id := null;
 
   else
 

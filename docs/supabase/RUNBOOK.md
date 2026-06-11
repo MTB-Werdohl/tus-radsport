@@ -31,6 +31,8 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Phase 4a Review:** [`supabase-phase4a-public-feedback-rpc-fix.sql`](../supabase-phase4a-public-feedback-rpc-fix.sql) — `submit_public_feedback` an 4a-Logik (`set_event_feedback_answer_for_member`); nach Phase-4a-Basis.
 
+**Phase 4a Hotfix (Absage FK):** [`supabase-phase4a-withdraw-answer-id-fix.sql`](../supabase-phase4a-withdraw-answer-id-fix.sql) — behebt `23503 feedback_answer_events_answer_id_fkey` bei Absage nach Ja; nur `set_event_feedback_answer_for_member` neu deployen.
+
 **Feedback Public-Registrierung (Magic Link):** [`supabase-feedback-public-registration.sql`](../supabase-feedback-public-registration.sql) — externe Teilnehmer, abstimmen erst nach Login; `submit_public_feedback` für anonym nicht mehr.
 
 **Phase 5 — Website-Hinweise:** [`supabase/supabase-site-content.sql`](supabase-site-content.sql) — öffentliches SELECT auf `site_state` für `site_banner`, `saison_mode`, `landing_hints`, `site_overlay` (nach `supabase-public-read.sql`).

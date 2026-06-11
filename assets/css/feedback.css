@@ -1265,69 +1265,27 @@ opacity: 1;
 
 }
 
-.feedback-subscription-hint {
+.feedback-btn--withdraw {
 
-margin: 0 0 14px;
+opacity: 0.92;
 
-font-size: 0.88rem;
+}
 
-line-height: 1.45;
+.feedback-btn--withdraw:hover {
 
-opacity: 0.88;
+opacity: 1;
 
 }
 
 .feedback-actions--subscription {
 
-flex-direction: column;
-
 align-items: flex-start;
 
-gap: 10px;
-
 }
 
-.feedback-btn--subscribe {
+.feedback-btn--subscription {
 
 min-width: 12rem;
-
-}
-
-.feedback-unsubscribe-wrap {
-
-margin: 0;
-
-}
-
-.feedback-unsubscribe {
-
-border: none;
-
-padding: 0;
-
-background: none;
-
-color: inherit;
-
-font: inherit;
-
-font-size: 0.88rem;
-
-font-weight: 600;
-
-text-decoration: underline;
-
-text-underline-offset: 3px;
-
-cursor: pointer;
-
-opacity: 0.88;
-
-}
-
-.feedback-unsubscribe:hover {
-
-opacity: 1;
 
 }
 
