@@ -175,7 +175,7 @@ function renderActivityMapHtml(
 
   const height =
     Number(options.height)
-      || (options.detail ? 220 : 130);
+      || (options.detail ? 240 : 160);
 
   return `
 <div class="aktivitaeten-card-map-stack">
@@ -304,17 +304,7 @@ function renderActivityCardHtml(
       ? 'aktivitaeten-card-shell'
       : 'aktivitaeten-card-shell aktivitaeten-card-shell--single';
 
-  const bodyHtml = `
-        <h3 class="aktivitaeten-card-title">
-          ${escape(title)}${badgeHtml}
-        </h3>
-
-        ${statsHtml}
-  `;
-
-  const contentHtml = `
-    <div class="aktivitaeten-card-layout">
-
+  const headerHtml = `
       <div class="aktivitaeten-card-header">
 
         <div class="aktivitaeten-card-avatar">
@@ -332,14 +322,44 @@ function renderActivityCardHtml(
         </div>
 
       </div>
+  `;
+
+  const bodyHtml = `
+        <h3 class="aktivitaeten-card-title">
+          ${escape(title)}${badgeHtml}
+        </h3>
+
+        ${statsHtml}
+  `;
+
+  const contentHtml = mapHtml
+    ? `
+    <div class="aktivitaeten-card-layout">
 
       <div class="${shellClass}">
 
         <div class="aktivitaeten-card-text">
+          ${headerHtml}
           ${bodyHtml}
         </div>
 
-        ${mapHtml ? `<div class="aktivitaeten-card-map-col">${mapHtml}</div>` : ''}
+        <div class="aktivitaeten-card-map-col">
+          ${mapHtml}
+        </div>
+
+      </div>
+
+    </div>
+  `
+    : `
+    <div class="aktivitaeten-card-layout">
+
+      <div class="${shellClass}">
+
+        <div class="aktivitaeten-card-text">
+          ${headerHtml}
+          ${bodyHtml}
+        </div>
 
       </div>
 
