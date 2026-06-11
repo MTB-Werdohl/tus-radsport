@@ -1478,111 +1478,11 @@ color: #fff;
 
 }
 
-.feedback-admin-participation-changes {
+.feedback-admin-table--results .feedback-admin-answer-cell {
 
-margin-top: 2.5rem;
+white-space: nowrap;
 
-}
-
-.feedback-admin-participation-changes h2 {
-
-margin: 0 0 1rem;
-
-}
-
-.participation-changes-toolbar {
-
-display: flex;
-
-flex-wrap: wrap;
-
-align-items: center;
-
-gap: 12px;
-
-margin-bottom: 16px;
-
-}
-
-.participation-changes-list {
-
-display: grid;
-
-gap: 14px;
-
-}
-
-.participation-change-card {
-
-padding: 16px;
-
-border-radius: 14px;
-
-background: rgba(255, 255, 255, 0.04);
-
-border: 1px solid rgba(255, 255, 255, 0.08);
-
-}
-
-.participation-change-card__meta {
-
-margin-bottom: 8px;
-
-font-size: 0.85rem;
-
-opacity: 0.75;
-
-}
-
-.participation-change-card__title {
-
-margin: 0 0 12px;
-
-font-size: 1.05rem;
-
-}
-
-.participation-change-card__title a {
-
-color: inherit;
-
-text-decoration: none;
-
-}
-
-.participation-change-card__title a:hover {
-
-text-decoration: underline;
-
-}
-
-.participation-change-card__details {
-
-display: grid;
-
-gap: 8px;
-
-margin: 0;
-
-}
-
-.participation-change-card__details dt {
-
-font-size: 0.78rem;
-
-font-weight: 600;
-
-opacity: 0.7;
-
-margin: 0;
-
-}
-
-.participation-change-card__details dd {
-
-margin: 0;
-
-line-height: 1.4;
+width: 1%;
 
 }
 

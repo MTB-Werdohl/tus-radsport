@@ -688,7 +688,7 @@ function formatFeedbackParticipationAnswerLabel(
       .toLowerCase();
 
   if (!value) {
-    return 'Keine Teilnahme';
+    return 'Nein';
   }
 
   if (
@@ -706,6 +706,40 @@ function formatFeedbackParticipationAnswerLabel(
   }
 
   return value;
+
+}
+
+function formatFeedbackResultsAnswerShort(
+  answerCode
+) {
+
+  return formatFeedbackParticipationAnswerLabel(
+    answerCode
+  );
+
+}
+
+function isFeedbackEventResultsHistoryMode(
+  module,
+  entityRecurring
+) {
+
+  if (entityRecurring === true) {
+    return false;
+  }
+
+  if (
+    module?.entity_type
+    !== window.siteConfig.feedback.entityTypes.event
+  ) {
+    return false;
+  }
+
+  return (
+    module?.type
+    === window.siteConfig.feedback.types.yesMaybe
+    || module?.type === 'yes_no_comment'
+  );
 
 }
 

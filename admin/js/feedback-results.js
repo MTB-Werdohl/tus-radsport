@@ -52,6 +52,40 @@ function formatFeedbackMemberName(memberRow) {
 
 }
 
+function formatFeedbackResultsMemberNameFromEvent(
+  row
+) {
+
+  if (row.member_anonymized_at) {
+    return 'Anonym (Account gelöscht)';
+  }
+
+  const name =
+    [
+      row.member_vorname,
+      row.member_nachname
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .trim();
+
+  const baseName =
+    name
+    || row.member_email
+    || 'Mitglied';
+
+  if (
+    String(row.member_rolle || '')
+      .trim()
+      .toLowerCase() === 'public'
+  ) {
+    return `${baseName} (extern)`;
+  }
+
+  return baseName;
+
+}
+
 function formatFeedbackDateTime(value) {
 
   if (!value) {
@@ -72,6 +106,381 @@ function formatFeedbackDateTime(value) {
     hour: '2-digit',
     minute: '2-digit'
   });
+
+}
+
+function formatFeedbackCancellationDisplay(
+  reasonCode,
+  comment
+) {
+
+  if (!reasonCode) {
+    return '—';
+  }
+
+  const label =
+    formatFeedbackCancellationReasonLabel(
+      reasonCode
+    );
+
+  const freeText =
+    String(comment || '')
+      .trim();
+
+  if (
+    reasonCode === 'sonstiges'
+    && freeText
+  ) {
+    return `${label}: ${freeText}`;
+  }
+
+  return label;
+
+}
+
+function compareFeedbackResultsRows(
+  left,
+  right
+) {
+
+  const leftTime =
+    new Date(left.updatedAt || 0).getTime();
+
+  const rightTime =
+    new Date(right.updatedAt || 0).getTime();
+
+  if (leftTime !== rightTime) {
+    return rightTime - leftTime;
+  }
+
+  return left.name.localeCompare(
+    right.name,
+    'de'
+  );
+
+}
+
+function buildFeedbackResultsDisplayRows(
+  module,
+  answers,
+  participationEvents,
+  entityRecurring
+) {
+
+  const historyMode =
+    isFeedbackEventResultsHistoryMode(
+      module,
+      entityRecurring
+    );
+
+  if (!historyMode) {
+
+    return (answers || [])
+      .map((row) => {
+
+        let answerLabel;
+
+        if (
+          module.type
+          === window.siteConfig.feedback.types.poll
+        ) {
+          answerLabel =
+            formatFeedbackPollAnswerDisplay(
+              module,
+              row
+            );
+        } else if (
+          isFeedbackEventSubscriptionMode(
+            module,
+            entityRecurring
+          )
+        ) {
+          answerLabel =
+            isFeedbackSubscriptionAnswer(
+              row.answer
+            )
+              ? 'Ja'
+              : 'Nein';
+        } else {
+          answerLabel =
+            formatFeedbackAnswerLabel(
+              module,
+              row.answer,
+              entityRecurring
+            );
+        }
+
+        return {
+          name:
+            formatFeedbackMemberName(row),
+          email:
+            row.members?.email || '—',
+          answerLabel,
+          firstAnswerAt:
+            row.created_at,
+          updatedAt:
+            row.updated_at,
+          reasonLabel: null
+        };
+
+      })
+      .sort(compareFeedbackResultsRows);
+
+  }
+
+  const yes =
+    window.siteConfig.feedback.answers.yes;
+
+  const maybe =
+    window.siteConfig.feedback.answers.maybe;
+
+  const byMember =
+    new Map();
+
+  (participationEvents || [])
+    .slice()
+    .sort((left, right) => {
+
+      const leftTime =
+        new Date(left.created_at || 0).getTime();
+
+      const rightTime =
+        new Date(right.created_at || 0).getTime();
+
+      return leftTime - rightTime;
+
+    })
+    .forEach((event) => {
+
+      const memberId =
+        event.member_id;
+
+      if (!memberId) {
+        return;
+      }
+
+      let row =
+        byMember.get(memberId);
+
+      if (!row) {
+
+        row = {
+          memberId,
+          name:
+            formatFeedbackResultsMemberNameFromEvent(
+              event
+            ),
+          email:
+            event.member_email || '—',
+          firstAnswerAt:
+            event.created_at,
+          updatedAt:
+            event.created_at,
+          currentAnswer: null,
+          withdrawn: false,
+          withdrawReason: null,
+          withdrawComment: null
+        };
+
+        byMember.set(
+          memberId,
+          row
+        );
+
+      }
+
+      const eventTime =
+        new Date(event.created_at).getTime();
+
+      const firstTime =
+        new Date(row.firstAnswerAt).getTime();
+
+      if (
+        Number.isFinite(eventTime)
+        && eventTime < firstTime
+      ) {
+        row.firstAnswerAt =
+          event.created_at;
+      }
+
+      if (
+        Number.isFinite(eventTime)
+        && eventTime
+          >= new Date(row.updatedAt).getTime()
+      ) {
+        row.updatedAt =
+          event.created_at;
+      }
+
+      const toAnswer =
+        event.to_answer == null
+          ? null
+          : String(event.to_answer)
+            .trim()
+            .toLowerCase();
+
+      if (toAnswer == null) {
+
+        row.withdrawn = true;
+        row.currentAnswer = null;
+        row.withdrawReason =
+          event.cancellation_reason_code
+          || null;
+        row.withdrawComment =
+          event.comment || null;
+
+      } else if (
+        toAnswer === yes
+        || toAnswer === maybe
+      ) {
+
+        row.withdrawn = false;
+        row.currentAnswer = toAnswer;
+        row.withdrawReason = null;
+        row.withdrawComment = null;
+
+      }
+
+    });
+
+  (answers || []).forEach((answerRow) => {
+
+    const memberId =
+      answerRow.member_id;
+
+    if (!memberId) {
+      return;
+    }
+
+    let row =
+      byMember.get(memberId);
+
+    if (!row) {
+
+      row = {
+        memberId,
+        name:
+          formatFeedbackMemberName(
+            answerRow
+          ),
+        email:
+          answerRow.members?.email
+          || '—',
+        firstAnswerAt:
+          answerRow.created_at,
+        updatedAt:
+          answerRow.updated_at,
+        currentAnswer: null,
+        withdrawn: false,
+        withdrawReason: null,
+        withdrawComment: null
+      };
+
+      byMember.set(
+        memberId,
+        row
+      );
+
+    } else {
+
+      row.name =
+        formatFeedbackMemberName(
+          answerRow
+        );
+      row.email =
+        answerRow.members?.email
+        || row.email;
+
+    }
+
+    const answerCode =
+      String(answerRow.answer || '')
+        .trim()
+        .toLowerCase();
+
+    row.currentAnswer =
+      answerCode || null;
+    row.withdrawn = false;
+    row.withdrawReason = null;
+    row.withdrawComment = null;
+
+    if (answerRow.created_at) {
+
+      const createdTime =
+        new Date(
+          answerRow.created_at
+        ).getTime();
+
+      const firstTime =
+        new Date(
+          row.firstAnswerAt || 0
+        ).getTime();
+
+      if (
+        !row.firstAnswerAt
+        || createdTime < firstTime
+      ) {
+        row.firstAnswerAt =
+          answerRow.created_at;
+      }
+
+    }
+
+    if (answerRow.updated_at) {
+      row.updatedAt =
+        answerRow.updated_at;
+    }
+
+  });
+
+  return [...byMember.values()]
+    .map((row) => {
+
+      if (row.withdrawn) {
+
+        return {
+          name: row.name,
+          email: row.email,
+          answerLabel: 'Nein',
+          firstAnswerAt:
+            row.firstAnswerAt,
+          updatedAt:
+            row.updatedAt,
+          reasonLabel:
+            formatFeedbackCancellationDisplay(
+              row.withdrawReason,
+              row.withdrawComment
+            )
+        };
+
+      }
+
+      if (
+        row.currentAnswer === yes
+        || row.currentAnswer === maybe
+      ) {
+
+        return {
+          name: row.name,
+          email: row.email,
+          answerLabel:
+            formatFeedbackResultsAnswerShort(
+              row.currentAnswer
+            ),
+          firstAnswerAt:
+            row.firstAnswerAt,
+          updatedAt:
+            row.updatedAt,
+          reasonLabel: '—'
+        };
+
+      }
+
+      return null;
+
+    })
+    .filter(Boolean)
+    .sort(compareFeedbackResultsRows);
 
 }
 
@@ -279,11 +688,11 @@ ${totalLine}
 
 function renderFeedbackAnswersTable(
   module,
-  answers,
+  displayRows,
   entityRecurring
 ) {
 
-  if (!answers.length) {
+  if (!displayRows.length) {
 
     return `
 <p class="admin-hint">
@@ -293,76 +702,125 @@ function renderFeedbackAnswersTable(
 
   }
 
-  const rows =
-    answers
-      .map((row) => `
+  const historyMode =
+    isFeedbackEventResultsHistoryMode(
+      module,
+      entityRecurring
+    );
 
+  const rows =
+    displayRows
+      .map((row) => {
+
+        if (historyMode) {
+
+          return `
 <tr>
 
 <td>
+  ${escapeAdminHtml(row.name)}
+</td>
+
+<td>
+  ${escapeAdminHtml(row.email)}
+</td>
+
+<td class="feedback-admin-answer-cell">
+  ${escapeAdminHtml(row.answerLabel)}
+</td>
+
+<td>
   ${escapeAdminHtml(
-    formatFeedbackMemberName(row)
+    formatFeedbackDateTime(
+      row.firstAnswerAt
+    )
   )}
 </td>
 
 <td>
   ${escapeAdminHtml(
-    row.members?.email || '—'
+    formatFeedbackDateTime(
+      row.updatedAt
+    )
   )}
 </td>
 
 <td>
   ${escapeAdminHtml(
-    module.type
-    === window.siteConfig.feedback.types.poll
-      ? formatFeedbackPollAnswerDisplay(
-        module,
-        row
-      )
-      : formatFeedbackAnswerLabel(
-        module,
-        row.answer,
-        entityRecurring
-      )
-  )}
-</td>
-
-<td>
-  ${escapeAdminHtml(
-    module.type
-    === window.siteConfig.feedback.types.poll
-      ? '—'
-      : (row.comment || '—')
-  )}
-</td>
-
-<td>
-  ${escapeAdminHtml(
-    formatFeedbackDateTime(row.updated_at)
+    row.reasonLabel || '—'
   )}
 </td>
 
 </tr>
+`;
 
-`)
+        }
+
+        return `
+<tr>
+
+<td>
+  ${escapeAdminHtml(row.name)}
+</td>
+
+<td>
+  ${escapeAdminHtml(row.email)}
+</td>
+
+<td class="feedback-admin-answer-cell">
+  ${escapeAdminHtml(row.answerLabel)}
+</td>
+
+<td>
+  ${escapeAdminHtml(
+    formatFeedbackDateTime(
+      row.firstAnswerAt
+    )
+  )}
+</td>
+
+<td>
+  ${escapeAdminHtml(
+    formatFeedbackDateTime(
+      row.updatedAt
+    )
+  )}
+</td>
+
+</tr>
+`;
+
+      })
       .join('');
+
+  const head =
+    historyMode
+      ? `
+<th>Name</th>
+<th>E-Mail</th>
+<th>Antwort</th>
+<th>Erstantwort</th>
+<th>Aktualisiert</th>
+<th>Absagegrund</th>
+`
+      : `
+<th>Name</th>
+<th>E-Mail</th>
+<th>Antwort</th>
+<th>Erstantwort</th>
+<th>Aktualisiert</th>
+`;
 
   return `
 
 <div class="feedback-admin-table-wrap">
 
-<table class="feedback-admin-table">
+<table class="feedback-admin-table feedback-admin-table--results">
 
 <thead>
 
 <tr>
-
-<th>Name</th>
-<th>E-Mail</th>
-<th>Antwort</th>
-<th>Kommentar</th>
-<th>Aktualisiert</th>
-
+  ${head}
 </tr>
 
 </thead>
@@ -381,41 +839,58 @@ function renderFeedbackAnswersTable(
 
 function buildFeedbackCsv(
   module,
-  answers,
+  displayRows,
   entityRecurring
 ) {
 
-  const header = [
-    'Name',
-    'E-Mail',
-    'Antwort',
-    'Kommentar',
-    'Aktualisiert'
-  ];
+  const historyMode =
+    isFeedbackEventResultsHistoryMode(
+      module,
+      entityRecurring
+    );
+
+  const header =
+    historyMode
+      ? [
+        'Name',
+        'E-Mail',
+        'Antwort',
+        'Erstantwort',
+        'Aktualisiert',
+        'Absagegrund'
+      ]
+      : [
+        'Name',
+        'E-Mail',
+        'Antwort',
+        'Erstantwort',
+        'Aktualisiert'
+      ];
 
   const lines =
-    answers.map((row) => [
+    displayRows.map((row) => {
 
-      formatFeedbackMemberName(row),
-      row.members?.email || '',
-      module.type
-      === window.siteConfig.feedback.types.poll
-        ? formatFeedbackPollAnswerDisplay(
-          module,
-          row
-        )
-        : formatFeedbackAnswerLabel(
-          module,
-          row.answer,
-          entityRecurring
+      const base = [
+        row.name,
+        row.email,
+        row.answerLabel,
+        formatFeedbackDateTime(
+          row.firstAnswerAt
         ),
-      module.type
-      === window.siteConfig.feedback.types.poll
-        ? ''
-        : (row.comment || ''),
-      formatFeedbackDateTime(row.updated_at)
+        formatFeedbackDateTime(
+          row.updatedAt
+        )
+      ];
 
-    ]);
+      if (historyMode) {
+        base.push(
+          row.reasonLabel || '—'
+        );
+      }
+
+      return base;
+
+    });
 
   return [header, ...lines]
     .map((line) =>
@@ -431,213 +906,9 @@ function buildFeedbackCsv(
 
 }
 
-function shouldShowFeedbackParticipationChanges(
-  module,
-  entityRecurring
-) {
-
-  if (entityRecurring === true) {
-    return false;
-  }
-
-  if (
-    module?.entity_type
-    !== window.siteConfig.feedback.entityTypes.event
-  ) {
-    return false;
-  }
-
-  return (
-    module?.type
-    === window.siteConfig.feedback.types.yesMaybe
-    || module?.type === 'yes_no_comment'
-  );
-
-}
-
-function formatParticipationChangeMemberName(
-  row
-) {
-
-  if (row.member_anonymized_at) {
-    return 'Anonym (Account gelöscht)';
-  }
-
-  const name =
-    [
-      row.member_vorname,
-      row.member_nachname
-    ]
-      .filter(Boolean)
-      .join(' ')
-      .trim();
-
-  const baseName =
-    name
-    || row.member_email
-    || 'Mitglied';
-
-  if (
-    String(row.member_rolle || '')
-      .trim()
-      .toLowerCase() === 'public'
-  ) {
-    return `${baseName} (extern)`;
-  }
-
-  return baseName;
-
-}
-
-function formatParticipationChangeReason(
-  row
-) {
-
-  if (
-    !row.cancellation_reason_code
-  ) {
-    return '—';
-  }
-
-  const label =
-    formatFeedbackCancellationReasonLabel(
-      row.cancellation_reason_code
-    );
-
-  const comment =
-    String(row.comment || '')
-      .trim();
-
-  if (
-    row.cancellation_reason_code === 'sonstiges'
-    && comment
-  ) {
-    return `${label}: ${comment}`;
-  }
-
-  return label;
-
-}
-
-function renderFeedbackParticipationChangesSection(
-  rows
-) {
-
-  if (!rows.length) {
-
-    return `
-<section class="feedback-admin-participation-changes">
-
-<h2>
-  Teilnahmeänderungen
-</h2>
-
-<p class="admin-hint">
-  Noch keine Absagen oder Statuswechsel.
-</p>
-
-</section>
-`;
-
-  }
-
-  const tableRows =
-    rows
-      .map((row) => {
-
-        const fromLabel =
-          formatFeedbackParticipationAnswerLabel(
-            row.from_answer
-          );
-
-        const toLabel =
-          formatFeedbackParticipationAnswerLabel(
-            row.to_answer
-          );
-
-        return `
-<tr>
-
-<td>
-  ${escapeAdminHtml(
-    formatFeedbackDateTime(
-      row.created_at
-    )
-  )}
-</td>
-
-<td>
-  ${escapeAdminHtml(
-    formatParticipationChangeMemberName(
-      row
-    )
-  )}
-</td>
-
-<td>
-  ${escapeAdminHtml(
-    row.member_email || '—'
-  )}
-</td>
-
-<td>
-  ${escapeAdminHtml(fromLabel)}
-  → ${escapeAdminHtml(toLabel)}
-</td>
-
-<td>
-  ${escapeAdminHtml(
-    formatParticipationChangeReason(row)
-  )}
-</td>
-
-</tr>
-`;
-
-      })
-      .join('');
-
-  return `
-<section class="feedback-admin-participation-changes">
-
-<h2>
-  Teilnahmeänderungen
-</h2>
-
-<div class="feedback-admin-table-wrap">
-
-<table class="feedback-admin-table">
-
-<thead>
-
-<tr>
-
-<th>Zeitpunkt</th>
-<th>Name</th>
-<th>E-Mail</th>
-<th>Änderung</th>
-<th>Grund</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-  ${tableRows}
-</tbody>
-
-</table>
-
-</div>
-
-</section>
-`;
-
-}
-
 function downloadFeedbackCsv(
   module,
-  answers,
+  displayRows,
   entityRecurring
 ) {
 
@@ -655,7 +926,7 @@ function downloadFeedbackCsv(
       [
         `\uFEFF${buildFeedbackCsv(
           module,
-          answers,
+          displayRows,
           entityRecurring
         )}`
       ],
@@ -739,6 +1010,12 @@ async function loadFeedbackResults() {
   const entityRecurring =
     entity?.recurring === true;
 
+  const historyMode =
+    isFeedbackEventResultsHistoryMode(
+      module,
+      entityRecurring
+    );
+
   try {
 
     const answers =
@@ -746,21 +1023,15 @@ async function loadFeedbackResults() {
         module.id
       );
 
-    const showParticipationChanges =
-      shouldShowFeedbackParticipationChanges(
-        module,
-        entityRecurring
-      );
-
-    let participationChanges =
+    let participationEvents =
       [];
 
-    if (showParticipationChanges) {
+    if (historyMode) {
 
       const changeResult =
         await listFeedbackParticipationChanges({
           moduleId: module.id,
-          limit: 100,
+          limit: 500,
           offset: 0
         });
 
@@ -768,10 +1039,18 @@ async function loadFeedbackResults() {
         throw changeResult.error;
       }
 
-      participationChanges =
+      participationEvents =
         changeResult.rows || [];
 
     }
+
+    const displayRows =
+      buildFeedbackResultsDisplayRows(
+        module,
+        answers,
+        participationEvents,
+        entityRecurring
+      );
 
     const summary =
       buildFeedbackSummary(
@@ -814,22 +1093,14 @@ ${renderFeedbackFreeTextResponses(
 </div>
 
 <h2>
-  Einzelantworten
+  Rückmeldungen
 </h2>
 
 ${renderFeedbackAnswersTable(
   module,
-  answers,
+  displayRows,
   entityRecurring
 )}
-
-${
-  showParticipationChanges
-    ? renderFeedbackParticipationChangesSection(
-      participationChanges
-    )
-    : ''
-}
 
 `;
 
@@ -839,7 +1110,7 @@ ${
 
         downloadFeedbackCsv(
           module,
-          answers,
+          displayRows,
           entityRecurring
         );
 
