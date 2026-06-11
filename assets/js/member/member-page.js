@@ -367,7 +367,7 @@ async function loadMemberVotesIfNeeded(
   }
 
   container.innerHTML = `
-<p>Abstimmungen werden geladen …</p>
+<p>Teilnahmen werden geladen …</p>
   `;
 
   try {
@@ -393,7 +393,7 @@ async function loadMemberVotesIfNeeded(
 <p class="member-strava-hint member-strava-hint--error">
   ${escapeMemberHtml(
     error?.message
-    || 'Abstimmungen konnten nicht geladen werden.'
+    || 'Teilnahmen konnten nicht geladen werden.'
   )}
 </p>
     `;

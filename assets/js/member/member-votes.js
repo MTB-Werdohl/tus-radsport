@@ -554,7 +554,7 @@ function renderMemberVotesList(
     container.innerHTML = `
 <article class="calendar-card">
   <div>
-    <h3>Keine Abstimmungen</h3>
+    <h3>Keine Teilnahmen</h3>
     <p>
       Zu kommenden Terminen und News hast du derzeit nichts abgestimmt.
     </p>

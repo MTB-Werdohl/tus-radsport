@@ -258,7 +258,7 @@ function renderMemberProfileTabsNav(
     },
     {
       id: 'abstimmungen',
-      label: 'Abstimmungen'
+      label: 'Teilnahmen'
     },
     {
       id: 'aktivitaeten',
@@ -311,13 +311,13 @@ function renderMemberVotesPanelShell() {
   return `
 <section class="member-profile-section-block">
 
-  <h2>Abstimmungen</h2>
+  <h2>Teilnahmen</h2>
 
   <div
     id="member-votes-list"
     class="member-votes-list">
 
-    <p>Abstimmungen werden geladen …</p>
+    <p>Teilnahmen werden geladen …</p>
 
   </div>
 
