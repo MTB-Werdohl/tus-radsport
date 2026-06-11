@@ -567,6 +567,91 @@ function bindMemberProfileTabEvents() {
 
 }
 
+function syncStravaVisibilityCheckboxes(
+  status
+) {
+
+  const container =
+    document.getElementById(
+      'strava-visibility-form'
+    );
+
+  if (!container || !status) {
+    return;
+  }
+
+  const publishFeedInput =
+    container.querySelector(
+      '[name="publish_feed"]'
+    );
+
+  const publishRankingsInput =
+    container.querySelector(
+      '[name="publish_rankings"]'
+    );
+
+  const contributeInput =
+    container.querySelector(
+      '[name="contribute_to_club_goals"]'
+    );
+
+  if (publishFeedInput) {
+    publishFeedInput.checked =
+      status.publishFeed === true;
+  }
+
+  if (publishRankingsInput) {
+    publishRankingsInput.checked =
+      status.publishRankings === true;
+  }
+
+  if (contributeInput) {
+    contributeInput.checked =
+      status.contributeToClubGoals === true;
+  }
+
+}
+
+async function saveStravaVisibilityFromForm() {
+
+  const container =
+    document.getElementById(
+      'strava-visibility-form'
+    );
+
+  if (!container) {
+    return;
+  }
+
+  const publishFeed =
+    container.querySelector(
+      '[name="publish_feed"]'
+    )?.checked === true;
+
+  const publishRankings =
+    container.querySelector(
+      '[name="publish_rankings"]'
+    )?.checked === true;
+
+  const contributeToClubGoals =
+    container.querySelector(
+      '[name="contribute_to_club_goals"]'
+    )?.checked === true;
+
+  profileStravaState = {
+    available: true,
+    status:
+      await updateStravaVisibility({
+        publishFeed,
+        publishRankings,
+        contributeToClubGoals
+      })
+  };
+
+  memberActivitiesLoaded = false;
+
+}
+
 function bindStravaProfileEvents(
   member
 ) {
@@ -612,81 +697,64 @@ function bindStravaProfileEvents(
       'strava-visibility-form'
     );
 
-  const visibilityStatus =
-    document.getElementById(
-      'strava-visibility-status'
-    );
-
   if (visibilityForm) {
 
-    visibilityForm.addEventListener(
-      'submit',
-      async (event) => {
+    visibilityForm
+      .querySelectorAll(
+        'input[type="checkbox"]'
+      )
+      .forEach((checkbox) => {
 
-        event.preventDefault();
+        checkbox.addEventListener(
+          'change',
+          async () => {
 
-        const submitBtn =
-          visibilityForm.querySelector(
-            '[type="submit"]'
-          );
+            const previousStatus =
+              profileStravaState?.status
+              || {};
 
-        if (submitBtn) {
-          submitBtn.disabled = true;
-        }
+            const inputs =
+              visibilityForm.querySelectorAll(
+                'input[type="checkbox"]'
+              );
 
-        if (visibilityStatus) {
-          visibilityStatus.hidden = true;
-        }
+            inputs.forEach((input) => {
+              input.disabled = true;
+            });
 
-        try {
+            try {
 
-          const formData =
-            new FormData(visibilityForm);
+              await saveStravaVisibilityFromForm();
 
-          profileStravaState = {
-            available: true,
-            status:
-              await updateStravaVisibility({
-                publishFeed:
-                  formData.get('publish_feed') === 'on',
-                publishRankings:
-                  formData.get('publish_rankings') === 'on',
-                contributeToClubGoals:
-                  formData.get('contribute_to_club_goals') === 'on'
-              })
-          };
+              showMemberToast(
+                'Sichtbarkeit gespeichert.',
+                'success',
+                3000
+              );
 
-          if (visibilityStatus) {
-            visibilityStatus.textContent =
-              'Sichtbarkeit gespeichert.';
-            visibilityStatus.hidden = false;
+            } catch (error) {
+
+              console.error(error);
+
+              syncStravaVisibilityCheckboxes(
+                previousStatus
+              );
+
+              showMemberToast(
+                'Speichern fehlgeschlagen.',
+                'error'
+              );
+
+            }
+
+            inputs.forEach((input) => {
+              input.disabled = false;
+            });
+
           }
+        );
 
-          memberActivitiesLoaded = false;
-
-          showMemberToast(
-            'Sichtbarkeit gespeichert.',
-            'success',
-            3000
-          );
-
-        } catch (error) {
-
-          console.error(error);
-
-          showMemberToast(
-            'Speichern fehlgeschlagen.',
-            'error'
-          );
-
-        }
-
-        if (submitBtn) {
-          submitBtn.disabled = false;
-        }
-
-      }
-    );
+      });
 
   }
 
@@ -903,14 +971,77 @@ function bindMemberAvatarEvents(
       'member-avatar-file'
     );
 
-  const removeBtn =
+  const toggleBtn =
     document.getElementById(
-      'member-avatar-remove-btn'
+      'member-avatar-toggle-btn'
     );
 
-  if (!fileInput) {
+  if (!fileInput || !toggleBtn) {
     return;
   }
+
+  toggleBtn.addEventListener(
+    'click',
+    async () => {
+
+      const currentMember =
+        getCurrentMember()
+        || member;
+
+      if (currentMember?.avatar_storage_path) {
+
+        if (
+          !window.confirm(
+            'Profilbild wirklich entfernen?'
+          )
+        ) {
+          return;
+        }
+
+        setMemberAvatarStatus(
+          'Profilbild wird entfernt …'
+        );
+
+        toggleBtn.disabled = true;
+
+        try {
+
+          const updated =
+            await removeMemberAvatar(
+              currentMember
+            );
+
+          applyMemberUpdate(updated);
+
+          await reloadStravaProfileView(updated);
+
+          setMemberAvatarStatus(
+            'Profilbild entfernt.',
+            'success'
+          );
+
+        } catch (error) {
+
+          console.error(error);
+
+          setMemberAvatarStatus(
+            error?.message
+              || 'Entfernen fehlgeschlagen.',
+            'error'
+          );
+
+        }
+
+        toggleBtn.disabled = false;
+
+        return;
+
+      }
+
+      fileInput.click();
+
+    }
+  );
 
   fileInput.addEventListener(
     'change',
@@ -939,6 +1070,8 @@ function bindMemberAvatarEvents(
       setMemberAvatarStatus(
         'Profilbild wird hochgeladen …'
       );
+
+      toggleBtn.disabled = true;
 
       try {
 
@@ -969,60 +1102,10 @@ function bindMemberAvatarEvents(
 
       }
 
+      toggleBtn.disabled = false;
+
     }
   );
-
-  if (removeBtn) {
-
-    removeBtn.addEventListener(
-      'click',
-      async () => {
-
-        if (
-          !window.confirm(
-            'Profilbild wirklich entfernen?'
-          )
-        ) {
-          return;
-        }
-
-        setMemberAvatarStatus(
-          'Profilbild wird entfernt …'
-        );
-
-        try {
-
-          const updated =
-            await removeMemberAvatar(
-              getCurrentMember()
-              || member
-            );
-
-          applyMemberUpdate(updated);
-
-          await reloadStravaProfileView(updated);
-
-          setMemberAvatarStatus(
-            'Profilbild entfernt.',
-            'success'
-          );
-
-        } catch (error) {
-
-          console.error(error);
-
-          setMemberAvatarStatus(
-            error?.message
-              || 'Entfernen fehlgeschlagen.',
-            'error'
-          );
-
-        }
-
-      }
-    );
-
-  }
 
 }
 

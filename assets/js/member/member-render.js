@@ -561,27 +561,22 @@ function renderMemberAvatarProfileBlock(
 
     <div class="member-profile-avatar-actions">
 
-      <label class="member-avatar-upload-label">
-        <span class="member-save-btn member-avatar-upload-btn">
-          Profilbild hochladen
-        </span>
-        <input
-          type="file"
-          id="member-avatar-file"
-          class="member-avatar-file-input"
-          accept="image/jpeg,image/png,image/webp"
-          hidden>
-      </label>
-
       <button
         type="button"
-        id="member-avatar-remove-btn"
-        class="member-logout-btn member-avatar-remove-btn"
-        ${hasAvatar ? '' : 'hidden'}>
+        id="member-avatar-toggle-btn"
+        class="member-avatar-toggle-btn${hasAvatar ? ' is-active' : ''}"
+        aria-pressed="${hasAvatar ? 'true' : 'false'}">
 
-        Profilbild entfernen
+        ${hasAvatar ? 'Profilbild entfernen' : 'Profilbild hochladen'}
 
       </button>
+
+      <input
+        type="file"
+        id="member-avatar-file"
+        class="member-avatar-file-input"
+        accept="image/jpeg,image/png,image/webp"
+        hidden>
 
       <p
         id="member-avatar-status"
@@ -862,7 +857,7 @@ function renderStravaProfilePanel(
 
   <h2>Sichtbarkeit</h2>
 
-  <form id="strava-visibility-form" class="member-strava-visibility-form">
+  <div id="strava-visibility-form" class="member-strava-visibility-form">
 
     <label class="member-strava-checkbox">
       <input
@@ -891,13 +886,9 @@ function renderStravaProfilePanel(
       Zu Vereinszielen beitragen
     </label>
 
-    <button type="submit" class="member-save-btn">
-      Sichtbarkeit speichern
-    </button>
-
     <p id="strava-visibility-status" class="member-save-status" hidden></p>
 
-  </form>
+  </div>
 
 </section>
 

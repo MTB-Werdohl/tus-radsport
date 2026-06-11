@@ -1276,19 +1276,33 @@ body.member-consent-modal-open {
   min-width: 0;
 }
 
-.member-avatar-upload-label {
+.member-avatar-toggle-btn {
   display: inline-block;
   margin-top: 8px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
   cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  background: var(--header-bg);
+  color: #fff;
+  transition: background 0.2s ease;
 }
 
-.member-avatar-upload-btn {
-  display: inline-block;
+.member-avatar-toggle-btn:hover {
+  filter: brightness(1.05);
 }
 
-.member-avatar-remove-btn {
-  display: block;
-  margin-top: 10px;
+.member-avatar-toggle-btn.is-active {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-main);
+  border: var(--border-soft);
+}
+
+.member-avatar-toggle-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
 }
 
 .feedback-admin-member-cell {

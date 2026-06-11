@@ -148,7 +148,7 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
       </ul>
     </li>
     <li>
-      Auf <strong>„Sichtbarkeit speichern“</strong> klicken
+      Die Checkboxen werden <strong>sofort gespeichert</strong>
     </li>
   </ol>
   <p>
