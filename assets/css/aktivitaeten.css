@@ -145,17 +145,68 @@
 .aktivitaeten-card-link,
 .aktivitaeten-card-inner {
   display: block;
-  padding: 1rem 1.1rem 0.65rem;
+  padding: 1rem 1.1rem;
   color: inherit;
   text-decoration: none;
 }
 
-.aktivitaeten-card-map-wrap {
-  padding: 0 1.1rem 1rem;
-}
-
 .aktivitaeten-card-link:hover {
   background: rgba(255, 255, 255, 0.04);
+}
+
+.aktivitaeten-card-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) min(42%, 220px);
+  gap: 0.85rem;
+  align-items: stretch;
+  margin-top: 0.15rem;
+}
+
+.aktivitaeten-card-shell--single {
+  grid-template-columns: 1fr;
+}
+
+.aktivitaeten-card-text {
+  min-width: 0;
+}
+
+.aktivitaeten-card-map-col {
+  display: flex;
+  min-width: 0;
+  min-height: 130px;
+}
+
+.aktivitaeten-card-map-stack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 130px;
+}
+
+.aktivitaeten-finish-flag {
+  background: none;
+  border: none;
+}
+
+.aktivitaeten-finish-flag__pattern {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  background-color: #fff;
+  background-image:
+    linear-gradient(45deg, #111 25%, transparent 25%),
+    linear-gradient(-45deg, #111 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #111 75%),
+    linear-gradient(-45deg, transparent 75%, #111 75%);
+  background-size: 7px 7px;
+  background-position:
+    0 0,
+    0 3.5px,
+    3.5px -3.5px,
+    -3.5px 0;
 }
 
 .aktivitaeten-card-title {
@@ -164,21 +215,42 @@
   line-height: 1.25;
 }
 
-.aktivitaeten-stats-inline {
+.aktivitaeten-stats-block {
   margin: 0 0 0.65rem;
+}
+
+.aktivitaeten-stats-labels,
+.aktivitaeten-stats-values {
+  margin: 0;
   font-size: 0.92rem;
-  line-height: 1.4;
+  line-height: 1.35;
+}
+
+.aktivitaeten-stats-labels {
+  color: #999;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.15rem;
+}
+
+.aktivitaeten-stats-values {
   color: #ddd;
+  font-weight: 600;
 }
 
 .aktivitaeten-stats-sep {
   margin: 0 0.45rem;
   color: rgba(255, 255, 255, 0.35);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .aktivitaeten-card-map,
 .aktivitaeten-detail-map {
-  margin-top: 0;
+  flex: 1;
+  min-height: 110px;
   border-radius: 8px;
   overflow: hidden;
   background: rgba(0, 0, 0, 0.22);
@@ -306,6 +378,15 @@
 }
 
 @media (max-width: 640px) {
+
+  .aktivitaeten-card-shell {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
+  .aktivitaeten-card-map-col {
+    min-height: 120px;
+  }
 
   .aktivitaeten-stats,
   .aktivitaeten-detail-stats,

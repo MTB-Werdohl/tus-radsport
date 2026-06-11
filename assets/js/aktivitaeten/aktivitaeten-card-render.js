@@ -175,15 +175,18 @@ function renderActivityMapHtml(
 
   const height =
     Number(options.height)
-      || (options.detail ? 220 : 140);
+      || (options.detail ? 220 : 130);
 
   return `
-<div
-  class="${mapClass}"
-  data-activity-map
-  data-polyline="${escapeActivityCardHtml(polyline)}"
-  style="height:${height}px"
-  aria-hidden="true"></div>
+<div class="aktivitaeten-card-map-stack">
+  <div
+    class="${mapClass}"
+    data-activity-map
+    data-polyline="${escapeActivityCardHtml(polyline)}"
+    style="min-height:${height}px"
+    role="img"
+    aria-label="Streckenkarte"></div>
+</div>
   `;
 
 }
@@ -212,13 +215,25 @@ function renderActivityStatsHtml(
       : '—';
 
   return `
-<p class="aktivitaeten-stats-inline">
-  <span>${escape(distance)}</span>
-  <span class="aktivitaeten-stats-sep" aria-hidden="true">|</span>
-  <span>${escape(elevation)}</span>
-  <span class="aktivitaeten-stats-sep" aria-hidden="true">|</span>
-  <span>${escape(duration)}</span>
-</p>
+<div class="aktivitaeten-stats-block">
+
+  <p class="aktivitaeten-stats-labels">
+    <span>Distanz</span>
+    <span class="aktivitaeten-stats-sep" aria-hidden="true">|</span>
+    <span>Höhenmeter</span>
+    <span class="aktivitaeten-stats-sep" aria-hidden="true">|</span>
+    <span>Dauer</span>
+  </p>
+
+  <p class="aktivitaeten-stats-values">
+    <span>${escape(distance)}</span>
+    <span class="aktivitaeten-stats-sep" aria-hidden="true">|</span>
+    <span>${escape(elevation)}</span>
+    <span class="aktivitaeten-stats-sep" aria-hidden="true">|</span>
+    <span>${escape(duration)}</span>
+  </p>
+
+</div>
   `;
 
 }
@@ -284,6 +299,19 @@ function renderActivityCardHtml(
       ? ` href="${escape(url)}"`
       : '';
 
+  const shellClass =
+    mapHtml
+      ? 'aktivitaeten-card-shell'
+      : 'aktivitaeten-card-shell aktivitaeten-card-shell--single';
+
+  const bodyHtml = `
+        <h3 class="aktivitaeten-card-title">
+          ${escape(title)}${badgeHtml}
+        </h3>
+
+        ${statsHtml}
+  `;
+
   const contentHtml = `
     <div class="aktivitaeten-card-layout">
 
@@ -305,13 +333,13 @@ function renderActivityCardHtml(
 
       </div>
 
-      <div class="aktivitaeten-card-body">
+      <div class="${shellClass}">
 
-        <h3 class="aktivitaeten-card-title">
-          ${escape(title)}${badgeHtml}
-        </h3>
+        <div class="aktivitaeten-card-text">
+          ${bodyHtml}
+        </div>
 
-        ${statsHtml}
+        ${mapHtml ? `<div class="aktivitaeten-card-map-col">${mapHtml}</div>` : ''}
 
       </div>
 
@@ -325,8 +353,6 @@ function renderActivityCardHtml(
     class="${wrapperClass}"${wrapperAttrs}>
     ${contentHtml}
   </${wrapperTag}>
-
-  ${mapHtml ? `<div class="aktivitaeten-card-map-wrap">${mapHtml}</div>` : ''}
 
 </article>
   `;

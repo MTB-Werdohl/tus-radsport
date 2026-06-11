@@ -360,8 +360,18 @@ Die Strava-Anbindung ist **freiwillig** und nur für **Vereinsmitglieder** (Roll
 
 - OAuth-Zugangsdaten (Access- und Refresh-Token, Ablaufzeit) — nur **serverseitig** gespeichert, nicht im Browser
 - technische Strava-Athlete-ID (Zuordnung zum Vereinsprofil)
-- importierte Aktivitätsdaten, insbesondere: Art der Aktivität, Bezeichnung, Startdatum/-zeit, Distanz, Fahrzeit, Höhenmeter, optional Streckenpolyline und Foto-URL
+- importierte Aktivitätsdaten, insbesondere: Bezeichnung, Startdatum/-zeit, optional Startort (Stadt/Region), Distanz, Fahrzeit, Höhenmeter, Streckenpolyline (`summary_polyline`, von Strava), optional Foto-URL
 - Zeitpunkte der Verbindung, letzten Synchronisation und Sichtbarkeits-Einstellungen (`publish_feed`, `publish_rankings`, `contribute_to_club_goals`)
+
+**Karten und Privatsphäre (Strava):**
+
+Wir zeigen importierte Strecken als Karte mit OpenStreetMap-Kacheln. Die **Strecke (Polyline)** speichern und veröffentlichen wir **so, wie Strava sie über die API liefert** — einschließlich der von Strava vorgenommenen **Privacy Zones** (z. B. „Wohnort ausblenden“: Start- und Endbereich nahe dem hinterlegten Wohnort werden von Strava in der Polyline gekürzt). Wir schneiden die Route **nicht zusätzlich** ab; wir fügen auch **keine** weiteren GPS-Punkte hinzu.
+
+Auf der Karte markieren wir **Start** (grüner Punkt) und **Ziel** (Zielflaggen-Muster) als ersten und letzten Punkt dieser von Strava bereitgestellten Polyline. Wenn Strava einen Abschnitt ausgeblendet hat, beginnt bzw. endet die sichtbare Linie entsprechend **nicht** am exakten Start-/Endpunkt der Tour.
+
+**Hinweis:** Änderungen an Strava-Privacy-Einstellungen wirken sich nach Strava-Regeln vor allem auf **neu synchronisierte** Aktivitäten aus; bereits importierte Touren können unverändert bleiben, bis sie erneut von Strava geliefert werden.
+
+**Kartenanbieter OpenStreetMap:** Beim Laden der Karte ruft dein Browser Kartenkacheln von [OpenStreetMap](https://www.openstreetmap.org/copyright)-Servern ab; dabei wird deine IP-Adresse an den Kartenanbieter übermittelt.
 
 **Drittanbieter Strava:**
 
