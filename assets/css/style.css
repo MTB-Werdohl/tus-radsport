@@ -2323,3 +2323,43 @@ body.site-saison-pause .mitfahren-hero__cta {
   cursor: pointer;
   font: inherit;
 }
+
+.member-change-summary-dialog__form {
+  position: relative;
+}
+
+.member-change-summary-dialog__close-icon {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  border: 0;
+  background: transparent;
+  color: #666;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.25rem 0.4rem;
+}
+
+.member-change-summary-dialog__close-icon:hover {
+  color: #111;
+}
+
+.member-change-summary-dialog__list {
+  margin: 0 0 1.25rem;
+  padding-left: 1.2rem;
+  line-height: 1.55;
+}
+
+.member-change-summary-dialog__list li + li {
+  margin-top: 0.35rem;
+}
+
+.member-change-summary-dialog__actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.member-change-summary-dialog__primary {
+  font-weight: 600;
+}

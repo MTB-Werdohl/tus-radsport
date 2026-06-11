@@ -57,8 +57,13 @@ page.js      → slug aus URL lesen, service + render aufrufen
 Lädt global:
 
 - Supabase-Client (`site-config` → `core/supabase.js`)
-- Push-Skripte
-- Navigation, Sidebar, Footer, Service Worker
+- Mitglieder-Auth (`member-service`, `member-auth`, `preview-role`)
+- Tröte (`push/state.js`, `push/widget.js`)
+- Website-Hinweise (`site/site-content-state.js`, `site/site-content-render.js`)
+- Rollen-Vorschau-Banner (`core/preview-banner.js`) — nur sichtbar bei aktiver Admin-Vorschau
+- Navigation (`member-nav.js`, `nav.js`)
+
+**Kein** Service Worker, **kein** Web Push.
 
 Optionale Frontmatter-Flags:
 
@@ -71,12 +76,14 @@ Optionale Frontmatter-Flags:
 
 | Datei | Aufgabe |
 |-------|---------|
-| `member-service.js` | Abfrage Tabelle `members`, Rollen-Hilfen |
+| `member-service.js` | Abfrage Tabelle `members`, Rollen-Hilfen, Avatar-URLs |
 | `member-auth.js` | Session, Magic Link, Logout, Validierung; Rückkehr-URL (`memberReturnUrl`, `?next=`) nach Login |
+| `member-change-summary.js` | Popup „Seit deinem letzten Besuch“ (nur Mitglied/Vorstand) |
 | `member-account.js` | Account-Löschung (Anonymisierung) via Edge Function |
-| `member-nav.js` | Header-UI (Login / Profil) |
-| `member-render.js` | Profilseite rendern (Mitglied + public) |
-| `member-page.js` | Profilseite initialisieren |
+| `member-nav.js` | Header-UI (Login / Profil / Admin-Link) |
+| `member-render.js` | Profilseite rendern (Mitglied + public), Avatar-Block |
+| `member-page.js` | Profilseite initialisieren (Tabs Strava, Abstimmungen, Aktivitäten) |
+| `preview-role.js` | Rollen-Vorschau für Vorstand (`getViewerMember`, `isRealVorstand`) |
 
 Ablauf Vereinsmitglied: E-Mail in `members` → Magic Link → Session → E-Mail-Abgleich → Profil unter `/profil/`.
 
@@ -101,8 +108,8 @@ Ausführliche Einrichtung: [`docs/supabase-members-setup.md`](supabase-members-s
 - Einheitliches Layout: `.page-header` + `.admin-topbar` (Listen) bzw. `.member-admin-form` (Formulare)
 - Kein separates Admin-Login: Vorstand meldet sich in der Website-Navigation per Magic Link an
 - `/admin/` und Unterseiten: ohne Vorstand-Session → Redirect nach `/` (Mitglied bleibt eingeloggt)
-- Session-Prüfung: `requireAdminSession(callback)` in `admin/js/auth-guard.js`
-- Admin-Module: Termine, News, Galerien, Mitglieder, Push, Feedback (`admin/js/*-list.js`, `*-edit.js`, `feedback-module-form.js`)
+- Session-Prüfung: `requireAdminSession(callback)` in `admin/js/auth-guard.js` — nutzt `isRealVorstand()` (unabhängig von Rollen-Vorschau)
+- Admin-Module: Termine, News, Galerien, Mitglieder, Tröte, Website-Hinweise, Rollen-Vorschau, Feedback (`admin/js/*`)
 - HTML-Escaping: `escapeAdminHtml()` in `admin/js/admin-utils.js`
 
 SQL für Rollen und RLS: [`docs/supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql)
@@ -125,19 +132,22 @@ SQL: [`docs/supabase-content-visibility.sql`](supabase-content-visibility.sql) �
 | `News` | Vereinsnachrichten |
 | `galleries` | Galerie-Metadaten |
 | `gallery_images` | Bilder pro Galerie |
-| `site_state` | Tröte: letzte Mitteilung (`last_push`) |
-| `members` | Vereinsmitglieder (`rolle`, Profil, Einwilligungen) |
+| `site_state` | Tröte (`last_push`), Website-Hinweise (Phase 5) |
+| `members` | Vereinsmitglieder (`rolle`, Profil, Einwilligungen, `avatar_*`) |
+| `strava_connections` / `activities` | Strava-OAuth, importierte Touren (`sport_category`) |
+| `member_stats_*` / `club_stats_*` | Rankings und Vereinsziele (nur Rad) |
 | `feedback_modules` | Universelles Feedback (polymorph: `entity_type` + `entity_id`, kein FK) |
 | `feedback_answers` | Antworten pro Modul und Mitglied (`answer` = Code/`option_id`) |
 
-**Storage-Bucket:** `media` (Bilder, GPX)
+**Storage-Buckets:** `media` (Bilder, GPX), `avatars` (Profilbilder, öffentlich lesbar)
 
 SQL Feedback: [`supabase-feedback.sql`](supabase-feedback.sql)
 
 **Edge Functions** (URLs in `site-config.js` → `functionsUrl`):
 
-- `send-admin-email` — Vorstand-E-Mails (Einzel / Termin / Alle mit Kontakt-Einwilligung); Setup: [`supabase-admin-email-setup.md`](supabase-admin-email-setup.md)
-- `anonymize-member-account` — Account-Löschung (public Self-Service / Vorstand); Referenz: [`supabase-edge-anonymize-member-account.ts`](supabase-edge-anonymize-member-account.ts), **Verify JWT OFF**
+- `send-admin-email` — Vorstand-E-Mails
+- `anonymize-member-account` — Account-Löschung; **Verify JWT OFF**
+- `strava-oauth-start`, `strava-oauth-callback`, `strava-sync` — Strava-Integration
 
 ## Admin-E-Mail
 
@@ -159,6 +169,33 @@ Der Vorstand veröffentlicht unter `/admin/push.html` eine Mitteilung. Gespeiche
 | `admin/js/push-admin.js` | Formular → `saveLastPush()` |
 
 SQL: [`docs/supabase-drop-web-push.sql`](supabase-drop-web-push.sql) (entfernt alte Push-Tabellen nach Migration)
+
+---
+
+## Website-Hinweise & Rollen-Vorschau (Phase 5)
+
+| Bereich | Dateien | Admin |
+|---------|---------|-------|
+| Banner, Saison, Landing, Overlay | `site/site-content-state.js`, `site/site-content-render.js` | `/admin/site-content.html` |
+| Rollen-Vorschau | `core/preview-role.js`, `core/preview-banner.js` | `/admin/preview.html` |
+
+`site_state`-Keys: `site_banner`, `saison_mode`, `landing_hints`, `site_overlay` — SQL: [`supabase/supabase-site-content.sql`](supabase/supabase-site-content.sql)
+
+Vorschau simuliert **clientseitig** Public- oder Mitglied-Sicht; echte Session und Admin-Rechte bleiben unverändert.
+
+---
+
+## Aktivitätenportal (Strava, Phase 2+3)
+
+Öffentlich unter `/aktivitaeten/` — nur **Rad**-Aktivitäten mit Opt-in (`publish_feed`, `publish_rankings`). Profilbilder optional (`avatars`-Bucket, `avatar_url` in RPCs).
+
+| Datei | Aufgabe |
+|-------|---------|
+| `aktivitaeten/aktivitaeten-service.js` | RPCs Feed, Rankings, Club-Stats |
+| `aktivitaeten/aktivitaeten-render.js` | Feed-Karten mit Avatar/Initialen |
+| `aktivitaeten/aktivitaeten-page.js` | Portal initialisieren |
+
+SQL: [`supabase-strava-public.sql`](supabase-strava-public.sql), Phase 2/3 siehe RUNBOOK.
 
 ---
 
@@ -231,4 +268,6 @@ SQL-Reihenfolge: [`docs/supabase/RUNBOOK.md`](supabase/RUNBOOK.md) (Feedback + p
 ## Wartung
 
 - Tabellennamen in `site-config.js` und `scripts/generate-pages.js` (`TABLES`) synchron halten
+- Admin-JS-Version nur in `_config.yml` → `admin_js_version` (Cache-Busting)
 - Kein Service-Role-Key im Frontend
+- Go-live: [`GO-LIVE-CHECKLIST.md`](GO-LIVE-CHECKLIST.md)

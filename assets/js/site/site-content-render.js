@@ -242,6 +242,12 @@ function renderSiteOverlay(
           dialog.close();
           dialog.remove();
 
+          window.dispatchEvent(
+            new CustomEvent(
+              'site-overlay-dismissed'
+            )
+          );
+
         }
       );
 
@@ -290,6 +296,14 @@ async function initPublicSiteContent() {
     console.error(error);
 
   }
+
+  window.__siteContentInitComplete = true;
+
+  window.dispatchEvent(
+    new CustomEvent(
+      'site-content-init-complete'
+    )
+  );
 
 }
 

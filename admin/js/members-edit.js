@@ -512,7 +512,7 @@ function loadMemberPdfScripts() {
     script.src =
       '/admin/js/member-pdf.js'
       + '?v='
-      + (window.siteConfig.adminJsVersion || '1');
+      + (window.__adminJsVersion || '1');
 
     script.onload = () => {
 

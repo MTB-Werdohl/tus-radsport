@@ -21,6 +21,7 @@ Stand: Projekt MTB Werdohl. Spalten aus Code + Supabase; bei Abweichungen Dashbo
 | `bilder_eingewilligt_am` | date | |
 | `anonymized_at` | timestamptz | gesetzt nach Account-Löschung; `id` bleibt für `feedback_answers` |
 | `last_login_at` | timestamptz | letzter erfolgreicher Magic-Link-Login (Admin: grün/rot) |
+| `last_change_summary_seen_at` | timestamptz | letzte geschlossene Veränderungs-Zusammenfassung (Popup) |
 | `strava_connected_at` | timestamptz | letzte Strava-Verbindung (Profil-Anzeige) |
 | `strava_sync_enabled` | boolean | Sync aktiv (intern) |
 | `publish_feed` | boolean | im öffentlichen Feed (90 Tage) |
@@ -90,6 +91,8 @@ SQL: [`supabase-strava-public.sql`](../supabase-strava-public.sql)
 | `update_strava_visibility(...)` | authenticated | Feed / Rankings / Vereinsziele |
 | `disconnect_strava()` | authenticated | Verbindung trennen |
 | `get_member_activities(p_limit)` | authenticated | Tab „Meine Aktivitäten“ — nur Rad, Badge `in_public_feed` |
+| `get_member_change_summary()` | authenticated (Mitglied/Vorstand) | Zähler neuer sichtbarer Inhalte seit `last_change_summary_seen_at` |
+| `touch_member_change_summary_seen()` | authenticated (Mitglied/Vorstand) | Popup/Erstbesuch: Zeitstempel setzen |
 | `get_member_profile_avatar()` | authenticated | Eigenes Profilbild-Metadaten (URL, Initialen) |
 
 SQL Profil-Aktivitäten: [`supabase-strava-member-activities.sql`](../supabase-strava-member-activities.sql)
@@ -109,6 +112,8 @@ SQL Profilbilder: [`supabase/supabase-member-avatars.sql`](supabase/supabase-mem
 |--------|---------|
 | `date` | Einzeltermin: Start (Datum/Zeit) |
 | `endDate` | Einzeltermin: optionales Enddatum (Mehrtages-Termin, inklusive) |
+| `created_at` | timestamptz | Erstellungszeitpunkt (Veränderungs-Zusammenfassung) |
+| `updated_at` | timestamptz | letzte Bearbeitung |
 | `recurring`, `daysOfWeek`, `startTime`, `startRecur`, `endRecur`, `exclude` | Wiederkehrend |
 | `durationDays` | Wiederkehrend: aufeinanderfolgende Tage pro Termin (optional, >1) |
 | `sichtbarkeit` | `public` \| `members` \| `draft` |

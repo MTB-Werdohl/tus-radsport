@@ -26,7 +26,7 @@ Internet: https://www.tusjahnwerdohl.de
 
 Der Schutz personenbezogener Daten ist uns wichtig.
 
-Diese Website dient der Information über die Abteilung Radsport des TuS Jahn Werdohl e.V. Die Seiten werden als statische Website bereitgestellt. Für den **Mitgliederbereich**, die Verwaltung von Vereinsinhalten, **Feedback/Abstimmungen**, **externe Anmeldungen** (z. B. Trainingslager), die **Tröte** (kurze Mitteilung auf der Startseite) und optional das **öffentliche Aktivitätsportal** (Strava-Ausfahrten, nur mit Einwilligung der Mitglieder) nutzen wir zusätzlich einen Backend-Dienst (Supabase, siehe Abschnitt 11).
+Diese Website dient der Information über die Abteilung Radsport des TuS Jahn Werdohl e.V. Die Seiten werden als statische Website bereitgestellt. Für den **Mitgliederbereich**, die Verwaltung von Vereinsinhalten, **Feedback/Abstimmungen**, **externe Anmeldungen** (z. B. Trainingslager), die **Tröte**, **Website-Hinweise** (Banner, Saisonmodus) und optional das **öffentliche Aktivitätsportal** (Strava-Ausfahrten, Profilbilder — nur mit Einwilligung der Mitglieder) nutzen wir zusätzlich einen Backend-Dienst (Supabase, siehe Abschnitt 11).
 
 Personenbezogene Daten werden nur verarbeitet, soweit dies für die Mitgliedschaft, die Nutzung des Mitgliederbereichs, eine Anmeldung zu Vereinsangeboten, eine Einwilligung oder eine gesetzliche Grundlage erforderlich ist.
 
@@ -200,7 +200,9 @@ Beim Aufruf von Seiten mit Mitgliederfunktionen oder beim Speichern von Inhalten
 - Mitgliederstammdaten (siehe Abschnitt 12)
 - Feedback und Abstimmungen (siehe Abschnitt 12.6)
 - optional importierte Strava-Aktivitäten und Sichtbarkeits-Einstellungen (siehe Abschnitt 12.7)
+- optional **Profilbilder** von Vereinsmitgliedern (siehe Abschnitt 12.8)
 - letzte Mitteilung für die **Tröte** auf der Startseite (`site_state.last_push`, siehe Abschnitt 13)
+- **Website-Hinweise** (Banner, Saisonmodus, Overlay, Landing-Hinweise — siehe Abschnitt 14)
 
 Rechtsgrundlagen:
 
@@ -313,7 +315,7 @@ Rechtsgrundlagen:
 - Art. 6 Abs. 1 lit. b DSGVO — Durchführung der von dir gewünschten Anmeldung/Teilnahme
 - Art. 6 Abs. 1 lit. f DSGVO — Organisation des Radsportbetriebs und Auswertung durch den Vorstand
 
-Speicherdauer: bis zur Löschung durch dich (Profil), den Vorstand oder auf Anfrage (siehe Abschnitt 15), sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen.
+Speicherdauer: bis zur Löschung durch dich (Profil), den Vorstand oder auf Anfrage (siehe Abschnitt 16), sofern keine gesetzlichen Aufbewahrungspflichten entgegenstehen.
 
 ### 12.6 Feedback und Abstimmungen
 
@@ -387,6 +389,27 @@ Rechtsgrundlagen:
 - Art. 6 Abs. 1 lit. b DSGVO — Nutzung im Rahmen der Vereinsmitgliedschaft
 - Art. 6 Abs. 1 lit. f DSGVO — Betrieb des optionalen Aktivitätsportals
 
+### 12.8 Profilbilder (optional)
+
+Vereinsmitglieder (Rollen „Mitglied“ und „Vorstand“) können **freiwillig** ein Profilbild in **Mein Profil** hochladen. Mit dem Upload willigst du ein, dass das Bild **öffentlich** auf der Website erscheinen darf — z. B. im Aktivitäts-Feed, in Rankings, in Teilnehmerlisten und auf Profilseiten.
+
+**Getrennt von Tourfotos:** Die Einwilligung **„Bilder“** (`einwilligung_bilder`) auf der Profilseite gilt **nicht** für das Profilbild. Sie betrifft weiterhin Vereinsfotos, Tourfotos und Galeriebilder im Vereinskontext.
+
+Verarbeitete Daten:
+
+- Bilddatei im Storage-Bucket **`avatars`** (Pfad z. B. `{Mitglieds-ID}/avatar.webp`)
+- Metadaten in der Mitgliederdatenbank (`avatar_storage_path`, Zeitstempel der Aktualisierung)
+- öffentliche Anzeige-URL (technisch aus Storage abgeleitet)
+
+Ohne Upload wird kein Profilbild gespeichert; stattdessen können Initialen als Platzhalter angezeigt werden.
+
+**Löschung:** Du kannst das Profilbild im Profil entfernen. Bei Account-Löschung wird die Bilddatei gelöscht und die Avatar-Felder entfernt.
+
+Rechtsgrundlagen:
+
+- Art. 6 Abs. 1 lit. a DSGVO — freiwilliger Upload als Einwilligung zur öffentlichen Darstellung
+- Art. 6 Abs. 1 lit. f DSGVO — Darstellung im Vereinskontext (Feed, Rankings)
+
 ---
 
 ## 13. Tröte (Mitteilung auf der Startseite)
@@ -397,7 +420,7 @@ Verarbeitete Daten:
 
 - Inhalt der Mitteilung (Titel, Text, optional Link, Zeitstempel)
 - technischer Speichereintrag in der Datenbank (`site_state.last_push`)
-- **lastSeenPush** im Local Storage deines Browsers — ob du die Mitteilung bereits geöffnet/gelesen markiert hast (siehe Abschnitt 14)
+- **lastSeenPush** im Local Storage deines Browsers — ob du die Mitteilung bereits geöffnet/gelesen markiert hast (siehe Abschnitt 15)
 
 Es werden **keine** Browser-Push-Benachrichtigungen versendet. Es ist **kein** Service Worker und **keine** Geräte-Registrierung nötig.
 
@@ -405,7 +428,47 @@ Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (Information der Website-Besucher ü
 
 ---
 
-## 14. Cookies, Local Storage und technische Speicherung
+## 13a. Veränderungs-Zusammenfassung (Mitglieder / Vorstand)
+
+Eingeloggte **Vereinsmitglieder** und **Vorstände** können beim Besuch der Website eine **persönliche Zusammenfassung** neuer Inhalte sehen (z. B. neue Termine, News, Aktivitäten, Abstimmungen), sofern seit der letzten angezeigten Zusammenfassung relevante Änderungen vorhanden sind.
+
+Verarbeitete Daten:
+
+- **last_change_summary_seen_at** in der Tabelle `members` — technischer Zeitpunkt, wann du die Zusammenfassung zuletzt geschlossen hast (nicht an Login/Logout gebunden)
+- serverseitige **Zählwerte** sichtbarer Inhalte seit diesem Zeitpunkt (keine Speicherung der Popup-Inhalte als separates Protokoll)
+
+Beim **ersten Besuch** nach Einführung der Funktion wird kein Popup gezeigt; der Zeitstempel wird still gesetzt, damit keine historischen Inhalte als „neu“ erscheinen.
+
+Rolle **public** (externe Teilnehmer) erhält **keine** Veränderungs-Zusammenfassung.
+
+Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (Orientierung im Mitgliederbereich, keine Werbung).
+
+---
+
+## 14. Website-Hinweise (Banner, Saisonmodus, Overlay)
+
+Der Vorstand kann im Admin-Bereich unter **Website-Hinweise** kurze, zeitlich begrenzte Informationen für alle Besucher veröffentlichen. Gespeichert werden diese Einträge in der Datenbank (`site_state`) — **kein** vollständiges Content-Management-System.
+
+| Art | Zweck |
+|-----|--------|
+| **Banner** | Hinweisleiste auf allen Seiten (Text, optional Link, Stil Info/Warnung) |
+| **Saisonmodus** | Hinweis bei Saisonpause (z. B. abgeschwächte Mitfahr-Hinweise) |
+| **Overlay** | Wichtige Mitteilung als Dialog für alle Besucher (optional schließbar) |
+| **Landing-Hinweise** | Kurze Zusatzinfos auf der Startseite (z. B. Trainingstermine) |
+
+Verarbeitete Daten:
+
+- vom Vorstand eingegebene Texte, optional Links und Zeiträume (von/bis)
+- technische Speichereinträge (`site_banner`, `saison_mode`, `site_overlay`, `landing_hints`)
+- **siteOverlayDismissedAt** im Local Storage — ob du ein schließbares Overlay bereits geschlossen hast (siehe Abschnitt 15)
+
+Es werden **keine** personenbezogenen Daten der Besucher an den Verein übermittelt, solange du nur die Hinweise liest.
+
+Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (Information über aktuelle Vereins- und Saisonhinweise).
+
+---
+
+## 15. Cookies, Local Storage und technische Speicherung
 
 Diese Website verwendet:
 
@@ -419,6 +482,7 @@ Zur technischen Funktion können Informationen **lokal im Browser** gespeichert 
 
 - **Supabase Auth-Session** — damit du eingeloggt bleibst (Magic Link)
 - **lastSeenPush** — ob die Tröte-Mitteilung auf der Website bereits als gelesen markiert wurde
+- **siteOverlayDismissedAt** — ob ein Website-Overlay bereits geschlossen wurde (Abschnitt 14)
 - **publicFeedbackReturnUrl** — Rückkehr-Adresse nach Magic Link bei externer Abstimmung (Session Storage, bis Tab geschlossen oder überschrieben)
 - **memberReturnUrl** — Rückkehr nach normalem Mitglieder-Login (z. B. `?next=` auf Termin/News), Session Storage
 - **publicRegistrationPending** — vorübergehend Name/Telefon bis E-Mail bestätigt ist (Session Storage, bis Registrierung abgeschlossen oder Account gelöscht)
@@ -434,22 +498,25 @@ Es werden keine Cookies zu Werbe- oder Analysezwecken gesetzt.
 
 ---
 
-## 15. Speicherdauer
+## 16. Speicherdauer
 
 - **Kontaktanfragen per E-Mail:** Löschung nach abschließender Bearbeitung, spätestens nach Ablauf gesetzlicher Aufbewahrungsfristen, sofern keine weitergehende Pflicht besteht.
 - **Mitgliederstammdaten (Mitglied / Vorstand):** für die Dauer der Mitgliedschaft; danach Löschung oder Einschränkung, soweit keine gesetzlichen Aufbewahrungspflichten entgegenstehen.
+- **last_change_summary_seen_at:** bis zur nächsten angezeigten Zusammenfassung bzw. Account-Löschung; dient nur der persönlichen „Was ist neu?“-Orientierung.
 - **Externe Teilnehmer (Rolle „public“):** bis zur Löschung durch dich (Profil), den Vorstand oder auf Anfrage; nach Löschung nur noch anonyme technische ID ohne Personenbezug, soweit Abstimmungen ausgewertet werden.
 - **Feedback-Antworten:** für die Dauer des jeweiligen Termins/Anlasses und der Auswertung durch den Vorstand; bei Account-Löschung bleiben Antworten **anonym** erhalten (ohne Name/Kommentar), Löschung auf Anfrage möglich.
 - **Strava-Verbindung und importierte Aktivitäten:** bis zur Trennung der Verbindung, Löschung des Mitgliedskontos oder auf Anfrage; OAuth-Tokens werden bei Trennung gelöscht.
 - **Öffentlich freigegebene Aktivitäten im Feed:** Anzeige höchstens **90 Tage** zurück; danach nicht mehr im Feed, ggf. weiter in Rankings oder Vereinszielen je nach gespeicherter Freigabe.
 - **Auth-Session:** bis zum Logout, Ablauf der Session oder Ungültigkeit des Login-Links.
 - **Tröte (`site_state.last_push`):** bis der Vorstand eine neue Mitteilung veröffentlicht oder den Eintrag entfernt.
-- **Local Storage im Browser** (z. B. `lastSeenPush`) und **Session Storage** (z. B. `publicFeedbackReturnUrl`, `memberReturnUrl`, `publicRegistrationPending`): bis du die Website-Daten im Browser löschst, der Tab geschlossen wird oder der Eintrag überschrieben wird.
+- **Website-Hinweise** (`site_banner`, `saison_mode`, `site_overlay`, `landing_hints`): bis der Vorstand sie ändert, deaktiviert oder löscht; Anzeige kann zusätzlich durch eingestellte Zeiträume begrenzt sein.
+- **Profilbilder:** bis zur Entfernung im Profil, Account-Löschung oder auf Anfrage.
+- **Local Storage im Browser** (z. B. `lastSeenPush`, `siteOverlayDismissedAt`) und **Session Storage** (z. B. `publicFeedbackReturnUrl`, `memberReturnUrl`, `publicRegistrationPending`): bis du die Website-Daten im Browser löschst, der Tab geschlossen wird oder der Eintrag überschrieben wird.
 - **Server- und Verbindungslogs der Hosting-/Backend-Anbieter:** gemäß deren Richtlinien; auf diese Logs hat der Verein in der Regel keinen direkten Zugriff.
 
 ---
 
-## 16. Rechte betroffener Personen
+## 17. Rechte betroffener Personen
 
 Du hast das Recht:
 
@@ -473,10 +540,10 @@ Zur Ausübung deiner Rechte genügt eine formlose Mitteilung an die unter Abschn
 
 ---
 
-## 17. Aktualität
+## 18. Aktualität
 
 Stand dieser Datenschutzerklärung:
 
-Mai 2026
+Mai 2026 (Ergänzung: Profilbilder Abschnitt 12.8, Website-Hinweise Abschnitt 14)
 
 Bei technischen oder rechtlichen Änderungen wird diese Datenschutzerklärung angepasst.

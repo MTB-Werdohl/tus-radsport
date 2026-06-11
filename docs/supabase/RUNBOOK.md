@@ -40,6 +40,8 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Mitglieder letzter Login:** [`supabase-members-last-login.sql`](../supabase-members-last-login.sql) — Spalte `last_login_at`, RPC `touch_member_last_login()` beim Magic-Link-Login; einmaliges Backfill aus `auth.users`.
 
+**Veränderungs-Zusammenfassung:** [`supabase-member-change-summary.sql`](../supabase-member-change-summary.sql) — `members.last_change_summary_seen_at`, `Termine.created_at`/`updated_at`, RPCs `get_member_change_summary()`, `touch_member_change_summary_seen()`, Hilfsfunktion `is_club_member()`.
+
 **Protokolle (Vorstand):** [`supabase-board-documents.sql`](../supabase-board-documents.sql) — Tabelle `board_documents`, PDFs unter `protocols/` im Storage (nur Vorstand lesbar). **Kurzbeschreibung in Listen:** [`supabase-board-documents-subject.sql`](../supabase-board-documents-subject.sql) — Spalte `subject` (Feld „Inhalt“ im Admin). **Dateien verschieben:** [`supabase-board-documents-storage-update.sql`](../supabase-board-documents-storage-update.sql) — Storage-Policy `UPDATE` für `move`/Umbenennen.
 
 **Strava / Aktivitätenportal (MVP Schritt 4+2):** [`supabase-strava.sql`](../supabase-strava.sql) — `strava_connections`, `activities`, Stats-Tabellen, Profil-RPCs (`get_strava_profile_status`, `update_strava_visibility`, `disconnect_strava`). OAuth/Webhook/Sync: Edge Functions folgen — Setup: [`supabase-strava-setup.md`](../supabase-strava-setup.md).
@@ -123,7 +125,7 @@ Falscher Slug (404): alte Test-Function im Dashboard löschen.
 | `galleries` / `gallery_images` | SELECT | SELECT | CRUD |
 | `feedback_modules` | SELECT | SELECT | ALL |
 | `feedback_answers` | — | SELECT/INSERT/UPDATE eigene | SELECT alle + (später Auswertung) |
-| `site_state` | SELECT `last_push` | SELECT `last_push` | ALL (Tröte) |
+| `site_state` | SELECT `last_push` + Phase-5-Keys | SELECT `last_push` + Phase-5-Keys | ALL |
 | `storage.objects` (media) | SELECT | SELECT | INSERT, UPDATE, DELETE |
 | `storage.objects` (avatars) | SELECT | INSERT/UPDATE/DELETE eigenes `{member_id}/` | INSERT/UPDATE/DELETE alle |
 
@@ -137,11 +139,14 @@ Schreibzugriffe auf `site_state` (`last_push`) für die Tröte: Vorstand direkt 
 
 ## Go-live Checkliste (Website + Supabase)
 
-Vor dem produktiven Start einmal durchgehen:
+**Gesamtübersicht:** [`GO-LIVE-CHECKLIST.md`](../GO-LIVE-CHECKLIST.md) — SQL, Edge Functions, Smoke-Tests Phase 2–3–5.
+
+Kurz (Details im Dokument oben):
 
 | Bereich | Aktion |
 |---------|--------|
 | **SQL Feedback** | [`supabase-feedback-cascade-delete.sql`](../supabase-feedback-cascade-delete.sql) + [`supabase-feedback-answers-delete-own.sql`](../supabase-feedback-answers-delete-own.sql) ausgeführt |
+| **SQL Change Summary** | [`supabase-member-change-summary.sql`](../supabase-member-change-summary.sql) ausgeführt |
 | **Edge `send-admin-email`** | Code deployt; Termin-Mails zählen **Ja + Vielleicht** (Preview in Admin = tatsächlicher Versand) |
 | **Edge `anonymize-member-account`** | Deployt, JWT Verify **OFF**; Test Account löschen |
 | **Redirect URLs** | `/profil/`, `/**`, ggf. `/event.html`, `/news-detail.html` für Rückkehr nach Magic Link |
@@ -164,6 +169,7 @@ Details: [`../supabase-members-setup.md`](../supabase-members-setup.md), [`../su
 
 ## Siehe auch
 
+- Go-live: [`GO-LIVE-CHECKLIST.md`](../GO-LIVE-CHECKLIST.md)
 - Schema: [`SCHEMA.md`](SCHEMA.md)
-- Magic Link Setup: [`../supabase-members-setup.md`](../supabase-members-setup.md)
 - Architektur: [`../ARCHITECTURE.md`](../ARCHITECTURE.md)
+- Magic Link Setup: [`../supabase-members-setup.md`](../supabase-members-setup.md)

@@ -74,9 +74,7 @@ window.siteConfig = {
     public: 'public',
     members: 'members',
     draft: 'draft'
-  },
-
-  adminJsVersion: '20260547'
+  }
 
 };
 

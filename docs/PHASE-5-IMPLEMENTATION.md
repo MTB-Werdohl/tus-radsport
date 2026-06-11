@@ -52,7 +52,7 @@
 
 1. **Supabase SQL Editor:** `docs/supabase/supabase-site-content.sql` ausführen
 2. **Frontend deployen** (Jekyll Build + statische Assets)
-3. **Cache:** Admin-Seiten nutzen `admin_js_version` — in `_config.yml` auf `20260561` gesetzt
+3. **Cache:** Admin-Seiten nutzen `admin_js_version` aus `_config.yml` (einzige Quelle; injiziert als `window.__adminJsVersion` in `admin-head.html`)
 
 ---
 
@@ -94,7 +94,7 @@
 | `index.md` | `#home-quick-facts` |
 | `assets/css/style.css` | Preview + Site-Content Styles |
 | `assets/css/admin.css` | Admin Site-Content Tabs |
-| `_config.yml` | `admin_js_version` |
+| `_config.yml` | `admin_js_version` (einzige Quelle für Admin-Cache-Busting) |
 
 ---
 

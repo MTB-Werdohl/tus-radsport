@@ -255,7 +255,10 @@ function normalizeMemberRow(row) {
       row.avatar_source || null,
 
     avatar_consent_at:
-      row.avatar_consent_at || null
+      row.avatar_consent_at || null,
+
+    last_change_summary_seen_at:
+      row.last_change_summary_seen_at || null
 
   };
 

@@ -17,7 +17,9 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Trö
 | Kalender | FullCalendar (lokal unter `assets/js/fullcalendar/`) |
 | Markdown (Inhalte) | [marked](https://marked.js.org/) |
 | Lightbox | GLightbox |
-| Tröte | Letzte Mitteilung auf der Startseite (`site_state.last_push`) |
+| Tröte | Letzte Mitteilung (`site_state.last_push`) |
+| Strava / Aktivitäten | Feed, Rankings, Vereinsziele (`/aktivitaeten/`) |
+| Website-Hinweise | Banner, Saisonmodus, Overlay (`site_state`) |
 
 ---
 
@@ -39,8 +41,9 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Trö
 │       ├── news/        # News-Liste & Detail
 │       ├── gallery/     # Galerie
 │       ├── feedback/    # Abstimmungen (Termin/News)
-│       ├── member/      # Mitglieder-Login (Magic Link)
-│       ├── aktivitaeten/ # Strava-Feed (öffentlich)
+│       ├── member/      # Mitglieder-Login (Magic Link), Profil, Strava
+│       ├── aktivitaeten/ # Öffentliches Aktivitätsportal
+│       ├── site/        # Website-Hinweise (Banner, Saison, Overlay)
 │       └── push/        # Tröte (state.js, widget.js)
 ├── mitglieder-hilfe.md  # Hilfe für Mitglieder (Login, Abstimmung, Profil)
 ├── *.md, *.html         # Öffentliche Seiten (Jekyll)
@@ -85,8 +88,10 @@ Unter `/admin/` (nicht in der Hauptnavigation verlinkt; Footer-Link).
 - **Feedback** — Auswertung, CSV; Löschung über DB-Kaskade beim Entity-Löschen
 - **Galerien** — `galleries` + `gallery_images`
 - **Mitglieder** — `members` (CRUD, Rolle Vorstand/Mitglied)
-- **Tröte** — `site_state.last_push` (Admin: `/admin/push.html`)
-- **E-Mail** — Edge Function `send-admin-email` (Admin: `/admin/email.html`)
+- **Tröte** — `site_state.last_push` (`/admin/push.html`)
+- **Website-Hinweise** — Banner, Saisonmodus, Landing, Overlay (`/admin/site-content.html`)
+- **Rollen-Vorschau** — Website als Public/Mitglied betrachten (`/admin/preview.html`)
+- **E-Mail** — Edge Function `send-admin-email` (`/admin/email.html`)
 
 SQL-Reihenfolge und Policies: [`docs/supabase/RUNBOOK.md`](docs/supabase/RUNBOOK.md)
 
@@ -106,14 +111,15 @@ Rollen & Sichtbarkeit: [`docs/supabase-vorstand-roles.sql`](docs/supabase-vorsta
 | `News` | Tabelle | News-Liste & Detail |
 | `galleries` | Tabelle | Galerie-Metadaten |
 | `gallery_images` | Tabelle | Bilder pro Galerie |
-| `site_state` | Tabelle | Tröte: letzte Mitteilung (`last_push`) |
-| `members` | Tabelle | Vereinsmitglieder (`rolle`: Mitglied / Vorstand / public) |
+| `site_state` | Tabelle | Tröte + Website-Hinweise (Key-Value JSONB) |
+| `members` | Tabelle | Vereinsmitglieder inkl. `avatar_*` (Profilbilder) |
+| `activities` / `strava_connections` | Tabellen | Strava-Import (optional) |
 | `feedback_modules` / `feedback_answers` | Tabellen | Abstimmungen an Terminen/News |
-| `media` | Storage | Uploads (Bilder, GPX) |
+| `media` / `avatars` | Storage | Vereinsmedien / Profilbilder |
 
 Frontend-Konfiguration: `assets/js/core/site-config.js` (URL, Keys, Tabellennamen, Storage, Edge Functions). Anon-Key ist öffentlich — Schutz nur über **RLS** in Supabase.
 
-Ausführlicher: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
+Ausführlicher: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · Go-live: [docs/GO-LIVE-CHECKLIST.md](docs/GO-LIVE-CHECKLIST.md)
 
 ---
 
@@ -182,13 +188,17 @@ Fehlen sie lokal, funktionieren Kalender oder Bilder erst nach Ergänzen der Dat
 
 ---
 
-## Roadmap (intern)
+## Projektstand (Phasen)
 
-- [x] Phase 1–2: Doku, `.gitignore`, toter Code
-- [x] Phase 3: Kalender — eine gemeinsame Datenquelle (`termine-loader.js`, `categories.js`)
-- [x] Phase 4: Admin-JavaScript aus HTML auslagern (`admin/js/`)
-- [x] Phase 5: Einheitliches Seitenmuster (Galerie/News), gemeinsame Helfer
-- [x] Phase 6: `site-config.js` zentral, `push/config.js` entfernt
+| Phase | Thema | Doku |
+|-------|--------|------|
+| 0–1 | Public-Registrierung, Quick-Wins | `docs/PUBLIC-REGISTRATION.md`, `PHASE-1-CHANGELOG.md` |
+| 2 | Radfokus (Strava) | `PHASE-2-IMPLEMENTATION.md` |
+| 3 | Profilbilder | `PHASE-3-IMPLEMENTATION.md` |
+| 4 | Zusagen / Serientermine | ⏸ `PHASE-4-ZUSAGEN-SERIENTERMINE-KONZEPT.md` (nicht freigegeben) |
+| 5 | Admin-Vorschau, Website-Hinweise | `PHASE-5-IMPLEMENTATION.md` |
+
+Smoke-Tests: `docs/SMOKE-TEST-PHASE-2-3.md`, `docs/SMOKE-TEST-PHASE-5.md`
 
 ---
 
