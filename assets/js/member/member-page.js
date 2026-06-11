@@ -516,6 +516,12 @@ async function reloadStravaProfileView(
   memberActivitiesLoaded = false;
   memberVotesLoaded = false;
 
+  profileActiveTab =
+    resolveMemberProfileActiveTab(
+      profileActiveTab,
+      profileStravaState
+    );
+
   renderMemberProfile(
     member,
     {
@@ -1438,6 +1444,12 @@ async function loadMemberProfilePage() {
 
       profileStravaState =
         await fetchStravaProfileStatus();
+
+      profileActiveTab =
+        resolveMemberProfileActiveTab(
+          profileActiveTab,
+          profileStravaState
+        );
 
       renderMemberProfile(
         member,

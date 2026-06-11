@@ -247,8 +247,36 @@ function renderConsentBlock(
 
 }
 
+function shouldShowMemberActivitiesTab(
+  stravaState
+) {
+
+  return !!(
+    stravaState?.available
+    && stravaState?.status?.connected
+  );
+
+}
+
+function resolveMemberProfileActiveTab(
+  activeTab,
+  stravaState
+) {
+
+  if (
+    activeTab === 'aktivitaeten'
+    && !shouldShowMemberActivitiesTab(stravaState)
+  ) {
+    return 'profil';
+  }
+
+  return activeTab || 'profil';
+
+}
+
 function renderMemberProfileTabsNav(
-  activeTab
+  activeTab,
+  stravaState
 ) {
 
   const tabs = [
@@ -270,8 +298,14 @@ function renderMemberProfileTabsNav(
     }
   ];
 
+  const visibleTabs =
+    tabs.filter((tab) =>
+      tab.id !== 'aktivitaeten'
+      || shouldShowMemberActivitiesTab(stravaState)
+    );
+
   const buttons =
-    tabs.map((tab) => {
+    visibleTabs.map((tab) => {
 
       const isActive =
         activeTab === tab.id;
@@ -326,35 +360,7 @@ function renderMemberVotesPanelShell() {
 
 }
 
-function renderMemberActivitiesPanelShell(
-  stravaState
-) {
-
-  const connected =
-    stravaState?.available
-    && stravaState?.status?.connected;
-
-  if (!connected) {
-
-    return `
-<section class="member-profile-section-block">
-
-  <h2>Meine Aktivitäten</h2>
-
-  <p class="member-strava-hint">
-    Hier siehst du deine importierten Strava-Touren — privat für dich,
-    unabhängig vom öffentlichen Aktivitätsportal.
-  </p>
-
-  <p class="member-strava-hint">
-    Verbinde zuerst Strava im Tab <strong>Strava</strong>, damit Touren
-    importiert werden können.
-  </p>
-
-</section>
-    `;
-
-  }
+function renderMemberActivitiesPanelShell() {
 
   return `
 <section class="member-profile-section-block">
@@ -954,7 +960,13 @@ function renderMemberProfile(
     options?.stravaState || null;
 
   const activeTab =
-    options?.activeTab || 'profil';
+    resolveMemberProfileActiveTab(
+      options?.activeTab || 'profil',
+      stravaState
+    );
+
+  const showActivitiesTab =
+    shouldShowMemberActivitiesTab(stravaState);
 
   const container =
     document.getElementById(
@@ -1041,7 +1053,10 @@ function renderMemberProfile(
 
   container.innerHTML = `
 
-${renderMemberProfileTabsNav(activeTab)}
+${renderMemberProfileTabsNav(
+  activeTab,
+  stravaState
+)}
 
 <div
   id="member-profile-tab-profil"
@@ -1067,6 +1082,9 @@ ${renderMemberProfileTabsNav(activeTab)}
 
 </div>
 
+${
+  showActivitiesTab
+    ? `
 <div
   id="member-profile-tab-aktivitaeten"
   class="member-profile-tab-panel"
@@ -1075,9 +1093,12 @@ ${renderMemberProfileTabsNav(activeTab)}
   data-profile-panel="aktivitaeten"
   ${activeTab !== 'aktivitaeten' ? 'hidden' : ''}>
 
-  ${renderMemberActivitiesPanelShell(stravaState)}
+  ${renderMemberActivitiesPanelShell()}
 
 </div>
+`
+    : ''
+}
 
 <div
   id="member-profile-tab-strava"
