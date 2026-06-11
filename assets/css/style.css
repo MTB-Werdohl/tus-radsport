@@ -1732,26 +1732,26 @@ h2 { font-weight: 600; }
   margin: 0 0 18px;
 }
 
-/* Standard pages: centered column like Kalender/News; headings left within it */
+/* Standard pages: one centered column (Maßstab Kalender/News) */
 
-.site-main .content.content--standard > :not(#calendar):not(#event-cards):not(#news-cards) {
+.site-main .content.content--standard .page-content-column {
   width: 100%;
   max-width: var(--page-content-width);
   margin-left: auto;
   margin-right: auto;
   padding: 0 1rem;
   box-sizing: border-box;
+}
+
+.site-main .content.content--standard .page-content-column > h1 {
+  margin-top: 0;
+  margin-bottom: 1.25rem;
   text-align: left;
 }
 
-.site-main .content.content--standard > h1 {
-  margin-top: 0;
-  margin-bottom: 1.25rem;
-}
-
-.site-main .content.content--standard p,
-.site-main .content.content--standard ul,
-.site-main .content.content--standard ol {
+.site-main .content.content--standard .page-content-column p,
+.site-main .content.content--standard .page-content-column ul,
+.site-main .content.content--standard .page-content-column ol {
   max-width: none;
 }
 
