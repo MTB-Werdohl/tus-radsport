@@ -2,8 +2,6 @@
 layout: default
 title: News
 permalink: /news/
-header_image: /assets/images/header/news.png
-hide_title: true
 load_calendar_css: true
 load_news_css: true
 description: "News und Aktuelles aus der Radsportabteilung TuS Jahn Werdohl."

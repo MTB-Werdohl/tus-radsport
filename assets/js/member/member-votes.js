@@ -3,44 +3,6 @@ const MEMBER_VOTES_POLLS_PAGE_SIZE = 5;
 let memberVotesGroupedCache = null;
 let memberVotesPollsPage = 1;
 
-function isTerminStillUpcoming(termin) {
-
-  const today =
-    new Date();
-
-  today.setHours(0, 0, 0, 0);
-
-  if (termin?.recurring) {
-
-    const recurringEnd =
-      termin.endRecur
-        ? parseTerminDateOnly(
-          termin.endRecur
-        )
-        : null;
-
-    if (
-      recurringEnd
-      && recurringEnd < today
-    ) {
-      return false;
-    }
-
-    return true;
-
-  }
-
-  const endDay =
-    getTerminVisibilityEndDay(termin);
-
-  if (!endDay) {
-    return false;
-  }
-
-  return endDay >= today;
-
-}
-
 function getFeedbackEntityPageUrl(
   entityType,
   slug

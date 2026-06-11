@@ -12,53 +12,41 @@ description: "Unverbindlich mitfahren — jeden Dienstag 18:00 am Brüninghauspl
 
 <div class="mitfahren-page">
 
-<section class="mitfahren-hero" aria-labelledby="mitfahren-hero-title">
-  <div class="mitfahren-hero__media">
-    <img
-      class="mitfahren-hero__image"
-      src="{{ '/assets/images/mitfahren/header.png' | relative_url }}"
-      alt=""
-      width="1792"
-      height="768"
-      fetchpriority="high">
-  </div>
+<section class="mitfahren-intro" aria-labelledby="mitfahren-hero-title">
+  <h1 class="mitfahren-hero__title" id="mitfahren-hero-title">
+    Fahr nicht allein. Fahr mit uns.
+  </h1>
 
-  <div class="mitfahren-hero__overlay">
-    <h1 class="mitfahren-hero__title" id="mitfahren-hero-title">
-      Fahr nicht allein. Fahr mit uns.
-    </h1>
+  <p class="mitfahren-hero__lead">
+    Mountainbike, Gravel oder E-Bike. Komm einfach vorbei und fahr eine Runde mit.
+  </p>
 
-    <p class="mitfahren-hero__lead">
-      Mountainbike, Gravel oder E-Bike. Komm einfach vorbei und fahr eine Runde mit.
-    </p>
+  <ul class="mitfahren-hero__perks">
+    <li>
+      <span aria-hidden="true">✅</span>
+      Kostenlos ausprobieren
+    </li>
+    <li>
+      <span aria-hidden="true">✅</span>
+      Keine Vereinsmitgliedschaft nötig
+    </li>
+    <li>
+      <span aria-hidden="true">✅</span>
+      Niemand bleibt zurück
+    </li>
+  </ul>
 
-    <ul class="mitfahren-hero__perks">
-      <li>
-        <span aria-hidden="true">✅</span>
-        Kostenlos ausprobieren
-      </li>
-      <li>
-        <span aria-hidden="true">✅</span>
-        Keine Vereinsmitgliedschaft nötig
-      </li>
-      <li>
-        <span aria-hidden="true">✅</span>
-        Niemand bleibt zurück
-      </li>
-    </ul>
+  <a
+    class="cta-btn mitfahren-hero__cta"
+    href="{{ wa }}"
+    rel="noopener noreferrer"
+    target="_blank">
+    Per WhatsApp melden
+  </a>
 
-    <a
-      class="cta-btn mitfahren-hero__cta"
-      href="{{ wa }}"
-      rel="noopener noreferrer"
-      target="_blank">
-      Per WhatsApp melden
-    </a>
-
-    <p class="mitfahren-hero__hint">
-      Eine Anmeldung ist nicht erforderlich. Wenn du uns vorher kurz schreibst, freuen wir uns.
-    </p>
-  </div>
+  <p class="mitfahren-hero__hint">
+    Eine Anmeldung ist nicht erforderlich. Wenn du uns vorher kurz schreibst, freuen wir uns.
+  </p>
 </section>
 
 <section class="mitfahren-cards" aria-label="So einfach geht's">

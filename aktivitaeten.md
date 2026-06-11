@@ -2,8 +2,6 @@
 layout: default
 title: Aktivitäten
 permalink: /aktivitaeten/
-header_image: /assets/images/header/aktivitaeten.png
-hide_title: true
 load_aktivitaeten_css: true
 description: "Aktivitätsfeed, Rankings und Vereinsstatistiken der MTB-Abteilung TuS Jahn Werdohl."
 ---

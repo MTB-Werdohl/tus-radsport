@@ -35,6 +35,8 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Anonymisierung + zukünftige Zusagen:** [`supabase-anonymize-upcoming-feedback.sql`](../supabase-anonymize-upcoming-feedback.sql) — bei Profil-Löschung entfallen Zusagen für **zukünftige** Termine; ohne verbleibendes Feedback wird die `members`-Zeile **gelöscht**, sonst anonymisiert (vergangene Teilnahmen). Enthält einmalige Bestandsbereinigung.
 
+**Abstimmung nach Termin-Ende:** [`supabase-feedback-event-expired.sql`](../supabase-feedback-event-expired.sql) — Zusagen/Abstimmung für abgelaufene Termine schließen (`is_termin_still_upcoming`); Frontend zeigt Hinweis statt Formular. Voraussetzung: `is_termin_still_upcoming()` deployt.
+
 **Feedback Public-Registrierung (Magic Link):** [`supabase-feedback-public-registration.sql`](../supabase-feedback-public-registration.sql) — externe Teilnehmer, abstimmen erst nach Login; `submit_public_feedback` für anonym nicht mehr.
 
 **Phase 5 — Website-Hinweise:** [`supabase/supabase-site-content.sql`](supabase-site-content.sql) — öffentliches SELECT auf `site_state` für `site_banner`, `saison_mode`, `landing_hints`, `site_overlay` (nach `supabase-public-read.sql`).

@@ -45,6 +45,24 @@ async function initFeedbackModule(options) {
     return;
   }
 
+  if (
+    entityType
+    === window.siteConfig.feedback.entityTypes.event
+    && options?.entityTermin
+    && typeof isTerminStillUpcoming === 'function'
+    && !isTerminStillUpcoming(options.entityTermin)
+  ) {
+
+    container.innerHTML = `
+<p class="feedback-hint">
+  Die Abstimmung für diesen Termin ist beendet.
+</p>
+    `.trim();
+
+    return;
+
+  }
+
   let member =
     typeof getCurrentMember === 'function'
       ? getCurrentMember()

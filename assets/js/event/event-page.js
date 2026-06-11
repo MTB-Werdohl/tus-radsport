@@ -79,6 +79,7 @@ async function loadEvent() {
       event.sichtbarkeit,
     entityRecurring:
       event.recurring === true,
+    entityTermin: event,
     container: 'event-feedback'
   });
 

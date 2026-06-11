@@ -3,46 +3,36 @@ layout: default
 title: "Login & Teilnahme"
 permalink: /mitglieder-hilfe/
 center_prose: true
-description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, Teilnahme an Terminen, Profil pflegen, privat ohne Strava, externe Anmeldung."
+description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, Zusagen, Profil, Strava optional."
 ---
 
 <div class="about-page member-help-page">
 
 <header class="about-intro">
   <p class="about-lead">
-    Auf unserer Website kannst du dich <strong>ohne Passwort</strong> anmelden,
-    bei Terminen und Abstimmungen <strong>zusagen oder absagen</strong> und deine
-    <strong>Kontaktdaten aktuell halten</strong>. Diese Seite erklärt kurz, wie
-    das funktioniert — für Vereinsmitglieder und für Gäste bei öffentlichen
-    Anmeldungen (z.&nbsp;B. zu den Bike-Days).
+    Auf unserer Website meldest du dich <strong>ohne Passwort</strong> an,
+    sagst bei Terminen <strong>zu oder ab</strong> und hältst deine
+    <strong>Kontaktdaten</strong> aktuell. Kurz erklärt — für Vereinsmitglieder
+    und für Gäste bei öffentlichen Anmeldungen (z.&nbsp;B. Bike-Days).
   </p>
 </header>
 
 <section class="about-section">
   <h2>Für Vereinsmitglieder: Warum anmelden?</h2>
   <p>
-    Viele Inhalte sind für alle sichtbar. Einige Termine und News sind aber nur
-    für <strong>eingeloggte Vereinsmitglieder</strong> bestimmt — zum Beispiel
-    interne Infos oder Planungen, die nicht öffentlich sein sollen.
+    Viel ist öffentlich sichtbar. Manche Termine und News sind nur für
+    <strong>eingeloggte Vereinsmitglieder</strong> — interne Infos, die nicht
+    für alle gedacht sind.
   </p>
-  <p>Mit deinem Login kannst du außerdem:</p>
+  <p>Mit Login kannst du:</p>
   <ul>
-    <li>
-      bei Terminen und News <strong>abstimmen</strong> (z.&nbsp;B.
-      <strong>Ja</strong> / <strong>Vielleicht</strong> bei Terminen oder
-      Umfragen bei News)
-    </li>
-    <li>
-      dein <strong>Profil</strong> einsehen und fehlende Angaben ergänzen
-      (Telefon, Adresse, Einwilligungen)
-    </li>
-    <li>
-      sicherstellen, dass der Vorstand dich bei Rückfragen erreichen kann
-    </li>
+    <li>bei Terminen und News <strong>mitmachen</strong> (Zusage, Infos, Umfrage)</li>
+    <li>dein <strong>Profil</strong> sehen und Kontaktdaten pflegen</li>
+    <li>optional <strong>Strava</strong> verbinden und Sichtbarkeit steuern</li>
   </ul>
   <p>
-    Ohne Anmeldung siehst du diese Funktionen nicht — du kannst dann weder
-    mitstimmen noch interne Inhalte lesen.
+    Ohne Anmeldung fehlen diese Funktionen — du kannst weder zustimmen noch
+    interne Inhalte lesen.
   </p>
 </section>
 
@@ -55,111 +45,111 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
       für dich hinterlegt hat.
     </li>
     <li>
-      Du erhältst eine E-Mail mit einem <strong>Login-Link</strong> (Magic Link).
-      Den Link im <strong>gleichen Browser</strong> öffnen, in dem du die
-      Adresse eingegeben hast (ein zweiter Tab ist in Ordnung).
+      E-Mail mit <strong>Login-Link</strong> (Magic Link) öffnen — am besten im
+      <strong>gleichen Browser</strong>, in dem du die Adresse eingegeben hast.
     </li>
     <li>
-      Danach bist du angemeldet. In der Kopfzeile steht
-      <strong>„Hallo … · Profil“</strong>. Unter
-      <a href="{{ '/profil' | relative_url }}">Profil</a> findest du deine Daten
-      und kannst dich dort <strong>abmelden</strong>.
+      In der Kopfzeile erscheint <strong>„Hallo … · Profil“</strong>. Unter
+      <a href="{{ '/profil/' | relative_url }}">Profil</a> findest du deine Daten
+      und kannst dich <strong>abmelden</strong>.
     </li>
   </ol>
   <p>
-    Es gibt <strong>kein Passwort</strong>. Für jeden neuen Browser oder nach
-    dem Ausloggen schickst du dir einfach erneut einen Link.
+    Es gibt <strong>kein Passwort</strong>. Nach dem Ausloggen oder in einem
+    neuen Browser schickst du dir einfach erneut einen Link.
   </p>
 </section>
 
 <section class="about-section">
-  <h2>Teilnahme &amp; Abstimmungen</h2>
+  <h2>Teilnahme an Terminen</h2>
   <p>
-    Bei vielen Terminen im <a href="{{ '/kalender/' | relative_url }}">Kalender</a>
-    und bei News gibt es eine <strong>Abstimmung</strong> direkt beim Beitrag
-    (z.&nbsp;B. „Bist du dabei?“ oder eine Umfrage).
+    Viele Termine im <a href="{{ '/kalender/' | relative_url }}">Kalender</a>
+    haben unten auf der Terminseite eine <strong>Zusage oder Abstimmung</strong>.
+    Du musst <strong>eingeloggt</strong> sein. Kommst du von einer Terminseite,
+    landest du nach dem Login wieder dort.
   </p>
-  <h3>Als Vereinsmitglied</h3>
+
+  <h3>Einzeltermine (z.&nbsp;B. eine Tour)</h3>
+  <ul>
+    <li>
+      <strong>Ja — verbindlich:</strong> Der Organisator darf mit deiner Teilnahme
+      planen. Vor der ersten verbindlichen Zusage fragt die Seite kurz nach.
+    </li>
+    <li>
+      <strong>Vielleicht:</strong> Du bist interessiert, ohne verbindliche Zusage.
+    </li>
+    <li>
+      Hast du <strong>Ja</strong> gewählt, wird der zweite Button zu
+      <strong>„Absagen“</strong>. Beim Absagen wählst du einen Grund — kein
+      freier Kommentar-Feld.
+    </li>
+    <li>
+      <strong>Nein</strong> gibt es als dritten Button nicht — Absage läuft über
+      „Absagen“, wenn du zuvor verbindlich zugesagt hast, oder du wählst
+      „Vielleicht“ / lässt die Zusage weg.
+    </li>
+  </ul>
+
+  <h3>Serientermine (wiederkehrend, z.&nbsp;B. Dienstags-Tour)</h3>
   <p>
-    Du musst <strong>eingeloggt</strong> sein. Wenn du noch nicht angemeldet bist,
-    erscheint ein Hinweis zum Login — E-Mail eingeben, Link aus der Mail öffnen.
-    Danach landest du automatisch wieder auf der Seite, von der du kamst.
+    Statt Ja/Vielleicht gibt es nur einen Schalter:
+    <strong>„Keine Infos bestellt“</strong> /
+    <strong>„Infos bestellt“</strong> — du möchtest E-Mails/Infos zu dieser
+    Serie erhalten oder nicht. Das ist <strong>keine verbindliche Tour-Zusage</strong>
+    für einen konkreten Tag.
   </p>
+
+  <h3>Abstimmung bei News</h3>
   <p>
-    <strong>Antwort ändern oder zurückziehen:</strong> Andere Option wählen und
-    speichern. Bei Terminen (Ja/Vielleicht) kannst du die aktive Schaltfläche
-    erneut antippen, um deine Abstimmung zurückzuziehen.
+    Bei News kann eine <strong>Umfrage</strong> hängen — Antworten nur
+    eingeloggt, je nach Einstellung des Vorstands.
   </p>
-  <h3>Warum E-Mail?</h3>
+
+  <h3>Wann ist Schluss?</h3>
   <p>
-    Deine Antwort wird deinem Vereinsdatensatz zugeordnet. So kann der Vorstand
-    Auswertungen fahren (wer kommt, wie viele Plätze nötig sind) und dich bei
-    Bedarf kontaktieren — ohne WhatsApp-Listen in zig Gruppen.
+    Ist der Termin vorbei, verschwindet er aus den Termin-Listen. Die Abstimmung
+    auf der Terminseite ist dann <strong>beendet</strong> — neue Zusagen oder
+    Änderungen sind nicht mehr möglich. Deine bisherige Antwort bleibt für
+    Auswertungen erhalten.
+  </p>
+
+  <h3>Deine Übersicht</h3>
+  <p>
+    Unter <a href="{{ '/profil/' | relative_url }}">Profil</a> → Tab
+    <strong>Teilnahmen</strong> siehst du deine aktuellen Zusagen und
+    Abstimmungen.
   </p>
 </section>
 
 <section class="about-section">
-  <h2>Anmelden ohne Strava — privat im Aktivitätsportal</h2>
+  <h2>Strava &amp; Aktivitäten (optional)</h2>
   <p>
     Unter <a href="{{ '/aktivitaeten/' | relative_url }}">Aktivitäten</a> können
-    Vereinsmitglieder freiwillig Ausfahrtsdaten teilen (Feed, Rankings, Vereinsziele).
-    <strong>Du musst dafür kein Strava-Konto verbinden.</strong> Wer sich nur normal
-    anmeldet und Strava ignoriert, erscheint dort <strong>nicht</strong> — ohne
-    weitere Einstellung.
-  </p>
-
-  <h3>So meldest du dich an (ohne Strava)</h3>
-  <ol class="help-steps">
-    <li>
-      Oben rechts auf <strong>„Mitglieder“</strong> klicken und deine
-      <strong>E-Mail-Adresse</strong> eingeben (vom Verein hinterlegt).
-    </li>
-    <li>
-      Den <strong>Login-Link</strong> aus der E-Mail im gleichen Browser öffnen.
-    </li>
-    <li>
-      Unter <a href="{{ '/profil/' | relative_url }}">Profil</a> findest du deine
-      Stammdaten. Den Tab <strong>Strava</strong> musst du <strong>nicht</strong>
-      öffnen — „Mit Strava verbinden“ ist optional.
-    </li>
-  </ol>
-  <p>
-    Damit kannst du interne Termine sehen, abstimmen und dein Profil pflegen —
-    <strong>ohne</strong> dass Ausfahrtsdaten öffentlich werden.
-  </p>
-
-  <h3>Privat bleiben, wenn Strava schon verbunden ist</h3>
-  <p>
-    Hast du Strava bereits verbunden, steuerst du die <strong>Sichtbarkeit</strong>
-    getrennt auf der Profilseite:
+    Mitglieder freiwillig Ausfahrtsdaten teilen. <strong>Ohne Strava-Verbindung
+    erscheinst du dort nicht.</strong> Normal anmelden reicht für Termine und
+    Profil — Strava ist extra.
   </p>
   <ol class="help-steps">
     <li>
-      <a href="{{ '/profil/' | relative_url }}">Profil</a> öffnen → Tab
-      <strong>Strava</strong>
+      <a href="{{ '/profil/' | relative_url }}">Profil</a> → Tab
+      <strong>Strava</strong> → optional „Mit Strava verbinden“.
     </li>
     <li>
-      Im Abschnitt <strong>„Sichtbarkeit“</strong> alle drei Häkchen
-      <strong>entfernen</strong>:
-      <ul>
-        <li>Im Aktivitätsfeed erscheinen</li>
-        <li>In Rankings erscheinen</li>
-        <li>Zu Vereinszielen beitragen</li>
-      </ul>
+      Sichtbarkeit (Feed, Rankings, Vereinsziele) steuerst du mit den
+      Checkboxen — jede Änderung wird <strong>sofort gespeichert</strong>.
     </li>
     <li>
-      Die Checkboxen werden <strong>sofort gespeichert</strong>
+      Importierte Touren siehst du im Tab <strong>Meine Aktivitäten</strong>
+      — der Tab erscheint erst, wenn Strava verbunden ist.
     </li>
   </ol>
   <p>
-    Deine importierten Aktivitäten bleiben intern gespeichert, solange Strava
-    verbunden ist — sie erscheinen aber <strong>nicht</strong> öffentlich. Für
-    vollständige Trennung: im selben Tab unten
-    <strong>„Verbindung trennen“</strong> — dann werden importierte Daten aus
-    dem Vereinsportal entfernt (in Strava selbst ändert sich nichts).
+    Alle Häkchen bei Sichtbarkeit entfernen = nichts öffentlich, obwohl Strava
+    verbunden ist. <strong>Verbindung trennen</strong> entfernt importierte
+    Daten aus dem Vereinsportal (in Strava selbst ändert sich nichts).
   </p>
   <p>
-    Details zum Datenschutz:
+    Mehr zum Datenschutz:
     <a href="{{ '/datenschutz/' | relative_url }}#strava-aktivitaeten">
       Datenschutzerklärung, Abschnitt 12.7
     </a>
@@ -167,86 +157,81 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
 </section>
 
 <section class="about-section">
-  <h2>Profil aktuell halten</h2>
+  <h2>Profil pflegen</h2>
   <p>
-    Unter <a href="{{ '/profil/' | relative_url }}">Mein Profil</a> siehst du,
-    welche Daten der Verein für dich gespeichert hat. Mit Strava-Verbindung
-    findest du importierte Touren im Tab <strong>Meine Aktivitäten</strong>.
-    Bitte prüfe regelmäßig:
+    Unter <a href="{{ '/profil/' | relative_url }}">Mein Profil</a>:
   </p>
   <ul>
-    <li>Telefonnummer und Adresse — erreichbar bleiben</li>
     <li>
-      Einwilligungen (Kontakt, Bilder) — nur wenn du zustimmen möchtest;
-      du kannst sie dort erteilen, nicht widerrufen
+      Tab <strong>Profil</strong> — Stammdaten, Kontakt bearbeiten, optional
+      Profilbild, Einwilligungen (Kontakt, Bilder)
+    </li>
+    <li>
+      Tab <strong>Teilnahmen</strong> — deine Zusagen und Abstimmungen
+    </li>
+    <li>
+      Tab <strong>Strava</strong> — nur wenn du es nutzen willst
     </li>
   </ul>
   <p>
-    Stammdaten wie Name oder Mitgliedsnummer ändert bei Bedarf der Vorstand.
-    Wenn etwas falsch ist: melde dich bei uns (siehe unten).
+    Telefon und Adresse bitte aktuell halten. Name und Mitgliedsnummer ändert
+    bei Bedarf der Vorstand. Einwilligungen kannst du auf der Profilseite
+    <strong>erteilen</strong>; Widerruf in Textform (z.&nbsp;B. per E-Mail an
+    den Verein) — siehe
+    <a href="{{ '/datenschutz/' | relative_url }}">Datenschutzerklärung</a>.
   </p>
 </section>
 
 <blockquote class="about-quote help-problem">
   <strong>Es klappt nicht?</strong><br>
-  Häufigste Ursache: Die eingegebene E-Mail stimmt <strong>nicht</strong> mit der
-  Adresse überein, die der Verein für dich hinterlegt hat — oder bei dir ist
-  <strong>noch gar keine E-Mail</strong> eingetragen.
+  Häufigste Ursache: Die E-Mail stimmt <strong>nicht</strong> mit der
+  hinterlegten Vereins-Adresse überein — oder es ist <strong>noch keine
+  E-Mail</strong> eingetragen.
   <br><br>
-  Dann kommt kein Login-Link oder nach dem Klick die Meldung, dass kein
-  Vereinsmitglied gefunden wurde.
+  Dann kommt kein Link oder die Meldung, dass kein Vereinsmitglied gefunden wurde.
   <br><br>
-  <strong>Bitte melde dich beim Vorstand:</strong><br>
+  <strong>Bitte den Vorstand kontaktieren:</strong><br>
   E-Mail:
-  <a href="mailto:{{ site.contact.email }}">{{ site.contact.email }}</a><br>
+  <a href="mailto:{{ site.contact.email }}">{{ site.contact.email }}</a>
 </blockquote>
 
 <section class="about-section">
-  <h2>Für Gäste &amp; Nichtmitglieder (öffentliche Anmeldung)</h2>
+  <h2>Für Gäste (öffentliche Anmeldung)</h2>
   <p>
     Manche Abstimmungen — z.&nbsp;B. zu den <strong>Bike-Days</strong> — sind
-    auch für Personen ohne Vereinsmitgliedschaft freigegeben. Du musst dafür
-    <strong>kein Vereinsmitglied</strong> sein.
+    auch ohne Vereinsmitgliedschaft freigegeben.
   </p>
   <ol class="help-steps">
     <li>
-      Beim Termin oder der News auf <strong>„Teilnehmen“</strong> klicken und
-      das kurze Formular ausfüllen (Name, E-Mail, Einwilligung Kontakt).
+      Am Termin oder der News auf die <strong>Teilnahme</strong> klicken und
+      das Formular ausfüllen (Name, E-Mail, Einwilligung Kontakt).
     </li>
     <li>
-      E-Mail öffnen und den <strong>Bestätigungs-Link</strong> anklicken.
-      Erst danach bist du registriert und kannst abstimmen.
+      <strong>Bestätigungs-Link</strong> in der E-Mail öffnen — erst danach
+      kannst du abstimmen.
     </li>
     <li>
-      Du bleibst auf diesem Gerät <strong>angemeldet</strong>, bis du dich
-      ausloggst oder deinen Account unter
-      <a href="{{ '/profil' | relative_url }}">Profil</a>
-      <strong>löschst</strong>.
+      Eingeloggt bleibst du, bis du dich ausloggst oder den Account unter
+      <a href="{{ '/profil/' | relative_url }}">Profil</a> löschst.
     </li>
   </ol>
   <p>
-    Als Gast siehst du <strong>keine</strong> internen Mitglieder-Inhalte — nur
-    die öffentliche Anmeldung bzw. Abstimmung, für die du dich registriert hast.
-    Bereits Vereinsmitglieder sollen sich über den normalen Mitglieder-Login
-    oben rechts anmelden, nicht über das Gast-Formular.
-  </p>
-  <p>
-    Details zum Datenschutz:
-    <a href="{{ '/datenschutz/' | relative_url }}">Datenschutzerklärung</a>
-    (Abschnitt 12).
+    Als Gast siehst du <strong>keine</strong> internen Mitglieder-Inhalte.
+    Bereits Vereinsmitglieder melden sich oben rechts über
+    <strong>Mitglieder</strong> an — nicht über das Gast-Formular.
   </p>
 </section>
 
 <section class="about-section about-cta">
   <h2>Kurz zusammengefasst</h2>
   <ul>
-    <li><strong>Vereinsmitglied:</strong> E-Mail oben rechts → Link in der Mail → eingeloggt</li>
-    <li><strong>Ohne Strava:</strong> Strava-Tab ignorieren → nicht im Aktivitätsportal sichtbar</li>
-    <li><strong>Teilnehmen:</strong> eingeloggt sein, dann am Termin/News abstimmen</li>
+    <li><strong>Login:</strong> Mitglieder → E-Mail → Link in der Mail</li>
+    <li><strong>Einzeltermin:</strong> Ja (verbindlich) / Vielleicht — Absage über „Absagen“</li>
+    <li><strong>Serie:</strong> Infos bestellt ja/nein — kein verbindliches Ja pro Tag</li>
+    <li><strong>Termin vorbei:</strong> Abstimmung beendet</li>
+    <li><strong>Strava:</strong> optional — ohne Verbindung nicht im Aktivitätsportal</li>
     <li><strong>Abmelden:</strong> nur auf der Profilseite</li>
-    <li><strong>Profil:</strong> Daten und Erreichbarkeit prüfen</li>
-    <li><strong>Problem:</strong> falsche oder fehlende E-Mail → <a href="mailto:{{ site.contact.email }}"> kontaktieren</a></li>
-    <li><strong>Gast:</strong> Formular → E-Mail bestätigen → abstimmen — bis Account gelöscht</li>
+    <li><strong>Problem:</strong> falsche E-Mail → Vorstand kontaktieren</li>
   </ul>
 </section>
 

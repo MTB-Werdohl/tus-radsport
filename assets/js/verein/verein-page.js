@@ -4,21 +4,6 @@ const VEREIN_TABS = [
   'kodex'
 ];
 
-const VEREIN_HEADER_IMAGES = {
-  about: {
-    src: '/assets/images/header/ueberuns.png',
-    alt: 'Über uns'
-  },
-  ausfahrt: {
-    src: '/assets/images/header/ausfahrt.png',
-    alt: 'Ausfahrt'
-  },
-  kodex: {
-    src: '/assets/images/header/kodex.png',
-    alt: 'Kodex'
-  }
-};
-
 function normalizeVereinTab(tabId) {
 
   if (
@@ -62,28 +47,6 @@ function updateVereinUrl(tabId) {
 
 }
 
-function updateVereinHeader(tabId) {
-
-  const header =
-    document.getElementById(
-      'verein-header-img'
-    );
-
-  const config =
-    VEREIN_HEADER_IMAGES[tabId];
-
-  if (
-    !header
-    || !config
-  ) {
-    return;
-  }
-
-  header.src = config.src;
-  header.alt = config.alt;
-
-}
-
 function switchVereinTab(tabId) {
 
   const activeTab =
@@ -117,7 +80,6 @@ function switchVereinTab(tabId) {
 
     });
 
-  updateVereinHeader(activeTab);
   updateVereinUrl(activeTab);
 
 }

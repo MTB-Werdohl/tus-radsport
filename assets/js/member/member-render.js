@@ -1138,20 +1138,11 @@ function renderMemberProfileGuestLogin() {
   </p>
 
   <p class="member-profile-guest-hint">
-    E-Mail unter <strong>„Mitglieder“</strong> (oben rechts) — Link im gleichen Browser öffnen.
+    E-Mail unter <strong>„Mitglieder“</strong> (oben rechts) eingeben —
+    Login-Link im <strong>gleichen Browser</strong> öffnen.
   </p>
 
-  <div class="member-profile-guest-actions">
-
-    <button
-      type="button"
-      id="member-profile-open-login"
-      class="member-save-btn">
-
-      Login-Bereich öffnen
-
-    </button>
-
+  <p class="member-profile-guest-actions">
     <a
       href="/mitglieder-hilfe/"
       class="member-profile-help-link">
@@ -1159,34 +1150,11 @@ function renderMemberProfileGuestLogin() {
       Anleitung: Login &amp; Teilnahme
 
     </a>
-
-  </div>
+  </p>
 
 </section>
 
   `;
-
-  document
-    .getElementById('member-profile-open-login')
-    ?.addEventListener('click', () => {
-
-      if (
-        typeof openMemberAuthPanel
-          === 'function'
-      ) {
-        openMemberAuthPanel();
-      }
-
-      const emailInput =
-        document.getElementById(
-          'member-email'
-        );
-
-      if (emailInput) {
-        emailInput.focus();
-      }
-
-    });
 
 }
 
