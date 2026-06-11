@@ -2,7 +2,6 @@
 layout: default
 title: "Login & Teilnahme"
 permalink: /mitglieder-hilfe/
-center_prose: true
 description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, Zusagen, Profil, Strava optional."
 ---
 

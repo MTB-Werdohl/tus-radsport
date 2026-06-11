@@ -2,7 +2,6 @@
 layout: default
 title: Verein
 permalink: /verein/
-center_prose: true
 load_verein_css: true
 description: "Radsportabteilung TuS Jahn Werdohl — Über uns, Ausfahrten und unser Kodex."
 ---

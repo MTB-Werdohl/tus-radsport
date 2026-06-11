@@ -9,11 +9,9 @@ Layout / Spacing.
 
 #news-cards {
 
-  max-width:700px;
+  margin:0;
 
-  margin:auto;
-
-  padding:0 1rem;
+  padding:0;
 
   display:flex;
 

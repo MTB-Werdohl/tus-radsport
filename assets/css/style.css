@@ -40,6 +40,7 @@ font-display:swap;
 
 :root {
   --max-width: 920px;
+  --page-content-width: 700px;
   --header-height: 72px;
 
   --radius: 10px;
@@ -1509,7 +1510,7 @@ body.member-consent-modal-open {
 /* About */
 
 .about-page {
-  margin: 0 auto;
+  margin: 0;
   width: 100%;
 }
 
@@ -1731,65 +1732,31 @@ h2 { font-weight: 600; }
   margin: 0 0 18px;
 }
 
-/* Prose pages: center readable column on desktop only */
+/* Standard pages: one left-aligned content column (Kalender, News, …) */
 
-@media (min-width: 801px) {
-  .site-main .content.content--prose-centered {
-    display: grid;
-    grid-template-columns: 1fr min(100%, 65ch) 1fr;
-  }
+.site-main .content.content--standard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
 
-  .site-main .content.content--prose-centered > * {
-    grid-column: 2;
-    max-width: none;
-    width: auto;
-    margin-left: 0;
-    margin-right: 0;
-  }
+.site-main .content.content--standard > h1 {
+  margin-top: 0;
+  margin-bottom: 1.25rem;
+  text-align: left;
+  width: 100%;
+  max-width: var(--page-content-width);
+}
 
-  .site-main .content.content--prose-centered > .page-header-image {
-    grid-column: 1 / -1;
-    width: calc(100% + 32px);
-    max-width: none;
-    margin: -24px -16px 24px;
-  }
+.site-main .content.content--standard > * {
+  width: 100%;
+  max-width: var(--page-content-width);
+}
 
-  .site-main .content.content--prose-centered > ul,
-  .site-main .content.content--prose-centered > ol {
-    margin-bottom: 18px;
-  }
-
-  .site-main .content.content--prose-centered > .about-page,
-  .site-main .content.content--prose-centered > .netzwerk-page {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: 1fr min(100%, 65ch) 1fr;
-    width: 100%;
-  }
-
-  .site-main .content.content--prose-centered .about-page > *,
-  .site-main .content.content--prose-centered .netzwerk-page > .netzwerk-intro {
-    grid-column: 2;
-    max-width: none;
-    width: auto;
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  .site-main .content.content--prose-centered .netzwerk-page > .netzwerk-grid-2,
-  .site-main .content.content--prose-centered .netzwerk-page > .netzwerk-instagram {
-    grid-column: 1 / -1;
-    justify-self: center;
-    width: min(100%, 720px);
-    max-width: 720px;
-  }
-
-  .site-main .content.content--prose-centered .about-page ul,
-  .site-main .content.content--prose-centered .about-page ol,
-  .site-main .content.content--prose-centered .netzwerk-page ul,
-  .site-main .content.content--prose-centered .netzwerk-page ol {
-    margin-bottom: 18px;
-  }
+.site-main .content.content--standard p,
+.site-main .content.content--standard ul,
+.site-main .content.content--standard ol {
+  max-width: none;
 }
 
 /* =========================

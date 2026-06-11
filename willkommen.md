@@ -3,7 +3,6 @@ layout: default
 title: Willkommen
 permalink: /willkommen/
 hide_title: true
-center_prose: true
 description: "Willkommen auf der Vereinsplattform der MTB-Abteilung TuS Jahn Werdohl — was neu ist und wie wir gemeinsam starten."
 image: /assets/images/icon-512.png
 image_width: 512
