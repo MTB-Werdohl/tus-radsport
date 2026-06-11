@@ -313,10 +313,6 @@ function renderMemberVotesPanelShell() {
 
   <h2>Abstimmungen</h2>
 
-  <p class="member-strava-hint">
-    Kommende Termine (nächster zuerst) und deine News-Abstimmungen — nur für dich sichtbar.
-  </p>
-
   <div
     id="member-votes-list"
     class="member-votes-list">
@@ -365,12 +361,6 @@ function renderMemberActivitiesPanelShell(
 
   <h2>Meine Aktivitäten</h2>
 
-  <p class="member-strava-hint">
-    Alle importierten Touren — nur für dich sichtbar. Im öffentlichen Feed
-    erscheinen nur Touren der letzten 90 Tage, wenn du im Tab Strava
-    <strong>„Im Aktivitätsfeed erscheinen“</strong> aktiviert hast.
-  </p>
-
   <div id="member-activities-list">
     <p>Aktivitäten werden geladen …</p>
   </div>
@@ -391,9 +381,6 @@ function renderMemberActivitiesList(
 
   const activities =
     payload?.activities || [];
-
-  const feedDays =
-    Number(payload?.feedDays) || 90;
 
   if (!activities.length) {
 
@@ -535,10 +522,7 @@ function renderMemberActivitiesList(
 
   const feedHint =
     payload?.publishFeed
-      ? `<p class="member-strava-hint member-activity-feed-hint">
-          Feed-Freigabe ist aktiv — Touren der letzten ${feedDays} Tage
-          können öffentlich sein (Badge „Im Feed sichtbar“).
-        </p>`
+      ? ''
       : `<p class="member-strava-hint member-activity-feed-hint">
           Feed-Freigabe ist aus — alle Touren bleiben privat, auch wenn
           Strava verbunden ist.
@@ -576,12 +560,6 @@ function renderMemberAvatarProfileBlock(
     ${preview}
 
     <div class="member-profile-avatar-actions">
-
-      <p class="member-strava-hint">
-        Dein Profilbild kann öffentlich in Feed, Rankings, Teilnehmerlisten
-        und auf Profilseiten erscheinen. Mit dem Upload stimmst du dieser
-        Darstellung zu.
-      </p>
 
       <label class="member-avatar-upload-label">
         <span class="member-save-btn member-avatar-upload-btn">
@@ -734,18 +712,6 @@ ${renderMemberAvatarProfileBlock(member)}
 
 </section>
 
-<section class="member-profile-section-block member-profile-troete-hint">
-
-  <h2>Vereinsinfos</h2>
-
-  <p class="member-troete-hint">
-    Aktuelle Hinweise vom Verein erscheinen unten rechts als
-    <strong>Tröte</strong> auf jeder Seite — dort findest du kurze
-    Mitteilungen des Vorstands.
-  </p>
-
-</section>
-
 <section class="member-profile-section-block member-profile-actions">
 
   <button type="button" id="member-logout-btn" class="member-logout-btn">
@@ -836,20 +802,6 @@ function renderStravaProfilePanel(
 
   <h2>Strava verbunden</h2>
 
-  <div class="member-strava-banner">
-
-    <p>
-      <strong>Synchronisation aktiv.</strong>
-      Neue Touren werden automatisch importiert — im öffentlichen Feed nur mit
-      Häkchen „Im Feed veröffentlichen“.
-    </p>
-
-    <a href="/aktivitaeten/">
-      Zum Aktivitäts-Feed →
-    </a>
-
-  </div>
-
   <dl class="member-profile-list">
 
     <div class="member-profile-row">
@@ -910,11 +862,6 @@ function renderStravaProfilePanel(
 
   <h2>Sichtbarkeit</h2>
 
-  <p class="member-strava-hint">
-    Diese Einstellungen steuern nur die <strong>Anzeige</strong>.
-    Deine importierten Aktivitäten bleiben gespeichert, solange Strava verbunden ist.
-  </p>
-
   <form id="strava-visibility-form" class="member-strava-visibility-form">
 
     <label class="member-strava-checkbox">
@@ -957,11 +904,6 @@ function renderStravaProfilePanel(
 <section class="member-profile-section-block member-strava-disconnect">
 
   <h2>Verbindung trennen</h2>
-
-  <p class="member-strava-hint">
-    Beendet die Strava-Anbindung. Importierte Aktivitäten werden aus Feed,
-    Rankings und Vereinszielen entfernt.
-  </p>
 
   <button
     type="button"
