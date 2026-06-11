@@ -215,7 +215,26 @@ feedback_answers
 
 Alte Poll-Antworten bleiben gültig, wenn Labels geändert werden; unbekannte `option_id` in Auswertung als „(Option entfernt)“ behandeln.
 
-**Unique:** `(module_id, member_id)` — eine Antwort pro Mitglied, Upsert zum Ändern.
+**Unique:** `(module_id, member_id)` — eine Antwort pro Mitglied, Upsert zum Ändern (Einzeltermine Phase 4a: Schreiben nur über RPC `set_event_feedback_answer`).
+
+### `feedback_answer_events` (Phase 4a)
+
+Historie von Statusänderungen bei **Einzeltermin**-Zusagen (`Termine.recurring = false`).
+
+| Spalte | Typ | Hinweis |
+|--------|-----|---------|
+| `id` | bigint PK | |
+| `module_id` | bigint | → `feedback_modules.id` |
+| `member_id` | bigint | → `members.id` |
+| `answer_id` | bigint NULL | → `feedback_answers.id` (NULL nach Löschen) |
+| `event_type` | text | `set_answer` \| `withdraw` \| `withdraw_after_yes` \| `downgrade_after_yes` |
+| `from_answer` | text NULL | vorheriger Code (`yes` / `maybe`) |
+| `to_answer` | text NULL | neuer Code; NULL = keine Teilnahme |
+| `cancellation_reason_code` | text NULL | bei Absage nach Ja: `krankheit`, `familie`, … |
+| `comment` | text NULL | optional Freitext bei `sonstiges` |
+| `created_at` | timestamptz | |
+
+RPCs: `set_event_feedback_answer`, `list_feedback_participation_changes` (Vorstand). Siehe [`supabase-phase4a-feedback-events.sql`](../supabase-phase4a-feedback-events.sql).
 
 ## Storage `media`
 

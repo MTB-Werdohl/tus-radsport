@@ -56,12 +56,91 @@ async function fetchOwnFeedbackAnswer(
 
 }
 
+async function setEventFeedbackAnswer(
+  moduleId,
+  answer,
+  comment,
+  cancellationReasonCode
+) {
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'set_event_feedback_answer',
+      {
+        p_module_id: moduleId,
+        p_answer: answer ?? null,
+        p_comment: comment ?? null,
+        p_cancellation_reason_code:
+          cancellationReasonCode ?? null
+      }
+    );
+
+  if (error) {
+
+    console.error(error);
+
+    return { error };
+
+  }
+
+  const answerRow =
+    data?.answer ?? null;
+
+  return {
+    data: answerRow
+  };
+
+}
+
+async function listFeedbackParticipationChanges(
+  options = {}
+) {
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'list_feedback_participation_changes',
+      {
+        p_module_id:
+          options.moduleId ?? null,
+        p_limit:
+          options.limit ?? 50,
+        p_offset:
+          options.offset ?? 0
+      }
+    );
+
+  if (error) {
+
+    console.error(error);
+
+    return { error, rows: [] };
+
+  }
+
+  return {
+    rows: Array.isArray(data) ? data : []
+  };
+
+}
+
 async function saveFeedbackAnswer(
   moduleId,
   identity,
   answer,
-  comment
+  comment,
+  options = {}
 ) {
+
+  if (options.eventCommitment === true) {
+
+    return setEventFeedbackAnswer(
+      moduleId,
+      answer,
+      comment,
+      options.cancellationReasonCode
+    );
+
+  }
 
   const memberId =
     identity?.memberId
@@ -114,8 +193,20 @@ async function saveFeedbackAnswer(
 
 async function deleteFeedbackAnswer(
   moduleId,
-  memberId
+  memberId,
+  options = {}
 ) {
+
+  if (options.eventCommitment === true) {
+
+    return setEventFeedbackAnswer(
+      moduleId,
+      null,
+      null,
+      options.cancellationReasonCode
+    );
+
+  }
 
   if (!moduleId || !memberId) {
     return { ok: true };
@@ -655,7 +746,7 @@ async function fetchFeedbackEntityTitle(
     const { data, error } =
       await window.supabaseClient
         .from(window.siteConfig.tables.termine)
-        .select('title, slug')
+        .select('title, slug, recurring')
         .eq('id', id)
         .maybeSingle();
 
@@ -739,7 +830,7 @@ async function fetchFeedbackEntityTitlesForModules(
     const { data, error } =
       await window.supabaseClient
         .from(window.siteConfig.tables.termine)
-        .select('id, title, slug')
+        .select('id, title, slug, recurring')
         .in('id', eventIds);
 
     if (error) {

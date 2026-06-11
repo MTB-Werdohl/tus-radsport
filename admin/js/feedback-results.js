@@ -127,12 +127,90 @@ function renderFeedbackFreeTextResponses(
 
 function renderFeedbackSummaryHtml(
   module,
-  summary
+  summary,
+  entityRecurring
 ) {
 
+  const counts =
+    summary?.counts || {};
+
+  const isEventYesMaybe =
+    module?.entity_type
+    === window.siteConfig.feedback.entityTypes.event
+    && (
+      module?.type
+      === window.siteConfig.feedback.types.yesMaybe
+      || module?.type === 'yes_no_comment'
+    );
+
+  const subscriptionMode =
+    isFeedbackEventSubscriptionMode(
+      module,
+      entityRecurring
+    );
+
+  if (subscriptionMode) {
+
+    const count =
+      countFeedbackSubscriptionAnswers(
+        summary
+      );
+
+    return `
+
+<section class="feedback-admin-summary">
+
+<h2>
+  Zusammenfassung
+</h2>
+
+<p>
+  Rückmeldungen gesamt:
+  <strong>${summary.total}</strong>
+</p>
+
+<ul class="feedback-admin-summary-list">
+  <li>
+    <strong>${escapeAdminHtml(FEEDBACK_EVENT_SUBSCRIPTION_LABEL)}</strong>:
+    ${count}
+  </li>
+</ul>
+
+</section>
+
+`;
+
+  }
+
+  let keys = [];
+
+  if (isEventYesMaybe) {
+
+    keys = [
+      window.siteConfig.feedback.answers.yes,
+      window.siteConfig.feedback.answers.maybe
+    ];
+
+  } else if (
+    module.type
+    === window.siteConfig.feedback.types.poll
+  ) {
+
+    keys =
+      getFeedbackPollAllOptions(
+        module.config
+      ).map((option) => option.id);
+
+  } else {
+
+    keys =
+      Object.keys(counts);
+
+  }
+
   const items =
-    Object.entries(summary.counts)
-      .map(([key, count]) => {
+    keys
+      .map((key) => {
 
         const label =
           module.type
@@ -144,10 +222,14 @@ function renderFeedbackSummaryHtml(
               )
               || '(Option entfernt)'
             )
-            : formatFeedbackAnswerLabel(
+            : formatFeedbackEventAnswerAdminLabel(
               module,
-              key
+              key,
+              entityRecurring
             );
+
+        const count =
+          counts[key] || 0;
 
         return `
 <li>
@@ -159,6 +241,22 @@ function renderFeedbackSummaryHtml(
       })
       .join('');
 
+  const totalLine =
+    isEventYesMaybe
+      ? `
+<p class="admin-hint">
+  Rückmeldungen gesamt:
+  <strong>${summary.total}</strong>
+  (Planung nur anhand verbindlicher Teilnehmer)
+</p>
+`
+      : `
+<p>
+  Antworten gesamt:
+  <strong>${summary.total}</strong>
+</p>
+`;
+
   return `
 
 <section class="feedback-admin-summary">
@@ -167,10 +265,7 @@ function renderFeedbackSummaryHtml(
   Zusammenfassung
 </h2>
 
-<p>
-  Antworten gesamt:
-  <strong>${summary.total}</strong>
-</p>
+${totalLine}
 
 <ul class="feedback-admin-summary-list">
   ${items}
@@ -184,7 +279,8 @@ function renderFeedbackSummaryHtml(
 
 function renderFeedbackAnswersTable(
   module,
-  answers
+  answers,
+  entityRecurring
 ) {
 
   if (!answers.length) {
@@ -236,7 +332,8 @@ function renderFeedbackAnswersTable(
       )
       : formatFeedbackAnswerLabel(
         module,
-        row.answer
+        row.answer,
+        entityRecurring
       )
   )}
 </td>
@@ -295,7 +392,8 @@ function renderFeedbackAnswersTable(
 
 function buildFeedbackCsv(
   module,
-  answers
+  answers,
+  entityRecurring
 ) {
 
   const header = [
@@ -319,7 +417,8 @@ function buildFeedbackCsv(
         )
         : formatFeedbackAnswerLabel(
           module,
-          row.answer
+          row.answer,
+          entityRecurring
         ),
       module.type
       === window.siteConfig.feedback.types.poll
@@ -345,7 +444,8 @@ function buildFeedbackCsv(
 
 function downloadFeedbackCsv(
   module,
-  answers
+  answers,
+  entityRecurring
 ) {
 
   const entityTitle =
@@ -362,7 +462,8 @@ function downloadFeedbackCsv(
       [
         `\uFEFF${buildFeedbackCsv(
           module,
-          answers
+          answers,
+          entityRecurring
         )}`
       ],
       {
@@ -442,6 +543,9 @@ async function loadFeedbackResults() {
   window.__feedbackResultsEntity =
     entity;
 
+  const entityRecurring =
+    entity?.recurring === true;
+
   try {
 
     const answers =
@@ -467,7 +571,8 @@ async function loadFeedbackResults() {
 
 ${renderFeedbackSummaryHtml(
   module,
-  summary
+  summary,
+  entityRecurring
 )}
 
 ${renderFeedbackFreeTextResponses(
@@ -494,7 +599,8 @@ ${renderFeedbackFreeTextResponses(
 
 ${renderFeedbackAnswersTable(
   module,
-  answers
+  answers,
+  entityRecurring
 )}
 
 `;
@@ -505,7 +611,8 @@ ${renderFeedbackAnswersTable(
 
         downloadFeedbackCsv(
           module,
-          answers
+          answers,
+          entityRecurring
         );
 
       });

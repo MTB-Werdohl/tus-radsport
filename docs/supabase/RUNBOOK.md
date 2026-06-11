@@ -27,6 +27,10 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Feedback Deaktivieren (ohne Löschen):** [`supabase-feedback-enabled.sql`](../supabase-feedback-enabled.sql) — Spalte `enabled`; deaktiviertes Modul ist öffentlich ausgeblendet, Antworten bleiben bis Entity-Löschung.
 
+**Phase 4a — Einzeltermine (Verbindlichkeit):** [`supabase-phase4a-feedback-events.sql`](../supabase-phase4a-feedback-events.sql) — `feedback_answer_events`, RPCs `set_event_feedback_answer` / `list_feedback_participation_changes`, RLS: Einzeltermine nur noch über RPC schreibbar; `anonymize_member` bereinigt Event-Freitexte. **Nach** Feedback-Basis und `supabase-feedback-answers-delete-own.sql`. Frontend/Admin: `admin_js_version` **20260562**.
+
+**Phase 4a Review:** [`supabase-phase4a-public-feedback-rpc-fix.sql`](../supabase-phase4a-public-feedback-rpc-fix.sql) — `submit_public_feedback` an 4a-Logik (`set_event_feedback_answer_for_member`); nach Phase-4a-Basis.
+
 **Feedback Public-Registrierung (Magic Link):** [`supabase-feedback-public-registration.sql`](../supabase-feedback-public-registration.sql) — externe Teilnehmer, abstimmen erst nach Login; `submit_public_feedback` für anonym nicht mehr.
 
 **Phase 5 — Website-Hinweise:** [`supabase/supabase-site-content.sql`](supabase-site-content.sql) — öffentliches SELECT auf `site_state` für `site_banner`, `saison_mode`, `landing_hints`, `site_overlay` (nach `supabase-public-read.sql`).

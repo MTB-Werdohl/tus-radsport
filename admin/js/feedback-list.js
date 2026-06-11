@@ -43,11 +43,33 @@ function getFeedbackEntityTypeLabel(entityType) {
 
 function renderFeedbackSummaryLines(
   module,
-  summary
+  summary,
+  entityRecurring
 ) {
 
   const counts =
     summary?.counts || {};
+
+  if (
+    isFeedbackEventSubscriptionMode(
+      module,
+      entityRecurring
+    )
+  ) {
+
+    const count =
+      countFeedbackSubscriptionAnswers(
+        summary
+      );
+
+    return `
+      <div class="feedback-card-answer-row">
+        ${escapeAdminHtml(FEEDBACK_EVENT_SUBSCRIPTION_LABEL)}:
+        <strong>${count}</strong>
+      </div>
+    `;
+
+  }
 
   let keys = [];
 
@@ -85,9 +107,10 @@ function renderFeedbackSummaryLines(
     keys.map((key) => {
 
       const label =
-        formatFeedbackAnswerLabel(
+        formatFeedbackEventAnswerAdminLabel(
           module,
-          key
+          key,
+          entityRecurring
         );
 
       const count =
@@ -454,7 +477,8 @@ function renderFeedbackList(
         </div>
         ${renderFeedbackSummaryLines(
           module,
-          row.summary
+          row.summary,
+          row.entity?.recurring === true
         )}
         ${renderFeedbackFreeTextResponses(
           module,

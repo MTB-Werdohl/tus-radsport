@@ -1,6 +1,6 @@
 ---
 layout: null
-title: Feedback Übersicht
+title: Teilnahmeänderungen
 ---
 
 <!doctype html>
@@ -24,19 +24,19 @@ title: Feedback Übersicht
     <div>
 
       <h1>
-        Feedback
+        Teilnahmeänderungen
       </h1>
 
       <p>
-        Module und Rückmeldungen im Überblick
+        Absagen und Statuswechsel bei Einzelterminen (Phase 4a)
       </p>
 
     </div>
 
-    <a href="/admin/"
+    <a href="/admin/feedback.html"
        class="back-button">
 
-      ← Dashboard
+      ← Feedback
 
     </a>
 
@@ -44,36 +44,35 @@ title: Feedback Übersicht
 
   <div class="admin-topbar participation-changes-toolbar">
 
-    <a
-      href="/admin/participation_changes.html"
-      class="secondary-button">
+    <label for="participation-changes-filter">
+      Termin filtern
+    </label>
 
-      Teilnahmeänderungen
+    <select id="participation-changes-filter">
 
-    </a>
+      <option value="">
+        Alle Einzeltermine
+      </option>
 
-    <input
-      id="feedback-search"
-      placeholder="Titel oder Frage suchen…"
-    >
+    </select>
 
   </div>
 
   <div
-    id="feedback-list"
-    class="feedback-admin-list">
+    id="participation-changes-list"
+    class="participation-changes-list">
 
   </div>
 
-  <div id="feedback-pagination"></div>
+  <div id="participation-changes-pagination"></div>
 
 </div>
 
 <script src="/assets/js/feedback/feedback-types.js?v={{ site.admin_js_version }}"></script>
 <script src="/assets/js/feedback/feedback-service.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/feedback-list.js?v={{ site.admin_js_version }}"></script>
+<script src="/admin/js/participation-changes.js?v={{ site.admin_js_version }}"></script>
 <script>
-requireAdminSession(loadFeedbackList);
+requireAdminSession(loadParticipationChanges);
 </script>
 
 </body>

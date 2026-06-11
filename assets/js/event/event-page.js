@@ -77,6 +77,8 @@ async function loadEvent() {
     entityId: event.id,
     entityVisibility:
       event.sichtbarkeit,
+    entityRecurring:
+      event.recurring === true,
     container: 'event-feedback'
   });
 

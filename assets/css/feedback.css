@@ -1181,3 +1181,438 @@ font-weight: 700;
 
 }
 
+.feedback-commitment-hint {
+
+margin: 0 0 14px;
+
+font-size: 0.88rem;
+
+line-height: 1.45;
+
+opacity: 0.88;
+
+}
+
+.feedback-btn {
+
+display: inline-flex;
+
+flex-direction: column;
+
+align-items: center;
+
+gap: 2px;
+
+min-width: 7.5rem;
+
+}
+
+.feedback-btn__label {
+
+font-size: 1rem;
+
+line-height: 1.2;
+
+}
+
+.feedback-btn__sublabel {
+
+font-size: 0.72rem;
+
+font-weight: 500;
+
+opacity: 0.78;
+
+line-height: 1.2;
+
+}
+
+.feedback-cancel-yes-wrap {
+
+margin: 4px 0 0;
+
+}
+
+.feedback-cancel-yes {
+
+border: none;
+
+padding: 0;
+
+background: none;
+
+color: inherit;
+
+font: inherit;
+
+font-size: 0.88rem;
+
+font-weight: 600;
+
+text-decoration: underline;
+
+text-underline-offset: 3px;
+
+cursor: pointer;
+
+opacity: 0.88;
+
+}
+
+.feedback-cancel-yes:hover {
+
+opacity: 1;
+
+}
+
+.feedback-subscription-hint {
+
+margin: 0 0 14px;
+
+font-size: 0.88rem;
+
+line-height: 1.45;
+
+opacity: 0.88;
+
+}
+
+.feedback-actions--subscription {
+
+flex-direction: column;
+
+align-items: flex-start;
+
+gap: 10px;
+
+}
+
+.feedback-btn--subscribe {
+
+min-width: 12rem;
+
+}
+
+.feedback-unsubscribe-wrap {
+
+margin: 0;
+
+}
+
+.feedback-unsubscribe {
+
+border: none;
+
+padding: 0;
+
+background: none;
+
+color: inherit;
+
+font: inherit;
+
+font-size: 0.88rem;
+
+font-weight: 600;
+
+text-decoration: underline;
+
+text-underline-offset: 3px;
+
+cursor: pointer;
+
+opacity: 0.88;
+
+}
+
+.feedback-unsubscribe:hover {
+
+opacity: 1;
+
+}
+
+.feedback-cancellation-modal {
+
+position: fixed;
+
+inset: 0;
+
+z-index: 12000;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+padding: 16px;
+
+}
+
+.feedback-cancellation-modal[hidden] {
+
+display: none !important;
+
+}
+
+.feedback-cancellation-modal__backdrop {
+
+position: absolute;
+
+inset: 0;
+
+background: rgba(0, 0, 0, 0.55);
+
+}
+
+.feedback-cancellation-modal__dialog {
+
+position: relative;
+
+z-index: 1;
+
+width: min(100%, 420px);
+
+max-height: min(90vh, 640px);
+
+overflow: auto;
+
+padding: 20px;
+
+border-radius: 16px;
+
+background: #fff;
+
+color: #1a1a1a;
+
+box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28);
+
+}
+
+.feedback-cancellation-modal__dialog h3 {
+
+margin: 0 0 10px;
+
+font-size: 1.15rem;
+
+}
+
+.feedback-cancellation-modal__intro {
+
+margin: 0 0 14px;
+
+line-height: 1.45;
+
+}
+
+.feedback-cancellation-modal__reasons {
+
+margin: 0 0 14px;
+
+padding: 0;
+
+border: none;
+
+display: grid;
+
+gap: 8px;
+
+}
+
+.feedback-cancellation-option {
+
+display: flex;
+
+align-items: center;
+
+gap: 10px;
+
+padding: 10px 12px;
+
+border-radius: 10px;
+
+background: rgba(34, 81, 180, 0.08);
+
+cursor: pointer;
+
+}
+
+.feedback-cancellation-modal__freetext-wrap {
+
+margin-bottom: 14px;
+
+}
+
+.feedback-cancellation-modal__freetext-wrap.is-hidden {
+
+display: none;
+
+}
+
+.feedback-cancellation-modal__freetext {
+
+width: 100%;
+
+margin-top: 6px;
+
+padding: 10px 12px;
+
+border-radius: 10px;
+
+border: 1px solid rgba(0, 0, 0, 0.15);
+
+font: inherit;
+
+resize: vertical;
+
+}
+
+.feedback-cancellation-modal__error {
+
+margin: 0 0 12px;
+
+color: #b00020;
+
+font-size: 0.9rem;
+
+}
+
+.feedback-cancellation-modal__actions {
+
+display: flex;
+
+justify-content: flex-end;
+
+gap: 10px;
+
+flex-wrap: wrap;
+
+}
+
+.feedback-cancellation-modal__cancel,
+.feedback-cancellation-modal__confirm {
+
+border: none;
+
+border-radius: 999px;
+
+padding: 10px 16px;
+
+font-weight: 600;
+
+cursor: pointer;
+
+}
+
+.feedback-cancellation-modal__cancel {
+
+background: rgba(0, 0, 0, 0.08);
+
+color: inherit;
+
+}
+
+.feedback-cancellation-modal__confirm {
+
+background: #2251b4;
+
+color: #fff;
+
+}
+
+.participation-changes-toolbar {
+
+display: flex;
+
+flex-wrap: wrap;
+
+align-items: center;
+
+gap: 12px;
+
+margin-bottom: 16px;
+
+}
+
+.participation-changes-list {
+
+display: grid;
+
+gap: 14px;
+
+}
+
+.participation-change-card {
+
+padding: 16px;
+
+border-radius: 14px;
+
+background: rgba(255, 255, 255, 0.04);
+
+border: 1px solid rgba(255, 255, 255, 0.08);
+
+}
+
+.participation-change-card__meta {
+
+margin-bottom: 8px;
+
+font-size: 0.85rem;
+
+opacity: 0.75;
+
+}
+
+.participation-change-card__title {
+
+margin: 0 0 12px;
+
+font-size: 1.05rem;
+
+}
+
+.participation-change-card__title a {
+
+color: inherit;
+
+text-decoration: none;
+
+}
+
+.participation-change-card__title a:hover {
+
+text-decoration: underline;
+
+}
+
+.participation-change-card__details {
+
+display: grid;
+
+gap: 8px;
+
+margin: 0;
+
+}
+
+.participation-change-card__details dt {
+
+font-size: 0.78rem;
+
+font-weight: 600;
+
+opacity: 0.7;
+
+margin: 0;
+
+}
+
+.participation-change-card__details dd {
+
+margin: 0;
+
+line-height: 1.4;
+
+}
+

@@ -105,7 +105,8 @@ async function initFeedbackModule(options) {
     module,
     ownAnswer,
     viewerMember,
-    options?.entityVisibility ?? null
+    options?.entityVisibility ?? null,
+    options?.entityRecurring === true
   );
 
 }

@@ -67,7 +67,8 @@ function getFeedbackEntityPageUrl(
 function formatMemberVoteAnswerLine(
   module,
   answerRow,
-  answerLabel
+  answerLabel,
+  entityRecurring
 ) {
 
   if (
@@ -86,6 +87,14 @@ function formatMemberVoteAnswerLine(
   let icon = '🗳️';
 
   if (
+    isFeedbackEventSubscriptionMode(
+      module,
+      entityRecurring
+    )
+    && isFeedbackSubscriptionAnswer(code)
+  ) {
+    icon = '📬';
+  } else if (
     code
     === window.siteConfig.feedback.answers.yes
   ) {
@@ -120,7 +129,8 @@ function buildMemberVoteItem(
       )
       : formatFeedbackAnswerLabel(
         module,
-        answerRow.answer
+        answerRow.answer,
+        entity?.recurring === true
       );
 
   return {
@@ -361,7 +371,8 @@ function renderMemberVoteCard(item) {
       item.answerRow,
       escapeMemberHtml(
         item.answerLabel
-      )
+      ),
+      item.entity?.recurring === true
     );
 
   const metaParts = [];

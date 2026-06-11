@@ -89,9 +89,62 @@ ${escapeFeedbackHtml(message)}
 
 }
 
+function renderFeedbackSubscription(
+  ownAnswer
+) {
+
+  const subscribed =
+    isFeedbackSubscriptionAnswer(
+      ownAnswer?.answer
+    );
+
+  return `
+<p class="feedback-subscription-hint">
+  Serientermin — du kannst dich über neue Termine informieren lassen.
+</p>
+<div class="feedback-actions feedback-actions--subscription">
+
+<button
+  type="button"
+  class="feedback-btn feedback-btn--subscribe${
+    subscribed ? ' is-active' : ''
+  }"
+  data-feedback-subscribe>
+
+<span class="feedback-btn__label">
+  Informiert bleiben
+</span>
+
+</button>
+
+${
+  subscribed
+    ? `
+<p class="feedback-unsubscribe-wrap">
+
+<button
+  type="button"
+  class="feedback-unsubscribe"
+  data-feedback-unsubscribe>
+
+Nicht mehr informiert werden
+
+</button>
+
+</p>
+`
+    : ''
+}
+
+</div>
+`;
+
+}
+
 function renderFeedbackYesMaybe(
   module,
-  ownAnswer
+  ownAnswer,
+  commitmentEnabled
 ) {
 
   const selected =
@@ -103,7 +156,18 @@ function renderFeedbackYesMaybe(
   const maybe =
     window.siteConfig.feedback.answers.maybe;
 
+  const hint =
+    commitmentEnabled
+      ? `
+<p class="feedback-commitment-hint">
+  <strong>Ja</strong> = verbindliche Teilnahme (Organisator darf planen).
+  <strong>Vielleicht</strong> = Interesse, keine Garantie — jederzeit ohne Hürde änderbar.
+</p>
+`
+      : '';
+
   return `
+${hint}
 <div class="feedback-actions">
 
 <button
@@ -113,7 +177,12 @@ function renderFeedbackYesMaybe(
   }"
   data-feedback-answer="${yes}">
 
-Ja
+<span class="feedback-btn__label">Ja</span>
+${
+  commitmentEnabled
+    ? '<span class="feedback-btn__sublabel">Verbindlich</span>'
+    : ''
+}
 
 </button>
 
@@ -124,11 +193,35 @@ Ja
   }"
   data-feedback-answer="${maybe}">
 
-Vielleicht
+<span class="feedback-btn__label">Vielleicht</span>
+${
+  commitmentEnabled
+    ? '<span class="feedback-btn__sublabel">Interesse</span>'
+    : ''
+}
 
 </button>
 
 </div>
+${
+  commitmentEnabled
+  && selected === yes
+    ? `
+<p class="feedback-cancel-yes-wrap">
+
+<button
+  type="button"
+  class="feedback-cancel-yes"
+  data-feedback-cancel-yes>
+
+Verbindliche Zusage absagen
+
+</button>
+
+</p>
+`
+    : ''
+}
 `;
 
 }
@@ -334,12 +427,295 @@ function resolveFeedbackModuleType(module) {
 
 }
 
+function ensureFeedbackCancellationModal() {
+
+  if (
+    document.getElementById(
+      'feedback-cancellation-modal'
+    )
+  ) {
+    return;
+  }
+
+  const reasonsHtml =
+    FEEDBACK_CANCELLATION_REASONS
+      .map((reason, index) => `
+<label class="feedback-cancellation-option">
+
+<input
+  type="radio"
+  name="feedback-cancellation-reason"
+  value="${escapeFeedbackHtml(reason.code)}"
+  ${index === 0 ? 'checked' : ''}
+>
+
+<span>${escapeFeedbackHtml(reason.label)}</span>
+
+</label>
+`)
+      .join('');
+
+  document.body.insertAdjacentHTML(
+    'beforeend',
+    `
+<div
+  id="feedback-cancellation-modal"
+  class="feedback-cancellation-modal"
+  hidden>
+
+  <div
+    class="feedback-cancellation-modal__backdrop"
+    data-feedback-cancellation-close>
+
+  </div>
+
+  <div
+    class="feedback-cancellation-modal__dialog"
+    role="dialog"
+    aria-labelledby="feedback-cancellation-title"
+    aria-modal="true">
+
+    <h3 id="feedback-cancellation-title">
+      Verbindliche Zusage absagen
+    </h3>
+
+    <p class="feedback-cancellation-modal__intro">
+      Du hattest bereits verbindlich zugesagt.
+      Warum möchtest du absagen?
+    </p>
+
+    <fieldset class="feedback-cancellation-modal__reasons">
+      ${reasonsHtml}
+    </fieldset>
+
+    <div
+      class="feedback-cancellation-modal__freetext-wrap is-hidden"
+      data-feedback-cancellation-freetext-wrap>
+
+      <label for="feedback-cancellation-freetext">
+        Optional: kurze Ergänzung
+      </label>
+
+      <textarea
+        id="feedback-cancellation-freetext"
+        class="feedback-cancellation-modal__freetext"
+        maxlength="500"
+        rows="3"
+        placeholder="Optional …">
+
+      </textarea>
+
+    </div>
+
+    <p
+      id="feedback-cancellation-error"
+      class="feedback-cancellation-modal__error"
+      hidden>
+
+    </p>
+
+    <div class="feedback-cancellation-modal__actions">
+
+      <button
+        type="button"
+        class="feedback-cancellation-modal__cancel"
+        data-feedback-cancellation-close>
+
+        Abbrechen
+
+      </button>
+
+      <button
+        type="button"
+        class="feedback-cancellation-modal__confirm"
+        data-feedback-cancellation-confirm>
+
+        Absage speichern
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+`
+  );
+
+  const modal =
+    document.getElementById(
+      'feedback-cancellation-modal'
+    );
+
+  const freeTextWrap =
+    modal.querySelector(
+      '[data-feedback-cancellation-freetext-wrap]'
+    );
+
+  modal
+    .querySelectorAll(
+      'input[name="feedback-cancellation-reason"]'
+    )
+    .forEach((input) => {
+
+      input.addEventListener('change', () => {
+
+        const isSonstiges =
+          modal.querySelector(
+            'input[name="feedback-cancellation-reason"]:checked'
+          )?.value === 'sonstiges';
+
+        freeTextWrap.classList.toggle(
+          'is-hidden',
+          !isSonstiges
+        );
+
+        if (!isSonstiges) {
+
+          const freeText =
+            modal.querySelector(
+              '#feedback-cancellation-freetext'
+            );
+
+          if (freeText) {
+            freeText.value = '';
+          }
+
+        }
+
+      });
+
+    });
+
+}
+
+function openFeedbackCancellationDialog() {
+
+  ensureFeedbackCancellationModal();
+
+  const modal =
+    document.getElementById(
+      'feedback-cancellation-modal'
+    );
+
+  const errorEl =
+    document.getElementById(
+      'feedback-cancellation-error'
+    );
+
+  const freeText =
+    document.getElementById(
+      'feedback-cancellation-freetext'
+    );
+
+  if (freeText) {
+    freeText.value = '';
+  }
+
+  if (errorEl) {
+    errorEl.hidden = true;
+    errorEl.textContent = '';
+  }
+
+  const firstReason =
+    modal.querySelector(
+      'input[name="feedback-cancellation-reason"]'
+    );
+
+  if (firstReason) {
+    firstReason.checked = true;
+  }
+
+  modal.querySelector(
+    '[data-feedback-cancellation-freetext-wrap]'
+  ).classList.add('is-hidden');
+
+  modal.hidden = false;
+
+  return new Promise((resolve) => {
+
+    function cleanup(result) {
+
+      modal.hidden = true;
+
+      modal
+        .querySelector('[data-feedback-cancellation-confirm]')
+        ?.removeEventListener('click', onConfirm);
+
+      modal
+        .querySelectorAll('[data-feedback-cancellation-close]')
+        .forEach((el) => {
+          el.removeEventListener('click', onCancel);
+        });
+
+      resolve(result);
+
+    }
+
+    function onCancel() {
+      cleanup(null);
+    }
+
+    function onConfirm() {
+
+      const selected =
+        modal.querySelector(
+          'input[name="feedback-cancellation-reason"]:checked'
+        )?.value;
+
+      if (!selected) {
+
+        if (errorEl) {
+          errorEl.textContent =
+            'Bitte einen Grund wählen.';
+          errorEl.hidden = false;
+        }
+
+        return;
+
+      }
+
+      const comment =
+        selected === 'sonstiges'
+          ? freeText?.value?.trim() || null
+          : null;
+
+      cleanup({
+        cancellationReasonCode: selected,
+        comment
+      });
+
+    }
+
+    modal
+      .querySelector('[data-feedback-cancellation-confirm]')
+      ?.addEventListener('click', onConfirm);
+
+    modal
+      .querySelectorAll('[data-feedback-cancellation-close]')
+      .forEach((el) => {
+        el.addEventListener('click', onCancel);
+      });
+
+  });
+
+}
+
+function confirmFeedbackYesCommitment() {
+
+  return window.confirm(
+    'Du sagst verbindlich zu. Der Organisator darf mit deiner Teilnahme planen.\n\nJetzt verbindlich zusagen?'
+  );
+
+}
+
 function renderFeedbackModule(
   container,
   module,
   ownAnswer,
   member,
-  entityVisibility
+  entityVisibility,
+  entityRecurring
 ) {
 
   if (!container || !module) {
@@ -374,6 +750,18 @@ function renderFeedbackModule(
   const type =
     resolveFeedbackModuleType(module);
 
+  const commitmentEnabled =
+    isFeedbackEventCommitmentEnabled(
+      module,
+      entityRecurring
+    );
+
+  const subscriptionMode =
+    isFeedbackEventSubscriptionMode(
+      module,
+      entityRecurring
+    );
+
   const pollConfig =
     type
     === window.siteConfig.feedback.types.poll
@@ -402,10 +790,15 @@ function renderFeedbackModule(
     ) {
 
       body =
-        renderFeedbackYesMaybe(
-          module,
-          ownAnswer
-        );
+        subscriptionMode
+          ? renderFeedbackSubscription(
+            ownAnswer
+          )
+          : renderFeedbackYesMaybe(
+            module,
+            ownAnswer,
+            commitmentEnabled
+          );
 
     } else if (
       type
@@ -455,7 +848,9 @@ ${
       container,
       module,
       member,
-      entityVisibility
+      entityVisibility,
+      entityRecurring,
+      ownAnswer
     );
   } else if (showPublicGate) {
     bindFeedbackPublicGateEvents(container);
@@ -502,7 +897,9 @@ function bindFeedbackModuleEvents(
   container,
   module,
   member,
-  entityVisibility
+  entityVisibility,
+  entityRecurring,
+  ownAnswer
 ) {
 
   const identity =
@@ -513,7 +910,53 @@ function bindFeedbackModuleEvents(
   const type =
     resolveFeedbackModuleType(module);
 
-  async function withdrawAnswer() {
+  const commitmentEnabled =
+    isFeedbackEventCommitmentEnabled(
+      module,
+      entityRecurring
+    );
+
+  const subscriptionMode =
+    isFeedbackEventSubscriptionMode(
+      module,
+      entityRecurring
+    );
+
+  const yes =
+    window.siteConfig.feedback.answers.yes;
+
+  const maybe =
+    window.siteConfig.feedback.answers.maybe;
+
+  function rerenderFeedback(
+    nextAnswer,
+    message,
+    isError
+  ) {
+
+    renderFeedbackModule(
+      container,
+      module,
+      nextAnswer,
+      member,
+      entityVisibility,
+      entityRecurring
+    );
+
+    if (message) {
+      showFeedbackStatus(
+        container,
+        message,
+        isError
+      );
+    }
+
+  }
+
+  async function applyEventAnswer(
+    nextAnswer,
+    cancellation
+  ) {
 
     if (!identity?.memberId) {
 
@@ -523,48 +966,103 @@ function bindFeedbackModuleEvents(
         true
       );
 
-      return;
+      return false;
 
     }
 
-    const result =
-      await deleteFeedbackAnswer(
-        module.id,
-        identity.memberId
-      );
+    const saveOptions =
+      commitmentEnabled
+        ? {
+          eventCommitment: true,
+          cancellationReasonCode:
+            cancellation?.cancellationReasonCode
+            || null
+        }
+        : {};
+
+    let result;
+
+    if (nextAnswer == null) {
+
+      result =
+        await deleteFeedbackAnswer(
+          module.id,
+          identity.memberId,
+          saveOptions
+        );
+
+    } else {
+
+      const validationError =
+        validateFeedbackAnswer(
+          module,
+          nextAnswer,
+          cancellation?.comment
+        );
+
+      if (validationError) {
+
+        showFeedbackStatus(
+          container,
+          validationError,
+          true
+        );
+
+        return false;
+
+      }
+
+      result =
+        await saveFeedbackAnswer(
+          module.id,
+          identity,
+          nextAnswer,
+          cancellation?.comment || null,
+          saveOptions
+        );
+
+    }
 
     if (result?.error) {
 
       showFeedbackStatus(
         container,
         result.error.message
-          || 'Zurückziehen fehlgeschlagen.',
+          || 'Speichern fehlgeschlagen.',
         true
       );
 
-      return;
+      return false;
 
     }
 
-    renderFeedbackModule(
-      container,
-      module,
-      null,
-      member,
-      entityVisibility
+    rerenderFeedback(
+      result.data ?? null,
+      nextAnswer == null
+        ? 'Abstimmung zurückgezogen.'
+        : 'Antwort gespeichert.',
+      false
     );
 
-    showFeedbackStatus(
-      container,
-      'Abstimmung zurückgezogen.',
-      false
+    return true;
+
+  }
+
+  async function withdrawAnswer(
+    cancellation
+  ) {
+
+    return applyEventAnswer(
+      null,
+      cancellation
     );
 
   }
 
   async function persistAnswer(
     answer,
-    comment
+    comment,
+    cancellationReasonCode
   ) {
 
     try {
@@ -577,7 +1075,14 @@ function bindFeedbackModuleEvents(
         )
       ) {
 
-        await withdrawAnswer();
+        await withdrawAnswer(
+          cancellationReasonCode
+            ? {
+              cancellationReasonCode,
+              comment
+            }
+            : null
+        );
 
         return;
 
@@ -614,12 +1119,22 @@ function bindFeedbackModuleEvents(
 
       }
 
+      const saveOptions =
+        commitmentEnabled
+          ? {
+            eventCommitment: true,
+            cancellationReasonCode:
+              cancellationReasonCode || null
+          }
+          : {};
+
       const result =
         await saveFeedbackAnswer(
           module.id,
           identity,
           answer,
-          comment
+          comment,
+          saveOptions
         );
 
       if (result?.error) {
@@ -635,16 +1150,8 @@ function bindFeedbackModuleEvents(
 
       }
 
-      renderFeedbackModule(
-        container,
-        module,
+      rerenderFeedback(
         result.data,
-        member,
-        entityVisibility
-      );
-
-      showFeedbackStatus(
-        container,
         'Antwort gespeichert.',
         false
       );
@@ -660,6 +1167,115 @@ function bindFeedbackModuleEvents(
       );
 
     }
+
+  }
+
+  async function handleYesMaybeClick(
+    answer,
+    wasActive
+  ) {
+
+    const currentAnswer =
+      String(ownAnswer?.answer || '')
+        .trim();
+
+    if (commitmentEnabled) {
+
+      if (wasActive && answer === yes) {
+        return;
+      }
+
+      if (wasActive && answer === maybe) {
+
+        await applyEventAnswer(null, null);
+
+        return;
+
+      }
+
+      if (answer === yes) {
+
+        if (
+          currentAnswer !== yes
+          && !confirmFeedbackYesCommitment()
+        ) {
+          rerenderFeedback(ownAnswer, null, false);
+          return;
+        }
+
+        await applyEventAnswer(yes, null);
+
+        return;
+
+      }
+
+      if (answer === maybe) {
+
+        if (currentAnswer === yes) {
+
+          const cancellation =
+            await openFeedbackCancellationDialog();
+
+          if (!cancellation) {
+            rerenderFeedback(ownAnswer, null, false);
+            return;
+          }
+
+          await applyEventAnswer(
+            maybe,
+            cancellation
+          );
+
+          return;
+
+        }
+
+        await applyEventAnswer(maybe, null);
+
+      }
+
+      return;
+
+    }
+
+    if (wasActive) {
+
+      container
+        .querySelectorAll('[data-feedback-answer]')
+        .forEach((item) => {
+          item.classList.remove('is-active');
+        });
+
+      await withdrawAnswer(null);
+
+      return;
+
+    }
+
+    container
+      .querySelectorAll('[data-feedback-answer]')
+      .forEach((item) => {
+        item.classList.remove('is-active');
+      });
+
+    buttonHighlight(answer);
+
+    await persistAnswer(answer, null);
+
+  }
+
+  function buttonHighlight(answer) {
+
+    container
+      .querySelectorAll('[data-feedback-answer]')
+      .forEach((item) => {
+
+        item.classList.toggle(
+          'is-active',
+          item.dataset.feedbackAnswer === answer
+        );
+
+      });
 
   }
 
@@ -727,6 +1343,59 @@ function bindFeedbackModuleEvents(
 
   }
 
+  async function handleCancelYesCommitment() {
+
+    const cancellation =
+      await openFeedbackCancellationDialog();
+
+    if (!cancellation) {
+      return;
+    }
+
+    await applyEventAnswer(null, cancellation);
+
+  }
+
+  if (
+    subscriptionMode
+    && type
+    === window.siteConfig.feedback.types.yesMaybe
+  ) {
+
+    container
+      .querySelector('[data-feedback-subscribe]')
+      ?.addEventListener('click', async () => {
+
+        if (
+          isFeedbackSubscriptionAnswer(
+            ownAnswer?.answer
+          )
+        ) {
+          return;
+        }
+
+        await applyEventAnswer(maybe, null);
+
+      });
+
+    container
+      .querySelector('[data-feedback-unsubscribe]')
+      ?.addEventListener('click', async () => {
+
+        await applyEventAnswer(null, null);
+
+      });
+
+  } else {
+
+  container
+    .querySelector('[data-feedback-cancel-yes]')
+    ?.addEventListener('click', () => {
+
+      void handleCancelYesCommitment();
+
+    });
+
   container
     .querySelectorAll('[data-feedback-answer]')
     .forEach((button) => {
@@ -744,20 +1413,12 @@ function bindFeedbackModuleEvents(
         if (
           type
           === window.siteConfig.feedback.types.yesMaybe
-          && wasActive
         ) {
 
-          container
-            .querySelectorAll(
-              '[data-feedback-answer]'
-            )
-            .forEach((item) => {
-              item.classList.remove(
-                'is-active'
-              );
-            });
-
-          await withdrawAnswer();
+          await handleYesMaybeClick(
+            answer,
+            wasActive
+          );
 
           return;
 
@@ -771,16 +1432,11 @@ function bindFeedbackModuleEvents(
 
         button.classList.add('is-active');
 
-        if (
-          type
-          === window.siteConfig.feedback.types.yesMaybe
-        ) {
-          await persistAnswer(answer, null);
-        }
-
       });
 
     });
+
+  }
 
   container
     .querySelector('.feedback-poll-save')

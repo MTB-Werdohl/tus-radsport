@@ -1,6 +1,18 @@
 const FEEDBACK_POLL_FREETEXT_OPTION_ID =
   '__freetext__';
 
+const FEEDBACK_CANCELLATION_REASONS = [
+  { code: 'krankheit', label: 'Krankheit' },
+  { code: 'familie', label: 'Familie' },
+  { code: 'arbeit', label: 'Arbeit' },
+  { code: 'wetter', label: 'Wetter' },
+  { code: 'terminueberschneidung', label: 'Terminüberschneidung' },
+  { code: 'sonstiges', label: 'Sonstiges' }
+];
+
+const FEEDBACK_EVENT_SUBSCRIPTION_LABEL =
+  'Informiert bleiben';
+
 const FEEDBACK_POLL_FREETEXT_ONLY =
   '[]';
 
@@ -511,9 +523,196 @@ function isFeedbackAnswerWithdrawal(
 
 }
 
+function isFeedbackEventSubscriptionMode(
+  module,
+  entityRecurring
+) {
+
+  if (entityRecurring !== true) {
+    return false;
+  }
+
+  if (
+    module?.entity_type
+    !== window.siteConfig.feedback.entityTypes.event
+  ) {
+    return false;
+  }
+
+  const type =
+    resolveFeedbackModuleType(module);
+
+  return (
+    type
+    === window.siteConfig.feedback.types.yesMaybe
+  );
+
+}
+
+function isFeedbackSubscriptionAnswer(
+  answer
+) {
+
+  const value =
+    String(answer || '')
+      .trim();
+
+  return (
+    value
+    === window.siteConfig.feedback.answers.yes
+    || value
+    === window.siteConfig.feedback.answers.maybe
+  );
+
+}
+
+function countFeedbackSubscriptionAnswers(
+  summary
+) {
+
+  const counts =
+    summary?.counts || {};
+
+  return (
+    (counts[window.siteConfig.feedback.answers.yes] || 0)
+    + (counts[window.siteConfig.feedback.answers.maybe] || 0)
+  );
+
+}
+
+function isFeedbackEventCommitmentEnabled(
+  module,
+  entityRecurring
+) {
+
+  if (entityRecurring === true) {
+    return false;
+  }
+
+  if (
+    module?.entity_type
+    !== window.siteConfig.feedback.entityTypes.event
+  ) {
+    return false;
+  }
+
+  const type =
+    resolveFeedbackModuleType(module);
+
+  return (
+    type
+    === window.siteConfig.feedback.types.yesMaybe
+  );
+
+}
+
+function formatFeedbackCancellationReasonLabel(
+  reasonCode
+) {
+
+  const code =
+    String(reasonCode || '')
+      .trim()
+      .toLowerCase();
+
+  const match =
+    FEEDBACK_CANCELLATION_REASONS.find(
+      (item) => item.code === code
+    );
+
+  return match?.label || code || '—';
+
+}
+
+function formatFeedbackEventAnswerAdminLabel(
+  module,
+  answerCode,
+  entityRecurring
+) {
+
+  const value =
+    String(answerCode || '')
+      .trim();
+
+  if (
+    isFeedbackEventSubscriptionMode(
+      module,
+      entityRecurring
+    )
+    && isFeedbackSubscriptionAnswer(value)
+  ) {
+    return FEEDBACK_EVENT_SUBSCRIPTION_LABEL;
+  }
+
+  if (
+    module?.entity_type
+    === window.siteConfig.feedback.entityTypes.event
+    && (
+      module?.type
+      === window.siteConfig.feedback.types.yesMaybe
+      || module?.type === 'yes_no_comment'
+    )
+  ) {
+
+    if (
+      value
+      === window.siteConfig.feedback.answers.yes
+    ) {
+      return 'Verbindliche Teilnehmer';
+    }
+
+    if (
+      value
+      === window.siteConfig.feedback.answers.maybe
+    ) {
+      return 'Interessenten';
+    }
+
+  }
+
+  return formatFeedbackAnswerLabel(
+    module,
+    answerCode,
+    entityRecurring
+  );
+
+}
+
+function formatFeedbackParticipationAnswerLabel(
+  answerCode
+) {
+
+  const value =
+    String(answerCode || '')
+      .trim()
+      .toLowerCase();
+
+  if (!value) {
+    return 'Keine Teilnahme';
+  }
+
+  if (
+    value
+    === window.siteConfig.feedback.answers.yes
+  ) {
+    return 'Ja';
+  }
+
+  if (
+    value
+    === window.siteConfig.feedback.answers.maybe
+  ) {
+    return 'Vielleicht';
+  }
+
+  return value;
+
+}
+
 function formatFeedbackAnswerLabel(
   module,
-  answerCode
+  answerCode,
+  entityRecurring
 ) {
 
   const value =
@@ -522,6 +721,16 @@ function formatFeedbackAnswerLabel(
 
   if (!value) {
     return '—';
+  }
+
+  if (
+    isFeedbackEventSubscriptionMode(
+      module,
+      entityRecurring
+    )
+    && isFeedbackSubscriptionAnswer(value)
+  ) {
+    return FEEDBACK_EVENT_SUBSCRIPTION_LABEL;
   }
 
   if (
@@ -565,6 +774,22 @@ function formatFeedbackAnswerLabel(
     };
 
     return legacyLabels[value] || value;
+
+  }
+
+  if (
+    module?.entity_type
+    === window.siteConfig.feedback.entityTypes.event
+  ) {
+
+    const eventLabels = {
+      [window.siteConfig.feedback.answers.yes]:
+        'Ja — verbindliche Teilnahme',
+      [window.siteConfig.feedback.answers.maybe]:
+        'Vielleicht — Interesse'
+    };
+
+    return eventLabels[value] || value;
 
   }
 
