@@ -217,21 +217,27 @@ function renderActivityStatsHtml(
   return `
 <div class="aktivitaeten-stats-block">
 
-  <p class="aktivitaeten-stats-labels">
-    <span>Distanz</span>
-    <span class="aktivitaeten-stats-sep" aria-hidden="true">|</span>
-    <span>Höhenmeter</span>
-    <span class="aktivitaeten-stats-sep" aria-hidden="true">|</span>
-    <span>Dauer</span>
-  </p>
+  <div class="aktivitaeten-stats-col">
+    <span class="aktivitaeten-stats-label">Distanz</span>
+    <span class="aktivitaeten-stats-sep aktivitaeten-stats-sep--inline" aria-hidden="true">|</span>
+    <span class="aktivitaeten-stats-value">${escape(distance)}</span>
+  </div>
 
-  <p class="aktivitaeten-stats-values">
-    <span>${escape(distance)}</span>
-    <span class="aktivitaeten-stats-sep" aria-hidden="true">|</span>
-    <span>${escape(elevation)}</span>
-    <span class="aktivitaeten-stats-sep" aria-hidden="true">|</span>
-    <span>${escape(duration)}</span>
-  </p>
+  <span class="aktivitaeten-stats-sep aktivitaeten-stats-sep--between" aria-hidden="true">|</span>
+
+  <div class="aktivitaeten-stats-col">
+    <span class="aktivitaeten-stats-label">Höhenmeter</span>
+    <span class="aktivitaeten-stats-sep aktivitaeten-stats-sep--inline" aria-hidden="true">|</span>
+    <span class="aktivitaeten-stats-value">${escape(elevation)}</span>
+  </div>
+
+  <span class="aktivitaeten-stats-sep aktivitaeten-stats-sep--between" aria-hidden="true">|</span>
+
+  <div class="aktivitaeten-stats-col">
+    <span class="aktivitaeten-stats-label">Dauer</span>
+    <span class="aktivitaeten-stats-sep aktivitaeten-stats-sep--inline" aria-hidden="true">|</span>
+    <span class="aktivitaeten-stats-value">${escape(duration)}</span>
+  </div>
 
 </div>
   `;
