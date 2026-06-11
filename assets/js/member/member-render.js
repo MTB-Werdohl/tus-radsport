@@ -469,6 +469,8 @@ ${feedHint}
 </div>
   `;
 
+  refreshActivityMaps(container);
+
 }
 
 function renderMemberAvatarProfileBlock(

@@ -117,6 +117,13 @@ function switchAktivitaetenTab(tabId) {
       panel.hidden =
         panel.dataset.aktivitaetenPanel !== tabId;
 
+      if (
+        !panel.hidden
+        && panel.dataset.aktivitaetenPanel === 'feed'
+      ) {
+        refreshActivityMaps(panel);
+      }
+
     });
 
 }

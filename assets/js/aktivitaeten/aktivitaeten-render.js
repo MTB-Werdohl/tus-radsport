@@ -61,6 +61,8 @@ function renderActivityFeed(
 </div>
   `;
 
+  refreshActivityMaps(container);
+
 }
 
 function renderRankingsTable(
@@ -331,5 +333,7 @@ function renderActivityDetail(activity) {
 
 </section>
   `;
+
+  refreshActivityMaps(container);
 
 }

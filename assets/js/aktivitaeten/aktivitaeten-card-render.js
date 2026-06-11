@@ -10,11 +10,43 @@ function escapeActivityCardHtml(value) {
 
 function formatActivityLocation(activity) {
 
-  const location =
-    String(activity?.start_location || '')
-      .trim();
+  return String(activity?.start_location || '')
+    .trim();
 
-  return location || '—';
+}
+
+function renderActivityMetaLineHtml(
+  activity,
+  escapeHtml
+) {
+
+  const escape =
+    escapeHtml || escapeActivityCardHtml;
+
+  const timeLabel =
+    typeof formatActivityCardDateTime === 'function'
+      ? formatActivityCardDateTime(activity.start_date)
+      : (
+        typeof formatActivityDateTime === 'function'
+          ? formatActivityDateTime(activity.start_date)
+          : '—'
+      );
+
+  const location =
+    formatActivityLocation(activity);
+
+  const locationHtml =
+    location
+      ? `<span class="aktivitaeten-card-sep" aria-hidden="true">·</span><span class="aktivitaeten-card-location">${escape(location)}</span>`
+      : '';
+
+  return `
+<p class="aktivitaeten-card-meta-line">
+  <span class="aktivitaeten-card-time">
+    ${escape(timeLabel)}
+  </span>${locationHtml}
+</p>
+  `;
 
 }
 
@@ -136,71 +168,22 @@ function renderActivityMapHtml(
     return '';
   }
 
-  const width =
-    Number(options.width) || 400;
-
-  const height =
-    Number(options.height) || 120;
-
-  let minLat = Infinity;
-  let maxLat = -Infinity;
-  let minLng = Infinity;
-  let maxLng = -Infinity;
-
-  points.forEach((point) => {
-
-    minLat = Math.min(minLat, point.lat);
-    maxLat = Math.max(maxLat, point.lat);
-    minLng = Math.min(minLng, point.lng);
-    maxLng = Math.max(maxLng, point.lng);
-
-  });
-
-  const padX = width * 0.08;
-  const padY = height * 0.14;
-  const innerWidth = width - (padX * 2);
-  const innerHeight = height - (padY * 2);
-  const latSpan = maxLat - minLat || 0.00001;
-  const lngSpan = maxLng - minLng || 0.00001;
-
-  const path =
-    points.map((point, index) => {
-
-      const x =
-        padX
-        + (
-          (point.lng - minLng)
-          / lngSpan
-        ) * innerWidth;
-
-      const y =
-        padY
-        + (
-          (maxLat - point.lat)
-          / latSpan
-        ) * innerHeight;
-
-      return `${index === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`;
-
-    }).join(' ');
-
   const mapClass =
     options.detail
       ? 'aktivitaeten-detail-map'
       : 'aktivitaeten-card-map';
 
+  const height =
+    Number(options.height)
+      || (options.detail ? 220 : 140);
+
   return `
-<div class="${mapClass}" aria-hidden="true">
-  <svg
-    viewBox="0 0 ${width} ${height}"
-    preserveAspectRatio="xMidYMid meet"
-    role="presentation">
-    <path
-      d="${path}"
-      class="aktivitaeten-map-path"
-      fill="none" />
-  </svg>
-</div>
+<div
+  class="${mapClass}"
+  data-activity-map
+  data-polyline="${escapeActivityCardHtml(polyline)}"
+  style="height:${height}px"
+  aria-hidden="true"></div>
   `;
 
 }
@@ -213,37 +196,29 @@ function renderActivityStatsHtml(
   const escape =
     escapeHtml || escapeActivityCardHtml;
 
+  const distance =
+    typeof formatActivityDistance === 'function'
+      ? formatActivityDistance(activity.distance_m)
+      : '—';
+
+  const elevation =
+    typeof formatActivityElevation === 'function'
+      ? formatActivityElevation(activity.elevation_gain_m)
+      : '—';
+
+  const duration =
+    typeof formatActivityDuration === 'function'
+      ? formatActivityDuration(activity.moving_time_s)
+      : '—';
+
   return `
-<dl class="aktivitaeten-stats">
-
-  <div>
-    <dt>Distanz</dt>
-    <dd>${escape(
-      typeof formatActivityDistance === 'function'
-        ? formatActivityDistance(activity.distance_m)
-        : '—'
-    )}</dd>
-  </div>
-
-  <div>
-    <dt>Höhenmeter</dt>
-    <dd>${escape(
-      typeof formatActivityElevation === 'function'
-        ? formatActivityElevation(activity.elevation_gain_m)
-        : '—'
-    )}</dd>
-  </div>
-
-  <div>
-    <dt>Zeit</dt>
-    <dd>${escape(
-      typeof formatActivityDuration === 'function'
-        ? formatActivityDuration(activity.moving_time_s)
-        : '—'
-    )}</dd>
-  </div>
-
-</dl>
+<p class="aktivitaeten-stats-inline">
+  <span>${escape(distance)}</span>
+  <span class="aktivitaeten-stats-sep" aria-hidden="true">|</span>
+  <span>${escape(elevation)}</span>
+  <span class="aktivitaeten-stats-sep" aria-hidden="true">|</span>
+  <span>${escape(duration)}</span>
+</p>
   `;
 
 }
@@ -272,13 +247,11 @@ function renderActivityCardHtml(
       'member-avatar--md'
     );
 
-  const timeLabel =
-    typeof formatActivityDateTime === 'function'
-      ? formatActivityDateTime(activity.start_date)
-      : '—';
-
-  const locationLabel =
-    formatActivityLocation(activity);
+  const metaHtml =
+    renderActivityMetaLineHtml(
+      activity,
+      escape
+    );
 
   const statsHtml =
     renderActivityStatsHtml(activity, escape);
@@ -311,31 +284,26 @@ function renderActivityCardHtml(
       ? ` href="${escape(url)}"`
       : '';
 
-  return `
-<article class="aktivitaeten-card${extraClass ? ` ${extraClass}` : ''}">
-
-  <${wrapperTag}
-    class="${wrapperClass}"${wrapperAttrs}>
-
+  const contentHtml = `
     <div class="aktivitaeten-card-layout">
 
-      <div class="aktivitaeten-card-avatar">
-        ${avatarHtml}
+      <div class="aktivitaeten-card-header">
+
+        <div class="aktivitaeten-card-avatar">
+          ${avatarHtml}
+        </div>
+
+        <div class="aktivitaeten-card-header-text">
+
+          <p class="aktivitaeten-card-member-name">
+            ${escape(memberName)}
+          </p>
+
+          ${metaHtml}
+
+        </div>
+
       </div>
-
-      <p class="aktivitaeten-card-member-name">
-        ${escape(memberName)}
-      </p>
-
-      <p class="aktivitaeten-card-meta-line">
-        <span class="aktivitaeten-card-time">
-          ${escape(timeLabel)}
-        </span>
-        <span class="aktivitaeten-card-sep" aria-hidden="true">·</span>
-        <span class="aktivitaeten-card-location">
-          ${escape(locationLabel)}
-        </span>
-      </p>
 
       <div class="aktivitaeten-card-body">
 
@@ -344,13 +312,21 @@ function renderActivityCardHtml(
         </h3>
 
         ${statsHtml}
-        ${mapHtml}
 
       </div>
 
     </div>
+  `;
 
+  return `
+<article class="aktivitaeten-card${extraClass ? ` ${extraClass}` : ''}">
+
+  <${wrapperTag}
+    class="${wrapperClass}"${wrapperAttrs}>
+    ${contentHtml}
   </${wrapperTag}>
+
+  ${mapHtml ? `<div class="aktivitaeten-card-map-wrap">${mapHtml}</div>` : ''}
 
 </article>
   `;

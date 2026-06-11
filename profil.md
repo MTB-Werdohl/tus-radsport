@@ -25,8 +25,10 @@ load_calendar_css: true
 <script src="/assets/js/core/visibility.js"></script>
 <script src="/assets/js/feedback/feedback-types.js"></script>
 <script src="/assets/js/feedback/feedback-service.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="/assets/js/aktivitaeten/aktivitaeten-service.js"></script>
 <script src="/assets/js/aktivitaeten/aktivitaeten-card-render.js"></script>
+<script src="/assets/js/aktivitaeten/aktivitaeten-map.js"></script>
 <script src="/assets/js/member/member-votes.js"></script>
 <script src="/assets/js/member/member-render.js"></script>
 <script src="/assets/js/member/member-account.js"></script>
