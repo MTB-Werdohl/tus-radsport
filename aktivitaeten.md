@@ -93,5 +93,6 @@ description: "Aktivitätsfeed, Rankings und Vereinsstatistiken der MTB-Abteilung
 
 <script src="/assets/js/core/dates.js"></script>
 <script src="/assets/js/aktivitaeten/aktivitaeten-service.js"></script>
+<script src="/assets/js/aktivitaeten/aktivitaeten-card-render.js"></script>
 <script src="/assets/js/aktivitaeten/aktivitaeten-render.js"></script>
 <script src="/assets/js/aktivitaeten/aktivitaeten-page.js"></script>

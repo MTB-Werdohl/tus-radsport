@@ -378,7 +378,8 @@ function renderMemberActivitiesPanelShell() {
 
 function renderMemberActivitiesList(
   container,
-  payload
+  payload,
+  member
 ) {
 
   if (!container) {
@@ -401,13 +402,24 @@ function renderMemberActivitiesList(
 
   }
 
+  const memberName =
+    [
+      member?.vorname,
+      member?.nachname
+    ].filter(Boolean).join(' ')
+    || member?.member_name
+    || 'Mitglied';
+
+  const avatarHtml =
+    typeof renderMemberAvatarHtml === 'function'
+      ? renderMemberAvatarHtml(
+        member,
+        'member-avatar--md'
+      )
+      : '';
+
   const cards =
     activities.map((activity) => {
-
-      const title =
-        activity.activity_name
-        || activity.activity_type
-        || 'Aktivität';
 
       const inPublicFeed =
         activity.in_public_feed === true;
@@ -421,108 +433,24 @@ function renderMemberActivitiesList(
               Privat
             </span>`;
 
-      const stats = `
-<dl class="aktivitaeten-stats">
-
-  <div>
-    <dt>Distanz</dt>
-    <dd>${escapeMemberHtml(
-      typeof formatActivityDistance === 'function'
-        ? formatActivityDistance(activity.distance_m)
-        : '—'
-    )}</dd>
-  </div>
-
-  <div>
-    <dt>Zeit</dt>
-    <dd>${escapeMemberHtml(
-      typeof formatActivityDuration === 'function'
-        ? formatActivityDuration(activity.moving_time_s)
-        : '—'
-    )}</dd>
-  </div>
-
-  <div>
-    <dt>Höhenmeter</dt>
-    <dd>${escapeMemberHtml(
-      typeof formatActivityElevation === 'function'
-        ? formatActivityElevation(activity.elevation_gain_m)
-        : '—'
-    )}</dd>
-  </div>
-
-</dl>
-      `;
-
-      if (
+      const url =
         inPublicFeed
         && typeof getActivityUrl === 'function'
-      ) {
+          ? getActivityUrl(activity.id)
+          : null;
 
-        const url =
-          getActivityUrl(activity.id);
-
-        return `
-<article class="aktivitaeten-card member-activity-card">
-
-  <a
-    class="aktivitaeten-card-link"
-    href="${escapeMemberHtml(url)}">
-
-    <div class="aktivitaeten-card-head">
-
-      <h3 class="aktivitaeten-card-title">
-        ${escapeMemberHtml(title)}
-      </h3>
-
-      <p class="aktivitaeten-card-meta">
-        ${escapeMemberHtml(
-          typeof formatActivityDateTime === 'function'
-            ? formatActivityDateTime(activity.start_date)
-            : '—'
-        )}
-        · ${badge}
-      </p>
-
-    </div>
-
-    ${stats}
-
-  </a>
-
-</article>
-        `;
-
-      }
-
-      return `
-<article class="aktivitaeten-card member-activity-card">
-
-  <div class="member-activity-card-inner">
-
-    <div class="aktivitaeten-card-head">
-
-      <h3 class="aktivitaeten-card-title">
-        ${escapeMemberHtml(title)}
-      </h3>
-
-      <p class="aktivitaeten-card-meta">
-        ${escapeMemberHtml(
-          typeof formatActivityDateTime === 'function'
-            ? formatActivityDateTime(activity.start_date)
-            : '—'
-        )}
-        · ${badge}
-      </p>
-
-    </div>
-
-    ${stats}
-
-  </div>
-
-</article>
-      `;
+      return renderActivityCardHtml(
+        activity,
+        {
+          memberName,
+          avatarHtml,
+          avatarEntry: member,
+          badgeHtml: ` ${badge}`,
+          extraClass: 'member-activity-card',
+          url,
+          escapeHtml: escapeMemberHtml
+        }
+      );
 
     }).join('');
 

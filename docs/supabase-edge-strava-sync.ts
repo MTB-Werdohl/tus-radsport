@@ -276,6 +276,24 @@ function mapStravaTypeToCategory(type) {
 
 }
 
+function formatStravaStartLocation(activity) {
+
+  const city =
+    String(activity?.location_city || '')
+      .trim();
+
+  const state =
+    String(activity?.location_state || '')
+      .trim();
+
+  if (city && state && city !== state) {
+    return `${city}, ${state}`;
+  }
+
+  return city || state || null;
+
+}
+
 function mapStravaActivityRow(
   activity,
   memberId
@@ -308,6 +326,8 @@ function mapStravaActivityRow(
     elevation_gain_m:
       Number(activity.total_elevation_gain || 0),
     start_date: activity.start_date,
+    start_location:
+      formatStravaStartLocation(activity),
     map_summary_polyline:
       activity?.map?.summary_polyline || null,
     activity_photo_url: photoUrl,

@@ -435,7 +435,8 @@ async function loadMemberActivitiesIfNeeded(
 
     renderMemberActivitiesList(
       container,
-      payload
+      payload,
+      getCurrentMember()
     );
 
   } catch (error) {

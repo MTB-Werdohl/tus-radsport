@@ -1,60 +1,6 @@
 function escapeAktivitaetenHtml(value) {
 
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-
-}
-
-function memberStubFromActivityEntry(
-  entry
-) {
-
-  const fullName =
-    String(entry?.member_name || '')
-      .trim();
-
-  const parts =
-    fullName.split(/\s+/)
-      .filter(Boolean);
-
-  return {
-    member_name: fullName,
-    vorname: parts[0] || '',
-    nachname: parts.slice(1).join(' '),
-    avatar_url: entry?.avatar_url || null
-  };
-
-}
-
-function renderActivityMemberAvatar(
-  entry,
-  sizeClass
-) {
-
-  if (
-    typeof renderMemberAvatarHtml
-      !== 'function'
-  ) {
-    return '';
-  }
-
-  try {
-
-    return renderMemberAvatarHtml(
-      memberStubFromActivityEntry(entry),
-      sizeClass || 'member-avatar--md'
-    );
-
-  } catch (error) {
-
-    console.error(error);
-
-    return '';
-
-  }
+  return escapeActivityCardHtml(value);
 
 }
 
@@ -96,93 +42,12 @@ function renderActivityFeed(
   const cards =
     activities.map((activity) => {
 
-      const url =
-        getActivityUrl(activity.id);
-
-      const typeLabel =
-        formatActivityTypeLabel(
-          activity.activity_type
-        );
-
-      return `
-<article class="aktivitaeten-card">
-
-  <a
-    class="aktivitaeten-card-link"
-    href="${escapeAktivitaetenHtml(url)}">
-
-    <div class="aktivitaeten-card-head">
-
-      <span class="aktivitaeten-card-type">
-        ${escapeAktivitaetenHtml(typeLabel)}
-      </span>
-
-      <h3 class="aktivitaeten-card-title">
-        ${escapeAktivitaetenHtml(
-          activity.activity_name
-          || typeLabel
-          || 'Aktivität'
-        )}
-      </h3>
-
-      <p class="aktivitaeten-card-meta aktivitaeten-card-member">
-
-        ${renderActivityMemberAvatar(
-          activity,
-          'member-avatar--md'
-        )}
-
-        <span class="aktivitaeten-card-member-text">
-          ${escapeAktivitaetenHtml(
-            activity.member_name || 'Mitglied'
-          )}
-          ·
-          ${escapeAktivitaetenHtml(
-            formatActivityDateTime(
-              activity.start_date
-            )
-          )}
-        </span>
-
-      </p>
-
-    </div>
-
-    <dl class="aktivitaeten-stats">
-
-      <div>
-        <dt>Distanz</dt>
-        <dd>${escapeAktivitaetenHtml(
-          formatActivityDistance(
-            activity.distance_m
-          )
-        )}</dd>
-      </div>
-
-      <div>
-        <dt>Zeit</dt>
-        <dd>${escapeAktivitaetenHtml(
-          formatActivityDuration(
-            activity.moving_time_s
-          )
-        )}</dd>
-      </div>
-
-      <div>
-        <dt>Höhenmeter</dt>
-        <dd>${escapeAktivitaetenHtml(
-          formatActivityElevation(
-            activity.elevation_gain_m
-          )
-        )}</dd>
-      </div>
-
-    </dl>
-
-  </a>
-
-</article>
-      `;
+      return renderActivityCardHtml(
+        activity,
+        {
+          url: getActivityUrl(activity.id)
+        }
+      );
 
     }).join('');
 
@@ -444,6 +309,17 @@ function renderActivityDetail(activity) {
 
   }
 
+  const cardHtml =
+    renderActivityCardHtml(
+      activity,
+      {
+        mapOptions: {
+          detail: true,
+          height: 220
+        }
+      }
+    );
+
   container.innerHTML = `
 <section class="aktivitaeten-section aktivitaeten-detail">
 
@@ -451,81 +327,7 @@ function renderActivityDetail(activity) {
     <a href="/aktivitaeten/">← Aktivitäten</a>
   </p>
 
-  <h1>${escapeAktivitaetenHtml(
-    activity.activity_name
-    || activity.activity_type
-    || 'Aktivität'
-  )}</h1>
-
-  <p class="aktivitaeten-detail-meta aktivitaeten-card-member">
-
-    <span class="aktivitaeten-card-type">
-      ${escapeAktivitaetenHtml(
-        formatActivityTypeLabel(
-          activity.activity_type
-        )
-      )}
-    </span>
-    ·
-
-    ${renderActivityMemberAvatar(
-      activity,
-      'member-avatar--md'
-    )}
-
-    <span class="aktivitaeten-card-member-text">
-      ${escapeAktivitaetenHtml(
-        activity.member_name || 'Mitglied'
-      )}
-      ·
-      ${escapeAktivitaetenHtml(
-        formatActivityDateTime(
-          activity.start_date
-        )
-      )}
-    </span>
-
-  </p>
-
-  <dl class="aktivitaeten-detail-stats">
-
-    <div>
-      <dt>Art</dt>
-      <dd>${escapeAktivitaetenHtml(
-        formatActivityTypeLabel(
-          activity.activity_type
-        )
-      )}</dd>
-    </div>
-
-    <div>
-      <dt>Distanz</dt>
-      <dd>${escapeAktivitaetenHtml(
-        formatActivityDistance(
-          activity.distance_m
-        )
-      )}</dd>
-    </div>
-
-    <div>
-      <dt>Zeit</dt>
-      <dd>${escapeAktivitaetenHtml(
-        formatActivityDuration(
-          activity.moving_time_s
-        )
-      )}</dd>
-    </div>
-
-    <div>
-      <dt>Höhenmeter</dt>
-      <dd>${escapeAktivitaetenHtml(
-        formatActivityElevation(
-          activity.elevation_gain_m
-        )
-      )}</dd>
-    </div>
-
-  </dl>
+  ${cardHtml}
 
 </section>
   `;

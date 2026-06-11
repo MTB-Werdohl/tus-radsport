@@ -26,6 +26,7 @@ load_calendar_css: true
 <script src="/assets/js/feedback/feedback-types.js"></script>
 <script src="/assets/js/feedback/feedback-service.js"></script>
 <script src="/assets/js/aktivitaeten/aktivitaeten-service.js"></script>
+<script src="/assets/js/aktivitaeten/aktivitaeten-card-render.js"></script>
 <script src="/assets/js/member/member-votes.js"></script>
 <script src="/assets/js/member/member-render.js"></script>
 <script src="/assets/js/member/member-account.js"></script>
