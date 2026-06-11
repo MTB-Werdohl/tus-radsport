@@ -26,7 +26,7 @@ Internet: https://www.tusjahnwerdohl.de
 
 Der Schutz personenbezogener Daten ist uns wichtig.
 
-Diese Website dient der Information über die Abteilung Radsport des TuS Jahn Werdohl e.V. Die Seiten werden als statische Website bereitgestellt. Für den **Mitgliederbereich**, die Verwaltung von Vereinsinhalten, **Feedback/Abstimmungen**, **externe Anmeldungen** (z. B. Trainingslager), die **Tröte**, **Website-Hinweise** (Banner, Saisonmodus) und optional das **öffentliche Aktivitätsportal** (Strava-Ausfahrten, Profilbilder — nur mit Einwilligung der Mitglieder) nutzen wir zusätzlich einen Backend-Dienst (Supabase, siehe Abschnitt 11).
+Diese Website dient der Information über die Abteilung Radsport des TuS Jahn Werdohl e.V. Die Seiten werden als statische Website bereitgestellt. Für den **Mitgliederbereich**, die Verwaltung von Vereinsinhalten, **Feedback/Abstimmungen**, **externe Anmeldungen** (z. B. Trainingslager), den **E-Mail-Versand durch den Vorstand** (mit Versandprotokoll), die **Tröte**, **Website-Hinweise** (Banner, Saisonmodus) und optional das **öffentliche Aktivitätsportal** (Strava-Ausfahrten, Profilbilder — nur mit Einwilligung der Mitglieder) nutzen wir zusätzlich einen Backend-Dienst (Supabase, siehe Abschnitt 11).
 
 Personenbezogene Daten werden nur verarbeitet, soweit dies für die Mitgliedschaft, die Nutzung des Mitgliederbereichs, eine Anmeldung zu Vereinsangeboten, eine Einwilligung oder eine gesetzliche Grundlage erforderlich ist.
 
@@ -201,6 +201,7 @@ Beim Aufruf von Seiten mit Mitgliederfunktionen oder beim Speichern von Inhalten
 - Feedback und Abstimmungen (siehe Abschnitt 12.6)
 - optional importierte Strava-Aktivitäten und Sichtbarkeits-Einstellungen (siehe Abschnitt 12.7)
 - optional **Profilbilder** von Vereinsmitgliedern (siehe Abschnitt 12.8)
+- **Versandprotokoll** für Vorstand-E-Mails (siehe Abschnitt 12.9)
 - letzte Mitteilung für die **Tröte** auf der Startseite (`site_state.last_push`, siehe Abschnitt 13)
 - **Website-Hinweise** (Banner, Saisonmodus, Overlay, Landing-Hinweise — siehe Abschnitt 14)
 
@@ -262,7 +263,7 @@ Rechtsgrundlagen:
 
 Auf der Profilseite (**Mein Profil**, [mtb-werdohl.de/profil/](https://www.mtb-werdohl.de/profil/)) können eingeloggte **Vereinsmitglieder** (Rollen „Mitglied“ oder „Vorstand“) gesonderte Einwilligungen **online** erteilen, insbesondere:
 
-- **Einwilligung Kontakt** — Nutzung der Daten für vereinsbezogene Kontaktaufnahme
+- **Einwilligung Kontakt** — Nutzung der Daten für vereinsbezogene Kontaktaufnahme (insbesondere E-Mails aus dem Vorstand-Admin-Bereich, siehe Abschnitt 12.9)
 - **Einwilligung Bilder** — Verwendung von Bildern im Vereinskontext
 
 **Externe Teilnehmer** (Rolle „public“) erteilen die **Einwilligung Kontakt** bei der Registrierung im Anmeldeformular (Pflicht-Checkbox, siehe Abschnitt 12.5). Die **Einwilligung Bilder** können sie dort **freiwillig** erteilen.
@@ -410,6 +411,34 @@ Rechtsgrundlagen:
 - Art. 6 Abs. 1 lit. a DSGVO — freiwilliger Upload als Einwilligung zur öffentlichen Darstellung
 - Art. 6 Abs. 1 lit. f DSGVO — Darstellung im Vereinskontext (Feed, Rankings)
 
+### 12.9 Vorstand-E-Mails und Versandprotokoll
+
+Im **Admin-Bereich** (nur Rolle **Vorstand**) können vereinsbezogene E-Mails über die Website versendet werden. Absender ist standardmäßig **info@mtb-werdohl.de**.
+
+**Empfänger:** Es werden ausschließlich Personen angeschrieben, die eine **Einwilligung Kontakt** erteilt haben und eine gültige E-Mail-Adresse hinterlegt ist (siehe Abschnitt 12.3). Anonymisierte oder gelöschte Accounts werden nicht angeschrieben. Je nach Auswahl können einzelne Mitglieder, Teilnehmer eines Termins (z. B. mit Antwort Ja/Vielleicht) oder alle einwilligenden Mitglieder angeschrieben werden.
+
+**Beim Versand** werden u. a. verarbeitet:
+
+- Betreff und Text der Nachricht
+- Name und E-Mail-Adresse der Empfänger
+- Zuordnung zum sendenden Vorstandsmitglied
+- Zeitpunkt des Versands
+- ob der Versand an einzelne Empfänger erfolgreich war oder fehlgeschlagen ist
+
+**Versandprotokoll:** Nach erfolgreichem Versand (mindestens eine zugestellte E-Mail) wird ein Eintrag in der Datenbank (`admin_email_log`) gespeichert. Zweck ist die **Nachvollziehbarkeit** vereinsinterner Kommunikation — insbesondere bei Rückfragen wie „Ich habe keine E-Mail erhalten“. Gespeichert werden u. a. Absender, Empfängergruppe, Betreff, Nachrichtentext, einzelne Empfänger (Name, E-Mail, Versandstatus) und Zeitpunkt.
+
+**Zugriff:** Das Protokoll ist nur für den **Vorstand** in der Verwaltung einsehbar (nicht für andere Mitglieder oder externe Teilnehmer).
+
+**Speicherdauer:** Einträge werden **18 Monate** aufbewahrt und danach **automatisch gelöscht**. Ein Widerruf der Einwilligung Kontakt beendet künftige E-Mails; bereits protokollierte Versände bleiben bis zum Ablauf dieser Frist gespeichert, soweit sie für die Nachvollziehbarkeit erforderlich sind.
+
+**Technischer Versand:** Die E-Mail wird über eine serverseitige Funktion (Supabase Edge Function) versendet. Als Postfach-/Versanddienst kann z. B. der E-Mail-Anbieter des Vereins (SMTP) oder ein Dienst wie **Resend** genutzt werden. Dabei werden die üblichen Übermittlungsdaten (Empfänger-Adresse, Betreff, Inhalt) an den jeweiligen Anbieter übergeben.
+
+Rechtsgrundlagen:
+
+- Art. 6 Abs. 1 lit. a DSGVO — Versand an Empfänger mit **Einwilligung Kontakt**
+- Art. 6 Abs. 1 lit. f DSGVO — **Versandprotokoll** (berechtigtes Interesse des Vereins an nachvollziehbarer Vereinskommunikation und Klärung von Zustellungsfragen; begrenzt auf 18 Monate und Vorstand-Zugriff)
+- Art. 6 Abs. 1 lit. b DSGVO — Organisation im Rahmen der Vereinsmitgliedschaft bzw. Anmeldung zu Vereinsangeboten
+
 ---
 
 ## 13. Tröte (Mitteilung auf der Startseite)
@@ -505,6 +534,7 @@ Es werden keine Cookies zu Werbe- oder Analysezwecken gesetzt.
 - **last_change_summary_seen_at:** bis zur nächsten angezeigten Zusammenfassung bzw. Account-Löschung; dient nur der persönlichen „Was ist neu?“-Orientierung.
 - **Externe Teilnehmer (Rolle „public“):** bis zur Löschung durch dich (Profil), den Vorstand oder auf Anfrage; nach Löschung nur noch anonyme technische ID ohne Personenbezug, soweit Abstimmungen ausgewertet werden.
 - **Feedback-Antworten:** für die Dauer des jeweiligen Termins/Anlasses und der Auswertung durch den Vorstand; bei Account-Löschung bleiben Antworten **anonym** erhalten (ohne Name/Kommentar), Löschung auf Anfrage möglich.
+- **Versandprotokoll Vorstand-E-Mails** (`admin_email_log`): **18 Monate** ab Versandzeitpunkt, danach automatische Löschung; enthält ggf. noch Name und E-Mail gelöschter oder anonymisierter Accounts bis zum Ablauf dieser Frist.
 - **Strava-Verbindung und importierte Aktivitäten:** bis zur Trennung der Verbindung, Löschung des Mitgliedskontos oder auf Anfrage; OAuth-Tokens werden bei Trennung gelöscht.
 - **Öffentlich freigegebene Aktivitäten im Feed:** Anzeige höchstens **90 Tage** zurück; danach nicht mehr im Feed, ggf. weiter in Rankings oder Vereinszielen je nach gespeicherter Freigabe.
 - **Auth-Session:** bis zum Logout, Ablauf der Session oder Ungültigkeit des Login-Links.
@@ -544,6 +574,6 @@ Zur Ausübung deiner Rechte genügt eine formlose Mitteilung an die unter Abschn
 
 Stand dieser Datenschutzerklärung:
 
-Mai 2026 (Ergänzung: Profilbilder Abschnitt 12.8, Website-Hinweise Abschnitt 14)
+Mai 2026 (Ergänzung: Vorstand-E-Mails und Versandprotokoll Abschnitt 12.9; Profilbilder Abschnitt 12.8; Website-Hinweise Abschnitt 14)
 
 Bei technischen oder rechtlichen Änderungen wird diese Datenschutzerklärung angepasst.

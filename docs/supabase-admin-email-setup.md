@@ -66,7 +66,7 @@ SQL im **SQL Editor** ausführen: [`supabase-admin-email-log.sql`](supabase-admi
 - **18 Monate** Aufbewahrung, danach automatische Löschung bei jedem neuen Eintrag
 - Edge Function `send-admin-email` danach **neu deployen** (schreibt Protokoll per Service Role)
 
-In `/admin/email.html` erscheint unten das **Versandprotokoll**.
+In `/admin/email-log.html` erscheint das **Versandprotokoll** (Dashboard zwischen „E-Mail senden“ und „Posteingang“).
 
 ## 5. Test
 

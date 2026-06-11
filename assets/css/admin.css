@@ -655,15 +655,8 @@ h3 {
   font-weight: 600;
 }
 
-.admin-email-log-section {
-  margin-top: 48px;
-  padding-top: 32px;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.admin-email-log-section h2 {
-  margin: 0 0 8px;
-  font-size: 1.25rem;
+.admin-email-log-page {
+  max-width: 960px;
 }
 
 .admin-email-log-list {
