@@ -1732,13 +1732,17 @@ h2 { font-weight: 600; }
   margin: 0 0 18px;
 }
 
-/* Standard pages: one centered column (Maßstab Kalender/News) */
+/* Standard pages: centered narrow column (Maßstab Kalender/News) */
 
-.site-main .content.content--standard .page-content-column {
+.site-main .content.content--standard {
+  display: grid;
+  grid-template-columns: 1fr min(var(--page-content-width), 100%) 1fr;
+}
+
+.site-main .content.content--standard > .page-content-column {
+  grid-column: 2;
   width: 100%;
-  max-width: var(--page-content-width);
-  margin-left: auto;
-  margin-right: auto;
+  min-width: 0;
   padding: 0 1rem;
   box-sizing: border-box;
 }

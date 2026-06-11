@@ -145,9 +145,8 @@
 
   <main class="site-main">
     <div class="wrap layout-single">
-      {% assign is_home = page.url == '/' or page.url == '/index.html' %}
-      <section class="content{% if page.mitfahren_layout %} content--mitfahren{% elsif is_home %} content--home{% else %} content--standard{% endif %}">
-        {% unless is_home or page.mitfahren_layout %}
+      <section class="content{% if page.mitfahren_layout %} content--mitfahren{% elsif page.url == '/' or page.url == '/index.html' %} content--home{% else %} content--standard{% endif %}">
+        {% unless page.url == '/' or page.url == '/index.html' or page.mitfahren_layout %}
         <div class="page-content-column">
         {% endunless %}
         {% if page.hide_title != true %}
@@ -155,7 +154,7 @@
         {% endif %}
 
         {{ content }}
-        {% unless is_home or page.mitfahren_layout %}
+        {% unless page.url == '/' or page.url == '/index.html' or page.mitfahren_layout %}
         </div>
         {% endunless %}
       </section>
