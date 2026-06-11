@@ -1478,6 +1478,18 @@ color: #fff;
 
 }
 
+.feedback-admin-participation-changes {
+
+margin-top: 2.5rem;
+
+}
+
+.feedback-admin-participation-changes h2 {
+
+margin: 0 0 1rem;
+
+}
+
 .participation-changes-toolbar {
 
 display: flex;

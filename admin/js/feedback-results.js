@@ -299,21 +299,10 @@ function renderFeedbackAnswersTable(
 
 <tr>
 
-<td class="feedback-admin-member-cell">
-
-  ${typeof renderMemberAvatarHtml === 'function'
-    ? renderMemberAvatarHtml(
-      row.members || {},
-      'member-avatar--sm'
-    )
-    : ''}
-
-  <span>
-    ${escapeAdminHtml(
-      formatFeedbackMemberName(row)
-    )}
-  </span>
-
+<td>
+  ${escapeAdminHtml(
+    formatFeedbackMemberName(row)
+  )}
 </td>
 
 <td>
@@ -442,6 +431,210 @@ function buildFeedbackCsv(
 
 }
 
+function shouldShowFeedbackParticipationChanges(
+  module,
+  entityRecurring
+) {
+
+  if (entityRecurring === true) {
+    return false;
+  }
+
+  if (
+    module?.entity_type
+    !== window.siteConfig.feedback.entityTypes.event
+  ) {
+    return false;
+  }
+
+  return (
+    module?.type
+    === window.siteConfig.feedback.types.yesMaybe
+    || module?.type === 'yes_no_comment'
+  );
+
+}
+
+function formatParticipationChangeMemberName(
+  row
+) {
+
+  if (row.member_anonymized_at) {
+    return 'Anonym (Account gelöscht)';
+  }
+
+  const name =
+    [
+      row.member_vorname,
+      row.member_nachname
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .trim();
+
+  const baseName =
+    name
+    || row.member_email
+    || 'Mitglied';
+
+  if (
+    String(row.member_rolle || '')
+      .trim()
+      .toLowerCase() === 'public'
+  ) {
+    return `${baseName} (extern)`;
+  }
+
+  return baseName;
+
+}
+
+function formatParticipationChangeReason(
+  row
+) {
+
+  if (
+    !row.cancellation_reason_code
+  ) {
+    return '—';
+  }
+
+  const label =
+    formatFeedbackCancellationReasonLabel(
+      row.cancellation_reason_code
+    );
+
+  const comment =
+    String(row.comment || '')
+      .trim();
+
+  if (
+    row.cancellation_reason_code === 'sonstiges'
+    && comment
+  ) {
+    return `${label}: ${comment}`;
+  }
+
+  return label;
+
+}
+
+function renderFeedbackParticipationChangesSection(
+  rows
+) {
+
+  if (!rows.length) {
+
+    return `
+<section class="feedback-admin-participation-changes">
+
+<h2>
+  Teilnahmeänderungen
+</h2>
+
+<p class="admin-hint">
+  Noch keine Absagen oder Statuswechsel.
+</p>
+
+</section>
+`;
+
+  }
+
+  const tableRows =
+    rows
+      .map((row) => {
+
+        const fromLabel =
+          formatFeedbackParticipationAnswerLabel(
+            row.from_answer
+          );
+
+        const toLabel =
+          formatFeedbackParticipationAnswerLabel(
+            row.to_answer
+          );
+
+        return `
+<tr>
+
+<td>
+  ${escapeAdminHtml(
+    formatFeedbackDateTime(
+      row.created_at
+    )
+  )}
+</td>
+
+<td>
+  ${escapeAdminHtml(
+    formatParticipationChangeMemberName(
+      row
+    )
+  )}
+</td>
+
+<td>
+  ${escapeAdminHtml(
+    row.member_email || '—'
+  )}
+</td>
+
+<td>
+  ${escapeAdminHtml(fromLabel)}
+  → ${escapeAdminHtml(toLabel)}
+</td>
+
+<td>
+  ${escapeAdminHtml(
+    formatParticipationChangeReason(row)
+  )}
+</td>
+
+</tr>
+`;
+
+      })
+      .join('');
+
+  return `
+<section class="feedback-admin-participation-changes">
+
+<h2>
+  Teilnahmeänderungen
+</h2>
+
+<div class="feedback-admin-table-wrap">
+
+<table class="feedback-admin-table">
+
+<thead>
+
+<tr>
+
+<th>Zeitpunkt</th>
+<th>Name</th>
+<th>E-Mail</th>
+<th>Änderung</th>
+<th>Grund</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+  ${tableRows}
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+`;
+
+}
+
 function downloadFeedbackCsv(
   module,
   answers,
@@ -553,6 +746,33 @@ async function loadFeedbackResults() {
         module.id
       );
 
+    const showParticipationChanges =
+      shouldShowFeedbackParticipationChanges(
+        module,
+        entityRecurring
+      );
+
+    let participationChanges =
+      [];
+
+    if (showParticipationChanges) {
+
+      const changeResult =
+        await listFeedbackParticipationChanges({
+          moduleId: module.id,
+          limit: 100,
+          offset: 0
+        });
+
+      if (changeResult?.error) {
+        throw changeResult.error;
+      }
+
+      participationChanges =
+        changeResult.rows || [];
+
+    }
+
     const summary =
       buildFeedbackSummary(
         module,
@@ -602,6 +822,14 @@ ${renderFeedbackAnswersTable(
   answers,
   entityRecurring
 )}
+
+${
+  showParticipationChanges
+    ? renderFeedbackParticipationChangesSection(
+      participationChanges
+    )
+    : ''
+}
 
 `;
 
