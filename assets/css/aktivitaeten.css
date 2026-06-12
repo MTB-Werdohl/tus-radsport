@@ -576,6 +576,7 @@
   margin: 0;
 }
 
+.activity-detail-stream-chart__chart-wrap,
 .activity-detail-elevation-profile__chart-wrap {
   position: relative;
   width: 100%;
@@ -588,17 +589,20 @@
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+.activity-detail-stream-chart__svg,
 .activity-detail-elevation-profile__svg {
   display: block;
   width: 100%;
   height: 100%;
 }
 
+.activity-detail-stream-chart__area,
 .activity-detail-elevation-profile__area {
   fill: rgba(255, 255, 255, 0.06);
   stroke: none;
 }
 
+.activity-detail-stream-chart__line,
 .activity-detail-elevation-profile__line {
   fill: none;
   stroke: #eee;
@@ -606,6 +610,12 @@
   vector-effect: non-scaling-stroke;
 }
 
+.activity-detail-speed-profile
+  .activity-detail-stream-chart__line {
+  stroke: rgba(255, 255, 255, 0.92);
+}
+
+.activity-detail-stream-chart__cursor,
 .activity-detail-elevation-profile__cursor {
   stroke: rgba(255, 255, 255, 0.35);
   stroke-width: 1;
@@ -613,6 +623,7 @@
   vector-effect: non-scaling-stroke;
 }
 
+.activity-detail-stream-chart__cursor-dot,
 .activity-detail-elevation-profile__cursor-dot {
   fill: #fff;
   stroke: rgba(0, 0, 0, 0.45);
@@ -620,6 +631,7 @@
   vector-effect: non-scaling-stroke;
 }
 
+.activity-detail-stream-chart__tooltip,
 .activity-detail-elevation-profile__tooltip {
   position: absolute;
   z-index: 2;
@@ -633,6 +645,10 @@
   line-height: 1.25;
   pointer-events: none;
   white-space: nowrap;
+}
+
+.activity-detail-stream-highlights {
+  margin: 0;
 }
 
 .activity-detail-stats {
@@ -774,6 +790,7 @@
     grid-template-columns: 1fr;
   }
 
+  .activity-detail-stream-chart__chart-wrap,
   .activity-detail-elevation-profile__chart-wrap {
     min-height: 180px;
   }
