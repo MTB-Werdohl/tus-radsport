@@ -22,6 +22,53 @@ function isFeedbackAdminEventEntity() {
 
 }
 
+function getFeedbackAdminEntitySichtbarkeit() {
+
+  return (
+    document.getElementById('sichtbarkeit')?.value
+    || window.siteConfig.visibility?.public
+    || 'public'
+  );
+
+}
+
+function isFeedbackAdminPublicVotingFromSichtbarkeit() {
+
+  return (
+    getFeedbackAdminEntitySichtbarkeit()
+    === window.siteConfig.visibility.public
+  );
+
+}
+
+function isFeedbackAdminEnabled() {
+
+  if (isFeedbackAdminEventEntity()) {
+    return true;
+  }
+
+  return (
+    document.getElementById(
+      'feedback-admin-enabled'
+    )?.checked === true
+  );
+
+}
+
+function getFeedbackAdminPublicVoting() {
+
+  if (isFeedbackAdminEventEntity()) {
+    return isFeedbackAdminPublicVotingFromSichtbarkeit();
+  }
+
+  return (
+    document.getElementById(
+      'feedback-admin-public-voting'
+    )?.checked === true
+  );
+
+}
+
 function getFeedbackAdminForcedType() {
 
   return getFeedbackEntityFeedbackType(
@@ -315,9 +362,7 @@ function createFeedbackAdminOptionRow(option = {}) {
 function toggleFeedbackAdminPollFields() {
 
   const enabled =
-    document.getElementById(
-      'feedback-admin-enabled'
-    )?.checked;
+    isFeedbackAdminEnabled();
 
   const configWrap =
     document.getElementById(
@@ -345,10 +390,12 @@ function toggleFeedbackAdminPollFields() {
       'feedback-admin-public-voting-wrap'
     );
 
-  publicVotingWrap?.classList.toggle(
-    'hidden',
-    !enabled
-  );
+  if (publicVotingWrap) {
+    publicVotingWrap.classList.toggle(
+      'hidden',
+      !enabled
+    );
+  }
 
   updateFeedbackAdminPublicVotingHint();
 
@@ -368,42 +415,35 @@ function updateFeedbackAdminPublicVotingHint() {
     return;
   }
 
-  const enabled =
-    document.getElementById(
-      'feedback-admin-enabled'
-    )?.checked;
-
-  const publicVoting =
-    document.getElementById(
-      'feedback-admin-public-voting'
-    )?.checked;
-
   const sichtbarkeit =
-    document.getElementById('sichtbarkeit')
-      ?.value
-    || 'public';
+    getFeedbackAdminEntitySichtbarkeit();
 
   let message = '';
 
   if (
-    enabled
-    && publicVoting
-    && sichtbarkeit !== 'public'
+    sichtbarkeit
+    === window.siteConfig.visibility.public
   ) {
 
     message =
-      'Achtung: Öffentliche Abstimmung ist aktiv, der Termin ist aber nicht '
-      + 'auf „Öffentlich“ gestellt. Externe Teilnehmer sehen die Abstimmung nicht.';
+      'Öffentlicher Termin: externe Teilnehmer können sich registrieren '
+      + 'und abstimmen (folgt der Termin-Sichtbarkeit).';
 
   } else if (
-    enabled
-    && sichtbarkeit === 'public'
-    && !publicVoting
+    sichtbarkeit
+    === window.siteConfig.visibility.members
   ) {
 
     message =
-      'Hinweis: Öffentlicher Termin ohne externe Abstimmung — Gäste können sich '
-      + 'nicht per Registrierungs-Popup anmelden.';
+      'Nur Vereinsmitglieder (eingeloggt) können abstimmen.';
+
+  } else if (
+    sichtbarkeit
+    === window.siteConfig.visibility.draft
+  ) {
+
+    message =
+      'Entwurf: Abstimmung ist erst nach Veröffentlichung sichtbar.';
 
   }
 
@@ -547,7 +587,7 @@ function fillFeedbackAdminForm(module) {
       'feedback-admin-question'
     );
 
-  if (!enabled || !typeInput || !questionInput) {
+  if (!typeInput || !questionInput) {
     return;
   }
 
@@ -556,17 +596,24 @@ function fillFeedbackAdminForm(module) {
 
   if (!module) {
 
-    enabled.checked = false;
+    if (enabled) {
+      enabled.checked = false;
+    }
+
     typeInput.value = forcedType;
     questionInput.value =
       getDefaultFeedbackQuestion(
         feedbackAdminState.entityType
       );
 
-    document
-      .getElementById(
+    const publicVotingInput =
+      document.getElementById(
         'feedback-admin-public-voting'
-      ).checked = false;
+      );
+
+    if (publicVotingInput) {
+      publicVotingInput.checked = false;
+    }
 
     renderFeedbackAdminPollOptions();
     fillFeedbackAdminPollSettings({});
@@ -575,8 +622,11 @@ function fillFeedbackAdminForm(module) {
 
   }
 
-  enabled.checked =
-    module.enabled !== false;
+  if (enabled) {
+    enabled.checked =
+      module.enabled !== false;
+  }
+
   typeInput.value = forcedType;
   questionInput.value =
     module.question
@@ -584,11 +634,15 @@ function fillFeedbackAdminForm(module) {
       feedbackAdminState.entityType
     );
 
-  document
-    .getElementById(
+  const publicVotingInput =
+    document.getElementById(
       'feedback-admin-public-voting'
-    ).checked =
+    );
+
+  if (publicVotingInput) {
+    publicVotingInput.checked =
       module.public_voting === true;
+  }
 
   const config =
     normalizeFeedbackPollConfig(
@@ -642,7 +696,10 @@ async function saveFeedbackAdminForEntity(
       'feedback-admin-enabled'
     );
 
-  if (!enabledEl) {
+  if (
+    !isFeedbackAdminEventEntity()
+    && !enabledEl
+  ) {
     return { ok: true };
   }
 
@@ -657,9 +714,12 @@ async function saveFeedbackAdminForEntity(
     entityId;
 
   const enabled =
-    enabledEl.checked;
+    isFeedbackAdminEnabled();
 
-  if (!enabled) {
+  if (
+    !enabled
+    && !isFeedbackAdminEventEntity()
+  ) {
 
     if (!feedbackAdminState.module?.id) {
       return { ok: true };
@@ -699,9 +759,7 @@ async function saveFeedbackAdminForEntity(
     }
 
     const publicVoting =
-      document.getElementById(
-        'feedback-admin-public-voting'
-      )?.checked === true;
+      getFeedbackAdminPublicVoting();
 
     const payload = {
       type,
@@ -791,9 +849,7 @@ async function saveFeedbackAdminForEntity(
   }
 
   const publicVoting =
-    document.getElementById(
-      'feedback-admin-public-voting'
-    )?.checked === true;
+    getFeedbackAdminPublicVoting();
 
   const payload = {
     type,
@@ -891,10 +947,21 @@ function mountFeedbackAdminForm(mountId) {
       ? 'Termin: Ja / Vielleicht — Frage standardmäßig „Bist du dabei?“'
       : 'News: Umfrage mit wählbaren Antworten';
 
-  mount.innerHTML = `
+  const eventIntroHtml =
+    isEvent
+      ? `
+  <p class="admin-hint">
+    ${typeHint}. Die Abstimmung ist bei jedem Termin aktiv.
+  </p>
 
-<div class="admin-feedback-checkboxes">
+  <p
+    id="feedback-admin-public-voting-hint"
+    class="admin-hint"
+    hidden>
 
+  </p>
+`
+      : `
   <label class="admin-field admin-field--inline">
 
     <input
@@ -928,20 +995,38 @@ function mountFeedbackAdminForm(mountId) {
       per E-Mail → erst nach Klick Eintrag in der DB, dann abstimmen.
     </p>
 
-    <p
-      id="feedback-admin-public-voting-hint"
-      class="admin-hint admin-hint--warning"
-      hidden>
-
-    </p>
-
   </div>
+`;
+
+  const configHiddenClass =
+    isEvent ? '' : 'hidden';
+
+  const footerHintHtml =
+    isEvent
+      ? `
+<p class="admin-hint">
+  Öffentliche Termine: externe Abstimmung folgt automatisch der Sichtbarkeit
+  „Öffentlich“. Antworten bleiben gespeichert und werden erst beim Löschen
+  des Termins entfernt.
+</p>
+`
+      : `
+<p class="admin-hint">
+  Deaktivieren blendet das Feedback auf der Website aus. Antworten bleiben gespeichert und werden erst beim Löschen des Termins bzw. der News entfernt.
+</p>
+`;
+
+  mount.innerHTML = `
+
+<div class="admin-feedback-checkboxes">
+
+${eventIntroHtml}
 
 </div>
 
 <div
   id="feedback-admin-config"
-  class="hidden admin-feedback-config">
+  class="${configHiddenClass} admin-feedback-config">
 
   <input
     id="feedback-admin-type"
@@ -1037,9 +1122,7 @@ function mountFeedbackAdminForm(mountId) {
 
 </div>
 
-<p class="admin-hint">
-  Deaktivieren blendet das Feedback auf der Website aus. Antworten bleiben gespeichert und werden erst beim Löschen des Termins bzw. der News entfernt.
-</p>
+${footerHintHtml}
 
 <p class="admin-hint">
   Wird zusammen mit „Speichern“ am Ende des Formulars gesichert.
@@ -1050,6 +1133,10 @@ function mountFeedbackAdminForm(mountId) {
   bindFeedbackAdminEvents();
 
   fillFeedbackAdminForm(null);
+
+  if (isEvent) {
+    updateFeedbackAdminPublicVotingHint();
+  }
 
 }
 
