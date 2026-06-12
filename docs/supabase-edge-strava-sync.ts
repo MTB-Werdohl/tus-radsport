@@ -9,6 +9,7 @@
 //
 // Setup: docs/supabase-strava-sync-setup.md
 // Sync: jede Aktivität via GET /activities/{id} (DetailedActivity)
+// Phase B.2: Streams für Rad via GET /activities/{id}/streams
 // ============================================================================
 
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
@@ -27,6 +28,19 @@ const DEFAULT_RECONCILE_DAYS = 30;
 const TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000;
 const MAX_ACTIVITY_PAGES = 10;
 const ACTIVITIES_PER_PAGE = 200;
+const ACTIVITY_STREAMS_SCHEMA_VERSION = 1;
+const DEFAULT_STREAM_TARGET_MAX_POINTS = 800;
+const MIN_STREAM_TARGET_MAX_POINTS = 100;
+const MAX_STREAM_TARGET_MAX_POINTS = 2000;
+const STREAM_SYNC_RETRY_DELAY_MS = 2000;
+
+const STREAM_KEYS = [
+  'distance',
+  'altitude',
+  'velocity_smooth',
+  'latlng',
+  'time'
+];
 
 function jsonResponse(
   body,
@@ -96,6 +110,23 @@ function getSyncDays() {
   }
 
   return DEFAULT_SYNC_DAYS;
+
+}
+
+function getStreamTargetMaxPoints() {
+
+  const raw =
+    Number(Deno.env.get('STRAVA_STREAM_TARGET_POINTS'));
+
+  if (
+    Number.isFinite(raw)
+    && raw >= MIN_STREAM_TARGET_MAX_POINTS
+    && raw <= MAX_STREAM_TARGET_MAX_POINTS
+  ) {
+    return Math.floor(raw);
+  }
+
+  return DEFAULT_STREAM_TARGET_MAX_POINTS;
 
 }
 
@@ -451,6 +482,7 @@ async function upsertActivityRows(
 ) {
 
   const batchSize = 50;
+  const upsertedRows = [];
 
   for (
     let index = 0;
@@ -461,17 +493,375 @@ async function upsertActivityRows(
     const batch =
       rows.slice(index, index + batchSize);
 
-    const { error } =
+    const { data, error } =
       await supabaseAdmin
         .from('activities')
         .upsert(
           batch,
           { onConflict: 'strava_activity_id' }
+        )
+        .select(
+          'id, strava_activity_id, sport_category'
         );
 
     if (error) {
       throw error;
     }
+
+    if (Array.isArray(data)) {
+      upsertedRows.push(...data);
+    }
+
+  }
+
+  return upsertedRows;
+
+}
+
+function buildDownsampleIndices(
+  pointCount,
+  targetMax
+) {
+
+  if (pointCount <= targetMax) {
+    return Array.from(
+      { length: pointCount },
+      (_value, index) => index
+    );
+  }
+
+  const indices = [];
+
+  for (
+    let index = 0;
+    index < targetMax;
+    index += 1
+  ) {
+    indices.push(
+      Math.round(
+        index * (pointCount - 1) / (targetMax - 1)
+      )
+    );
+  }
+
+  return indices;
+
+}
+
+function roundStreamValue(
+  key,
+  value
+) {
+
+  if (key === 'latlng') {
+
+    const lat =
+      Number(value?.[0]);
+
+    const lng =
+      Number(value?.[1]);
+
+    return [
+      Math.round(lat * 1e5) / 1e5,
+      Math.round(lng * 1e5) / 1e5
+    ];
+
+  }
+
+  if (key === 'time') {
+    return Math.round(Number(value) || 0);
+  }
+
+  const numeric =
+    Number(value) || 0;
+
+  if (key === 'velocity_smooth') {
+    return Math.round(numeric * 100) / 100;
+  }
+
+  return Math.round(numeric * 10) / 10;
+
+}
+
+function validateStreamPayload(
+  streamsByType
+) {
+
+  const data = {};
+  let referenceLength = null;
+
+  for (const key of STREAM_KEYS) {
+
+    const streamData =
+      streamsByType?.[key]?.data;
+
+    if (
+      !Array.isArray(streamData)
+      || streamData.length === 0
+    ) {
+      return {
+        ok: false,
+        reason: `missing or empty ${key}`
+      };
+
+    }
+
+    if (referenceLength === null) {
+      referenceLength = streamData.length;
+    } else if (
+      streamData.length !== referenceLength
+    ) {
+      return {
+        ok: false,
+        reason: `length mismatch ${key}`
+      };
+
+    }
+
+    data[key] = streamData;
+
+  }
+
+  return {
+    ok: true,
+    pointCount: referenceLength,
+    data
+  };
+
+}
+
+function downsampleStreams(
+  streamData,
+  pointCount,
+  targetMax
+) {
+
+  const indices =
+    buildDownsampleIndices(
+      pointCount,
+      targetMax
+    );
+
+  const streams = {};
+
+  for (const key of STREAM_KEYS) {
+
+    streams[key] =
+      indices.map((index) =>
+        roundStreamValue(
+          key,
+          streamData[key][index]
+        )
+      );
+
+  }
+
+  return {
+    streams,
+    pointCount: indices.length,
+    originalPointCount: pointCount
+  };
+
+}
+
+async function fetchStravaActivityStreams(
+  accessToken,
+  activityId
+) {
+
+  const url =
+    new URL(
+      `https://www.strava.com/api/v3/activities/${activityId}/streams`
+    );
+
+  url.searchParams.set(
+    'keys',
+    STREAM_KEYS.join(',')
+  );
+
+  url.searchParams.set(
+    'key_by_type',
+    'true'
+  );
+
+  const response =
+    await fetch(url.toString(), {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+
+  const payload =
+    await response.json();
+
+  if (!response.ok) {
+
+    const error =
+      new Error(
+        payload?.message
+        || `Strava-Streams (${response.status})`
+      );
+
+    error.status = response.status;
+    throw error;
+
+  }
+
+  return payload;
+
+}
+
+async function fetchStravaActivityStreamsWithRetry(
+  accessToken,
+  activityId
+) {
+
+  try {
+
+    return await fetchStravaActivityStreams(
+      accessToken,
+      activityId
+    );
+
+  } catch (error) {
+
+    if (error?.status === 429) {
+
+      await new Promise((resolve) => {
+        setTimeout(
+          resolve,
+          STREAM_SYNC_RETRY_DELAY_MS
+        );
+      });
+
+      return await fetchStravaActivityStreams(
+        accessToken,
+        activityId
+      );
+
+    }
+
+    throw error;
+
+  }
+
+}
+
+async function upsertActivityStreams(
+  supabaseAdmin,
+  activityId,
+  payload
+) {
+
+  const nowIso =
+    new Date().toISOString();
+
+  const { error } =
+    await supabaseAdmin
+      .from('activity_streams')
+      .upsert(
+        {
+          activity_id: activityId,
+          schema_version:
+            ACTIVITY_STREAMS_SCHEMA_VERSION,
+          original_point_count:
+            payload.originalPointCount,
+          point_count: payload.pointCount,
+          streams: payload.streams,
+          synced_at: nowIso,
+          updated_at: nowIso
+        },
+        { onConflict: 'activity_id' }
+      );
+
+  if (error) {
+    throw error;
+  }
+
+}
+
+async function syncActivityStreams(
+  supabaseAdmin,
+  accessToken,
+  stravaActivityId,
+  activityId,
+  sportCategory
+) {
+
+  if (sportCategory !== 'rad') {
+    return;
+  }
+
+  try {
+
+    const rawStreams =
+      await fetchStravaActivityStreamsWithRetry(
+        accessToken,
+        stravaActivityId
+      );
+
+    const validation =
+      validateStreamPayload(rawStreams);
+
+    if (!validation.ok) {
+
+      console.warn(
+        `Stream skip strava=${stravaActivityId} activity=${activityId}: ${validation.reason}`
+      );
+
+      return;
+
+    }
+
+    const downsampled =
+      downsampleStreams(
+        validation.data,
+        validation.pointCount,
+        getStreamTargetMaxPoints()
+      );
+
+    await upsertActivityStreams(
+      supabaseAdmin,
+      activityId,
+      downsampled
+    );
+
+  } catch (error) {
+
+    if (error?.status === 404) {
+
+      console.warn(
+        `Stream 404 strava=${stravaActivityId} activity=${activityId}`
+      );
+
+      return;
+
+    }
+
+    console.error(
+      `Stream sync failed strava=${stravaActivityId} activity=${activityId}:`,
+      error
+    );
+
+  }
+
+}
+
+async function syncActivityStreamsForUpsertedRows(
+  supabaseAdmin,
+  accessToken,
+  upsertedRows
+) {
+
+  for (const row of upsertedRows) {
+
+    await syncActivityStreams(
+      supabaseAdmin,
+      accessToken,
+      row.strava_activity_id,
+      row.id,
+      row.sport_category
+    );
 
   }
 
@@ -898,9 +1288,16 @@ async function syncMemberActivities(
 
   if (rows.length > 0) {
 
-    await upsertActivityRows(
+    const upsertedRows =
+      await upsertActivityRows(
+        supabaseAdmin,
+        rows
+      );
+
+    await syncActivityStreamsForUpsertedRows(
       supabaseAdmin,
-      rows
+      accessToken,
+      upsertedRows
     );
 
   }
@@ -961,9 +1358,16 @@ async function syncSingleActivity(
       memberId
     );
 
-  await upsertActivityRows(
+  const upsertedRows =
+    await upsertActivityRows(
+      supabaseAdmin,
+      [row]
+    );
+
+  await syncActivityStreamsForUpsertedRows(
     supabaseAdmin,
-    [row]
+    accessToken,
+    upsertedRows
   );
 
   await rebuildStats(

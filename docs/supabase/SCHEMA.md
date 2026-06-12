@@ -77,6 +77,25 @@ Import aus Strava; UUID in URLs (`/aktivitaeten/{uuid}/`).
 
 **Sichtbarkeit:** Feed/Rankings/Ziele/Profil-Aktivitäten nur `sport_category = 'rad'`. Opt-ins (`members.publish_*`) steuern zusätzlich ob — nicht welche Sportart. Nicht-Rad bleibt in DB, ist aber nicht öffentlich sichtbar.
 
+## `activity_streams`
+
+Strava-Activity-Streams (Phase B.2), 1:1 zu `activities.id`.
+
+| Spalte | Typ | Hinweis |
+|--------|-----|---------|
+| `activity_id` | uuid PK/FK → `activities.id` | `ON DELETE CASCADE` |
+| `schema_version` | integer | Format-Version der Payload (Spalte, nicht im JSONB) |
+| `original_point_count` | integer | Strava-Punkte vor Downsampling |
+| `point_count` | integer | Gespeicherte Punkte (Obergrenze im Sync) |
+| `streams` | jsonb | `distance`, `altitude`, `velocity_smooth`, `latlng`, `time` |
+| `synced_at`, `updated_at` | timestamptz | |
+
+**Speicherung:** Sync nur für `sport_category = 'rad'`; Fehler blockieren Activity-Import nicht.
+
+**Sichtbarkeit:** Nur über `get_public_activity_streams(uuid)` — gleiche Filter wie Detail-RPC. Soft-Delete auf `activities` versteckt Streams; Zeile bleibt in DB.
+
+SQL: [`supabase-aktivitaeten-streams-phase-b2.sql`](../supabase-aktivitaeten-streams-phase-b2.sql)
+
 ## `member_stats_month` / `member_stats_year` / `club_stats_month` / `club_stats_year`
 
 Voraggregierte Werte nach `sport_category` (PK enthält Kategorie). Öffentliche RPCs lesen nur `sport_category = 'rad'`. Vereinsziele: nur Mitglieder mit `contribute_to_club_goals`.
@@ -87,6 +106,7 @@ Voraggregierte Werte nach `sport_category` (PK enthält Kategorie). Öffentliche
 |-----|-------|--------|
 | `get_public_activity_feed(p_days)` | anon, authenticated | `publish_feed`, `sport_category=rad`, 90 Tage; `avatar_url` wenn gesetzt |
 | `get_public_activity_detail(uuid, p_days)` | anon, authenticated | wie Feed; inkl. DetailedActivity-Felder (Phase A.1); `avatar_url` wenn gesetzt |
+| `get_public_activity_streams(uuid)` | anon, authenticated | wie Detail-RPC; JSONB-Streams (Phase B.2); lazy load |
 | `get_public_member_rankings(year, month?)` | anon, authenticated | `publish_rankings`, Stats `sport_category=rad`; `avatar_url` wenn gesetzt |
 | `get_public_club_stats(year, month?)` | anon, authenticated | Vereinsziele nur Rad (`sport_category=rad`) |
 

@@ -56,6 +56,23 @@ async function loadActivityDetail() {
 
     renderActivityDetail(activity);
 
+    const container =
+      document.getElementById(
+        'aktivitaeten-detail'
+      );
+
+    if (
+      container
+      && activity?.id
+      && typeof loadActivityDetailStreamAnalysis
+        === 'function'
+    ) {
+      loadActivityDetailStreamAnalysis(
+        activity.id,
+        container
+      );
+    }
+
   } catch (error) {
 
     console.error(error);

@@ -86,6 +86,7 @@ SQL: [`supabase-strava-public.sql`](../supabase-strava-public.sql) im **SQL Edit
 |-----|--------|
 | `get_public_activity_feed(p_days)` | Feed `/aktivitaeten/` — `publish_feed`, nur Rad, 90 Tage |
 | `get_public_activity_detail(uuid, p_days)` | Detail `/aktivitaeten/{uuid}/` — nur Rad; inkl. DetailedActivity-Felder (Phase A.1) |
+| `get_public_activity_streams(uuid)` | Streams lazy load — gleiche Sichtbarkeit wie Detail (Phase B.2) |
 | `get_public_member_rankings(year, month?)` | Rankings — `publish_rankings`, nur Rad; `avatar_url` |
 | `get_public_club_stats(year, month?)` | Vereinsziele — nur Rad-Kennzahlen |
 | `get_member_profile_avatar()` | Profil-Tab — eigenes Avatar (authenticated) |
@@ -101,6 +102,12 @@ Mitglieder steuern Sichtbarkeit im Profil → Tab Strava (Feed / Rankings / Vere
 **Phase 3 — Profilbilder:** [`supabase/supabase-member-avatars.sql`](supabase/supabase-member-avatars.sql) — `members.avatar_*`, Bucket `avatars`, Storage-RLS, Public-RPCs mit `avatar_url`, `get_member_profile_avatar()`, `anonymize_member` erweitert. Siehe [`PHASE-3-IMPLEMENTATION.md`](../PHASE-3-IMPLEMENTATION.md).
 
 **Phase A.1 — Aktivitätsdetail (DetailedActivity):** [`supabase-aktivitaeten-detail-phase-a1.sql`](../supabase-aktivitaeten-detail-phase-a1.sql) — 11 Detail-Spalten auf `activities`, erweiterte RPC `get_public_activity_detail`. **Danach** Edge Function `strava-sync` neu deployen (jede importierte Aktivität via `GET /activities/{id}`; öffentliche Sichtbarkeit weiter nur über RPC). Karten-Felder: [`supabase-aktivitaeten-card-display.sql`](../supabase-aktivitaeten-card-display.sql) muss vorher ausgeführt sein.
+
+**Phase B.2 — Activity-Streams:** [`supabase-aktivitaeten-streams-phase-b2.sql`](../supabase-aktivitaeten-streams-phase-b2.sql) — Tabelle `activity_streams`, RPC `get_public_activity_streams(uuid)`. **Danach** Edge Function `strava-sync` neu deployen (Streams nur Rad, non-blocking, Downsample ~800 via `STRAVA_STREAM_TARGET_POINTS`). Kein Frontend in B.2.
+
+**Stream-Validierung (B.2):** Alle fünf Keys (`distance`, `altitude`, `velocity_smooth`, `latlng`, `time`) sind Pflicht mit gleicher Array-Länge. Fehlende/unvollständige Strava-Antworten → Stream-Skip, Activity-Import bleibt erfolgreich.
+
+**Möglicher zukünftiger Fallback (nicht B.2):** `time` optional behandeln, wenn Strava den Stream sporadisch nicht liefert — würde höhere Persistenzrate ergeben, ist aber bewusst nicht in B.2 umgesetzt.
 
 ### Edge Function `anonymize-member-account` deployen
 

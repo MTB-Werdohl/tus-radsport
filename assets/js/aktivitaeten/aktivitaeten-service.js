@@ -75,6 +75,26 @@ async function fetchPublicActivityDetail(
 
 }
 
+async function fetchPublicActivityStreams(
+  activityId
+) {
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'get_public_activity_streams',
+      {
+        p_activity_id: activityId
+      }
+    );
+
+  if (error) {
+    throw error;
+  }
+
+  return data || null;
+
+}
+
 async function fetchPublicMemberRankings(
   year,
   month

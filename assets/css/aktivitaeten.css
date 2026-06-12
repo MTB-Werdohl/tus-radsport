@@ -566,6 +566,75 @@
   color: #aaa;
 }
 
+.activity-detail-stream-analysis {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.activity-detail-stream-analysis__block {
+  margin: 0;
+}
+
+.activity-detail-elevation-profile__chart-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 10 / 3;
+  min-height: 160px;
+  touch-action: pan-y;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.activity-detail-elevation-profile__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.activity-detail-elevation-profile__area {
+  fill: rgba(255, 255, 255, 0.06);
+  stroke: none;
+}
+
+.activity-detail-elevation-profile__line {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 1.75;
+  vector-effect: non-scaling-stroke;
+}
+
+.activity-detail-elevation-profile__cursor {
+  stroke: rgba(255, 255, 255, 0.35);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.activity-detail-elevation-profile__cursor-dot {
+  fill: #fff;
+  stroke: rgba(0, 0, 0, 0.45);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.activity-detail-elevation-profile__tooltip {
+  position: absolute;
+  z-index: 2;
+  max-width: calc(100% - 8px);
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #eee;
+  font-size: 0.82rem;
+  line-height: 1.25;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
 .activity-detail-stats {
   margin: 0;
 }
@@ -703,6 +772,10 @@
 
   .activity-detail-highlights-grid {
     grid-template-columns: 1fr;
+  }
+
+  .activity-detail-elevation-profile__chart-wrap {
+    min-height: 180px;
   }
 
   .aktivitaeten-stats-block {
