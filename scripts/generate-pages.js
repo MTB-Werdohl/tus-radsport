@@ -23,6 +23,34 @@ function isPublicVisibility(value) {
 
 }
 
+function escapeOgText(value) {
+
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+}
+
+function buildOgDescription(value, fallback) {
+
+  const plain =
+    escapeOgText(
+      String(value ?? '')
+        .replace(/<[^>]+>/g, ' ')
+    );
+
+  if (plain) {
+    return plain.slice(0, 200);
+  }
+
+  return escapeOgText(fallback || '');
+
+}
+
 async function fetchTable(table){
 
 const response =
@@ -87,7 +115,16 @@ image
 
 ? image
 
-: `${SITE_URL}/assets/images/icon-512.png`;
+: `${SITE_URL}/assets/images/hero.jpeg`;
+
+const safeTitle =
+  escapeOgText(title);
+
+const safeDescription =
+  buildOgDescription(
+    description,
+    title
+  );
 
 const html=
 `
@@ -99,30 +136,47 @@ const html=
 
 <meta charset="utf-8">
 
-<title>${title} · MTB Werdohl</title>
+<title>${safeTitle} · MTB Werdohl</title>
 
 <meta
 property="og:title"
-content="${title}">
+content="${safeTitle}">
 
 <meta
 property="og:description"
-content="${
-(description||"")
-.replace(/"/g,"'")
-}">
+content="${safeDescription}">
 
 <meta
 property="og:image"
 content="${imageUrl}">
 
-<meta
+${
+  image
+    ? ''
+    : `<meta
 property="og:image:width"
-content="512">
+content="1793">
 
 <meta
 property="og:image:height"
-content="512">
+content="762">`
+}
+
+<meta
+name="twitter:card"
+content="summary_large_image">
+
+<meta
+name="twitter:title"
+content="${safeTitle}">
+
+<meta
+name="twitter:description"
+content="${safeDescription}">
+
+<meta
+name="twitter:image"
+content="${imageUrl}">
 
 <meta
 property="og:type"

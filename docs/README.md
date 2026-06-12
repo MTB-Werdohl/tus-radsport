@@ -20,6 +20,7 @@
 | 3 Profilbilder | [PHASE-3-IMPLEMENTATION.md](PHASE-3-IMPLEMENTATION.md) |
 | 4 Zusagen/Serien | [PHASE-4-ZUSAGEN-SERIENTERMINE-KONZEPT.md](PHASE-4-ZUSAGEN-SERIENTERMINE-KONZEPT.md) ⏸ |
 | 5 Admin & Hinweise | [PHASE-5-IMPLEMENTATION.md](PHASE-5-IMPLEMENTATION.md) |
+| Medien-Storage | [MEDIA-STORAGE-ROADMAP.md](MEDIA-STORAGE-ROADMAP.md) — Architektur, Phasen 0–4, Mediathek |
 
 ## Smoke-Tests
 

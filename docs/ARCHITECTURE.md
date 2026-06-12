@@ -22,7 +22,7 @@ git push main
     → GitHub Pages Deploy
 ```
 
-`generate-pages.js` erzeugt pro News/Termin eine statische Seite unter `news/{slug}/` bzw. `kalender/{slug}/` mit Open-Graph-Tags und leitet per JavaScript auf die Detailseite weiter.
+`generate-pages.js` erzeugt pro News/Termin eine statische Seite unter `news/{slug}/` bzw. `kalender/{slug}/` mit Open-Graph-Tags und leitet per JavaScript auf die Detailseite weiter. Die Ordner stehen in `.gitignore` (lokal), werden im CI-Build aber via `_config.yml` → `include` in `_site` übernommen.
 
 ## Öffentliche Seiten — zwei Typen
 
@@ -140,6 +140,8 @@ SQL: [`docs/supabase-content-visibility.sql`](supabase-content-visibility.sql) �
 | `feedback_answers` | Antworten pro Modul und Mitglied (`answer` = Code/`option_id`) |
 
 **Storage-Buckets:** `media` (Bilder, GPX), `avatars` (Profilbilder, öffentlich lesbar)
+
+Geplante Erweiterung Medien-Struktur, Mediathek & Pfad-basierte Referenzen: [MEDIA-STORAGE-ROADMAP.md](MEDIA-STORAGE-ROADMAP.md).
 
 SQL Feedback: [`supabase-feedback.sql`](supabase-feedback.sql)
 
