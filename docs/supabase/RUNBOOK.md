@@ -103,7 +103,7 @@ Mitglieder steuern Sichtbarkeit im Profil → Tab Strava (Feed / Rankings / Vere
 
 **Phase A.1 — Aktivitätsdetail (DetailedActivity):** [`supabase-aktivitaeten-detail-phase-a1.sql`](../supabase-aktivitaeten-detail-phase-a1.sql) — 11 Detail-Spalten auf `activities`, erweiterte RPC `get_public_activity_detail`. **Danach** Edge Function `strava-sync` neu deployen (jede importierte Aktivität via `GET /activities/{id}`; öffentliche Sichtbarkeit weiter nur über RPC). Karten-Felder: [`supabase-aktivitaeten-card-display.sql`](../supabase-aktivitaeten-card-display.sql) muss vorher ausgeführt sein.
 
-**Phase B.2 — Activity-Streams:** [`supabase-aktivitaeten-streams-phase-b2.sql`](../supabase-aktivitaeten-streams-phase-b2.sql) — Tabelle `activity_streams`, RPC `get_public_activity_streams(uuid)`. **Danach** Edge Function `strava-sync` neu deployen (Streams nur Rad, non-blocking, Downsample ~800 via `STRAVA_STREAM_TARGET_POINTS`). Kein Frontend in B.2.
+**Phase B.2 — Activity-Streams:** [`supabase-aktivitaeten-streams-phase-b2.sql`](../supabase-aktivitaeten-streams-phase-b2.sql) — Tabelle `activity_streams`, RPC `get_public_activity_streams(uuid)`. **Danach** Edge Function `strava-sync` neu deployen (Streams nur Rad, non-blocking, Downsample via `STRAVA_STREAM_TARGET_POINTS`, Prod typisch **1000**). Kein Frontend in B.2.
 
 **Stream-Validierung (B.2):** Alle fünf Keys (`distance`, `altitude`, `velocity_smooth`, `latlng`, `time`) sind Pflicht mit gleicher Array-Länge. Fehlende/unvollständige Strava-Antworten → Stream-Skip, Activity-Import bleibt erfolgreich.
 

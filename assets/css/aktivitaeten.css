@@ -534,6 +534,33 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.activity-detail-highlight-card--map-sync {
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.activity-detail-highlight-card--map-sync:hover,
+.activity-detail-highlight-card--map-sync:focus-visible {
+  border-color: rgba(237, 28, 36, 0.55);
+  background: rgba(255, 255, 255, 0.07);
+  outline: none;
+}
+
+.activity-detail-highlight-card--map-sync:focus-visible {
+  box-shadow: 0 0 0 2px rgba(237, 28, 36, 0.35);
+}
+
+.activity-detail-highlight-card--active {
+  border-color: rgba(237, 28, 36, 0.75);
+  background: rgba(237, 28, 36, 0.08);
+}
+
+.activity-detail-map-sync-marker {
+  pointer-events: none;
+}
+
 .activity-detail-highlight-card__title {
   margin: 0;
   font-size: 0.78rem;

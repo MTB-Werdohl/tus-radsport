@@ -66,10 +66,13 @@ $randomId = [guid]::NewGuid().ToString()
 $nullResult = Invoke-Rpc "get_public_activity_streams" @{ p_activity_id = $randomId }
 Add-Result "T1" "RPC unbekannte UUID" "get_public_activity_streams('$randomId') => $(if($null -eq $nullResult){'null'}else{'data'})" "Erwartet null" ($null -eq $nullResult)
 
-# T2: Direct table access blocked for anon
+# T2: Direct table access blocked for anon (empty result = RLS ok)
 try {
-  Invoke-RestMethod -Uri "$URL/rest/v1/activity_streams?select=activity_id&limit=1" -Headers $headers -Method Get
-  Add-Result "T2" "RLS anon SELECT activity_streams" "SELECT erlaubt" "Soll blockiert sein" $false
+  $directRows = Invoke-RestMethod -Uri "$URL/rest/v1/activity_streams?select=activity_id&limit=1" -Headers $headers -Method Get
+  $rowCount = @($directRows).Count
+  $t2Pass = ($rowCount -eq 0)
+  $t2Detail = if ($t2Pass) { "0 Zeilen (RLS)" } else { "SELECT lieferte $rowCount Zeile(n)" }
+  Add-Result "T2" "RLS anon SELECT activity_streams" $t2Detail "Kein direkter Datenzugriff" $t2Pass
 } catch {
   $code = $_.Exception.Response.StatusCode.value__
   Add-Result "T2" "RLS anon SELECT activity_streams" "HTTP $code / permission denied" "Kein Client-Zugriff" ($code -eq 401 -or $code -eq 403 -or $code -eq 406)
@@ -117,14 +120,15 @@ Add-Result "T5" "Array-Längen = point_count (alle mit Streams)" $(if($integrity
 $schemaIssues = @($withStreams | Where-Object { $_.schema_version -ne 1 })
 Add-Result "T6" "schema_version = 1" "$(@($withStreams | Select-Object -First 3 | ForEach-Object { "$($_.id.Substring(0,8))… v=$($_.schema_version)" }) -join '; ')" "Spaltenwert 1" ($schemaIssues.Count -eq 0)
 
-# T7: point_count bounds
+# T7: point_count bounds (Prod: STRAVA_STREAM_TARGET_POINTS=1000)
+$maxPointCount = 1000
 $boundIssues = @()
 foreach ($s in $withStreams) {
   if ($s.point_count -le 0) { $boundIssues += "$($s.id) point_count<=0" }
-  if ($s.point_count -gt 800) { $boundIssues += "$($s.id) point_count=$($s.point_count)>800" }
+  if ($s.point_count -gt $maxPointCount) { $boundIssues += "$($s.id) point_count=$($s.point_count)>$maxPointCount" }
   if ($s.original -lt $s.point_count) { $boundIssues += "$($s.id) original<point" }
 }
-Add-Result "T7" "point_count Integrität" $(if($boundIssues.Count -eq 0){"alle <=800, original>=point_count"}else{$boundIssues -join '; '}) "Sync-Grenze" ($boundIssues.Count -eq 0)
+Add-Result "T7" "point_count Integrität" $(if($boundIssues.Count -eq 0){"alle <=$maxPointCount, original>=point_count"}else{$boundIssues -join '; '}) "Sync-Grenze" ($boundIssues.Count -eq 0)
 
 # T8: Data quality sample - distance monotonic-ish, time monotonic
 $sample = $withStreams | Select-Object -First 1

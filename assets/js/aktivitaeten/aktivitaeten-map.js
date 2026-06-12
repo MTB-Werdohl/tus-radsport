@@ -97,6 +97,8 @@ function initActivityDetailHeroMap(node) {
       attributionControl: true
     });
 
+  node.__activityDetailLeafletMap = map;
+
   addActivityRouteToMap(
     map,
     latLngs
@@ -257,5 +259,188 @@ function refreshActivityDetailMap(
     .forEach((node) => {
       initActivityDetailHeroMap(node);
     });
+
+}
+
+function normalizeActivityStreamLatLng(
+  latlng
+) {
+
+  if (
+    !Array.isArray(latlng)
+    || latlng.length < 2
+  ) {
+    return null;
+  }
+
+  const lat =
+    Number(latlng[0]);
+
+  const lng =
+    Number(latlng[1]);
+
+  if (
+    !Number.isFinite(lat)
+    || !Number.isFinite(lng)
+  ) {
+    return null;
+  }
+
+  return [lat, lng];
+
+}
+
+function createActivityDetailStreamMapSync(
+  root
+) {
+
+  if (
+    typeof L === 'undefined'
+    || !root
+  ) {
+    return null;
+  }
+
+  const mapNode =
+    root.querySelector(
+      '[data-activity-detail-map][data-map-ready="true"]'
+    );
+
+  const map =
+    mapNode?.__activityDetailLeafletMap;
+
+  if (!map) {
+    return null;
+  }
+
+  let profileMarker = null;
+  let segmentLayer = null;
+
+  function hideProfilePoint() {
+
+    if (!profileMarker) {
+      return;
+    }
+
+    map.removeLayer(profileMarker);
+    profileMarker = null;
+
+  }
+
+  function showProfilePoint(
+    latlng
+  ) {
+
+    const point =
+      normalizeActivityStreamLatLng(
+        latlng
+      );
+
+    if (!point) {
+      hideProfilePoint();
+      return;
+    }
+
+    if (!profileMarker) {
+
+      profileMarker =
+        L.circleMarker(point, {
+          radius: 8,
+          color: '#ffffff',
+          fillColor: '#ed1c24',
+          fillOpacity: 1,
+          weight: 3,
+          className:
+            'activity-detail-map-sync-marker'
+        }).addTo(map);
+
+    } else {
+      profileMarker.setLatLng(point);
+    }
+
+    profileMarker.bringToFront();
+
+  }
+
+  function clearSegmentHighlight() {
+
+    if (!segmentLayer) {
+      return;
+    }
+
+    map.removeLayer(segmentLayer);
+    segmentLayer = null;
+
+  }
+
+  function showSegmentHighlight(
+    startLatLng,
+    endLatLng
+  ) {
+
+    const start =
+      normalizeActivityStreamLatLng(
+        startLatLng
+      );
+
+    const end =
+      normalizeActivityStreamLatLng(
+        endLatLng
+      );
+
+    if (
+      !start
+      || !end
+    ) {
+      return;
+    }
+
+    clearSegmentHighlight();
+    hideProfilePoint();
+
+    segmentLayer =
+      L.layerGroup([
+        L.polyline(
+          [start, end],
+          {
+            color: '#111111',
+            weight: 6,
+            opacity: 0.85,
+            lineCap: 'round',
+            lineJoin: 'round'
+          }
+        ),
+        L.circleMarker(start, {
+          radius: 5,
+          color: '#ffffff',
+          fillColor: '#2e8b57',
+          fillOpacity: 1,
+          weight: 2
+        }),
+        L.circleMarker(end, {
+          radius: 5,
+          color: '#ffffff',
+          fillColor: '#111111',
+          fillOpacity: 1,
+          weight: 2
+        })
+      ]).addTo(map);
+
+    map.fitBounds(
+      segmentLayer.getBounds(),
+      {
+        padding: [36, 36],
+        maxZoom: 15
+      }
+    );
+
+  }
+
+  return {
+    showProfilePoint,
+    hideProfilePoint,
+    showSegmentHighlight,
+    clearSegmentHighlight
+  };
 
 }

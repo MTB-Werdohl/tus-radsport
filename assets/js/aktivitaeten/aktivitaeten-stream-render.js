@@ -83,24 +83,108 @@ function renderStreamChartBlock(
 
 }
 
-function renderElevationProfileBlock() {
+function buildElevationChartAriaLabel(
+  series
+) {
+
+  const bounds =
+    series?.bounds;
+
+  if (!bounds) {
+    return 'Höhenprofil entlang der gefahrenen Strecke';
+  }
+
+  const range =
+    typeof formatElevationRange === 'function'
+      ? formatElevationRange(
+        bounds.altitudeMinM,
+        bounds.altitudeMaxM
+      )
+      : null;
+
+  const distance =
+    typeof formatActivityDistance === 'function'
+      ? formatActivityDistance(
+        bounds.distanceMaxM
+      )
+      : null;
+
+  if (
+    range?.label
+    && distance
+    && distance !== '—'
+  ) {
+    return (
+      `Höhenprofil, ${range.label}, Strecke ${distance}`
+    );
+  }
+
+  return 'Höhenprofil entlang der gefahrenen Strecke';
+
+}
+
+function buildSpeedChartAriaLabel(
+  series
+) {
+
+  const bounds =
+    series?.bounds;
+
+  if (!bounds) {
+    return 'Tempo entlang der gefahrenen Strecke';
+  }
+
+  const maxSpeed =
+    typeof formatActivitySpeed === 'function'
+      ? formatActivitySpeed(
+        bounds.velocityMaxMps
+      )
+      : null;
+
+  const distance =
+    typeof formatActivityDistance === 'function'
+      ? formatActivityDistance(
+        bounds.distanceMaxM
+      )
+      : null;
+
+  if (
+    maxSpeed
+    && maxSpeed !== '—'
+    && distance
+    && distance !== '—'
+  ) {
+    return (
+      `Tempo entlang der Strecke ${distance}, Höchsttempo ${maxSpeed}`
+    );
+  }
+
+  return 'Tempo entlang der gefahrenen Strecke';
+
+}
+
+function renderElevationProfileBlock(
+  series
+) {
 
   return renderStreamChartBlock(
     'activity-detail-elevation-profile',
     'Höhenprofil',
-    'Höhenprofil entlang der gefahrenen Strecke',
+    buildElevationChartAriaLabel(series),
     'data-elevation-profile-chart',
     'elevation-profile'
   );
 
 }
 
-function renderSpeedProfileBlock() {
+function renderSpeedProfileBlock(
+  series
+) {
 
   return renderStreamChartBlock(
     'activity-detail-speed-profile',
     'Geschwindigkeitsprofil',
-    'Tempo entlang der gefahrenen Strecke',
+    buildSpeedChartAriaLabel(series),
     'data-speed-profile-chart',
     'speed-profile'
   );
@@ -123,8 +207,28 @@ function renderStreamHighlightCard(
       `
       : '';
 
+  const hasMapSegment =
+    Array.isArray(highlight.startLatLng)
+    && highlight.startLatLng.length >= 2
+    && Array.isArray(highlight.endLatLng)
+    && highlight.endLatLng.length >= 2;
+
+  const interactiveClass =
+    hasMapSegment
+      ? ' activity-detail-highlight-card--map-sync'
+      : '';
+
+  const interactiveAttrs =
+    hasMapSegment
+      ? `
+    tabindex="0"
+    role="button"
+    aria-label="${escape(`${highlight.title} auf der Karte anzeigen`)}"
+      `
+      : '';
+
   return `
-<div class="activity-detail-highlight-card">
+<div class="activity-detail-highlight-card${interactiveClass}"${interactiveAttrs}>
 
   <p class="activity-detail-highlight-card__title">
     ${escape(highlight.title)}
@@ -187,14 +291,18 @@ function renderStreamAnalysisSection(
 
     if (block.id === 'elevation') {
       parts.push(
-        renderElevationProfileBlock()
+        renderElevationProfileBlock(
+          block.series
+        )
       );
       return;
     }
 
     if (block.id === 'speed') {
       parts.push(
-        renderSpeedProfileBlock()
+        renderSpeedProfileBlock(
+          block.series
+        )
       );
       return;
     }
@@ -257,6 +365,130 @@ function insertActivityDetailStreamAnalysis(
 
 }
 
+function clearStreamHighlightCardSelection(
+  container
+) {
+
+  container
+    .querySelectorAll(
+      '.activity-detail-highlight-card--active'
+    )
+    .forEach((card) => {
+      card.classList.remove(
+        'activity-detail-highlight-card--active'
+      );
+    });
+
+}
+
+function buildStreamChartMapSyncOptions(
+  mapSync,
+  container
+) {
+
+  if (!mapSync) {
+    return {};
+  }
+
+  return {
+    onPointActive(point) {
+
+      mapSync.clearSegmentHighlight();
+
+      clearStreamHighlightCardSelection(
+        container
+      );
+
+      if (point?.latlng) {
+        mapSync.showProfilePoint(
+          point.latlng
+        );
+      }
+
+    },
+    onPointInactive() {
+      mapSync.hideProfilePoint();
+    }
+  };
+
+}
+
+function bindStreamHighlightMapSync(
+  container,
+  highlights,
+  mapSync
+) {
+
+  if (
+    !container
+    || !mapSync
+    || !highlights?.length
+  ) {
+    return;
+  }
+
+  const cards =
+    container.querySelectorAll(
+      '.activity-detail-stream-highlights .activity-detail-highlight-card--map-sync'
+    );
+
+  cards.forEach((card, index) => {
+
+    const highlight =
+      highlights[index];
+
+    if (
+      !highlight?.startLatLng
+      || !highlight?.endLatLng
+    ) {
+      return;
+    }
+
+    function activateHighlight() {
+
+      mapSync.hideProfilePoint();
+
+      mapSync.showSegmentHighlight(
+        highlight.startLatLng,
+        highlight.endLatLng
+      );
+
+      clearStreamHighlightCardSelection(
+        container
+      );
+
+      card.classList.add(
+        'activity-detail-highlight-card--active'
+      );
+
+    }
+
+    card.addEventListener(
+      'click',
+      activateHighlight
+    );
+
+    card.addEventListener(
+      'keydown',
+      (event) => {
+
+        if (
+          event.key !== 'Enter'
+          && event.key !== ' '
+        ) {
+          return;
+        }
+
+        event.preventDefault();
+        activateHighlight();
+
+      }
+    );
+
+  });
+
+}
+
 function mountStreamAnalysisSection(
   container,
   blocks
@@ -284,6 +516,20 @@ function mountStreamAnalysisSection(
     html
   );
 
+  const mapSync =
+    typeof createActivityDetailStreamMapSync
+      === 'function'
+      ? createActivityDetailStreamMapSync(
+        container
+      )
+      : null;
+
+  const chartSyncOptions =
+    buildStreamChartMapSyncOptions(
+      mapSync,
+      container
+    );
+
   blocks.forEach((block) => {
 
     if (
@@ -297,7 +543,8 @@ function mountStreamAnalysisSection(
 
       bindElevationProfileChart(
         wrapEl,
-        block.series
+        block.series,
+        chartSyncOptions
       );
 
       return;
@@ -315,7 +562,22 @@ function mountStreamAnalysisSection(
 
       bindSpeedProfileChart(
         wrapEl,
-        block.series
+        block.series,
+        chartSyncOptions
+      );
+
+      return;
+
+    }
+
+    if (
+      block.id === 'highlights'
+    ) {
+
+      bindStreamHighlightMapSync(
+        container,
+        block.highlights,
+        mapSync
       );
 
     }

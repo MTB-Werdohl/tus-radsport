@@ -192,6 +192,13 @@ function bindDistanceSeriesChart(
     tooltipEl.hidden = true;
     tooltipEl.textContent = '';
 
+    if (
+      typeof config.onPointInactive
+        === 'function'
+    ) {
+      config.onPointInactive();
+    }
+
   }
 
   function refreshRect() {
@@ -281,6 +288,13 @@ function bindDistanceSeriesChart(
 
     tooltipEl.hidden = false;
     positionTooltip(clientX, clientY);
+
+    if (
+      typeof config.onPointActive
+        === 'function'
+    ) {
+      config.onPointActive(point);
+    }
 
   }
 
@@ -596,7 +610,8 @@ function bindStreamChartWhenReady(
 
 function bindElevationProfileChart(
   wrapEl,
-  series
+  series,
+  syncOptions = {}
 ) {
 
   bindStreamChartWhenReady(
@@ -614,7 +629,11 @@ function bindElevationProfileChart(
       tooltipSelector:
         '[data-elevation-profile-tooltip]',
       formatTooltip:
-        formatElevationStreamTooltip
+        formatElevationStreamTooltip,
+      onPointActive:
+        syncOptions.onPointActive,
+      onPointInactive:
+        syncOptions.onPointInactive
     }
   );
 
@@ -622,7 +641,8 @@ function bindElevationProfileChart(
 
 function bindSpeedProfileChart(
   wrapEl,
-  series
+  series,
+  syncOptions = {}
 ) {
 
   bindStreamChartWhenReady(
@@ -640,7 +660,11 @@ function bindSpeedProfileChart(
       tooltipSelector:
         '[data-speed-profile-tooltip]',
       formatTooltip:
-        formatSpeedStreamTooltip
+        formatSpeedStreamTooltip,
+      onPointActive:
+        syncOptions.onPointActive,
+      onPointInactive:
+        syncOptions.onPointInactive
     }
   );
 

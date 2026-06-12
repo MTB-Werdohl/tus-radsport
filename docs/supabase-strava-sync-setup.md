@@ -59,8 +59,49 @@ https://eazizesytrnknbgrnggj.supabase.co/functions/v1/strava-sync
 | `STRAVA_CRON_SECRET` | Zufälliger String | Nächtlicher Reconcile |
 | `STRAVA_SYNC_DAYS` | Initial-Import (Standard `400`) | Nein |
 | `STRAVA_RECONCILE_DAYS` | Nacht-Abgleich (Standard `30`) | Nein |
+| `STRAVA_STREAM_TARGET_POINTS` | Downsample-Ziel (Standard `800`, Prod oft `1000`) | Nein |
 
 Bereits vorhanden: `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `SITE_URL`.
+
+---
+
+## 4b. Stream-Backfill (Phase B.2 / B.3)
+
+Bestehende Rad-Aktivitäten ohne `activity_streams`-Row bekommen Streams **nicht** automatisch nach — nur neue Upserts im Sync.
+
+**Voraussetzung:** `strava-sync` mit Modus `streams_backfill` deployen (Code in `supabase/functions/strava-sync/index.ts`).
+
+### Dry-Run (Anzahl fehlender Streams)
+
+```bash
+curl -X POST "https://eazizesytrnknbgrnggj.supabase.co/functions/v1/strava-sync" \
+  -H "X-Strava-Internal-Secret: DEIN_STRAVA_INTERNAL_SECRET" \
+  -H "Content-Type: application/json" \
+  -d "{\"mode\":\"streams_backfill\",\"dry_run\":true,\"limit\":25}"
+```
+
+Antwort: `{ "pending": N, "activity_ids": [...] }`
+
+### Backfill ausführen (Batch)
+
+```bash
+curl -X POST "https://eazizesytrnknbgrnggj.supabase.co/functions/v1/strava-sync" \
+  -H "X-Strava-Internal-Secret: DEIN_STRAVA_INTERNAL_SECRET" \
+  -H "Content-Type: application/json" \
+  -d "{\"mode\":\"streams_backfill\",\"limit\":25}"
+```
+
+Job läuft asynchron (`waitUntil`). **~1,5 s Pause pro Aktivität** (Strava Rate Limits). Dry-Run wiederholen, bis `pending: 0`.
+
+Optional PowerShell-Schleife: `scripts/backfill-activity-streams.ps1`
+
+```powershell
+.\scripts\backfill-activity-streams.ps1 -InternalSecret "DEIN_SECRET"
+```
+
+Verifikation: `scripts/verify-b2-streams.ps1` — Ziel: möglichst alle Feed-Touren mit Streams.
+
+Optional nur ein Mitglied: `"member_id": 123` im JSON-Body.
 
 ---
 

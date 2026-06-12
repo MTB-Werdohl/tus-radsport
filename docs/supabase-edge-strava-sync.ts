@@ -33,6 +33,9 @@ const DEFAULT_STREAM_TARGET_MAX_POINTS = 800;
 const MIN_STREAM_TARGET_MAX_POINTS = 100;
 const MAX_STREAM_TARGET_MAX_POINTS = 2000;
 const STREAM_SYNC_RETRY_DELAY_MS = 2000;
+const STREAM_BACKFILL_DELAY_MS = 1500;
+const DEFAULT_STREAM_BACKFILL_BATCH = 25;
+const MAX_STREAM_BACKFILL_BATCH = 100;
 
 const STREAM_KEYS = [
   'distance',
@@ -1570,6 +1573,257 @@ async function handleWebhookEvent(event) {
 
 }
 
+async function listActivitiesMissingStreams(
+  supabaseAdmin,
+  options = {}
+) {
+
+  const memberId =
+    options.memberId;
+
+  const limit =
+    options.limit
+    ?? DEFAULT_STREAM_BACKFILL_BATCH;
+
+  const fetchLimit =
+    Math.min(
+      Math.max(limit * 4, limit),
+      500
+    );
+
+  let query =
+    supabaseAdmin
+      .from('activities')
+      .select(
+        'id, strava_activity_id, member_id, sport_category'
+      )
+      .eq(
+        'sport_category',
+        'rad'
+      )
+      .is(
+        'deleted_at',
+        null
+      )
+      .order(
+        'start_date',
+        { ascending: false }
+      )
+      .limit(fetchLimit);
+
+  if (memberId) {
+    query =
+      query.eq(
+        'member_id',
+        memberId
+      );
+  }
+
+  const { data: activities, error } =
+    await query;
+
+  if (error) {
+    throw error;
+  }
+
+  if (
+    !activities
+    || !activities.length
+  ) {
+    return [];
+  }
+
+  const activityIds =
+    activities.map(
+      (row) => row.id
+    );
+
+  const { data: streamRows, error: streamError } =
+    await supabaseAdmin
+      .from('activity_streams')
+      .select('activity_id')
+      .in(
+        'activity_id',
+        activityIds
+      );
+
+  if (streamError) {
+    throw streamError;
+  }
+
+  const hasStream =
+    new Set(
+      (streamRows || []).map(
+        (row) => row.activity_id
+      )
+    );
+
+  return activities
+    .filter(
+      (row) => !hasStream.has(row.id)
+    )
+    .slice(0, limit);
+
+}
+
+async function runStreamsBackfillJob(
+  options = {}
+) {
+
+  const supabaseAdmin =
+    getServiceClient();
+
+  const memberId =
+    options.memberId || null;
+
+  const limit =
+    Math.min(
+      Math.max(
+        Number(options.limit)
+        || DEFAULT_STREAM_BACKFILL_BATCH,
+        1
+      ),
+      MAX_STREAM_BACKFILL_BATCH
+    );
+
+  const dryRun =
+    options.dryRun === true;
+
+  const missing =
+    await listActivitiesMissingStreams(
+      supabaseAdmin,
+      {
+        memberId,
+        limit
+      }
+    );
+
+  if (dryRun) {
+
+    return {
+      dry_run: true,
+      pending: missing.length,
+      activity_ids:
+        missing.map(
+          (row) => row.id
+        )
+    };
+
+  }
+
+  const byMember =
+    new Map();
+
+  for (const activity of missing) {
+
+    const bucket =
+      byMember.get(activity.member_id)
+      || [];
+
+    bucket.push(activity);
+    byMember.set(
+      activity.member_id,
+      bucket
+    );
+
+  }
+
+  let synced = 0;
+  let skipped = 0;
+  let failed = 0;
+
+  for (
+    const [
+      bucketMemberId,
+      activities
+    ] of byMember.entries()
+  ) {
+
+    let accessToken = null;
+
+    try {
+
+      const connection =
+        await getConnectionByMemberId(
+          supabaseAdmin,
+          bucketMemberId
+        );
+
+      if (!connection) {
+        skipped += activities.length;
+        continue;
+      }
+
+      accessToken =
+        await ensureValidAccessToken(
+          supabaseAdmin,
+          connection
+        );
+
+    } catch (error) {
+
+      console.error(
+        `[streams-backfill] token failed member=${bucketMemberId}:`,
+        error
+      );
+
+      failed += activities.length;
+      continue;
+
+    }
+
+    for (const activity of activities) {
+
+      try {
+
+        await syncActivityStreams(
+          supabaseAdmin,
+          accessToken,
+          activity.strava_activity_id,
+          activity.id,
+          activity.sport_category
+        );
+
+        synced += 1;
+
+        await new Promise((resolve) => {
+          setTimeout(
+            resolve,
+            STREAM_BACKFILL_DELAY_MS
+          );
+        });
+
+      } catch (error) {
+
+        failed += 1;
+
+        console.error(
+          `[streams-backfill] activity=${activity.id}:`,
+          error
+        );
+
+      }
+
+    }
+
+  }
+
+  const summary = {
+    synced,
+    skipped,
+    failed,
+    batch_size: missing.length
+  };
+
+  console.log(
+    '[streams-backfill] done',
+    summary
+  );
+
+  return summary;
+
+}
+
 async function handleInternalSync(req) {
 
   const secret =
@@ -1594,16 +1848,73 @@ async function handleInternalSync(req) {
     return jsonResponse({ error: 'Invalid JSON' }, 400);
   }
 
-  const memberId =
+  const memberIdRaw =
     Number(body?.member_id);
+
+  const memberId =
+    Number.isFinite(memberIdRaw)
+    && memberIdRaw > 0
+      ? memberIdRaw
+      : null;
 
   const mode =
     String(body?.mode || 'initial');
 
-  if (
-    !Number.isFinite(memberId)
-    || memberId <= 0
-  ) {
+  if (mode === 'streams_backfill') {
+
+    const limit =
+      Math.min(
+        Math.max(
+          Number(body?.limit)
+          || DEFAULT_STREAM_BACKFILL_BATCH,
+          1
+        ),
+        MAX_STREAM_BACKFILL_BATCH
+      );
+
+    const dryRun =
+      body?.dry_run === true;
+
+    if (dryRun) {
+
+      const result =
+        await runStreamsBackfillJob({
+          memberId,
+          limit,
+          dryRun: true
+        });
+
+      return jsonResponse({
+        ok: true,
+        mode: 'streams_backfill',
+        ...result
+      });
+
+    }
+
+    const waitUntil =
+      globalThis.EdgeRuntime?.waitUntil
+      || ((_promise) => {});
+
+    waitUntil(
+      runStreamsBackfillJob({
+        memberId,
+        limit,
+        dryRun: false
+      })
+    );
+
+    return jsonResponse({
+      ok: true,
+      started: true,
+      mode: 'streams_backfill',
+      limit,
+      member_id: memberId
+    });
+
+  }
+
+  if (!memberId) {
     return jsonResponse({ error: 'Invalid member_id' }, 400);
   }
 
