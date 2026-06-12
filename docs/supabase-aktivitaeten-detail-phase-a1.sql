@@ -1,6 +1,6 @@
--- Phase A.1: DetailedActivity-Felder für Feed-Rad-Aktivitäten
+-- Phase A.1: DetailedActivity-Felder für alle importierten Aktivitäten
 -- Nach docs/supabase-aktivitaeten-card-display.sql
--- Strava-Sync danach deployen (Detailed nur bei publish_feed + sport_category = rad)
+-- Strava-Sync: jede Aktivität via GET /activities/{id}; Sichtbarkeit über RPCs
 
 alter table public.activities
   add column if not exists elapsed_time_s integer;
@@ -36,37 +36,37 @@ alter table public.activities
   add column if not exists splits_metric jsonb;
 
 comment on column public.activities.elapsed_time_s is
-  'Strava elapsed_time (Sekunden). Nur bei publish_feed + Rad importiert.';
+  'Strava elapsed_time (Sekunden). DetailedActivity bei jedem Sync.';
 
 comment on column public.activities.average_speed_mps is
-  'Strava average_speed in m/s. Nur bei publish_feed + Rad importiert.';
+  'Strava average_speed in m/s. DetailedActivity bei jedem Sync.';
 
 comment on column public.activities.max_speed_mps is
-  'Strava max_speed in m/s. Nur bei publish_feed + Rad importiert.';
+  'Strava max_speed in m/s. DetailedActivity bei jedem Sync.';
 
 comment on column public.activities.elev_high_m is
-  'Strava elev_high in Metern. Nur bei publish_feed + Rad importiert.';
+  'Strava elev_high in Metern. DetailedActivity bei jedem Sync.';
 
 comment on column public.activities.elev_low_m is
-  'Strava elev_low in Metern. Nur bei publish_feed + Rad importiert.';
+  'Strava elev_low in Metern. DetailedActivity bei jedem Sync.';
 
 comment on column public.activities.start_lat is
-  'Start latitude aus Strava start_latlng. Nur bei publish_feed + Rad importiert.';
+  'Start latitude aus Strava start_latlng. DetailedActivity bei jedem Sync.';
 
 comment on column public.activities.start_lng is
-  'Start longitude aus Strava start_latlng. Nur bei publish_feed + Rad importiert.';
+  'Start longitude aus Strava start_latlng. DetailedActivity bei jedem Sync.';
 
 comment on column public.activities.end_lat is
-  'End latitude aus Strava end_latlng. Nur bei publish_feed + Rad importiert.';
+  'End latitude aus Strava end_latlng. DetailedActivity bei jedem Sync.';
 
 comment on column public.activities.end_lng is
-  'End longitude aus Strava end_latlng. Nur bei publish_feed + Rad importiert.';
+  'End longitude aus Strava end_latlng. DetailedActivity bei jedem Sync.';
 
 comment on column public.activities.map_polyline is
-  'Volle Strecken-Polyline (map.polyline). Nur bei publish_feed + Rad importiert.';
+  'Volle Strecken-Polyline (map.polyline). DetailedActivity bei jedem Sync.';
 
 comment on column public.activities.splits_metric is
-  'Strava splits_metric (JSON). Nur bei publish_feed + Rad importiert.';
+  'Strava splits_metric (JSON). DetailedActivity bei jedem Sync.';
 
 create or replace function public.get_public_activity_detail(
   p_activity_id uuid,
@@ -145,4 +145,4 @@ end;
 $$;
 
 comment on function public.get_public_activity_detail is
-  'Aktivitätsdetail inkl. DetailedActivity-Felder (Phase A.1); nur publish_feed + Rad.';
+  'Aktivitätsdetail inkl. DetailedActivity-Felder (Phase A.1); öffentlich nur publish_feed + Rad.';

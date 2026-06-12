@@ -65,7 +65,7 @@ Import aus Strava; UUID in URLs (`/aktivitaeten/{uuid}/`).
 | `start_date` | timestamptz | Feed: letzte 90 Tage |
 | `start_location` | text | Ort aus Strava (`location_city` / `location_state`) |
 | `map_summary_polyline`, `activity_photo_url` | text | Karte Feed / Foto |
-| `elapsed_time_s` | integer | DetailedActivity; Sync nur bei `publish_feed` + `rad` |
+| `elapsed_time_s` | integer | DetailedActivity; bei jedem Strava-Sync |
 | `average_speed_mps`, `max_speed_mps` | numeric | m/s; DetailedActivity |
 | `elev_high_m`, `elev_low_m` | numeric | Meter; DetailedActivity |
 | `start_lat`, `start_lng`, `end_lat`, `end_lng` | double precision | Koordinaten; DetailedActivity |
@@ -73,7 +73,9 @@ Import aus Strava; UUID in URLs (`/aktivitaeten/{uuid}/`).
 | `splits_metric` | jsonb | km-Splits; DetailedActivity |
 | `deleted_at` | timestamptz | Soft Delete (Strava-Trennung) |
 
-**Sichtbarkeit:** Feed/Rankings/Ziele/Profil-Aktivitäten nur `sport_category = 'rad'`. Opt-ins (`members.publish_*`) steuern zusätzlich ob — nicht welche Sportart. Alle Strava-Aktivitäten werden importiert; Nicht-Rad bleibt in DB, ist aber nicht öffentlich sichtbar.
+**Speicherung:** Jede importierte Strava-Aktivität wird als DetailedActivity (`GET /activities/{id}`) persistiert — unabhängig von `publish_feed` und `sport_category`.
+
+**Sichtbarkeit:** Feed/Rankings/Ziele/Profil-Aktivitäten nur `sport_category = 'rad'`. Opt-ins (`members.publish_*`) steuern zusätzlich ob — nicht welche Sportart. Nicht-Rad bleibt in DB, ist aber nicht öffentlich sichtbar.
 
 ## `member_stats_month` / `member_stats_year` / `club_stats_month` / `club_stats_year`
 

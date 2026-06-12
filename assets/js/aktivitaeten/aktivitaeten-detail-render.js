@@ -24,27 +24,6 @@ function getActivityDetailPolyline(activity) {
 
 }
 
-function normalizeActivitySplitsMetric(activity) {
-
-  let splits =
-    activity?.splits_metric;
-
-  if (typeof splits === 'string') {
-
-    try {
-      splits = JSON.parse(splits);
-    } catch (_error) {
-      return [];
-    }
-
-  }
-
-  return Array.isArray(splits)
-    ? splits
-    : [];
-
-}
-
 function renderActivityDetailMetaLine(
   activity
 ) {
@@ -240,95 +219,6 @@ function renderActivityDetailPrimaryStats(
 
 }
 
-function renderActivityDetailSecondaryStats(
-  activity
-) {
-
-  const movingTimeS =
-    Number(activity?.moving_time_s) || 0;
-
-  const elapsedTimeS =
-    Number(activity?.elapsed_time_s) || 0;
-
-  const elapsedTime =
-    elapsedTimeS > 0
-    && elapsedTimeS !== movingTimeS
-    && typeof formatActivityDuration === 'function'
-      ? formatActivityDuration(elapsedTimeS)
-      : (
-        elapsedTimeS > 0
-        && movingTimeS <= 0
-        && typeof formatActivityDuration === 'function'
-          ? formatActivityDuration(elapsedTimeS)
-          : null
-      );
-
-  const averageSpeed =
-    typeof formatActivitySpeed === 'function'
-      ? formatActivitySpeed(activity.average_speed_mps)
-      : '—';
-
-  const maxSpeed =
-    typeof formatActivitySpeed === 'function'
-      ? formatActivitySpeed(activity.max_speed_mps)
-      : '—';
-
-  const elevHigh =
-    typeof formatActivityPointElevation === 'function'
-      ? formatActivityPointElevation(activity.elev_high_m)
-      : '—';
-
-  const elevLow =
-    typeof formatActivityPointElevation === 'function'
-      ? formatActivityPointElevation(activity.elev_low_m)
-      : '—';
-
-  const items =
-    [
-      renderActivityDetailStatItem(
-        'Gesamtzeit',
-        elapsedTime
-      ),
-      renderActivityDetailStatItem(
-        'Ø Tempo',
-        averageSpeed
-      ),
-      renderActivityDetailStatItem(
-        'Max. Tempo',
-        maxSpeed
-      ),
-      renderActivityDetailStatItem(
-        'Höchster Punkt',
-        elevHigh
-      ),
-      renderActivityDetailStatItem(
-        'Tiefster Punkt',
-        elevLow
-      )
-    ].filter(Boolean).join('');
-
-  if (!items) {
-    return '';
-  }
-
-  return `
-<section
-  class="activity-detail-stats activity-detail-stats--secondary"
-  aria-label="Detailkennzahlen">
-
-  <h2 class="activity-detail-section-title">
-    Weitere Kennzahlen
-  </h2>
-
-  <dl class="activity-detail-stats-grid">
-    ${items}
-  </dl>
-
-</section>
-  `;
-
-}
-
 function renderActivityDetailSplits(
   activity
 ) {
@@ -507,13 +397,13 @@ function renderActivityDetailPage(
 
   ${renderActivityDetailHeroMap(activity)}
 
-  <div
-    id="activity-detail-future-analysis"
-    class="activity-detail-future-analysis"></div>
+  ${
+    typeof renderActivityDetailAnalysis === 'function'
+      ? renderActivityDetailAnalysis(activity)
+      : ''
+  }
 
   ${renderActivityDetailPrimaryStats(activity)}
-
-  ${renderActivityDetailSecondaryStats(activity)}
 
   ${renderActivityDetailSplits(activity)}
 

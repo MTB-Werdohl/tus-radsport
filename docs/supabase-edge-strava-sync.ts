@@ -8,6 +8,7 @@
 //   Verify JWT = AUS
 //
 // Setup: docs/supabase-strava-sync-setup.md
+// Sync: jede Aktivität via GET /activities/{id} (DetailedActivity)
 // ============================================================================
 
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
@@ -315,38 +316,6 @@ function getStravaActivityType(activity) {
 
 }
 
-function shouldPersistDetailed(
-  publishFeed,
-  sportCategory
-) {
-
-  return (
-    publishFeed === true
-    && sportCategory === 'rad'
-  );
-
-}
-
-async function getMemberPublishFeed(
-  supabaseAdmin,
-  memberId
-) {
-
-  const { data, error } =
-    await supabaseAdmin
-      .from('members')
-      .select('publish_feed')
-      .eq('id', memberId)
-      .maybeSingle();
-
-  if (error) {
-    throw error;
-  }
-
-  return data?.publish_feed === true;
-
-}
-
 function mapDetailedActivityFields(activity) {
 
   const startLatLng =
@@ -432,22 +401,14 @@ function mapSummaryActivityRow(
 
 function buildActivityRow(
   activity,
-  memberId,
-  includeDetailed
+  memberId
 ) {
 
-  const row =
-    mapSummaryActivityRow(
+  return {
+    ...mapSummaryActivityRow(
       activity,
       memberId
-    );
-
-  if (!includeDetailed) {
-    return row;
-  }
-
-  return {
-    ...row,
+    ),
     ...mapDetailedActivityFields(activity)
   };
 
@@ -455,20 +416,34 @@ function buildActivityRow(
 
 function mapStravaActivityRow(
   activity,
-  memberId,
-  includeDetailed = false
+  memberId
 ) {
 
   return buildActivityRow(
     activity,
-    memberId,
-    includeDetailed
+    memberId
   );
 
 }
 
-const ACTIVITY_PERSIST_READ_COLUMNS =
-  'strava_activity_id, elapsed_time_s, average_speed_mps, max_speed_mps, map_polyline';
+async function fetchAndBuildActivityRow(
+  accessToken,
+  activityId,
+  memberId
+) {
+
+  const activity =
+    await fetchStravaActivity(
+      accessToken,
+      activityId
+    );
+
+  return buildActivityRow(
+    activity,
+    memberId
+  );
+
+}
 
 async function upsertActivityRows(
   supabaseAdmin,
@@ -486,38 +461,16 @@ async function upsertActivityRows(
     const batch =
       rows.slice(index, index + batchSize);
 
-    const { data, error } =
+    const { error } =
       await supabaseAdmin
         .from('activities')
         .upsert(
           batch,
           { onConflict: 'strava_activity_id' }
-        )
-        .select(ACTIVITY_PERSIST_READ_COLUMNS);
+        );
 
     if (error) {
       throw error;
-    }
-
-    for (const persisted of data || []) {
-
-      console.log(
-        '[upsertActivityRows] upsert-returning',
-        {
-          strava_activity_id:
-            persisted?.strava_activity_id ?? null,
-          elapsed_time_s:
-            persisted?.elapsed_time_s ?? null,
-          average_speed_mps:
-            persisted?.average_speed_mps ?? null,
-          max_speed_mps:
-            persisted?.max_speed_mps ?? null,
-          hasMapPolyline:
-            Boolean(persisted?.map_polyline),
-          readError: null
-        }
-      );
-
     }
 
   }
@@ -923,12 +876,6 @@ async function syncMemberActivities(
       mode
     );
 
-  const publishFeed =
-    await getMemberPublishFeed(
-      supabaseAdmin,
-      memberId
-    );
-
   const activities =
     await fetchStravaActivitiesSince(
       accessToken,
@@ -939,42 +886,11 @@ async function syncMemberActivities(
 
   for (const activity of activities) {
 
-    const activityType =
-      getStravaActivityType(activity);
-
-    const sportCategory =
-      mapStravaTypeToCategory(activityType);
-
-    if (
-      shouldPersistDetailed(
-        publishFeed,
-        sportCategory
-      )
-    ) {
-
-      const detailedActivity =
-        await fetchStravaActivity(
-          accessToken,
-          activity.id
-        );
-
-      rows.push(
-        buildActivityRow(
-          detailedActivity,
-          memberId,
-          true
-        )
-      );
-
-      continue;
-
-    }
-
     rows.push(
-      buildActivityRow(
-        activity,
-        memberId,
-        false
+      await fetchAndBuildActivityRow(
+        accessToken,
+        activity.id,
+        memberId
       )
     );
 
@@ -1038,129 +954,16 @@ async function syncSingleActivity(
       connection
     );
 
-  const publishFeed =
-    await getMemberPublishFeed(
-      supabaseAdmin,
+  const row =
+    await fetchAndBuildActivityRow(
+      accessToken,
+      activityId,
       memberId
     );
-
-  const activity =
-    await fetchStravaActivity(
-      accessToken,
-      activityId
-    );
-
-  console.log(
-    '[syncSingleActivity] strava-activity',
-    {
-      elapsed_time: activity?.elapsed_time,
-      average_speed: activity?.average_speed,
-      max_speed: activity?.max_speed,
-      elev_high: activity?.elev_high,
-      elev_low: activity?.elev_low,
-      hasPolyline: Boolean(activity?.map?.polyline),
-      hasSplits: Array.isArray(activity?.splits_metric)
-    }
-  );
-
-  const activityType =
-    getStravaActivityType(activity);
-
-  const sportCategory =
-    mapStravaTypeToCategory(activityType);
-
-  const includeDetailed =
-    shouldPersistDetailed(
-      publishFeed,
-      sportCategory
-    );
-
-  console.log(
-    '[syncSingleActivity] detail-gate',
-    {
-      activityId,
-      memberId,
-      publishFeed,
-      activityType,
-      sportCategory,
-      includeDetailed
-    }
-  );
-
-  const row =
-    buildActivityRow(
-      activity,
-      memberId,
-      includeDetailed
-    );
-
-  console.log(
-    '[syncSingleActivity] activity-row',
-    {
-      hasElapsedTimeS: row.elapsed_time_s != null,
-      hasAverageSpeed: row.average_speed_mps != null,
-      hasPolyline: row.map_polyline != null,
-      rowKeys: Object.keys(row)
-    }
-  );
-
-  const detailFieldKeys = [
-    'elapsed_time_s',
-    'average_speed_mps',
-    'max_speed_mps',
-    'elev_high_m',
-    'elev_low_m',
-    'start_lat',
-    'start_lng',
-    'end_lat',
-    'end_lng',
-    'map_polyline',
-    'splits_metric'
-  ];
-
-  console.log(
-    '[syncSingleActivity] upsert-payload',
-    {
-      includeDetailed,
-      detailFieldCount: detailFieldKeys.filter(
-        (key) => key in row
-      ).length
-    }
-  );
 
   await upsertActivityRows(
     supabaseAdmin,
     [row]
-  );
-
-  const {
-    data: persisted,
-    error: readError
-  } = await supabaseAdmin
-    .from('activities')
-    .select(ACTIVITY_PERSIST_READ_COLUMNS)
-    .eq(
-      'strava_activity_id',
-      row.strava_activity_id
-    )
-    .maybeSingle();
-
-  console.log(
-    '[syncSingleActivity] post-upsert-read',
-    {
-      strava_activity_id:
-        persisted?.strava_activity_id
-        ?? row.strava_activity_id,
-      elapsed_time_s:
-        persisted?.elapsed_time_s ?? null,
-      average_speed_mps:
-        persisted?.average_speed_mps ?? null,
-      max_speed_mps:
-        persisted?.max_speed_mps ?? null,
-      hasMapPolyline:
-        Boolean(persisted?.map_polyline),
-      readError: readError?.message ?? null
-    }
   );
 
   await rebuildStats(
@@ -1284,13 +1087,6 @@ async function handleWebhookEvent(event) {
     if (
       event?.object_type !== 'activity'
     ) {
-      console.log(
-        '[handleWebhookEvent] early-return',
-        {
-          reason: 'object_type is not activity',
-          object_type: event?.object_type
-        }
-      );
       return;
     }
 
@@ -1309,16 +1105,6 @@ async function handleWebhookEvent(event) {
       || !activityId
       || !aspectType
     ) {
-      console.log(
-        '[handleWebhookEvent] early-return',
-        {
-          reason:
-            'missing athleteId, activityId, or aspectType',
-          athleteId,
-          activityId,
-          aspectType
-        }
-      );
       return;
     }
 
@@ -1332,13 +1118,6 @@ async function handleWebhookEvent(event) {
       );
 
     if (!connection?.member_id) {
-      console.log(
-        '[handleWebhookEvent] early-return',
-        {
-          reason: 'no strava connection for athlete',
-          athleteId
-        }
-      );
       return;
     }
 

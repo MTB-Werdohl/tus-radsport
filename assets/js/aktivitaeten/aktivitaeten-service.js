@@ -344,6 +344,162 @@ function formatActivityElevationDelta(
 
 }
 
+function normalizeActivitySplitsMetric(
+  activity
+) {
+
+  let splits =
+    activity?.splits_metric;
+
+  if (typeof splits === 'string') {
+
+    try {
+      splits = JSON.parse(splits);
+    } catch (_error) {
+      return [];
+    }
+
+  }
+
+  return Array.isArray(splits)
+    ? splits
+    : [];
+
+}
+
+function formatPauseDuration(
+  elapsedS,
+  movingS
+) {
+
+  const elapsed =
+    Number(elapsedS) || 0;
+
+  const moving =
+    Number(movingS) || 0;
+
+  if (elapsed <= 0) {
+    return null;
+  }
+
+  const pauseS =
+    elapsed - moving;
+
+  if (pauseS <= 0) {
+    return null;
+  }
+
+  const pauseLabel =
+    typeof formatActivityDuration === 'function'
+      ? formatActivityDuration(pauseS)
+      : null;
+
+  if (
+    !pauseLabel
+    || pauseLabel === '—'
+  ) {
+    return null;
+  }
+
+  const pausePercent =
+    Math.round(pauseS / elapsed * 100);
+
+  return {
+    pauseLabel,
+    pausePercent
+  };
+
+}
+
+function formatElevationRange(
+  elevHigh,
+  elevLow
+) {
+
+  const high =
+    Number(elevHigh);
+
+  const low =
+    Number(elevLow);
+
+  const hasHigh =
+    Number.isFinite(high);
+
+  const hasLow =
+    Number.isFinite(low);
+
+  if (
+    !hasHigh
+    && !hasLow
+  ) {
+    return null;
+  }
+
+  const highLabel =
+    hasHigh
+    && typeof formatActivityPointElevation === 'function'
+      ? formatActivityPointElevation(high)
+      : null;
+
+  const lowLabel =
+    hasLow
+    && typeof formatActivityPointElevation === 'function'
+      ? formatActivityPointElevation(low)
+      : null;
+
+  if (
+    hasHigh
+    && hasLow
+    && highLabel
+    && highLabel !== '—'
+    && lowLabel
+    && lowLabel !== '—'
+  ) {
+
+    const span =
+      Math.round(high - low);
+
+    return {
+      label:
+        `${highLabel} – ${lowLabel}`,
+      detail:
+        span > 0
+          ? (
+            'Höhendifferenz '
+            + span.toLocaleString('de-DE')
+            + ' m'
+          )
+          : null
+    };
+
+  }
+
+  if (
+    highLabel
+    && highLabel !== '—'
+  ) {
+    return {
+      label: highLabel,
+      detail: 'Höchster Punkt'
+    };
+
+  }
+
+  if (
+    lowLabel
+    && lowLabel !== '—'
+  ) {
+    return {
+      label: lowLabel,
+      detail: 'Tiefster Punkt'
+    };
+
+  }
+
+  return null;
+
+}
+
 function formatActivitySplitDistance(
   meters
 ) {

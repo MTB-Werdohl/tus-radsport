@@ -18,7 +18,7 @@ Voraussetzungen:
 
 Kein permanenter „Jetzt synchronisieren“-Button.
 
-**Phase A.1:** Bei `publish_feed = true` und Rad-Touren lädt der Sync zusätzlich `GET /activities/{id}` (DetailedActivity) und speichert u. a. `map_polyline`, Geschwindigkeiten und `splits_metric`. Ohne Feed-Opt-in oder bei Nicht-Rad bleiben nur Summary-Felder.
+**Phase A.1:** Jede importierte Strava-Aktivität wird über `GET /activities/{id}` (DetailedActivity) gespeichert — inkl. `map_polyline`, Geschwindigkeiten und `splits_metric`. Die List-API dient nur der Discovery (IDs im Zeitfenster). Öffentliche Anzeige bleibt über RPCs gefiltert (`publish_feed`, `sport_category = rad`).
 
 Code: [`supabase-edge-strava-sync.ts`](supabase-edge-strava-sync.ts)  
 OAuth-Callback (Initial-Trigger): [`supabase-edge-strava-oauth-callback.ts`](supabase-edge-strava-oauth-callback.ts)

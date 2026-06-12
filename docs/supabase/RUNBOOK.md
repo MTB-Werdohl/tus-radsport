@@ -100,7 +100,7 @@ Mitglieder steuern Sichtbarkeit im Profil → Tab Strava (Feed / Rankings / Vere
 
 **Phase 3 — Profilbilder:** [`supabase/supabase-member-avatars.sql`](supabase/supabase-member-avatars.sql) — `members.avatar_*`, Bucket `avatars`, Storage-RLS, Public-RPCs mit `avatar_url`, `get_member_profile_avatar()`, `anonymize_member` erweitert. Siehe [`PHASE-3-IMPLEMENTATION.md`](../PHASE-3-IMPLEMENTATION.md).
 
-**Phase A.1 — Aktivitätsdetail (DetailedActivity):** [`supabase-aktivitaeten-detail-phase-a1.sql`](../supabase-aktivitaeten-detail-phase-a1.sql) — 11 Detail-Spalten auf `activities`, erweiterte RPC `get_public_activity_detail`. **Danach** Edge Function `strava-sync` neu deployen (Detailed nur bei `publish_feed` + `sport_category = rad`). Karten-Felder: [`supabase-aktivitaeten-card-display.sql`](../supabase-aktivitaeten-card-display.sql) muss vorher ausgeführt sein.
+**Phase A.1 — Aktivitätsdetail (DetailedActivity):** [`supabase-aktivitaeten-detail-phase-a1.sql`](../supabase-aktivitaeten-detail-phase-a1.sql) — 11 Detail-Spalten auf `activities`, erweiterte RPC `get_public_activity_detail`. **Danach** Edge Function `strava-sync` neu deployen (jede importierte Aktivität via `GET /activities/{id}`; öffentliche Sichtbarkeit weiter nur über RPC). Karten-Felder: [`supabase-aktivitaeten-card-display.sql`](../supabase-aktivitaeten-card-display.sql) muss vorher ausgeführt sein.
 
 ### Edge Function `anonymize-member-account` deployen
 
