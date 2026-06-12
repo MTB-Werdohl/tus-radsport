@@ -4,6 +4,47 @@ const params =
 const editId =
   params.get('id');
 
+async function saveTerminFeedbackModule(
+  entityId
+) {
+
+  if (!entityId) {
+    return { ok: true };
+  }
+
+  const sichtbarkeit =
+    document.getElementById('sichtbarkeit')?.value
+    || window.siteConfig.visibility.draft;
+
+  const publicVoting =
+    sichtbarkeit
+    === window.siteConfig.visibility.public;
+
+  const existing =
+    await fetchFeedbackModule(
+      window.siteConfig.feedback.entityTypes.event,
+      entityId
+    );
+
+  const payload = {
+    type:
+      window.siteConfig.feedback.types.yesMaybe,
+    entity_type:
+      window.siteConfig.feedback.entityTypes.event,
+    entity_id: entityId,
+    question:
+      getDefaultFeedbackQuestion(
+        window.siteConfig.feedback.entityTypes.event
+      ),
+    config: existing?.config || {},
+    public_voting: publicVoting,
+    enabled: true
+  };
+
+  return saveFeedbackModule(payload);
+
+}
+
 function extractTerminTimeFromDate(value) {
 
   if (!value) {
@@ -555,10 +596,8 @@ async function saveEvent() {
   }
 
   const feedbackResult =
-    await saveFeedbackAdminForEntity(
-      window.siteConfig.feedback.entityTypes.event,
-      savedId,
-      { silent: true }
+    await saveTerminFeedbackModule(
+      savedId
     );
 
   if (feedbackResult?.error) {
@@ -603,18 +642,6 @@ function initTerminEdit() {
         'Sicher, dass du ohne Speichern zurück willst?'
     });
 
-  loadEvent()
-    .then(() => {
-
-      initFeedbackModuleForm({
-        entityType:
-          window.siteConfig.feedback.entityTypes.event,
-        entityId:
-          editId
-            ? parseInt(editId, 10)
-            : null
-      });
-
-    });
+  loadEvent();
 
 }
