@@ -170,6 +170,14 @@
     gap: 12px;
   }
 
+  .event-header__feedback .feedback-actions--public-gate {
+    margin-bottom: 0;
+  }
+
+  .event-header__feedback .feedback-actions--public-gate .feedback-btn {
+    min-width: calc(15rem + 12px);
+  }
+
   .event-header__feedback .feedback-btn {
     padding: 9px 20px;
     background: rgba(255, 255, 255, 0.12);

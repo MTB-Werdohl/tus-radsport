@@ -102,19 +102,13 @@ margin-bottom: 14px;
 
 }
 
-.feedback-public-gate {
+.feedback-actions--public-gate {
 
-display: flex;
-
-flex-direction: column;
-
-align-items: flex-start;
-
-gap: 12px;
+margin-bottom: 12px;
 
 }
 
-.feedback-public-gate__register {
+.feedback-actions--public-gate .feedback-public-gate__register {
 
 margin: 0;
 

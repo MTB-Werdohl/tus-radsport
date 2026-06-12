@@ -55,18 +55,19 @@ function renderFeedbackMembersOnlyHint() {
 function renderFeedbackPublicGate() {
 
   return `
-<div class="feedback-public-gate">
-
-  <p class="feedback-hint feedback-hint--public">
-    Als Gast kurz registrieren — Bestätigungs-Link per E-Mail, danach Teilnahme
-    anmelden.
-  </p>
+<div class="feedback-actions feedback-actions--public-gate">
 
   <button
     type="button"
-    class="feedback-public-gate__register feedback-save">
+    class="feedback-btn feedback-public-gate__register">
 
-    Als externer Teilnehmer teilnehmen
+    <span class="feedback-btn__label">
+      Teilnehmen
+    </span>
+
+    <span class="feedback-btn__sublabel">
+      Als Gast registrieren
+    </span>
 
   </button>
 
