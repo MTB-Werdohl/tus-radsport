@@ -85,7 +85,7 @@ SQL: [`supabase-strava-public.sql`](../supabase-strava-public.sql) im **SQL Edit
 | RPC | Zweck |
 |-----|--------|
 | `get_public_activity_feed(p_days)` | Feed `/aktivitaeten/` — `publish_feed`, nur Rad, 90 Tage |
-| `get_public_activity_detail(uuid, p_days)` | Detail `/aktivitaeten/{uuid}/` — nur Rad |
+| `get_public_activity_detail(uuid, p_days)` | Detail `/aktivitaeten/{uuid}/` — nur Rad; inkl. DetailedActivity-Felder (Phase A.1) |
 | `get_public_member_rankings(year, month?)` | Rankings — `publish_rankings`, nur Rad; `avatar_url` |
 | `get_public_club_stats(year, month?)` | Vereinsziele — nur Rad-Kennzahlen |
 | `get_member_profile_avatar()` | Profil-Tab — eigenes Avatar (authenticated) |
@@ -99,6 +99,8 @@ Mitglieder steuern Sichtbarkeit im Profil → Tab Strava (Feed / Rankings / Vere
 **Phase 2 — Radfokus (sport_category):** [`supabase/supabase-sport-category-rad.sql`](supabase-sport-category-rad.sql) — Spalte `sport_category`, Mapping-Funktion, Stats-Rebuild, Public-RPCs und Profil-Aktivitäten filtern auf `rad`. **Danach** Edge Function `strava-sync` neu deployen (siehe [`PHASE-2-IMPLEMENTATION.md`](../PHASE-2-IMPLEMENTATION.md)).
 
 **Phase 3 — Profilbilder:** [`supabase/supabase-member-avatars.sql`](supabase/supabase-member-avatars.sql) — `members.avatar_*`, Bucket `avatars`, Storage-RLS, Public-RPCs mit `avatar_url`, `get_member_profile_avatar()`, `anonymize_member` erweitert. Siehe [`PHASE-3-IMPLEMENTATION.md`](../PHASE-3-IMPLEMENTATION.md).
+
+**Phase A.1 — Aktivitätsdetail (DetailedActivity):** [`supabase-aktivitaeten-detail-phase-a1.sql`](../supabase-aktivitaeten-detail-phase-a1.sql) — 11 Detail-Spalten auf `activities`, erweiterte RPC `get_public_activity_detail`. **Danach** Edge Function `strava-sync` neu deployen (Detailed nur bei `publish_feed` + `sport_category = rad`). Karten-Felder: [`supabase-aktivitaeten-card-display.sql`](../supabase-aktivitaeten-card-display.sql) muss vorher ausgeführt sein.
 
 ### Edge Function `anonymize-member-account` deployen
 

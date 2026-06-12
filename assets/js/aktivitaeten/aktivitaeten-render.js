@@ -279,6 +279,13 @@ function renderClubStats(
 
 function renderActivityDetail(activity) {
 
+  if (
+    typeof mountActivityDetailPage === 'function'
+  ) {
+    mountActivityDetailPage(activity);
+    return;
+  }
+
   const container =
     document.getElementById(
       'aktivitaeten-detail'
@@ -288,52 +295,12 @@ function renderActivityDetail(activity) {
     return;
   }
 
-  if (!activity) {
-
-    container.innerHTML = `
+  container.innerHTML =
+    renderActivityDetailNotFound?.()
+    || `
 <section class="aktivitaeten-section">
-
   <h1>Aktivität nicht gefunden</h1>
-
-  <p class="aktivitaeten-hint">
-    Diese Aktivität ist nicht öffentlich sichtbar oder
-    liegt außerhalb des Feed-Zeitraums.
-  </p>
-
-  <p>
-    <a href="/aktivitaeten/">Zurück zum Aktivitätsportal</a>
-  </p>
-
 </section>
     `;
-
-    return;
-
-  }
-
-  const cardHtml =
-    renderActivityCardHtml(
-      activity,
-      {
-        mapOptions: {
-          detail: true,
-          height: 220
-        }
-      }
-    );
-
-  container.innerHTML = `
-<section class="aktivitaeten-section aktivitaeten-detail">
-
-  <p class="aktivitaeten-back">
-    <a href="/aktivitaeten/">← Aktivitäten</a>
-  </p>
-
-  ${cardHtml}
-
-</section>
-  `;
-
-  refreshActivityMaps(container);
 
 }

@@ -4,6 +4,7 @@ Voraussetzungen:
 
 - [`supabase-strava.sql`](supabase-strava.sql) ausgeführt
 - [`supabase-strava-sync-status.sql`](supabase-strava-sync-status.sql) ausgeführt *(Sync-Status-Spalten)*
+- [`supabase-aktivitaeten-detail-phase-a1.sql`](supabase-aktivitaeten-detail-phase-a1.sql) ausgeführt *(Phase A.1 — Detail-Spalten + Detail-RPC)*
 - OAuth deployt ([`supabase-strava-setup.md`](supabase-strava-setup.md))
 
 ## Betriebsmodell (wartungsfrei)
@@ -16,6 +17,8 @@ Voraussetzungen:
 | **Fehlerfall** | Profil-Button | „Synchronisierung erneut versuchen“ (nur bei Fehler sichtbar) |
 
 Kein permanenter „Jetzt synchronisieren“-Button.
+
+**Phase A.1:** Bei `publish_feed = true` und Rad-Touren lädt der Sync zusätzlich `GET /activities/{id}` (DetailedActivity) und speichert u. a. `map_polyline`, Geschwindigkeiten und `splits_metric`. Ohne Feed-Opt-in oder bei Nicht-Rad bleiben nur Summary-Felder.
 
 Code: [`supabase-edge-strava-sync.ts`](supabase-edge-strava-sync.ts)  
 OAuth-Callback (Initial-Trigger): [`supabase-edge-strava-oauth-callback.ts`](supabase-edge-strava-oauth-callback.ts)

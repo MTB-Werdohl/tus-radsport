@@ -272,6 +272,102 @@ function formatActivityDuration(
 
 }
 
+function formatActivitySpeed(
+  metersPerSecond
+) {
+
+  const value =
+    Number(metersPerSecond) || 0;
+
+  if (value <= 0) {
+    return '—';
+  }
+
+  const kmh =
+    value * 3.6;
+
+  return (
+    kmh.toLocaleString('de-DE', {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1
+    })
+    + ' km/h'
+  );
+
+}
+
+function formatActivityPointElevation(
+  meters
+) {
+
+  if (
+    meters === null
+    || meters === undefined
+    || meters === ''
+  ) {
+    return '—';
+  }
+
+  const value =
+    Math.round(Number(meters));
+
+  if (!Number.isFinite(value)) {
+    return '—';
+  }
+
+  return (
+    value.toLocaleString('de-DE')
+    + ' m'
+  );
+
+}
+
+function formatActivityElevationDelta(
+  meters
+) {
+
+  const value =
+    Math.round(Number(meters) || 0);
+
+  if (value === 0) {
+    return '—';
+  }
+
+  const prefix =
+    value > 0 ? '+' : '';
+
+  return (
+    prefix
+    + value.toLocaleString('de-DE')
+    + ' m'
+  );
+
+}
+
+function formatActivitySplitDistance(
+  meters
+) {
+
+  const value =
+    Number(meters) || 0;
+
+  if (value <= 0) {
+    return '—';
+  }
+
+  const km =
+    value / 1000;
+
+  return (
+    km.toLocaleString('de-DE', {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 2
+    })
+    + ' km'
+  );
+
+}
+
 function formatActivityDateTime(
   value
 ) {

@@ -42,6 +42,77 @@ function initSingleActivityMap(node) {
       attributionControl: true
     });
 
+  addActivityRouteToMap(
+    map,
+    latLngs
+  );
+
+  window.requestAnimationFrame(() => {
+    map.invalidateSize();
+  });
+
+}
+
+function initActivityDetailHeroMap(node) {
+
+  if (
+    typeof L === 'undefined'
+    || !node
+    || node.dataset.mapReady === 'true'
+  ) {
+    return;
+  }
+
+  const encoded =
+    node.getAttribute('data-polyline');
+
+  if (!encoded) {
+    return;
+  }
+
+  const points =
+    decodeActivityPolyline(encoded);
+
+  if (points.length < 2) {
+    return;
+  }
+
+  node.dataset.mapReady = 'true';
+
+  const latLngs =
+    points.map((point) => [
+      point.lat,
+      point.lng
+    ]);
+
+  const map =
+    L.map(node, {
+      scrollWheelZoom: true,
+      dragging: true,
+      zoomControl: true,
+      doubleClickZoom: true,
+      boxZoom: true,
+      keyboard: true,
+      touchZoom: true,
+      attributionControl: true
+    });
+
+  addActivityRouteToMap(
+    map,
+    latLngs
+  );
+
+  window.requestAnimationFrame(() => {
+    map.invalidateSize();
+  });
+
+}
+
+function addActivityRouteToMap(
+  map,
+  latLngs
+) {
+
   L.tileLayer(
     'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {
@@ -54,7 +125,7 @@ function initSingleActivityMap(node) {
   const line =
     L.polyline(latLngs, {
       color: '#ed1c24',
-      weight: 3,
+      weight: 4,
       opacity: 0.95,
       lineCap: 'round',
       lineJoin: 'round'
@@ -87,13 +158,9 @@ function initSingleActivityMap(node) {
   map.fitBounds(
     line.getBounds(),
     {
-      padding: [14, 14]
+      padding: [18, 18]
     }
   );
-
-  window.requestAnimationFrame(() => {
-    map.invalidateSize();
-  });
 
 }
 
@@ -172,5 +239,23 @@ function refreshActivityMaps(
 ) {
 
   observeActivityMaps(root);
+
+}
+
+function refreshActivityDetailMap(
+  root = document
+) {
+
+  if (typeof L === 'undefined') {
+    return;
+  }
+
+  root
+    .querySelectorAll(
+      '[data-activity-detail-map]:not([data-map-ready])'
+    )
+    .forEach((node) => {
+      initActivityDetailHeroMap(node);
+    });
 
 }

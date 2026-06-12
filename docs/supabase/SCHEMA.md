@@ -63,7 +63,14 @@ Import aus Strava; UUID in URLs (`/aktivitaeten/{uuid}/`).
 | `sport_category` | text | `rad` \| `other` — abgeleitet via `map_strava_type_to_category()`; Filter für Feed/Rankings/Ziele |
 | `distance_m`, `moving_time_s`, `elevation_gain_m` | numeric/int | |
 | `start_date` | timestamptz | Feed: letzte 90 Tage |
-| `map_summary_polyline`, `activity_photo_url` | text | MVP: gespeichert, nicht angezeigt |
+| `start_location` | text | Ort aus Strava (`location_city` / `location_state`) |
+| `map_summary_polyline`, `activity_photo_url` | text | Karte Feed / Foto |
+| `elapsed_time_s` | integer | DetailedActivity; Sync nur bei `publish_feed` + `rad` |
+| `average_speed_mps`, `max_speed_mps` | numeric | m/s; DetailedActivity |
+| `elev_high_m`, `elev_low_m` | numeric | Meter; DetailedActivity |
+| `start_lat`, `start_lng`, `end_lat`, `end_lng` | double precision | Koordinaten; DetailedActivity |
+| `map_polyline` | text | Volle Route; Detail-RPC, nicht Feed |
+| `splits_metric` | jsonb | km-Splits; DetailedActivity |
 | `deleted_at` | timestamptz | Soft Delete (Strava-Trennung) |
 
 **Sichtbarkeit:** Feed/Rankings/Ziele/Profil-Aktivitäten nur `sport_category = 'rad'`. Opt-ins (`members.publish_*`) steuern zusätzlich ob — nicht welche Sportart. Alle Strava-Aktivitäten werden importiert; Nicht-Rad bleibt in DB, ist aber nicht öffentlich sichtbar.
@@ -77,7 +84,7 @@ Voraggregierte Werte nach `sport_category` (PK enthält Kategorie). Öffentliche
 | RPC | Grant | Filter |
 |-----|-------|--------|
 | `get_public_activity_feed(p_days)` | anon, authenticated | `publish_feed`, `sport_category=rad`, 90 Tage; `avatar_url` wenn gesetzt |
-| `get_public_activity_detail(uuid, p_days)` | anon, authenticated | wie Feed; `avatar_url` wenn gesetzt |
+| `get_public_activity_detail(uuid, p_days)` | anon, authenticated | wie Feed; inkl. DetailedActivity-Felder (Phase A.1); `avatar_url` wenn gesetzt |
 | `get_public_member_rankings(year, month?)` | anon, authenticated | `publish_rankings`, Stats `sport_category=rad`; `avatar_url` wenn gesetzt |
 | `get_public_club_stats(year, month?)` | anon, authenticated | Vereinsziele nur Rad (`sport_category=rad`) |
 
