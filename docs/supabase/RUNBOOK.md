@@ -50,7 +50,7 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Mitglieder letzter Login:** [`supabase-members-last-login.sql`](../supabase-members-last-login.sql) — Spalte `last_login_at`, RPC `touch_member_last_login()` beim Magic-Link-Login; einmaliges Backfill aus `auth.users`.
 
-**Veränderungs-Zusammenfassung:** [`supabase-member-change-summary.sql`](../supabase-member-change-summary.sql) — `members.last_change_summary_seen_at`, `Termine.created_at`/`updated_at`, RPCs `get_member_change_summary()`, `touch_member_change_summary_seen()`, Hilfsfunktion `is_club_member()`.
+**Veränderungs-Zusammenfassung:** [`supabase-member-change-summary.sql`](../supabase-member-change-summary.sql) — `members.last_change_summary_seen_at`, `Termine.created_at`/`updated_at`, RPCs `get_member_change_summary()`, `touch_member_change_summary_seen()`, Hilfsfunktion `is_club_member()`. **Entwürfe (News/Termine `sichtbarkeit=draft`) zählen nur für Vorstand** — bei Popup-Problemen die Datei erneut im SQL Editor ausführen.
 
 **Protokolle (Vorstand):** [`supabase-board-documents.sql`](../supabase-board-documents.sql) — Tabelle `board_documents`, PDFs unter `protocols/` im Storage (nur Vorstand lesbar). **Kurzbeschreibung in Listen:** [`supabase-board-documents-subject.sql`](../supabase-board-documents-subject.sql) — Spalte `subject` (Feld „Inhalt“ im Admin). **Dateien verschieben:** [`supabase-board-documents-storage-update.sql`](../supabase-board-documents-storage-update.sql) — Storage-Policy `UPDATE` für `move`/Umbenennen.
 

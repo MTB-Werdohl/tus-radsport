@@ -110,6 +110,72 @@ function buildAdminSlug(title) {
 
 }
 
+function sanitizeMediaStorageFilename(
+  name
+) {
+
+  const raw =
+    String(name || 'datei').trim();
+
+  const dotIndex =
+    raw.lastIndexOf('.');
+
+  const extension =
+    dotIndex > 0
+      ? raw.slice(dotIndex + 1)
+      : '';
+
+  const baseName =
+    dotIndex > 0
+      ? raw.slice(0, dotIndex)
+      : raw;
+
+  let safeBase =
+    baseName
+      .toLowerCase()
+      .replace(/ä/g, 'ae')
+      .replace(/ö/g, 'oe')
+      .replace(/ü/g, 'ue')
+      .replace(/ß/g, 'ss')
+      .replace(/[^a-z0-9._-]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
+  if (!safeBase) {
+    safeBase = 'datei';
+  }
+
+  const safeExtension =
+    extension
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '')
+      .slice(0, 10);
+
+  if (!safeExtension) {
+    return safeBase.slice(0, 120);
+  }
+
+  return (
+    `${safeBase}.${safeExtension}`
+      .slice(0, 120)
+  );
+
+}
+
+function buildMediaStorageKey(
+  fileName
+) {
+
+  return (
+    `${Date.now()}-${
+      sanitizeMediaStorageFilename(
+        fileName
+      )
+    }`
+  );
+
+}
+
 function formatMemberLastLogin(value) {
 
   if (!value) {

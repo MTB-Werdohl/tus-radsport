@@ -86,17 +86,17 @@ security definer
 set search_path = public
 set row_security = off
 as $$
-  select
-    public.is_vorstand()
-    or coalesce(p_sichtbarkeit, '') = 'public'
-    or (
-      coalesce(p_sichtbarkeit, '') = 'members'
-      and public.is_club_member()
-    );
+  select case trim(coalesce(p_sichtbarkeit, ''))
+    when 'draft' then public.is_vorstand()
+    when 'public' then true
+    when 'members' then public.is_club_member()
+    when '' then public.is_vorstand()
+    else public.is_vorstand()
+  end;
 $$;
 
 comment on function public.member_can_view_sichtbarkeit(text) is
-  'Prüft Leserechte für News/Termine analog zu RLS (ohne Draft für Nicht-Vorstand).';
+  'Prüft Leserechte für News/Termine analog zu RLS — Entwürfe nur für Vorstand.';
 
 revoke all on function public.member_can_view_sichtbarkeit(text) from public;
 
@@ -204,12 +204,24 @@ begin
   into v_termine
   from public."Termine" t
   where t.created_at > v_since
+    and (
+      public.is_vorstand()
+      or coalesce(t.sichtbarkeit, 'public') <> 'draft'
+    )
     and public.member_can_view_sichtbarkeit(t.sichtbarkeit);
 
   select count(*)::integer
   into v_news
   from public."News" n
   where n.created_at > v_since
+    and (
+      public.is_vorstand()
+      or coalesce(n.sichtbarkeit, 'draft') <> 'draft'
+    )
+    and (
+      public.is_vorstand()
+      or coalesce(n.published, true) = true
+    )
     and public.member_can_view_sichtbarkeit(n.sichtbarkeit);
 
   select count(*)::integer

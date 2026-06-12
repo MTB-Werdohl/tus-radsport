@@ -374,7 +374,9 @@ async function saveEvent() {
   if (imageFile) {
 
     const imageName =
-      Date.now() + '-' + imageFile.name;
+      buildMediaStorageKey(
+        imageFile.name
+      );
 
     const { error } =
       await window.supabaseClient.storage
@@ -407,7 +409,9 @@ async function saveEvent() {
   if (gpxFile) {
 
     const gpxName =
-      Date.now() + '-' + gpxFile.name;
+      buildMediaStorageKey(
+        gpxFile.name
+      );
 
     const { error } =
       await window.supabaseClient.storage

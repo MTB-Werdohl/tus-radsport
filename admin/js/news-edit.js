@@ -122,9 +122,9 @@ async function saveNews() {
   if (imageFile) {
 
     const imageName =
-      Date.now() +
-      '-' +
-      imageFile.name;
+      buildMediaStorageKey(
+        imageFile.name
+      );
 
     const { error } =
       await window.supabaseClient
