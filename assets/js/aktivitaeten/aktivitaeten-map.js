@@ -262,6 +262,28 @@ function refreshActivityDetailMap(
 
 }
 
+function refreshActivityDetailMapSize(
+  root = document
+) {
+
+  const mapNode =
+    root?.querySelector?.(
+      '[data-activity-detail-map][data-map-ready="true"]'
+    );
+
+  const map =
+    mapNode?.__activityDetailLeafletMap;
+
+  if (!map) {
+    return;
+  }
+
+  window.requestAnimationFrame(() => {
+    map.invalidateSize();
+  });
+
+}
+
 function normalizeActivityStreamLatLng(
   latlng
 ) {

@@ -378,6 +378,38 @@ function renderActivityDetailNotFound() {
 
 }
 
+function renderActivityDetailMapSyncLayout(
+  activity
+) {
+
+  const heroMap =
+    renderActivityDetailHeroMap(activity);
+
+  const analysis =
+    typeof renderActivityDetailAnalysis === 'function'
+      ? renderActivityDetailAnalysis(activity)
+      : '';
+
+  if (!heroMap) {
+    return analysis;
+  }
+
+  return `
+<div class="activity-detail-scroll-sync">
+
+  <div class="activity-detail-scroll-sync__map">
+    ${heroMap}
+  </div>
+
+  <div class="activity-detail-scroll-sync__content">
+    ${analysis}
+  </div>
+
+</div>
+  `;
+
+}
+
 function renderActivityDetailPage(
   activity
 ) {
@@ -395,13 +427,7 @@ function renderActivityDetailPage(
 
   ${renderActivityDetailHeader(activity)}
 
-  ${renderActivityDetailHeroMap(activity)}
-
-  ${
-    typeof renderActivityDetailAnalysis === 'function'
-      ? renderActivityDetailAnalysis(activity)
-      : ''
-  }
+  ${renderActivityDetailMapSyncLayout(activity)}
 
   ${renderActivityDetailPrimaryStats(activity)}
 

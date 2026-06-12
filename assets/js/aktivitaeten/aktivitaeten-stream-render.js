@@ -339,6 +339,19 @@ function insertActivityDetailStreamAnalysis(
   html
 ) {
 
+  const contentColumn =
+    container.querySelector(
+      '.activity-detail-scroll-sync__content'
+    );
+
+  if (contentColumn) {
+    contentColumn.insertAdjacentHTML(
+      'beforeend',
+      html
+    );
+    return;
+  }
+
   const anchor =
     container.querySelector(
       '#activity-detail-analysis'
@@ -583,5 +596,13 @@ function mountStreamAnalysisSection(
     }
 
   });
+
+  if (
+    mapSync
+    && typeof refreshActivityDetailMapSize
+      === 'function'
+  ) {
+    refreshActivityDetailMapSize(container);
+  }
 
 }
