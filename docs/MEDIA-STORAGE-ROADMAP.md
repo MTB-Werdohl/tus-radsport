@@ -1,6 +1,6 @@
 # Medien-Storage — Architektur, Roadmap & Implementierungsplan
 
-**Status:** Phase 0–4 implementiert (Frontend) — SQL [`supabase-media-storage-paths.sql`](supabase-media-storage-paths.sql), [`supabase-media-move.sql`](supabase-media-move.sql), [`supabase-media-backfill.sql`](supabase-media-backfill.sql) in Supabase ausführen  
+**Status:** Phase 0–3 live + Phase-4-Grundlage (keine Legacy-URL-Writes mehr) — SQL [`supabase-media-storage-paths.sql`](supabase-media-storage-paths.sql), [`supabase-media-move.sql`](supabase-media-move.sql) in Supabase  
 **Zielgruppe:** Vorstand / Entwickler  
 **Letzte Aktualisierung:** 2026-05-26
 
@@ -361,24 +361,15 @@ Erweiterung Medien-Browser:
 
 ### Phase 4 — Legacy-Migration & Aufräumen
 
-**Ziel:** Root-Dateien nach `shared/` migrieren; Legacy-URL-Spalten deprecaten.
+**Ziel:** Einmalige Migration abgeschlossen; danach nur noch Pfad-basierte Medien (Mediathek, Move/Delete im Browser).
 
-#### 5.4.1 Backfill (Admin + RPC)
+#### 5.4.1 Backfill (einmalig, erledigt)
 
-| Datei | Inhalt |
-|-------|--------|
-| `docs/supabase-media-backfill.sql` | RPCs `count_media_backfill_candidates`, `backfill_media_storage_paths`, `list_media_storage_orphans` |
-| `admin/media-migration.html` | Vorstand-UI: Vorschau, Backfill, Waisen-Report |
+Einmal-Backfill wurde über `/admin/media-migration.html` ausgeführt. **Admin-UI und Backfill-RPCs sind aus dem Repo entfernt** — künftig: Upload/Picker/Medien-Browser.
 
-```text
-Für jeden Termin/News mit Legacy-URL und leerem *_storage_path:
-  path = extractStoragePath(url)
-  wenn Datei in Storage existiert:
-    image_storage_path = path
-  optional: copy nach shared/ + move_media_object
-```
+Optional in Supabase aufräumen: [`supabase-media-backfill-drop.sql`](supabase-media-backfill-drop.sql)
 
-#### 5.4.2 Endzustand
+#### 5.4.2 Endzustand (bleibt)
 
 - Keine neuen Writes auf `image`/`gpx` URL-Spalten
 - Renderer: nur noch `*_storage_path` (+ Fallback read-only für Restbestand)
@@ -393,9 +384,9 @@ Für jeden Termin/News mit Legacy-URL und leerem *_storage_path:
 
 **Definition of Done Phase 4:**
 
-- [x] Backfill-RPC + Admin-UI (`/admin/media-migration.html`)
+- [x] Einmal-Backfill durchgeführt
 - [x] Keine neuen Writes auf Legacy-URL-Spalten (Termin/News-Save)
-- [x] Waisen-Report im Admin
+- [x] Backfill-Tooling aus Code entfernt
 - [ ] Smoke M4.1–M4.2 bestanden
 
 ---
@@ -482,6 +473,6 @@ Phase 4   Backfill Legacy → deprecate URL-Spalten
 | 1 Medien-Browser | ✅ Code live | | `/admin/medien.html` |
 | 2 Mediathek-Picker | ✅ Code live | | Termin/News „Aus Mediathek“ |
 | 3 Move/Delete | ✅ Code live | | RPC + `/admin/medien.html` |
-| 4 Legacy-Migration | ✅ Code live | | `/admin/media-migration.html` |
+| 4 Legacy-Migration | ✅ erledigt | | Backfill einmalig; Tooling entfernt |
 
 *Bei Abschluss einer Phase: Status auf ✅ setzen, Datum eintragen, Smoke-Tests verlinken.*

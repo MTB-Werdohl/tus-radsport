@@ -56,7 +56,7 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Medien-Storage Phase 3:** [`supabase-media-move.sql`](../supabase-media-move.sql) — RPCs `get_media_references`, `move_media_object`, `delete_media_object` (Vorstand). Verschieben/Umbenennen/Löschen im Admin unter `/admin/medien.html`.
 
-**Medien-Storage Phase 4:** [`supabase-media-backfill.sql`](../supabase-media-backfill.sql) — RPCs `count_media_backfill_candidates`, `backfill_media_storage_paths`, `list_media_storage_orphans`. Admin: `/admin/media-migration.html`.
+**Medien-Storage Phase 4 (optional aufräumen):** [`supabase-media-backfill-drop.sql`](../supabase-media-backfill-drop.sql) — Backfill-RPCs in Supabase entfernen, nachdem die einmalige Migration gelaufen ist.
 
 **Protokolle (Vorstand):** [`supabase-board-documents.sql`](../supabase-board-documents.sql) — Tabelle `board_documents`, PDFs unter `protocols/` im Storage (nur Vorstand lesbar). **Kurzbeschreibung in Listen:** [`supabase-board-documents-subject.sql`](../supabase-board-documents-subject.sql) — Spalte `subject` (Feld „Inhalt“ im Admin). **Dateien verschieben:** [`supabase-board-documents-storage-update.sql`](../supabase-board-documents-storage-update.sql) — Storage-Policy `UPDATE` für `move`/Umbenennen.
 
