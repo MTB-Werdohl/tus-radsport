@@ -498,6 +498,18 @@ h3 {
   opacity: 0.7;
 }
 
+.page-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.page-header__actions .secondary-button,
+.page-header__actions .back-button {
+  margin-bottom: 0;
+}
+
 .back-button {
   background: #222;
   color: white;
@@ -1592,4 +1604,48 @@ h3 {
 .admin-media-browser__actions .danger-button,
 .admin-media-browser__actions .secondary-button {
   margin-bottom: 0;
+}
+
+.admin-media-migration {
+  display: grid;
+  gap: 1.5rem;
+  max-width: 920px;
+}
+
+.admin-media-migration__section {
+  padding: 1rem 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.admin-media-migration__section h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+}
+
+.admin-media-migration__stats {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.admin-media-migration__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.admin-media-migration__report {
+  margin-top: 1rem;
+  padding: 0.875rem;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  overflow: auto;
+  max-height: 420px;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
 }

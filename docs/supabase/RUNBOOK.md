@@ -56,6 +56,8 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Medien-Storage Phase 3:** [`supabase-media-move.sql`](../supabase-media-move.sql) — RPCs `get_media_references`, `move_media_object`, `delete_media_object` (Vorstand). Verschieben/Umbenennen/Löschen im Admin unter `/admin/medien.html`.
 
+**Medien-Storage Phase 4:** [`supabase-media-backfill.sql`](../supabase-media-backfill.sql) — RPCs `count_media_backfill_candidates`, `backfill_media_storage_paths`, `list_media_storage_orphans`. Admin: `/admin/media-migration.html`.
+
 **Protokolle (Vorstand):** [`supabase-board-documents.sql`](../supabase-board-documents.sql) — Tabelle `board_documents`, PDFs unter `protocols/` im Storage (nur Vorstand lesbar). **Kurzbeschreibung in Listen:** [`supabase-board-documents-subject.sql`](../supabase-board-documents-subject.sql) — Spalte `subject` (Feld „Inhalt“ im Admin). **Dateien verschieben:** [`supabase-board-documents-storage-update.sql`](../supabase-board-documents-storage-update.sql) — Storage-Policy `UPDATE` für `move`/Umbenennen.
 
 **Admin-E-Mail Versandprotokoll:** [`supabase-admin-email-log.sql`](../supabase-admin-email-log.sql) — Tabelle `admin_email_log`, 18 Monate Retention; danach Edge `send-admin-email` neu deployen. Setup: [`supabase-admin-email-setup.md`](../supabase-admin-email-setup.md).

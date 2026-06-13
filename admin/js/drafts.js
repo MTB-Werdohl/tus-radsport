@@ -488,12 +488,17 @@ async function fetchAdminDraftByParams(
 
 function renderAdminDraftPreviewNews(data) {
 
+  const imageUrl =
+    typeof resolveNewsImage === 'function'
+      ? resolveNewsImage(data)
+      : data.image;
+
   const imageHtml =
-    data.image
+    imageUrl
       ? `
         <img
           class="admin-draft-preview__image"
-          src="${escapeAdminHtml(data.image)}"
+          src="${safeMediaUrl(imageUrl)}"
           alt="${escapeAdminHtml(data.title || '')}"
         >
       `
@@ -523,12 +528,17 @@ function renderAdminDraftPreviewNews(data) {
 
 function renderAdminDraftPreviewEvent(event) {
 
+  const imageUrl =
+    typeof resolveTerminImage === 'function'
+      ? resolveTerminImage(event)
+      : event.image;
+
   const imageHtml =
-    event.image
+    imageUrl
       ? `
         <img
           class="admin-draft-preview__image"
-          src="${escapeAdminHtml(event.image)}"
+          src="${safeMediaUrl(imageUrl)}"
           alt="${escapeAdminHtml(event.title || '')}"
         >
       `

@@ -119,7 +119,6 @@ async function saveNews() {
   const slug =
     buildAdminSlug(title);
 
-  let image = null;
   let imageStoragePath = null;
 
   const sharedImagesFolder =
@@ -137,9 +136,6 @@ async function saveNews() {
         .eq('id', editId)
         .single();
 
-    image =
-      data?.image || null;
-
     imageStoragePath =
       data?.image_storage_path || null;
 
@@ -155,7 +151,6 @@ async function saveNews() {
 
     if (!upload.error) {
 
-      image = upload.publicUrl;
       imageStoragePath =
         upload.storagePath;
 
@@ -174,14 +169,11 @@ async function saveNews() {
       resolveMediaPickerSelectionForSave(
         'imageStoragePathPick',
         imageStoragePath,
-        image
+        null
       );
 
     imageStoragePath =
       pickedImage.storagePath;
-
-    image =
-      pickedImage.publicUrl;
 
   }
 
@@ -197,10 +189,6 @@ async function saveNews() {
       new Date().toISOString()
 
   };
-
-  if (image) {
-    payload.image = image;
-  }
 
   if (imageStoragePath) {
     payload.image_storage_path =

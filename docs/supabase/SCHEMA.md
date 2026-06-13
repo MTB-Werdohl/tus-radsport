@@ -277,8 +277,11 @@ Pfade z. B. `shared/images/…`, `shared/routes/…`, `galleries/{jahr}/{slug}
 | `get_media_references(p_path)` | Vorstand | Referenzen in Terminen/News/Galerien |
 | `move_media_object(p_old_path, p_new_path)` | Vorstand | Storage verschieben + DB-Referenzen aktualisieren |
 | `delete_media_object(p_path, p_force)` | Vorstand | Löschen; mit Referenzen nur bei `p_force=true` |
+| `count_media_backfill_candidates()` | Vorstand | Anzahl fehlender `*_storage_path` / Legacy-Pfade |
+| `backfill_media_storage_paths(p_move_legacy_to_shared, p_dry_run)` | Vorstand | Backfill + optional Move nach `shared/` |
+| `list_media_storage_orphans()` | Vorstand | Storage-Dateien ohne DB-Referenz |
 
-SQL: [`supabase-media-move.sql`](../supabase-media-move.sql)
+SQL: [`supabase-media-move.sql`](../supabase-media-move.sql), [`supabase-media-backfill.sql`](../supabase-media-backfill.sql)
 
 ## Storage `avatars`
 

@@ -1,6 +1,6 @@
 # Medien-Storage — Architektur, Roadmap & Implementierungsplan
 
-**Status:** Phase 0 + 1 + 2 + 3 implementiert (Frontend) — SQL [`supabase-media-storage-paths.sql`](supabase-media-storage-paths.sql) + [`supabase-media-move.sql`](supabase-media-move.sql) in Supabase ausführen  
+**Status:** Phase 0–4 implementiert (Frontend) — SQL [`supabase-media-storage-paths.sql`](supabase-media-storage-paths.sql), [`supabase-media-move.sql`](supabase-media-move.sql), [`supabase-media-backfill.sql`](supabase-media-backfill.sql) in Supabase ausführen  
 **Zielgruppe:** Vorstand / Entwickler  
 **Letzte Aktualisierung:** 2026-05-26
 
@@ -363,7 +363,12 @@ Erweiterung Medien-Browser:
 
 **Ziel:** Root-Dateien nach `shared/` migrieren; Legacy-URL-Spalten deprecaten.
 
-#### 5.4.1 Backfill (Admin-Skript oder einmalige RPC)
+#### 5.4.1 Backfill (Admin + RPC)
+
+| Datei | Inhalt |
+|-------|--------|
+| `docs/supabase-media-backfill.sql` | RPCs `count_media_backfill_candidates`, `backfill_media_storage_paths`, `list_media_storage_orphans` |
+| `admin/media-migration.html` | Vorstand-UI: Vorschau, Backfill, Waisen-Report |
 
 ```text
 Für jeden Termin/News mit Legacy-URL und leerem *_storage_path:
@@ -385,6 +390,13 @@ Für jeden Termin/News mit Legacy-URL und leerem *_storage_path:
 |---|------|-----------|
 | M4.1 | Stichprobe 10 Legacy-Termine | Medien weiter sichtbar |
 | M4.2 | Kein neuer Upload schreibt Legacy-URL | Nur Pfad-Spalten |
+
+**Definition of Done Phase 4:**
+
+- [x] Backfill-RPC + Admin-UI (`/admin/media-migration.html`)
+- [x] Keine neuen Writes auf Legacy-URL-Spalten (Termin/News-Save)
+- [x] Waisen-Report im Admin
+- [ ] Smoke M4.1–M4.2 bestanden
 
 ---
 
@@ -470,6 +482,6 @@ Phase 4   Backfill Legacy → deprecate URL-Spalten
 | 1 Medien-Browser | ✅ Code live | | `/admin/medien.html` |
 | 2 Mediathek-Picker | ✅ Code live | | Termin/News „Aus Mediathek“ |
 | 3 Move/Delete | ✅ Code live | | RPC + `/admin/medien.html` |
-| 4 Legacy-Migration | ⏳ Geplant | | |
+| 4 Legacy-Migration | ✅ Code live | | `/admin/media-migration.html` |
 
 *Bei Abschluss einer Phase: Status auf ✅ setzen, Datum eintragen, Smoke-Tests verlinken.*

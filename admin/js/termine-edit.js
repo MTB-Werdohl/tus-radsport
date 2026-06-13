@@ -427,8 +427,6 @@ async function saveEvent() {
     return;
   }
 
-  let image = null;
-  let gpx = null;
   let imageStoragePath = null;
   let gpxStoragePath = null;
 
@@ -451,8 +449,6 @@ async function saveEvent() {
         .eq('id', editId)
         .single();
 
-    image = data?.image || null;
-    gpx = data?.gpx || null;
     imageStoragePath =
       data?.image_storage_path || null;
     gpxStoragePath =
@@ -470,7 +466,6 @@ async function saveEvent() {
 
     if (!upload.error) {
 
-      image = upload.publicUrl;
       imageStoragePath =
         upload.storagePath;
 
@@ -489,14 +484,11 @@ async function saveEvent() {
       resolveMediaPickerSelectionForSave(
         'imageStoragePathPick',
         imageStoragePath,
-        image
+        null
       );
 
     imageStoragePath =
       pickedImage.storagePath;
-
-    image =
-      pickedImage.publicUrl;
 
   }
 
@@ -510,7 +502,6 @@ async function saveEvent() {
 
     if (!upload.error) {
 
-      gpx = upload.publicUrl;
       gpxStoragePath =
         upload.storagePath;
 
@@ -529,14 +520,11 @@ async function saveEvent() {
       resolveMediaPickerSelectionForSave(
         'gpxStoragePathPick',
         gpxStoragePath,
-        gpx
+        null
       );
 
     gpxStoragePath =
       pickedGpx.storagePath;
-
-    gpx =
-      pickedGpx.publicUrl;
 
   }
 
@@ -606,14 +594,6 @@ async function saveEvent() {
       || window.siteConfig.visibility.draft
 
   };
-
-  if (image) {
-    payload.image = image;
-  }
-
-  if (gpx) {
-    payload.gpx = gpx;
-  }
 
   if (imageStoragePath) {
     payload.image_storage_path =
