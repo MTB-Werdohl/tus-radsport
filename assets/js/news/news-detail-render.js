@@ -36,6 +36,10 @@ ${formatContentCardTitle(
 
 </h1>
 
+${renderContentCreatorMeta(
+  data.creator_label
+)}
+
 <div class="event-header__actions">
 
 <a

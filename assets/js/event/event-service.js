@@ -32,6 +32,6 @@ async function getEvent(
 
   }
 
-  return data;
+  return enrichContentRowWithCreator(data);
 
 }

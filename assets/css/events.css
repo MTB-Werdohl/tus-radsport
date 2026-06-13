@@ -333,6 +333,17 @@
   margin-top: -0.5rem;
 }
 
+.content-creator-meta {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.88);
+  margin: 0.5rem 0 0;
+}
+
+.calendar-card p .content-creator-inline,
+.calendar-card .content-creator-meta {
+  opacity: 0.9;
+}
+
 .event-date {
   color: #ffffff;
 }

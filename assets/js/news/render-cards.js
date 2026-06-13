@@ -75,6 +75,10 @@ ${
 item.excerpt
 ||
 'Mehr lesen'
+}${
+  item.creator_label
+    ? ` · 👤 ${escapeContentCreatorHtml(item.creator_label)}`
+    : ''
 }
 
 </p>

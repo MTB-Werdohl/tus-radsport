@@ -22,6 +22,8 @@ description: "Termine, Touren und Veranstaltungen der Radsportabteilung TuS Jahn
 
 <script src="/assets/js/calendar/categories.js"></script>
 
+<script src="/assets/js/core/content-creator.js"></script>
+
 <script src="/assets/js/calendar/termine-loader.js"></script>
 
 <script src="/assets/js/calendar/termin-to-calendar.js"></script>

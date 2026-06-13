@@ -29,7 +29,10 @@ async function fetchTermine() {
       throw error;
     }
 
-    termineCache = data || [];
+    termineCache =
+      await enrichContentRowsWithCreators(
+        data || []
+      );
 
     return termineCache;
 

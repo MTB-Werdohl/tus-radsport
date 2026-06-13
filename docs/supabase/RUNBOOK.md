@@ -58,6 +58,8 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Mitglieder-Inhalte (Entwürfe):** [`supabase-member-content.sql`](../supabase-member-content.sql) — Spalte `created_by` auf `News`/`Termine`, RLS: Vereinsmitglieder dürfen eigene Entwürfe einreichen/bearbeiten; erscheinen im Admin unter Entwürfe. Frontend: Profil-Tab **Content**, `/profil/termin_edit/`, `/profil/news_edit/`. **Nach** `supabase-member-change-summary.sql` (wegen `is_club_member()`).
 
+**Ersteller-Anzeige (Kalender/Details):** [`supabase-content-creator-display.sql`](../supabase-content-creator-display.sql) — RPC `get_content_creator_labels()` für öffentliche Anzeigenamen bei freigegebenen News/Terminen. **Nach** `supabase-member-content.sql`.
+
 **Medien-Storage Phase 4 (optional aufräumen):** [`supabase-media-backfill-drop.sql`](../supabase-media-backfill-drop.sql) — Backfill-RPCs in Supabase entfernen, nachdem die einmalige Migration gelaufen ist.
 
 **Protokolle (Vorstand):** [`supabase-board-documents.sql`](../supabase-board-documents.sql) — Tabelle `board_documents`, PDFs unter `protocols/` im Storage (nur Vorstand lesbar). **Kurzbeschreibung in Listen:** [`supabase-board-documents-subject.sql`](../supabase-board-documents-subject.sql) — Spalte `subject` (Feld „Inhalt“ im Admin). **Dateien verschieben:** [`supabase-board-documents-storage-update.sql`](../supabase-board-documents-storage-update.sql) — Storage-Policy `UPDATE` für `move`/Umbenennen.

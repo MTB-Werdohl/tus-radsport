@@ -343,6 +343,10 @@ ${
   event.location
     ? ` · 📍 ${event.location}`
     : ''
+}${
+  event.creator_label
+    ? ` · 👤 ${escapeContentCreatorHtml(event.creator_label)}`
+    : ''
 }
 
 </p>

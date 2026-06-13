@@ -117,6 +117,10 @@ ${event.location}
 
 }
 
+${renderContentCreatorMeta(
+  event.creator_label
+)}
+
 </div>
 
 <div

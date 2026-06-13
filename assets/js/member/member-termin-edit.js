@@ -282,6 +282,8 @@ async function saveMemberTerminEdit(
 
     recurring: false,
 
+    category: 'vereinsleben',
+
     sichtbarkeit:
       window.siteConfig.visibility.draft,
 

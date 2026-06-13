@@ -33,7 +33,9 @@ async function fetchNewsForViewer(
     throw error;
   }
 
-  return data || [];
+  return enrichContentRowsWithCreators(
+    data || []
+  );
 
 }
 
@@ -56,7 +58,9 @@ async function fetchNewsList() {
     throw error;
   }
 
-  return data || [];
+  return enrichContentRowsWithCreators(
+    data || []
+  );
 
 }
 
@@ -110,7 +114,7 @@ async function fetchNewsBySlug(
 
   }
 
-  return data;
+  return enrichContentRowWithCreator(data);
 
 }
 
