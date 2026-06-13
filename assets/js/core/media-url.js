@@ -51,26 +51,54 @@ function extractMediaStoragePath(
     return null;
   }
 
-  const marker =
-    '/storage/v1/object/public/media/';
+  const trimmed =
+    publicUrl.trim();
 
-  const markerIndex =
-    publicUrl.indexOf(marker);
-
-  if (markerIndex === -1) {
+  if (!trimmed) {
     return null;
   }
 
-  const rawPath =
-    publicUrl
-      .slice(markerIndex + marker.length)
+  const withoutQuery =
+    trimmed
+      .split('#')[0]
       .split('?')[0];
 
-  try {
-    return decodeURIComponent(rawPath);
-  } catch (error) {
-    return rawPath;
+  const markers = [
+    '/storage/v1/object/public/media/',
+    '/storage/v1/render/image/public/media/'
+  ];
+
+  for (const marker of markers) {
+
+    const markerIndex =
+      withoutQuery.indexOf(marker);
+
+    if (markerIndex === -1) {
+      continue;
+    }
+
+    const rawPath =
+      withoutQuery
+        .slice(markerIndex + marker.length);
+
+    try {
+      return decodeURIComponent(rawPath);
+    } catch (error) {
+      return rawPath;
+    }
+
   }
+
+  if (
+    /^https?:\/\//i.test(withoutQuery)
+    || withoutQuery.startsWith('/')
+  ) {
+    return null;
+  }
+
+  return normalizeMediaStoragePath(
+    withoutQuery
+  );
 
 }
 

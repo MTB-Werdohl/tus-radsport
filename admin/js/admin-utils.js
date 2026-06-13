@@ -283,10 +283,18 @@ function memberHasLoggedIn(member) {
 
 function extractStoragePath(url) {
 
-  const split =
-    url.split('/storage/v1/object/public/media/');
+  if (
+    typeof extractMediaStoragePath
+      === 'function'
+  ) {
+    return extractMediaStoragePath(url);
+  }
 
-  return split[1] || null;
+  const split =
+    String(url || '')
+      .split('/storage/v1/object/public/media/');
+
+  return split[1]?.split('?')[0] || null;
 
 }
 

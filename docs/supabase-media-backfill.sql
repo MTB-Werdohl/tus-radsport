@@ -6,19 +6,67 @@ create or replace function public.extract_media_storage_path_from_url(
   p_url text
 )
 returns text
-language sql
+language plpgsql
 immutable
 as $$
-  select coalesce(
+declare
+  v_raw text;
+  v_path text;
+begin
+
+  v_raw :=
+    trim(coalesce(p_url, ''));
+
+  if v_raw = '' then
+    return null;
+  end if;
+
+  v_raw :=
+    split_part(
+      split_part(v_raw, '#', 1),
+      '?',
+      1
+    );
+
+  v_path :=
     nullif(
       trim(both '/' from substring(
-        coalesce(p_url, '')
+        v_raw
         from '/storage/v1/object/public/media/(.+)$'
       )),
       ''
-    ),
-    public.normalize_media_storage_path(p_url)
+    );
+
+  if v_path is not null then
+    return v_path;
+  end if;
+
+  v_path :=
+    nullif(
+      trim(both '/' from substring(
+        v_raw
+        from '/storage/v1/render/image/public/media/(.+)$'
+      )),
+      ''
+    );
+
+  if v_path is not null then
+    return v_path;
+  end if;
+
+  if v_raw ~* '^https?://' then
+    return null;
+  end if;
+
+  if v_raw ~ '^/' then
+    return null;
+  end if;
+
+  return public.normalize_media_storage_path(
+    v_raw
   );
+
+end;
 $$;
 
 create or replace function public.media_storage_shared_target_path(
@@ -143,19 +191,19 @@ begin
   select count(*)
   into v_termine_image
   from public."Termine" t
-  where t.image is not null
+  where nullif(trim(t.image), '') is not null
     and coalesce(t.image_storage_path, '') = '';
 
   select count(*)
   into v_termine_gpx
   from public."Termine" t
-  where t.gpx is not null
+  where nullif(trim(t.gpx), '') is not null
     and coalesce(t.gpx_storage_path, '') = '';
 
   select count(*)
   into v_news_image
   from public."News" n
-  where n.image is not null
+  where nullif(trim(n.image), '') is not null
     and coalesce(n.image_storage_path, '') = '';
 
   select count(distinct src.path)
@@ -217,9 +265,14 @@ declare
   v_path text;
   v_target text;
   v_move_result jsonb;
+  v_legacy_preview text;
 begin
 
   perform public.assert_media_manage_authenticated();
+
+  create temp table _media_backfill_move_paths (
+    path text primary key
+  ) on commit drop;
 
   for r in
 
@@ -228,7 +281,7 @@ begin
       'termine_image'::text as kind,
       t.image as legacy_url
     from public."Termine" t
-    where t.image is not null
+    where nullif(trim(t.image), '') is not null
       and coalesce(t.image_storage_path, '') = ''
 
     union all
@@ -238,7 +291,7 @@ begin
       'termine_gpx'::text,
       t.gpx
     from public."Termine" t
-    where t.gpx is not null
+    where nullif(trim(t.gpx), '') is not null
       and coalesce(t.gpx_storage_path, '') = ''
 
     union all
@@ -248,10 +301,13 @@ begin
       'news_image'::text,
       n.image
     from public."News" n
-    where n.image is not null
+    where nullif(trim(n.image), '') is not null
       and coalesce(n.image_storage_path, '') = ''
 
   loop
+
+    v_legacy_preview :=
+      left(trim(r.legacy_url), 160);
 
     v_path :=
       public.extract_media_storage_path_from_url(
@@ -266,7 +322,16 @@ begin
           jsonb_build_object(
             'kind', r.kind,
             'id', r.id,
-            'error', 'Pfad aus URL nicht extrahierbar'
+            'legacy_url', v_legacy_preview,
+            'error',
+              case
+                when trim(coalesce(r.legacy_url, '')) = '' then
+                  'Leeres Medium-Feld'
+                when trim(r.legacy_url) ~* '^https?://' then
+                  'Externer Link, kein Storage-Pfad'
+                else
+                  'Pfad aus URL nicht extrahierbar'
+              end
           )
         );
 
@@ -305,6 +370,12 @@ begin
           'path', v_path
         )
       );
+
+    insert into _media_backfill_move_paths (
+      path
+    )
+    values (v_path)
+    on conflict do nothing;
 
     if p_dry_run then
       continue;
@@ -350,6 +421,11 @@ begin
 
       select distinct src.path
       from (
+
+        select bmp.path
+        from _media_backfill_move_paths bmp
+
+        union
 
         select t.image_storage_path as path
         from public."Termine" t
@@ -476,6 +552,7 @@ begin
     from storage.objects o
     where o.bucket_id = 'media'
       and o.name not like 'protocols/%'
+      and o.name not like '%.emptyFolderPlaceholder'
 
   loop
 
