@@ -333,6 +333,7 @@ function ensurePublicFeedbackModal() {
   modal.id = 'feedback-public-modal';
   modal.className = 'feedback-public-modal';
   modal.hidden = true;
+  modal.setAttribute('aria-hidden', 'true');
 
   modal.innerHTML = `
 
@@ -734,6 +735,49 @@ function closePublicFeedbackTab() {
 
 }
 
+function showPublicFeedbackModal() {
+
+  const modal =
+    document.getElementById(
+      'feedback-public-modal'
+    );
+
+  if (!modal) {
+    return;
+  }
+
+  document.body.appendChild(modal);
+
+  modal.hidden = false;
+  modal.removeAttribute('hidden');
+  modal.setAttribute('aria-hidden', 'false');
+
+  document.body.classList.add(
+    'feedback-public-modal-open'
+  );
+
+}
+
+function hidePublicFeedbackModal() {
+
+  const modal =
+    document.getElementById(
+      'feedback-public-modal'
+    );
+
+  if (!modal) {
+    return;
+  }
+
+  modal.hidden = true;
+  modal.setAttribute('aria-hidden', 'true');
+
+  document.body.classList.remove(
+    'feedback-public-modal-open'
+  );
+
+}
+
 function openPublicFeedbackModal() {
 
   ensurePublicFeedbackModal();
@@ -746,41 +790,28 @@ function openPublicFeedbackModal() {
 
   setPublicFeedbackModalStatus('', false);
 
-  const modal =
-    document.getElementById(
-      'feedback-public-modal'
-    );
+  showPublicFeedbackModal();
 
-  if (!modal) {
-    return;
+  const emailInput =
+    document
+      .querySelector('#feedback-public-register-form input[name="email"]');
+
+  if (
+    emailInput
+    && typeof emailInput.focus === 'function'
+  ) {
+
+    emailInput.focus({
+      preventScroll: true
+    });
+
   }
-
-  modal.hidden = false;
-  document.body.classList.add(
-    'feedback-public-modal-open'
-  );
-
-  modal
-    .querySelector('#feedback-public-register-form input[name="email"]')
-    ?.focus();
 
 }
 
 function closePublicFeedbackModal() {
 
-  const modal =
-    document.getElementById(
-      'feedback-public-modal'
-    );
-
-  if (!modal) {
-    return;
-  }
-
-  modal.hidden = true;
-  document.body.classList.remove(
-    'feedback-public-modal-open'
-  );
+  hidePublicFeedbackModal();
 
 }
 
