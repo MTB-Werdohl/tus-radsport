@@ -331,21 +331,32 @@ function buildMediaFolderContextMenuItems(
   const items = [
     {
       id: 'open',
-      label: 'Ordner öffnen',
+      label: 'Ordner aufklappen',
       action: async () => {
 
-        mediaBrowserCurrentPath =
-          path;
-
-        mediaBrowserCurrentRoot =
+        const rootId =
           inferMediaStorageRootId(
             path
           );
 
-        renderMediaBrowserRoots();
-        syncMediaBrowserTreeSelection();
-        await loadMediaBrowserView();
-        closeMediaBrowserTreeDrawer();
+        selectMediaBrowserFolder(
+          rootId,
+          path
+        );
+
+        if (
+          !isMediaBrowserNodeExpanded(
+            rootId,
+            path
+          )
+        ) {
+          toggleMediaBrowserNodeExpanded(
+            rootId,
+            path
+          );
+        }
+
+        await renderMediaBrowserTree();
 
       }
     },
@@ -870,22 +881,6 @@ function bindMediaBrowserExplorerRoot(
 
     }
 
-    const folderOpen =
-      event.target.closest(
-        '[data-media-folder-open]'
-      );
-
-    if (folderOpen) {
-
-      mediaBrowserCurrentPath =
-        folderOpen.dataset.mediaFolderOpen
-        || '';
-
-      loadMediaBrowserView();
-      syncMediaBrowserTreeSelection();
-
-    }
-
   });
 
   root.addEventListener('touchstart', (event) => {
@@ -1133,9 +1128,6 @@ function bindMediaBrowserExplorerRoot(
       !root.contains(
         event.target
       )
-      && !event.target.closest(
-        '#media-browser-tree-panel'
-      )
     ) {
       return;
     }
@@ -1282,81 +1274,5 @@ function updateMediaBrowserUploadButtonState() {
     );
 
   button.disabled = !enabled;
-
-}
-
-function bindMediaBrowserTreeDropTargets() {
-
-  const treePanel =
-    document.getElementById(
-      'media-browser-tree-panel'
-    );
-
-  if (
-    !treePanel
-    || treePanel.dataset.dropBound
-      === '1'
-  ) {
-    return;
-  }
-
-  treePanel.dataset.dropBound =
-    '1';
-
-  treePanel.addEventListener('dragover', (event) => {
-
-    if (
-      !mediaBrowserDragPayload
-      && !event.dataTransfer
-        ?.types?.includes('Files')
-    ) {
-      return;
-    }
-
-    event.preventDefault();
-
-    if (mediaBrowserDragPayload) {
-      updateMediaBrowserDropTargetFromPoint(
-        event.clientX,
-        event.clientY
-      );
-    }
-
-  });
-
-  treePanel.addEventListener('drop', async (event) => {
-
-    event.preventDefault();
-
-    if (mediaBrowserDragPayload) {
-
-      await executeMediaBrowserInternalDrop();
-      finishMediaBrowserDrag();
-      return;
-
-    }
-
-    const folderTarget =
-      event.target.closest(
-        '[data-media-drop-folder]'
-      );
-
-    const files =
-      event.dataTransfer?.files;
-
-    if (
-      !folderTarget
-      || !files
-      || !files.length
-    ) {
-      return;
-    }
-
-    await executeMediaBrowserExternalDrop(
-      folderTarget.dataset.mediaDropFolder,
-      files
-    );
-
-  });
 
 }

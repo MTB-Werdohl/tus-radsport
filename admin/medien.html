@@ -26,7 +26,7 @@ title: Medien
       </h1>
 
       <p>
-        Explorer — Ordnerbaum, Drag&nbsp;&amp;&nbsp;Drop, Rechtsklick / Long-Press
+        Explorer — ein Baum für Shared, Galerien und Legacy
       </p>
 
     </div>
@@ -40,144 +40,65 @@ title: Medien
 
   </div>
 
-  <div class="admin-media-explorer">
+  <div
+    class="admin-media-explorer"
+    id="media-browser-explorer">
 
-    <button
-      type="button"
-      class="admin-media-explorer__tree-toggle"
-      id="media-browser-tree-toggle">
+    <div class="admin-media-explorer__toolbar">
 
-      📁 Ordner
+      <button
+        type="button"
+        class="secondary-button"
+        id="media-browser-upload-btn">
 
-    </button>
+        Hochladen
 
-    <div
-      class="admin-media-explorer__tree-backdrop"
-      id="media-browser-tree-backdrop">
+      </button>
+
+      <input
+        id="media-browser-upload-input"
+        type="file"
+        hidden
+        multiple
+        accept="image/*,.gpx">
+
+      <label class="admin-media-explorer__filter">
+
+        Typ
+
+        <select id="media-browser-filter">
+
+          <option value="all">
+            Alle
+          </option>
+
+          <option value="image">
+            Bilder
+          </option>
+
+          <option value="gpx">
+            GPX
+          </option>
+
+          <option value="other">
+            Sonstiges
+          </option>
+
+        </select>
+
+      </label>
 
     </div>
 
-    <aside
-      class="admin-media-explorer__tree-panel"
-      id="media-browser-tree-panel">
+    <p
+      class="admin-hint admin-media-explorer__status"
+      id="media-browser-status">
 
-      <div class="admin-media-explorer__tree-header">
-
-        <strong>
-          Ordner
-        </strong>
-
-        <button
-          type="button"
-          class="admin-media-explorer__tree-close"
-          id="media-browser-tree-close"
-          aria-label="Ordner schließen">
-
-          ✕
-
-        </button>
-
-      </div>
-
-      <div
-        class="admin-media-explorer__tree"
-        id="media-browser-tree">
-
-      </div>
-
-    </aside>
+    </p>
 
     <div
-      class="admin-media-explorer__workspace"
-      id="media-browser-workspace">
-
-      <div class="admin-media-browser">
-
-        <div class="admin-media-browser__toolbar">
-
-          <div
-            class="admin-media-browser__roots"
-            id="media-browser-roots">
-
-          </div>
-
-          <div class="admin-media-browser__toolbar-actions">
-
-            <button
-              type="button"
-              class="secondary-button"
-              id="media-browser-upload-btn">
-
-              Hochladen
-
-            </button>
-
-            <input
-              id="media-browser-upload-input"
-              type="file"
-              hidden
-              multiple
-              accept="image/*,.gpx">
-
-            <label class="admin-media-browser__filter">
-
-              Typ
-
-              <select id="media-browser-filter">
-
-                <option value="all">
-                  Alle
-                </option>
-
-                <option value="image">
-                  Bilder
-                </option>
-
-                <option value="gpx">
-                  GPX
-                </option>
-
-                <option value="other">
-                  Sonstiges
-                </option>
-
-              </select>
-
-            </label>
-
-          </div>
-
-        </div>
-
-        <p class="admin-hint admin-media-explorer__hint">
-
-          Desktop: Rechtsklick für Menü, ☰ ziehen zum Verschieben, Dateien aus dem Explorer in Ordner ziehen zum Hochladen.
-          Handy: Long-Press für Menü, ☰ gedrückt halten und auf Ordner ziehen.
-
-        </p>
-
-        <nav
-          class="admin-media-browser__breadcrumb"
-          id="media-browser-breadcrumb"
-          aria-label="Ordnerpfad">
-
-        </nav>
-
-        <div
-          class="admin-media-browser__status"
-          id="media-browser-status">
-
-          Medien werden geladen …
-
-        </div>
-
-        <div
-          class="admin-media-browser__list"
-          id="media-browser-list">
-
-        </div>
-
-      </div>
+      class="admin-media-explorer__tree"
+      id="media-browser-tree">
 
     </div>
 
@@ -187,15 +108,11 @@ title: Medien
 
 <script src="/admin/js/media-storage-lib.js?v={{ site.admin_js_version }}"></script>
 <script src="/admin/js/media-storage-ops.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/media-browser-tree.js?v={{ site.admin_js_version }}"></script>
 <script src="/admin/js/media-browser-explorer.js?v={{ site.admin_js_version }}"></script>
+<script src="/admin/js/media-browser-tree.js?v={{ site.admin_js_version }}"></script>
 <script src="/admin/js/media-browser.js?v={{ site.admin_js_version }}"></script>
 <script>
 requireAdminSession(initMediaBrowser);
-
-document
-  .getElementById('media-browser-tree-close')
-  ?.addEventListener('click', closeMediaBrowserTreeDrawer);
 </script>
 
 </body>

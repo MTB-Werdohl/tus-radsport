@@ -276,15 +276,7 @@ function formatMediaMoveResultMessage(
 
 async function refreshMediaBrowserAfterMutation() {
 
-  await loadMediaStorageReferenceIndex(
-    true
-  );
-
-  invalidateMediaBrowserTreeCache();
-
-  await renderMediaBrowserTree();
-
-  await loadMediaBrowserView();
+  await refreshMediaBrowserTree();
 
 }
 

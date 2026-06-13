@@ -3,18 +3,31 @@ const mediaBrowserTreeCache =
 
 const mediaBrowserTreeExpanded =
   new Set([
-    'shared'
+    'shared::shared'
   ]);
+
+function getMediaBrowserNodeKey(
+  rootId,
+  folderPath
+) {
+
+  return (
+    `${rootId}::${
+      normalizeMediaStorageBrowserPath(
+        folderPath
+      )
+    }`
+  );
+
+}
 
 function invalidateMediaBrowserTreeCache(
   pathPrefix
 ) {
 
   if (!pathPrefix) {
-
     mediaBrowserTreeCache.clear();
     return;
-
   }
 
   const prefix =
@@ -25,8 +38,8 @@ function invalidateMediaBrowserTreeCache(
   for (const key of mediaBrowserTreeCache.keys()) {
 
     if (
-      key === prefix
-      || key.startsWith(`${prefix}/`)
+      key.endsWith(`::${prefix}`)
+      || key.includes(`::${prefix}/`)
     ) {
       mediaBrowserTreeCache.delete(key);
     }
@@ -35,7 +48,7 @@ function invalidateMediaBrowserTreeCache(
 
 }
 
-async function loadMediaBrowserTreeFolders(
+async function loadMediaBrowserTreeContents(
   folderPath,
   rootId
 ) {
@@ -46,7 +59,10 @@ async function loadMediaBrowserTreeFolders(
     );
 
   const cacheKey =
-    `${rootId}::${path}`;
+    getMediaBrowserNodeKey(
+      rootId,
+      path
+    );
 
   if (mediaBrowserTreeCache.has(cacheKey)) {
     return mediaBrowserTreeCache.get(cacheKey);
@@ -57,56 +73,58 @@ async function loadMediaBrowserTreeFolders(
       path,
       {
         rootId,
-        kindFilter: 'all'
+        kindFilter:
+          mediaBrowserCurrentFilter
       }
     );
 
-  const folders =
-    listing.folders || [];
-
   mediaBrowserTreeCache.set(
     cacheKey,
-    folders
+    listing
   );
 
-  return folders;
+  return listing;
 
 }
 
-function isMediaBrowserTreePathExpanded(
-  path
+function isMediaBrowserNodeExpanded(
+  rootId,
+  folderPath
 ) {
 
   return mediaBrowserTreeExpanded.has(
-    normalizeMediaStorageBrowserPath(
-      path
+    getMediaBrowserNodeKey(
+      rootId,
+      folderPath
     )
   );
 
 }
 
-function toggleMediaBrowserTreePathExpanded(
-  path
+function toggleMediaBrowserNodeExpanded(
+  rootId,
+  folderPath
 ) {
 
-  const normalized =
-    normalizeMediaStorageBrowserPath(
-      path
+  const nodeKey =
+    getMediaBrowserNodeKey(
+      rootId,
+      folderPath
     );
 
   if (
     mediaBrowserTreeExpanded.has(
-      normalized
+      nodeKey
     )
   ) {
     mediaBrowserTreeExpanded.delete(
-      normalized
+      nodeKey
     );
     return false;
   }
 
   mediaBrowserTreeExpanded.add(
-    normalized
+    nodeKey
   );
 
   return true;
@@ -120,22 +138,129 @@ function syncMediaBrowserTreeSelection() {
       mediaBrowserCurrentPath
     );
 
+  const selectedKey =
+    getMediaBrowserNodeKey(
+      mediaBrowserCurrentRoot,
+      selectedPath
+    );
+
   document
     .querySelectorAll(
-      '[data-media-tree-label]'
+      '[data-media-tree-folder]'
     )
     .forEach((button) => {
 
-      const nodePath =
-        button.dataset.mediaTreeLabel
+      const nodeKey =
+        button.dataset.mediaTreeFolder
         || '';
 
       button.classList.toggle(
         'is-selected',
-        nodePath === selectedPath
+        nodeKey === selectedKey
       );
 
     });
+
+}
+
+function renderMediaBrowserFileTreeNode(
+  file,
+  rootId,
+  depth
+) {
+
+  const publicUrl =
+    resolveMediaPublicUrl(
+      file.path
+    ) || '';
+
+  const isLegacy =
+    !file.path.includes('/');
+
+  const canMove =
+    canMoveMediaStoragePath(
+      file.path
+    );
+
+  const iconHtml =
+    file.kind === 'image'
+    && publicUrl
+      ? `
+<img
+  class="admin-media-tree__mini-thumb"
+  src="${escapeAdminHtml(publicUrl)}"
+  alt="">
+      `
+      : `
+<span class="admin-media-tree__file-icon">
+  ${file.kind === 'gpx' ? 'GPX' : '📄'}
+</span>
+      `;
+
+  return `
+<li class="admin-media-tree__item admin-media-tree__item--file">
+
+  <div
+    class="admin-media-tree__row admin-media-explorer-item"
+    style="--tree-depth:${depth}"
+    data-media-file-path="${escapeAdminHtml(file.path)}"
+    data-media-file-kind="${escapeAdminHtml(file.kind)}"
+    draggable="${canMove ? 'true' : 'false'}">
+
+    <span
+      class="admin-media-tree__toggle admin-media-tree__toggle--spacer"
+      aria-hidden="true">
+
+    </span>
+
+    ${
+      canMove
+        ? `
+    <button
+      type="button"
+      class="admin-media-tree__handle"
+      data-media-drag-handle
+      aria-label="Verschieben"
+      title="Verschieben">
+
+      ☰
+
+    </button>
+        `
+        : `
+    <span class="admin-media-tree__handle admin-media-tree__handle--spacer"></span>
+        `
+    }
+
+    ${iconHtml}
+
+    <span class="admin-media-tree__label-text">
+      ${escapeAdminHtml(
+        formatMediaFileLabel(
+          file.path
+        )
+      )}
+      ${
+        isLegacy
+          ? '<span class="admin-media-badge admin-media-badge--legacy">Legacy</span>'
+          : ''
+      }
+    </span>
+
+    <button
+      type="button"
+      class="admin-media-tree__menu"
+      data-media-context-trigger
+      aria-label="Aktionen">
+
+      ⋮
+
+    </button>
+
+  </div>
+
+</li>
+  `.trim();
 
 }
 
@@ -155,86 +280,139 @@ async function renderMediaBrowserTreeNode(
       rootId
     );
 
+  const nodeKey =
+    getMediaBrowserNodeKey(
+      rootId,
+      path
+    );
+
+  const isRootLevel =
+    depth === 0;
+
   const label =
-    path === root.path
-      || (
-        root.path
-        && path === root.path
-      )
+    isRootLevel
       ? root.label
       : path.split('/').pop()
       || path
       || root.label;
 
   const expanded =
-    isMediaBrowserTreePathExpanded(
+    isMediaBrowserNodeExpanded(
+      rootId,
       path
     );
 
-  const folders =
-    expanded
-      ? await loadMediaBrowserTreeFolders(
+  let childrenHtml =
+    '';
+
+  if (expanded) {
+
+    const listing =
+      await loadMediaBrowserTreeContents(
         path,
         rootId
-      )
-      : [];
+      );
 
-  const childrenHtml =
-    expanded
-      ? (
-        await Promise.all(
-          folders.map((folder) =>
+    const folderNodes =
+      await Promise.all(
+        (listing.folders || []).map(
+          (folder) =>
             renderMediaBrowserTreeNode(
               folder.path,
               rootId,
               depth + 1
             )
-          )
         )
-      ).join('')
-      : '';
+      );
+
+    const fileNodes =
+      (listing.files || []).map(
+        (file) =>
+          renderMediaBrowserFileTreeNode(
+            file,
+            rootId,
+            depth + 1
+          )
+      );
+
+    childrenHtml =
+      [
+        ...folderNodes,
+        ...fileNodes
+      ].join('');
+
+  }
 
   const canDrop =
     canDropMediaFileOnFolderTarget(
       path
     );
 
+  const isSelected =
+    nodeKey
+    === getMediaBrowserNodeKey(
+      mediaBrowserCurrentRoot,
+      mediaBrowserCurrentPath
+    );
+
   return `
 <li
-  class="admin-media-tree__item"
-  data-media-tree-item="${escapeAdminHtml(path)}">
+  class="admin-media-tree__item admin-media-tree__item--folder"
+  data-media-tree-item="${escapeAdminHtml(nodeKey)}">
 
   <div
-    class="admin-media-tree__row"
-    style="--tree-depth:${depth}">
+    class="admin-media-tree__row admin-media-explorer-item admin-media-explorer-item--folder${
+      canDrop
+        ? ' admin-media-drop-target'
+        : ''
+    }"
+    style="--tree-depth:${depth}"
+    data-media-folder-path="${escapeAdminHtml(path)}"
+    data-media-drop-folder="${escapeAdminHtml(path)}">
 
     <button
       type="button"
       class="admin-media-tree__toggle"
-      data-media-tree-toggle="${escapeAdminHtml(path)}"
+      data-media-tree-toggle="${escapeAdminHtml(nodeKey)}"
+      data-media-tree-root="${escapeAdminHtml(rootId)}"
+      data-media-tree-path="${escapeAdminHtml(path)}"
       aria-expanded="${expanded ? 'true' : 'false'}"
-      aria-label="Ordner ${escapeAdminHtml(label)} ${expanded ? 'einklappen' : 'aufklappen'}">
+      aria-label="${escapeAdminHtml(label)} ${expanded ? 'einklappen' : 'aufklappen'}">
 
       ${expanded ? '▾' : '▸'}
 
     </button>
 
+    <span
+      class="admin-media-tree__folder-icon"
+      aria-hidden="true">
+
+      📁
+
+    </span>
+
     <button
       type="button"
-      class="admin-media-tree__label${
-        path === mediaBrowserCurrentPath
+      class="admin-media-tree__folder${
+        isSelected
           ? ' is-selected'
           : ''
-      }${
-        canDrop
-          ? ' admin-media-drop-target'
-          : ''
       }"
-      data-media-tree-label="${escapeAdminHtml(path)}"
-      data-media-drop-folder="${escapeAdminHtml(path)}">
+      data-media-tree-folder="${escapeAdminHtml(nodeKey)}"
+      data-media-tree-root="${escapeAdminHtml(rootId)}"
+      data-media-tree-path="${escapeAdminHtml(path)}">
 
-      <span class="admin-media-tree__icon" aria-hidden="true">📁</span>
-      <span class="admin-media-tree__text">${escapeAdminHtml(label)}</span>
+      ${escapeAdminHtml(label)}
+
+    </button>
+
+    <button
+      type="button"
+      class="admin-media-tree__menu"
+      data-media-context-trigger
+      aria-label="Aktionen">
+
+      ⋮
 
     </button>
 
@@ -262,30 +440,40 @@ async function renderMediaBrowserTree() {
       'media-browser-tree'
     );
 
+  const statusEl =
+    document.getElementById(
+      'media-browser-status'
+    );
+
   if (!container) {
     return;
   }
 
   container.innerHTML =
-    '<p class="admin-hint">Ordner werden geladen …</p>';
+    '<p class="admin-hint">Medien werden geladen …</p>';
+
+  if (statusEl) {
+    statusEl.textContent =
+      'Medien werden geladen …';
+  }
 
   try {
 
-    const root =
-      getMediaStorageRootConfig(
-        mediaBrowserCurrentRoot
-      );
-
-    const html =
-      await renderMediaBrowserTreeNode(
-        root.path,
-        mediaBrowserCurrentRoot,
-        0
+    const rootNodes =
+      await Promise.all(
+        MEDIA_STORAGE_ROOTS.map(
+          (root) =>
+            renderMediaBrowserTreeNode(
+              root.path,
+              root.id,
+              0
+            )
+        )
       );
 
     container.innerHTML = `
 <ul class="admin-media-tree">
-  ${html}
+  ${rootNodes.join('')}
 </ul>
     `.trim();
 
@@ -294,6 +482,12 @@ async function renderMediaBrowserTree() {
     );
 
     syncMediaBrowserTreeSelection();
+    updateMediaBrowserUploadButtonState();
+
+    if (statusEl) {
+      statusEl.textContent =
+        'Rechtsklick oder Long-Press für Aktionen. ☰ ziehen zum Verschieben.';
+    }
 
   } catch (error) {
 
@@ -303,12 +497,35 @@ async function renderMediaBrowserTree() {
 <p class="admin-hint admin-hint--error">
   ${escapeAdminHtml(
     error.message
-    || 'Ordnerbaum konnte nicht geladen werden.'
+    || 'Explorer konnte nicht geladen werden.'
   )}
 </p>
     `.trim();
 
+    if (statusEl) {
+      statusEl.textContent =
+        'Laden fehlgeschlagen.';
+    }
+
   }
+
+}
+
+function selectMediaBrowserFolder(
+  rootId,
+  folderPath
+) {
+
+  mediaBrowserCurrentRoot =
+    rootId;
+
+  mediaBrowserCurrentPath =
+    normalizeMediaStorageBrowserPath(
+      folderPath
+    );
+
+  syncMediaBrowserTreeSelection();
+  updateMediaBrowserUploadButtonState();
 
 }
 
@@ -328,12 +545,11 @@ function bindMediaBrowserTreeEvents(
 
           event.stopPropagation();
 
-          const path =
-            button.dataset.mediaTreeToggle
-            || '';
-
-          toggleMediaBrowserTreePathExpanded(
-            path
+          toggleMediaBrowserNodeExpanded(
+            button.dataset.mediaTreeRoot
+            || mediaBrowserCurrentRoot,
+            button.dataset.mediaTreePath
+            || ''
           );
 
           await renderMediaBrowserTree();
@@ -345,7 +561,7 @@ function bindMediaBrowserTreeEvents(
 
   container
     .querySelectorAll(
-      '[data-media-tree-label]'
+      '[data-media-tree-folder]'
     )
     .forEach((button) => {
 
@@ -353,94 +569,25 @@ function bindMediaBrowserTreeEvents(
         'click',
         async () => {
 
-          const path =
-            button.dataset.mediaTreeLabel
-            || '';
+          selectMediaBrowserFolder(
+            button.dataset.mediaTreeRoot
+            || mediaBrowserCurrentRoot,
+            button.dataset.mediaTreePath
+            || ''
+          );
 
-          mediaBrowserCurrentPath =
-            path;
+          toggleMediaBrowserNodeExpanded(
+            button.dataset.mediaTreeRoot
+            || mediaBrowserCurrentRoot,
+            button.dataset.mediaTreePath
+            || ''
+          );
 
-          mediaBrowserCurrentRoot =
-            inferMediaStorageRootId(
-              path
-            );
-
-          renderMediaBrowserRoots();
-          syncMediaBrowserTreeSelection();
-          await loadMediaBrowserView();
-
-          closeMediaBrowserTreeDrawer();
+          await renderMediaBrowserTree();
 
         }
       );
 
-    });
-
-}
-
-function openMediaBrowserTreeDrawer() {
-
-  document
-    .getElementById(
-      'media-browser-tree-panel'
-    )
-    ?.classList.add('is-open');
-
-  document
-    .getElementById(
-      'media-browser-tree-backdrop'
-    )
-    ?.classList.add('is-open');
-
-}
-
-function closeMediaBrowserTreeDrawer() {
-
-  document
-    .getElementById(
-      'media-browser-tree-panel'
-    )
-    ?.classList.remove('is-open');
-
-  document
-    .getElementById(
-      'media-browser-tree-backdrop'
-    )
-    ?.classList.remove('is-open');
-
-}
-
-function bindMediaBrowserTreeDrawer() {
-
-  document
-    .getElementById(
-      'media-browser-tree-toggle'
-    )
-    ?.addEventListener('click', () => {
-
-      const panel =
-        document.getElementById(
-          'media-browser-tree-panel'
-        );
-
-      if (
-        panel?.classList.contains(
-          'is-open'
-        )
-      ) {
-        closeMediaBrowserTreeDrawer();
-      } else {
-        openMediaBrowserTreeDrawer();
-      }
-
-    });
-
-  document
-    .getElementById(
-      'media-browser-tree-backdrop'
-    )
-    ?.addEventListener('click', () => {
-      closeMediaBrowserTreeDrawer();
     });
 
 }
