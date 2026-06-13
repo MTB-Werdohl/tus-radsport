@@ -1,5 +1,4 @@
-body:has(#admin),
-body:has(#dashboard-view) {
+body {
   font-family: sans-serif;
   background: #111;
   color: white;
@@ -8,15 +7,9 @@ body:has(#dashboard-view) {
   margin: auto;
 }
 
-#admin select,
-#admin textarea,
-#admin button,
-#dashboard-view select,
-#dashboard-view textarea,
-#dashboard-view button,
-.member-content-edit-form select,
-.member-content-edit-form textarea,
-.member-content-edit-form button {
+select,
+textarea,
+button {
   width: 100%;
   margin-bottom: 15px;
   padding: 12px;
@@ -26,26 +19,19 @@ body:has(#dashboard-view) {
   box-sizing: border-box;
 }
 
-#admin textarea,
-#dashboard-view textarea,
-.member-content-edit-form textarea {
+textarea {
   min-height: 180px;
 }
 
-#admin button,
-#dashboard-view button,
-.member-content-edit-form button {
+button {
   background: #2e8b57;
   color: white;
   cursor: pointer;
 }
 
-#admin h1,
-#admin h2,
-#admin h3,
-#dashboard-view h1,
-#dashboard-view h2,
-#dashboard-view h3 {
+h1,
+h2,
+h3 {
   color: white;
 }
 
@@ -65,8 +51,7 @@ body:has(#dashboard-view) {
   margin: 0;
 }
 
-#admin .row,
-.member-content-edit-form .row {
+.row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
@@ -1679,8 +1664,6 @@ body:has(#dashboard-view) {
   line-height: 1;
   cursor: pointer;
   padding: 0.25rem 0.5rem;
-  width: auto;
-  margin-bottom: 0;
 }
 
 .admin-media-picker__tabs {
@@ -1697,8 +1680,6 @@ body:has(#dashboard-view) {
   color: #ccc;
   cursor: pointer;
   padding: 0.5rem 0.875rem;
-  width: auto;
-  margin-bottom: 0;
 }
 
 .admin-media-picker__tab.is-active {
@@ -1722,11 +1703,6 @@ body:has(#dashboard-view) {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.admin-media-picker__footer .secondary-button {
-  width: auto;
-  margin-bottom: 0;
-}
-
 .admin-media-picker__breadcrumb {
   display: flex;
   flex-wrap: wrap;
@@ -1743,8 +1719,6 @@ body:has(#dashboard-view) {
   cursor: pointer;
   padding: 0;
   text-decoration: underline;
-  width: auto;
-  margin-bottom: 0;
 }
 
 .admin-media-picker__list {
@@ -1762,7 +1736,6 @@ body:has(#dashboard-view) {
   color: inherit;
   cursor: pointer;
   padding: 0.625rem 0.75rem;
-  margin-bottom: 0;
 }
 
 .admin-media-picker__item {
@@ -1778,7 +1751,6 @@ body:has(#dashboard-view) {
   color: inherit;
   cursor: pointer;
   padding: 0.625rem 0.75rem;
-  margin-bottom: 0;
 }
 
 .admin-media-picker__item:hover,

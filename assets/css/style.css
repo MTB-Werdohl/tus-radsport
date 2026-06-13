@@ -766,6 +766,16 @@ body:has(.member-content-edit-section) {
   cursor: pointer;
 }
 
+.member-content-edit-form .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.member-content-edit-form .row .admin-field {
+  margin-bottom: 0;
+}
+
 .member-content-edit-form .preview-image {
   width: 100%;
   max-width: 300px;
