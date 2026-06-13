@@ -1,4 +1,5 @@
-body {
+body:has(#admin),
+body:has(#dashboard-view) {
   font-family: sans-serif;
   background: #111;
   color: white;
@@ -7,9 +8,18 @@ body {
   margin: auto;
 }
 
-select,
-textarea,
-button {
+#admin select,
+#admin textarea,
+#admin button,
+#dashboard-view select,
+#dashboard-view textarea,
+#dashboard-view button,
+.member-content-edit-form select,
+.member-content-edit-form textarea,
+.member-content-edit-form button,
+.admin-media-picker select,
+.admin-media-picker textarea,
+.admin-media-picker button {
   width: 100%;
   margin-bottom: 15px;
   padding: 12px;
@@ -19,19 +29,28 @@ button {
   box-sizing: border-box;
 }
 
-textarea {
+#admin textarea,
+#dashboard-view textarea,
+.member-content-edit-form textarea,
+.admin-media-picker textarea {
   min-height: 180px;
 }
 
-button {
+#admin button,
+#dashboard-view button,
+.member-content-edit-form button,
+.admin-media-picker button {
   background: #2e8b57;
   color: white;
   cursor: pointer;
 }
 
-h1,
-h2,
-h3 {
+#admin h1,
+#admin h2,
+#admin h3,
+#dashboard-view h1,
+#dashboard-view h2,
+#dashboard-view h3 {
   color: white;
 }
 
@@ -51,7 +70,8 @@ h3 {
   margin: 0;
 }
 
-.row {
+#admin .row,
+.member-content-edit-form .row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
