@@ -243,6 +243,7 @@ async function resolveActualMediaStoragePath(
     [
       ...new Set(
         [
+          normalized,
           ...discovered,
           ...buildMediaStoragePathCandidates(
             normalized

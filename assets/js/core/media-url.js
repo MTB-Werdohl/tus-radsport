@@ -47,20 +47,7 @@ function buildMediaStoragePathCandidates(
   const fileName =
     path.split('/').pop();
 
-  const candidates = [];
-
-  if (
-    path.startsWith('shared/images/')
-    || path.startsWith('shared/routes/')
-  ) {
-
-    candidates.push(
-      `shared/${fileName}`
-    );
-
-  }
-
-  candidates.push(path);
+  const candidates = [path];
 
   if (!path.includes('/')) {
 
@@ -87,6 +74,15 @@ function buildMediaStoragePathCandidates(
 
     candidates.push(
       `shared/routes/${fileName}`
+    );
+
+  } else if (
+    path.startsWith('shared/images/')
+    || path.startsWith('shared/routes/')
+  ) {
+
+    candidates.push(
+      `shared/${fileName}`
     );
 
   }
@@ -175,15 +171,9 @@ function resolveMediaPublicUrl(
   options = {}
 ) {
 
-  const candidates =
-    buildMediaStoragePathCandidates(
-      storagePath
-    );
-
   const path =
     normalizeMediaStoragePath(
-      candidates[0]
-      || storagePath
+      storagePath
     );
 
   if (!path) {
