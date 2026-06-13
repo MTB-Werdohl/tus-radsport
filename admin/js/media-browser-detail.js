@@ -56,7 +56,9 @@ function buildMediaBrowserReferenceLinksHtml(
   (references.gallery || []).forEach((ref) => {
 
     const galleryId =
-      ref.galleryId || ref.id;
+      ref.gallery_id
+      || ref.galleryId
+      || ref.id;
 
     items.push(`
 <li>
@@ -268,13 +270,9 @@ async function renderMediaBrowserDetail() {
 
   try {
 
-    const index =
-      await ensureMediaStorageReferenceIndex();
-
     const references =
-      findMediaStorageReferences(
-        filePath,
-        index
+      await fetchMediaReferencesRpc(
+        filePath
       );
 
     referencesHtml =

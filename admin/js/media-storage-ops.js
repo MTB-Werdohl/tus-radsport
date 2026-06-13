@@ -76,13 +76,39 @@ async function moveMediaObjectRpc(
   newPath
 ) {
 
+  const oldNormalized =
+    normalizeMediaStorageBrowserPath(
+      oldPath
+    );
+
+  const newNormalized =
+    normalizeMediaStorageBrowserPath(
+      newPath
+    );
+
+  const bucket =
+    getMediaStorageBucket();
+
+  const { error: moveError } =
+    await window.supabaseClient
+      .storage
+      .from(bucket)
+      .move(
+        oldNormalized,
+        newNormalized
+      );
+
+  if (moveError) {
+    throw moveError;
+  }
+
   const { data, error } =
     await window.supabaseClient
       .rpc(
-        'move_media_object',
+        'sync_media_object_references',
         {
-          p_old_path: oldPath,
-          p_new_path: newPath
+          p_old_path: oldNormalized,
+          p_new_path: newNormalized
         }
       );
 
@@ -99,21 +125,54 @@ async function deleteMediaObjectRpc(
   force = false
 ) {
 
-  const { data, error } =
-    await window.supabaseClient
-      .rpc(
-        'delete_media_object',
-        {
-          p_path: storagePath,
-          p_force: force
-        }
+  const path =
+    normalizeMediaStorageBrowserPath(
+      storagePath
+    );
+
+  if (!path) {
+    throw new Error('Pfad fehlt');
+  }
+
+  if (!force) {
+
+    const references =
+      await fetchMediaReferencesRpc(
+        path
       );
+
+    const total =
+      references?.counts?.total || 0;
+
+    if (total > 0) {
+
+      const rpcError =
+        new Error(MEDIA_REFERENCED_ERROR);
+
+      rpcError.details =
+        JSON.stringify(references);
+
+      throw rpcError;
+
+    }
+
+  }
+
+  const { error } =
+    await window.supabaseClient
+      .storage
+      .from(getMediaStorageBucket())
+      .remove([path]);
 
   if (error) {
     throw error;
   }
 
-  return data;
+  return {
+    ok: true,
+    path,
+    forced: force
+  };
 
 }
 
@@ -409,6 +468,14 @@ async function moveMediaStorageFileToFolder(
       newPath
     );
 
+  if (
+    mediaBrowserSelectedFilePath
+    === currentPath
+  ) {
+    mediaBrowserSelectedFilePath =
+      newPath;
+  }
+
   return result;
 
 }
@@ -542,6 +609,14 @@ async function promptMoveMediaStorageFile(
         newPath
       );
 
+    if (
+      mediaBrowserSelectedFilePath
+      === currentPath
+    ) {
+      mediaBrowserSelectedFilePath =
+        newPath;
+    }
+
     await refreshMediaBrowserAfterMutation();
 
     window.alert(
@@ -661,6 +736,14 @@ async function promptRenameMediaStorageFile(
         currentPath,
         newPath
       );
+
+    if (
+      mediaBrowserSelectedFilePath
+      === currentPath
+    ) {
+      mediaBrowserSelectedFilePath =
+        newPath;
+    }
 
     await refreshMediaBrowserAfterMutation();
 

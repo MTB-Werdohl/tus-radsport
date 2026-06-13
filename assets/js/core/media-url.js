@@ -134,6 +134,23 @@ function resolveMediaPublicUrl(
     data?.publicUrl || null;
 
   if (
+    !url
+    && window.siteConfig?.supabaseUrl
+  ) {
+
+    const encodedPath =
+      path
+        .split('/')
+        .map(encodeURIComponent)
+        .join('/');
+
+    url =
+      `${window.siteConfig.supabaseUrl.replace(/\/$/, '')}`
+      + `/storage/v1/object/public/${getMediaStorageBucket()}/${encodedPath}`;
+
+  }
+
+  if (
     url
     && options.updatedAt
   ) {

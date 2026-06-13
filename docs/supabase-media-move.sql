@@ -322,7 +322,145 @@ end;
 $$;
 
 comment on function public.move_media_object(text, text) is
-  'Medien-Storage Phase 3: Storage verschieben/umbenennen + DB-Referenzen aktualisieren (Vorstand).';
+  'Legacy: verschiebt nur per SQL-Update (deprecated). Client nutzt Storage API + sync_media_object_references.';
+
+create or replace function public.sync_media_object_references(
+  p_old_path text,
+  p_new_path text
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+set row_security = off
+as $$
+declare
+  v_old text;
+  v_new text;
+  v_termine_image_path integer := 0;
+  v_termine_gpx_path integer := 0;
+  v_termine_image_url integer := 0;
+  v_termine_gpx_url integer := 0;
+  v_news_path integer := 0;
+  v_news_url integer := 0;
+  v_gallery integer := 0;
+begin
+
+  perform public.assert_media_manage_authenticated();
+
+  v_old :=
+    public.normalize_media_storage_path(
+      p_old_path
+    );
+
+  v_new :=
+    public.normalize_media_storage_path(
+      p_new_path
+    );
+
+  if v_old is null or v_new is null then
+    raise exception 'Alte und neue Pfade erforderlich';
+  end if;
+
+  if v_new not like 'shared/%' then
+    raise exception 'Zielpfad muss mit shared/ beginnen';
+  end if;
+
+  if v_old like 'protocols/%'
+     or v_old like 'galleries/%' then
+    raise exception 'Dieser Quellpfad kann hier nicht verschoben werden';
+  end if;
+
+  if v_old like 'shared/%' then
+    null;
+
+  elsif position('/' in v_old) = 0 then
+    null;
+
+  else
+    raise exception 'Quellpfad nicht erlaubt';
+  end if;
+
+  if v_old = v_new then
+
+    return jsonb_build_object(
+      'ok', true,
+      'old_path', v_old,
+      'new_path', v_new,
+      'updated', jsonb_build_object()
+    );
+
+  end if;
+
+  update public."Termine"
+  set image_storage_path = v_new
+  where image_storage_path = v_old;
+
+  get diagnostics v_termine_image_path = row_count;
+
+  update public."Termine"
+  set gpx_storage_path = v_new
+  where gpx_storage_path = v_old;
+
+  get diagnostics v_termine_gpx_path = row_count;
+
+  update public."Termine"
+  set image = replace(image, v_old, v_new)
+  where image is not null
+    and image like '%' || v_old || '%';
+
+  get diagnostics v_termine_image_url = row_count;
+
+  update public."Termine"
+  set gpx = replace(gpx, v_old, v_new)
+  where gpx is not null
+    and gpx like '%' || v_old || '%';
+
+  get diagnostics v_termine_gpx_url = row_count;
+
+  update public."News"
+  set image_storage_path = v_new
+  where image_storage_path = v_old;
+
+  get diagnostics v_news_path = row_count;
+
+  update public."News"
+  set image = replace(image, v_old, v_new)
+  where image is not null
+    and image like '%' || v_old || '%';
+
+  get diagnostics v_news_url = row_count;
+
+  update public.gallery_images
+  set image_path = replace(image_path, v_old, v_new)
+  where image_path is not null
+    and image_path like '%' || v_old || '%';
+
+  get diagnostics v_gallery = row_count;
+
+  return jsonb_build_object(
+    'ok', true,
+    'old_path', v_old,
+    'new_path', v_new,
+    'updated', jsonb_build_object(
+      'termine_image_path', v_termine_image_path,
+      'termine_gpx_path', v_termine_gpx_path,
+      'termine_image_url', v_termine_image_url,
+      'termine_gpx_url', v_termine_gpx_url,
+      'news_path', v_news_path,
+      'news_url', v_news_url,
+      'gallery', v_gallery
+    )
+  );
+
+end;
+$$;
+
+comment on function public.sync_media_object_references(text, text) is
+  'Medien-Storage Phase 3: DB-Referenzen nach Storage API move/rename aktualisieren (Vorstand).';
+
+comment on function public.delete_media_object(text, boolean) is
+  'Deprecated: Client nutzt Storage API remove(). Referenz-Check weiterhin über get_media_references.';
 
 create or replace function public.delete_media_object(
   p_path text,
@@ -395,16 +533,17 @@ begin
 end;
 $$;
 
-comment on function public.delete_media_object(text, boolean) is
-  'Medien-Storage Phase 3: Storage-Datei löschen; mit Referenzen nur bei p_force=true (Vorstand).';
-
 revoke all on function public.normalize_media_storage_path(text) from public;
 revoke all on function public.assert_media_manage_authenticated() from public;
 revoke all on function public.get_media_references(text) from public;
+revoke all on function public.sync_media_object_references(text, text) from public;
 revoke all on function public.move_media_object(text, text) from public;
 revoke all on function public.delete_media_object(text, boolean) from public;
 
 grant execute on function public.get_media_references(text)
+  to authenticated;
+
+grant execute on function public.sync_media_object_references(text, text)
   to authenticated;
 
 grant execute on function public.move_media_object(text, text)

@@ -1409,6 +1409,7 @@ h3 {
 
 .admin-media-explorer-item--dragging {
   opacity: 0.55;
+  pointer-events: none;
 }
 
 .admin-media-drop-target--active {

@@ -513,7 +513,19 @@ function updateMediaBrowserDropTargetFromPoint(
 
 }
 
-async function executeMediaBrowserInternalDrop() {
+async function executeMediaBrowserInternalDrop(
+  event
+) {
+
+  if (
+    event
+    && typeof event.clientX === 'number'
+  ) {
+    updateMediaBrowserDropTargetFromPoint(
+      event.clientX,
+      event.clientY
+    );
+  }
 
   if (
     !mediaBrowserDragPayload
@@ -529,6 +541,21 @@ async function executeMediaBrowserInternalDrop() {
 
   const targetFolder =
     mediaBrowserActiveDropFolder;
+
+  const sourceFolder =
+    sourcePath.includes('/')
+      ? sourcePath.slice(
+        0,
+        sourcePath.lastIndexOf('/')
+      )
+      : '';
+
+  if (
+    targetFolder === sourceFolder
+    || targetFolder === sourcePath
+  ) {
+    return false;
+  }
 
   try {
 
@@ -785,7 +812,9 @@ function bindMediaBrowserExplorerRoot(
 
     if (mediaBrowserDragPayload) {
 
-      await executeMediaBrowserInternalDrop();
+      await executeMediaBrowserInternalDrop(
+        event
+      );
       finishMediaBrowserDrag();
       return;
 
@@ -793,6 +822,12 @@ function bindMediaBrowserExplorerRoot(
 
     const folderTarget =
       event.target.closest(
+        '[data-media-drop-folder]'
+      )
+      || document.elementFromPoint(
+        event.clientX,
+        event.clientY
+      )?.closest(
         '[data-media-drop-folder]'
       );
 
@@ -1085,7 +1120,9 @@ function bindMediaBrowserExplorerRoot(
       );
     }
 
-    await executeMediaBrowserInternalDrop();
+    await executeMediaBrowserInternalDrop(
+      event
+    );
     finishMediaBrowserDrag();
 
   });
@@ -1134,7 +1171,9 @@ function bindMediaBrowserExplorerRoot(
 
     event.preventDefault();
 
-    await executeMediaBrowserInternalDrop();
+    await executeMediaBrowserInternalDrop(
+      event
+    );
     finishMediaBrowserDrag();
 
   });
