@@ -276,7 +276,33 @@ function formatMediaMoveResultMessage(
 
 async function refreshMediaBrowserAfterMutation() {
 
+  invalidateMediaStorageReferenceIndex();
+
   await refreshMediaBrowserTree();
+
+  if (mediaBrowserSelectedFilePath) {
+
+    const stillVisible =
+
+      document.querySelector(
+
+        `[data-media-tree-file-select="${CSS.escape(
+
+          mediaBrowserSelectedFilePath
+
+        )}"]`
+
+      );
+
+    if (!stillVisible) {
+
+      clearMediaBrowserFileSelection();
+
+    }
+
+  }
+
+  await renderMediaBrowserDetail();
 
 }
 

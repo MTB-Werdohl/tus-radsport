@@ -342,6 +342,13 @@ async function ensureMediaStorageReferenceIndex() {
 
 }
 
+function invalidateMediaStorageReferenceIndex() {
+
+  mediaStorageReferenceIndex = null;
+  mediaStorageReferencePromise = null;
+
+}
+
 function findMediaStorageReferences(
   storagePath,
   index = mediaStorageReferenceIndex

@@ -7,6 +7,9 @@ let mediaBrowserCurrentPath =
 let mediaBrowserCurrentFilter =
   'all';
 
+let mediaBrowserSelectedFilePath =
+  null;
+
 async function copyTextToClipboard(
   value,
   successMessage
@@ -44,18 +47,9 @@ async function initMediaBrowser() {
     )
   );
 
-  document
-    .getElementById('media-browser-filter')
-    ?.addEventListener('change', async (event) => {
+  renderMediaBrowserDetail();
 
-      mediaBrowserCurrentFilter =
-        event.target.value || 'all';
-
-      invalidateMediaBrowserTreeCache();
-      await renderMediaBrowserTree();
-
-    });
-
+  await ensureMediaStorageReferenceIndex();
   await renderMediaBrowserTree();
 
 }

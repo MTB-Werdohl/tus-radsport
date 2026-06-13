@@ -486,6 +486,14 @@ function renderMediaBrowserFileTreeNode(
 
 
 
+  const isFileSelected =
+
+    mediaBrowserSelectedFilePath
+
+    === file.path;
+
+
+
   return `
 
 <li class="admin-media-tree__node admin-media-tree__node--file">
@@ -494,13 +502,23 @@ function renderMediaBrowserFileTreeNode(
 
   <div
 
-    class="admin-media-tree__row admin-media-explorer-item"
+    class="admin-media-tree__row admin-media-explorer-item${
+
+      isFileSelected
+
+        ? ' is-selected'
+
+        : ''
+
+    }"
 
     style="--tree-depth:${depth}"
 
     data-media-file-path="${escapeAdminHtml(file.path)}"
 
     data-media-file-kind="${escapeAdminHtml(file.kind)}"
+
+    data-media-tree-file-select="${escapeAdminHtml(file.path)}"
 
     draggable="${canMove ? 'true' : 'false'}">
 
@@ -974,16 +992,6 @@ async function renderMediaBrowserTree() {
 
 
 
-  const statusEl =
-
-    document.getElementById(
-
-      'media-browser-status'
-
-    );
-
-
-
   if (!container) {
 
     return;
@@ -995,16 +1003,6 @@ async function renderMediaBrowserTree() {
   container.innerHTML =
 
     '<p class="admin-hint">Medien werden geladen …</p>';
-
-
-
-  if (statusEl) {
-
-    statusEl.textContent =
-
-      'Medien werden geladen …';
-
-  }
 
 
 
@@ -1058,17 +1056,7 @@ async function renderMediaBrowserTree() {
 
     syncMediaBrowserTreeSelection();
 
-    updateMediaBrowserUploadButtonState();
-
-
-
-    if (statusEl) {
-
-      statusEl.textContent =
-
-        'Rechtsklick oder Long-Press für Aktionen. ☰ ziehen zum Verschieben.';
-
-    }
+    syncMediaBrowserFileSelection();
 
 
 
@@ -1095,16 +1083,6 @@ async function renderMediaBrowserTree() {
 </p>
 
     `.trim();
-
-
-
-    if (statusEl) {
-
-      statusEl.textContent =
-
-        'Laden fehlgeschlagen.';
-
-    }
 
 
 
@@ -1146,7 +1124,7 @@ function selectMediaBrowserFolder(
 
   updateMediaBrowserUploadButtonState();
 
-
+  clearMediaBrowserFileSelection();
 
 }
 
@@ -1311,6 +1289,74 @@ function bindMediaBrowserTreeEvents(
             );
 
             await renderMediaBrowserTree();
+
+          }
+
+
+
+        }
+
+      );
+
+
+
+    });
+
+
+
+  container
+
+    .querySelectorAll(
+
+      '[data-media-tree-file-select]'
+
+    )
+
+    .forEach((row) => {
+
+
+
+      row.addEventListener(
+
+        'click',
+
+        (event) => {
+
+
+
+          if (
+
+            event.target.closest(
+
+              '[data-media-context-trigger], [data-media-drag-handle]'
+
+            )
+
+          ) {
+
+            return;
+
+          }
+
+
+
+          const file =
+
+            getMediaBrowserFileFromElement(
+
+              row
+
+            );
+
+
+
+          if (file) {
+
+            selectMediaBrowserFile(
+
+              file
+
+            );
 
           }
 

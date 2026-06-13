@@ -25,10 +25,6 @@ title: Medien
         Medien
       </h1>
 
-      <p>
-        Explorer — ein Baum für Shared, Galerien und Legacy
-      </p>
-
     </div>
 
     <a href="/admin/"
@@ -44,63 +40,25 @@ title: Medien
     class="admin-media-explorer"
     id="media-browser-explorer">
 
-    <div class="admin-media-explorer__toolbar">
-
-      <button
-        type="button"
-        class="secondary-button"
-        id="media-browser-upload-btn">
-
-        Hochladen
-
-      </button>
-
-      <input
-        id="media-browser-upload-input"
-        type="file"
-        hidden
-        multiple
-        accept="image/*,.gpx">
-
-      <label class="admin-media-explorer__filter">
-
-        Typ
-
-        <select id="media-browser-filter">
-
-          <option value="all">
-            Alle
-          </option>
-
-          <option value="image">
-            Bilder
-          </option>
-
-          <option value="gpx">
-            GPX
-          </option>
-
-          <option value="other">
-            Sonstiges
-          </option>
-
-        </select>
-
-      </label>
-
-    </div>
-
-    <p
-      class="admin-hint admin-media-explorer__status"
-      id="media-browser-status">
-
-    </p>
+    <input
+      id="media-browser-upload-input"
+      type="file"
+      hidden
+      multiple
+      accept="image/*,.gpx">
 
     <div
       class="admin-media-explorer__tree"
       id="media-browser-tree">
 
     </div>
+
+    <aside
+      class="admin-media-explorer__detail"
+      id="media-browser-detail"
+      aria-live="polite">
+
+    </aside>
 
   </div>
 
@@ -110,6 +68,7 @@ title: Medien
 <script src="/admin/js/media-storage-ops.js?v={{ site.admin_js_version }}"></script>
 <script src="/admin/js/media-browser-explorer.js?v={{ site.admin_js_version }}"></script>
 <script src="/admin/js/media-browser-tree.js?v={{ site.admin_js_version }}"></script>
+<script src="/admin/js/media-browser-detail.js?v={{ site.admin_js_version }}"></script>
 <script src="/admin/js/media-browser.js?v={{ site.admin_js_version }}"></script>
 <script>
 requireAdminSession(initMediaBrowser);
