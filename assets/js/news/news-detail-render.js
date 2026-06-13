@@ -14,6 +14,11 @@ function renderNewsDetail(
     return;
   }
 
+  const newsImage =
+    typeof resolveNewsImage === 'function'
+      ? resolveNewsImage(data)
+      : data.image;
+
   wrapper.innerHTML = `
 
 <article class="news-page event-page">
@@ -57,7 +62,7 @@ ${formatContentCardTitle(
 
 ${
 
-data.image
+newsImage
 
 ?
 
@@ -65,7 +70,7 @@ data.image
 
 <img
 
-src="${data.image}"
+src="${newsImage}"
 
 class="news-hero"
 

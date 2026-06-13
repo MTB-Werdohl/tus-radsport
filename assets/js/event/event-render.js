@@ -13,6 +13,16 @@ function renderEvent(
     !event
   ) return;
 
+  const eventImage =
+    typeof resolveTerminImage === 'function'
+      ? resolveTerminImage(event)
+      : event.image;
+
+  const eventGpx =
+    typeof resolveTerminGpx === 'function'
+      ? resolveTerminGpx(event)
+      : event.gpx;
+
   document.title =
     `${event.title}
     · MTB Werdohl`;
@@ -121,7 +131,7 @@ ${event.location}
 
 ${
 
-event.image
+eventImage
 
 ?
 
@@ -131,7 +141,7 @@ event.image
 
 class="event-image"
 
-src="${event.image}"
+src="${eventImage}"
 
 >
 
@@ -182,11 +192,16 @@ function renderLinks(
  event
 ) {
 
+ const eventGpx =
+   typeof resolveTerminGpx === 'function'
+     ? resolveTerminGpx(event)
+     : event.gpx;
+
  if (
 
   !event.komoot &&
 
-  !event.gpx
+  !eventGpx
 
  ) return '';
 
@@ -224,7 +239,7 @@ class="event-button"
 
 ${
 
-event.gpx
+eventGpx
 
 ?
 
@@ -232,7 +247,7 @@ event.gpx
 
 <a
 
-href="${event.gpx}"
+href="${eventGpx}"
 
 target="_blank"
 

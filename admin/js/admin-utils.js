@@ -176,6 +176,82 @@ function buildMediaStorageKey(
 
 }
 
+function buildMediaStoragePath(
+  folderPrefix,
+  fileName
+) {
+
+  const folder =
+    String(folderPrefix || '')
+      .trim()
+      .replace(/^\/+|\/+$/g, '');
+
+  const fileKey =
+    buildMediaStorageKey(fileName);
+
+  if (!folder) {
+    return fileKey;
+  }
+
+  return `${folder}/${fileKey}`;
+
+}
+
+async function uploadMediaStorageFile(
+  folderPrefix,
+  file
+) {
+
+  if (!file) {
+    return {
+      error: new Error('Keine Datei'),
+      storagePath: null,
+      publicUrl: null
+    };
+  }
+
+  const storagePath =
+    buildMediaStoragePath(
+      folderPrefix,
+      file.name
+    );
+
+  const bucket =
+    window.siteConfig?.storage?.media
+    || 'media';
+
+  const { error } =
+    await window.supabaseClient
+      .storage
+      .from(bucket)
+      .upload(storagePath, file);
+
+  if (error) {
+    return {
+      error,
+      storagePath: null,
+      publicUrl: null
+    };
+  }
+
+  const publicUrl =
+    typeof resolveMediaPublicUrl === 'function'
+      ? resolveMediaPublicUrl(storagePath)
+      : window.supabaseClient
+        .storage
+        .from(bucket)
+        .getPublicUrl(storagePath)
+        .data?.publicUrl
+      || null;
+
+  return {
+    error: null,
+    storagePath,
+    publicUrl
+  };
+
+}
+
 function formatMemberLastLogin(value) {
 
   if (!value) {

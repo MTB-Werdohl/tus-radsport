@@ -1,0 +1,113 @@
+---
+layout: null
+title: Medien
+---
+
+<!doctype html>
+
+<html lang="de">
+
+<head>
+
+{% include admin-head.html %}
+
+</head>
+
+<body>
+
+<div id="admin">
+
+  <div class="page-header">
+
+    <div>
+
+      <h1>
+        Medien
+      </h1>
+
+      <p>
+        Storage-Browser — nur Ansicht, keine Änderungen
+      </p>
+
+    </div>
+
+    <a href="/admin/"
+       class="back-button">
+
+      ← Dashboard
+
+    </a>
+
+  </div>
+
+  <div class="admin-media-browser">
+
+    <div class="admin-media-browser__toolbar">
+
+      <div
+        class="admin-media-browser__roots"
+        id="media-browser-roots">
+
+      </div>
+
+      <label class="admin-media-browser__filter">
+
+        Typ
+
+        <select id="media-browser-filter">
+
+          <option value="all">
+            Alle
+          </option>
+
+          <option value="image">
+            Bilder
+          </option>
+
+          <option value="gpx">
+            GPX
+          </option>
+
+          <option value="other">
+            Sonstiges
+          </option>
+
+        </select>
+
+      </label>
+
+    </div>
+
+    <nav
+      class="admin-media-browser__breadcrumb"
+      id="media-browser-breadcrumb"
+      aria-label="Ordnerpfad">
+
+    </nav>
+
+    <div
+      class="admin-media-browser__status"
+      id="media-browser-status">
+
+      Medien werden geladen …
+
+    </div>
+
+    <div
+      class="admin-media-browser__list"
+      id="media-browser-list">
+
+    </div>
+
+  </div>
+
+</div>
+
+<script src="/admin/js/media-browser.js?v={{ site.admin_js_version }}"></script>
+<script>
+requireAdminSession(initMediaBrowser);
+</script>
+
+</body>
+
+</html>

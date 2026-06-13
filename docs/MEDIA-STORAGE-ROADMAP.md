@@ -1,6 +1,6 @@
 # Medien-Storage — Architektur, Roadmap & Implementierungsplan
 
-**Status:** Geplant (Vorbereitung Mediathek & Dateiwiederverwendung)  
+**Status:** Phase 0 + 1 implementiert (Frontend) — SQL [`supabase-media-storage-paths.sql`](supabase-media-storage-paths.sql) in Supabase ausführen  
 **Zielgruppe:** Vorstand / Entwickler  
 **Letzte Aktualisierung:** 2026-05-26
 
@@ -443,13 +443,13 @@ Phase 4   Backfill Legacy → deprecate URL-Spalten
 ## 10. Checkliste „Sprint 1“ (Phase 0 + 1)
 
 ```text
-[ ] docs/supabase-media-storage-paths.sql schreiben + in Supabase ausführen
-[ ] assets/js/core/media-url.js anlegen
-[ ] Resolver in event-render, news-detail-render einbinden
-[ ] termine-edit / news-edit: Dual-Write + Upload nach shared/
-[ ] admin/medien.html + media-browser.js (read-only)
-[ ] Dashboard-Link „Medien“
-[ ] Smoke M0.* + M1.*
+[x] docs/supabase-media-storage-paths.sql schreiben + in Supabase ausführen
+[x] assets/js/core/media-url.js anlegen
+[x] Resolver in event-render, news-detail-render einbinden
+[x] termine-edit / news-edit: Dual-Write + Upload nach shared/
+[x] admin/medien.html + media-browser.js (read-only)
+[x] Dashboard-Link „Medien“
+[ ] Smoke M0.* + M1.* (nach SQL-Deploy)
 [ ] RUNBOOK + diese Datei Status auf „Phase 0+1 live“ setzen
 ```
 
@@ -459,8 +459,8 @@ Phase 4   Backfill Legacy → deprecate URL-Spalten
 
 | Phase | Status | Deploy-Datum | Notizen |
 |-------|--------|--------------|---------|
-| 0 Fundament | ⏳ Geplant | | |
-| 1 Medien-Browser | ⏳ Geplant | | |
+| 0 Fundament | ✅ Code live | | SQL in Supabase noch ausführen |
+| 1 Medien-Browser | ✅ Code live | | `/admin/medien.html` |
 | 2 Mediathek-Picker | ⏳ Geplant | | |
 | 3 Move/Delete | ⏳ Geplant | | |
 | 4 Legacy-Migration | ⏳ Geplant | | |

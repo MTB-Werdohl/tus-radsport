@@ -134,6 +134,7 @@ SQL Profilbilder: [`supabase/supabase-member-avatars.sql`](supabase/supabase-mem
 |--------|---------|
 | `sichtbarkeit` | `public` \| `members` \| `draft` — **RLS-Leseregel** |
 | `published` | Legacy; Admin schreibt parallel via `publishedFromVisibility()`; OG-Build fallback |
+| `image_storage_path` | Relativer Pfad im Bucket `media` (Phase 0 Medien-Storage); Legacy: `image` URL |
 
 ## `Termine`
 
@@ -146,6 +147,8 @@ SQL Profilbilder: [`supabase/supabase-member-avatars.sql`](supabase/supabase-mem
 | `recurring`, `daysOfWeek`, `startTime`, `startRecur`, `endRecur`, `exclude` | Wiederkehrend |
 | `durationDays` | Wiederkehrend: aufeinanderfolgende Tage pro Termin (optional, >1) |
 | `sichtbarkeit` | `public` \| `members` \| `draft` |
+| `image`, `gpx` | Legacy: volle Public-URL |
+| `image_storage_path`, `gpx_storage_path` | Relativer Pfad im Bucket `media` (Phase 0 Medien-Storage) |
 
 ## `galleries` / `gallery_images`
 
@@ -267,7 +270,7 @@ RPCs: `set_event_feedback_answer`, `list_feedback_participation_changes` (Vorsta
 
 ## Storage `media`
 
-Pfade z. B. `galleries/{jahr}/{slug}/…`, News/Termin-Uploads.
+Pfade z. B. `shared/images/…`, `shared/routes/…`, `galleries/{jahr}/{slug}/…`, Legacy-Root-Uploads. Siehe [MEDIA-STORAGE-ROADMAP.md](../MEDIA-STORAGE-ROADMAP.md).
 
 ## Storage `avatars`
 

@@ -55,14 +55,30 @@ async function loadNews() {
 
   if (data.image) {
 
+    const imageUrl =
+      typeof resolveNewsImage === 'function'
+        ? resolveNewsImage(data)
+        : data.image;
+
+    const pathHint =
+      data.image_storage_path
+        ? `
+<p class="admin-media-path">
+  Pfad: ${escapeAdminHtml(data.image_storage_path)}
+</p>
+        `
+        : '';
+
     document
       .getElementById('currentImage')
       .innerHTML = `
 
         <p>Aktuelles Bild:</p>
 
-        <img src="${safeMediaUrl(data.image)}"
+        <img src="${safeMediaUrl(imageUrl)}"
              class="preview-image">
+
+        ${pathHint}
 
       `;
 
@@ -104,55 +120,50 @@ async function saveNews() {
     buildAdminSlug(title);
 
   let image = null;
+  let imageStoragePath = null;
+
+  const sharedImagesFolder =
+    window.MEDIA_STORAGE_FOLDERS?.sharedImages
+    || 'shared/images';
 
   if (editId) {
 
     const { data } =
       await window.supabaseClient
         .from(window.siteConfig.tables.news)
-        .select('image')
+        .select(
+          'image,image_storage_path'
+        )
         .eq('id', editId)
         .single();
 
     image =
       data?.image || null;
 
+    imageStoragePath =
+      data?.image_storage_path || null;
+
   }
 
   if (imageFile) {
 
-    const imageName =
-      buildMediaStorageKey(
-        imageFile.name
+    const upload =
+      await uploadMediaStorageFile(
+        sharedImagesFolder,
+        imageFile
       );
 
-    const { error } =
-      await window.supabaseClient
-        .storage
-        .from(window.siteConfig.storage.media)
-        .upload(
-          imageName,
-          imageFile
-        );
+    if (!upload.error) {
 
-    if (!error) {
-
-      const {
-        data: imageData
-      } =
-        window.supabaseClient
-          .storage
-          .from(window.siteConfig.storage.media)
-          .getPublicUrl(imageName);
-
-      image =
-        imageData.publicUrl;
+      image = upload.publicUrl;
+      imageStoragePath =
+        upload.storagePath;
 
     } else {
 
       alert(
         'Bild-Upload fehlgeschlagen: '
-        + (error.message || 'Unbekannter Fehler')
+        + (upload.error.message || 'Unbekannter Fehler')
       );
 
     }
@@ -174,6 +185,11 @@ async function saveNews() {
 
   if (image) {
     payload.image = image;
+  }
+
+  if (imageStoragePath) {
+    payload.image_storage_path =
+      imageStoragePath;
   }
 
   let error;

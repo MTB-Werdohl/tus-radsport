@@ -52,6 +52,8 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Veränderungs-Zusammenfassung:** [`supabase-member-change-summary.sql`](../supabase-member-change-summary.sql) — `members.last_change_summary_seen_at`, `Termine.created_at`/`updated_at`, RPCs `get_member_change_summary()`, `touch_member_change_summary_seen()`, Hilfsfunktion `is_club_member()`. **Entwürfe (News/Termine `sichtbarkeit=draft`) zählen nur für Vorstand** — bei Popup-Problemen die Datei erneut im SQL Editor ausführen.
 
+**Medien-Storage Phase 0:** [`supabase-media-storage-paths.sql`](../supabase-media-storage-paths.sql) — Spalten `image_storage_path`, `gpx_storage_path` (Termine), `image_storage_path` (News). Siehe [MEDIA-STORAGE-ROADMAP.md](../MEDIA-STORAGE-ROADMAP.md).
+
 **Protokolle (Vorstand):** [`supabase-board-documents.sql`](../supabase-board-documents.sql) — Tabelle `board_documents`, PDFs unter `protocols/` im Storage (nur Vorstand lesbar). **Kurzbeschreibung in Listen:** [`supabase-board-documents-subject.sql`](../supabase-board-documents-subject.sql) — Spalte `subject` (Feld „Inhalt“ im Admin). **Dateien verschieben:** [`supabase-board-documents-storage-update.sql`](../supabase-board-documents-storage-update.sql) — Storage-Policy `UPDATE` für `move`/Umbenennen.
 
 **Admin-E-Mail Versandprotokoll:** [`supabase-admin-email-log.sql`](../supabase-admin-email-log.sql) — Tabelle `admin_email_log`, 18 Monate Retention; danach Edge `send-admin-email` neu deployen. Setup: [`supabase-admin-email-setup.md`](../supabase-admin-email-setup.md).

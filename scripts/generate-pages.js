@@ -23,6 +23,33 @@ function isPublicVisibility(value) {
 
 }
 
+function resolveEntityImageUrl(entity) {
+
+  const storagePath =
+    entity?.image_storage_path;
+
+  if (
+    storagePath
+    && SUPABASE_URL
+  ) {
+
+    const path =
+      String(storagePath)
+        .trim()
+        .replace(/^\/+/, '');
+
+    if (path) {
+      return (
+        `${SUPABASE_URL}/storage/v1/object/public/media/${path}`
+      );
+    }
+
+  }
+
+  return entity?.image || null;
+
+}
+
 function escapeOgText(value) {
 
   return String(value ?? '')
@@ -278,7 +305,7 @@ article.title,
 
 article.excerpt,
 
-article.image,
+resolveEntityImageUrl(article),
 
 `/news-detail.html?slug=${article.slug}`
 
@@ -303,7 +330,7 @@ termin.title,
 
 termin.content,
 
-termin.image,
+resolveEntityImageUrl(termin),
 
 `/event.html?slug=${termin.slug}`
 
