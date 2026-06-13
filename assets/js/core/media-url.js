@@ -31,6 +31,74 @@ function normalizeMediaStoragePath(
 
 }
 
+function buildMediaStoragePathCandidates(
+  storagePath
+) {
+
+  const path =
+    normalizeMediaStoragePath(
+      storagePath
+    );
+
+  if (!path) {
+    return [];
+  }
+
+  const fileName =
+    path.split('/').pop();
+
+  const candidates = [];
+
+  if (
+    path.startsWith('shared/images/')
+    || path.startsWith('shared/routes/')
+  ) {
+
+    candidates.push(
+      `shared/${fileName}`
+    );
+
+  }
+
+  candidates.push(path);
+
+  if (!path.includes('/')) {
+
+    candidates.push(
+      `shared/${fileName}`
+    );
+
+    candidates.push(
+      `shared/images/${fileName}`
+    );
+
+    candidates.push(
+      `shared/routes/${fileName}`
+    );
+
+  } else if (
+    path.startsWith('shared/')
+    && path.split('/').length === 2
+  ) {
+
+    candidates.push(
+      `shared/images/${fileName}`
+    );
+
+    candidates.push(
+      `shared/routes/${fileName}`
+    );
+
+  }
+
+  return [
+    ...new Set(
+      candidates.filter(Boolean)
+    )
+  ];
+
+}
+
 function getMediaStorageBucket() {
 
   return (
@@ -107,9 +175,15 @@ function resolveMediaPublicUrl(
   options = {}
 ) {
 
+  const candidates =
+    buildMediaStoragePathCandidates(
+      storagePath
+    );
+
   const path =
     normalizeMediaStoragePath(
-      storagePath
+      candidates[0]
+      || storagePath
     );
 
   if (!path) {

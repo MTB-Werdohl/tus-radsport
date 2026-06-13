@@ -43,7 +43,7 @@ async function fetchAdminDrafts() {
     await window.supabaseClient
       .from(window.siteConfig.tables.news)
       .select(
-        'id, title, slug, sichtbarkeit, published, updated_at, created_at'
+        'id, title, slug, sichtbarkeit, published, updated_at, created_at, created_by'
       )
       .order('updated_at', {
         ascending: false,
@@ -54,7 +54,7 @@ async function fetchAdminDrafts() {
     await window.supabaseClient
       .from(window.siteConfig.tables.termine)
       .select(
-        'id, title, slug, date, sichtbarkeit'
+        'id, title, slug, date, sichtbarkeit, created_at, updated_at, created_by'
       )
       .order('date', {
         ascending: false,
@@ -81,35 +81,57 @@ async function fetchAdminDrafts() {
 
   const newsItems =
     (newsResult.data || [])
-      .filter(isAdminDraftRow)
-      .map((item) => ({
-        type: 'news',
-        id: item.id,
-        title: item.title || 'Ohne Titel',
-        slug: item.slug || '',
-        sortAt:
-          getAdminDraftSortAt(
-            item,
-            'news'
-          )
-      }));
+      .filter(isAdminDraftRow);
 
   const eventItems =
     (termineResult.data || [])
-      .filter(isAdminDraftRow)
-      .map((item) => ({
-        type: 'event',
-        id: item.id,
-        title: item.title || 'Ohne Titel',
-        slug: item.slug || '',
-        sortAt:
-          getAdminDraftSortAt(
-            item,
-            'event'
-          )
-      }));
+      .filter(isAdminDraftRow);
 
-  return [...newsItems, ...eventItems]
+  const creatorMap =
+    await fetchAdminMembersByIds([
+      ...newsItems.map((item) => item.created_by),
+      ...eventItems.map((item) => item.created_by)
+    ]);
+
+  const mappedNews =
+    newsItems.map((item) => ({
+      type: 'news',
+      id: item.id,
+      title: item.title || 'Ohne Titel',
+      slug: item.slug || '',
+      createdBy: item.created_by,
+      creatorLabel:
+        resolveAdminContentCreatorLabel(
+          item.created_by,
+          creatorMap
+        ),
+      sortAt:
+        getAdminDraftSortAt(
+          item,
+          'news'
+        )
+    }));
+
+  const mappedEvents =
+    eventItems.map((item) => ({
+      type: 'event',
+      id: item.id,
+      title: item.title || 'Ohne Titel',
+      slug: item.slug || '',
+      createdBy: item.created_by,
+      creatorLabel:
+        resolveAdminContentCreatorLabel(
+          item.created_by,
+          creatorMap
+        ),
+      sortAt:
+        getAdminDraftSortAt(
+          item,
+          'event'
+        )
+    }));
+
+  return [...mappedNews, ...mappedEvents]
     .sort((a, b) => {
 
       const aTime =
@@ -129,6 +151,58 @@ async function fetchAdminDrafts() {
       return (b.id || 0) - (a.id || 0);
 
     });
+
+}
+
+function formatDraftCreatorMeta(
+  draft
+) {
+
+  if (!draft?.creatorLabel) {
+    return '';
+  }
+
+  return `
+                  ·
+
+                  ${escapeAdminHtml(draft.creatorLabel)}
+  `.trim();
+
+}
+
+function renderDraftCreatorMetaHtml(
+  creatorLabel
+) {
+
+  if (!creatorLabel) {
+    return '';
+  }
+
+  return `
+    <p class="admin-draft-preview__meta">
+      👤 ${escapeAdminHtml(creatorLabel)}
+    </p>
+  `;
+
+}
+
+async function resolveAdminDraftCreatorLabel(
+  createdBy
+) {
+
+  if (!createdBy) {
+    return null;
+  }
+
+  const creatorMap =
+    await fetchAdminMembersByIds([
+      createdBy
+    ]);
+
+  return resolveAdminContentCreatorLabel(
+    createdBy,
+    creatorMap
+  );
 
 }
 
@@ -286,6 +360,8 @@ async function loadDraftsList() {
                   ·
 
                   Entwurf
+
+                  ${formatDraftCreatorMeta(draft)}
 
                 </div>
 
@@ -486,7 +562,10 @@ async function fetchAdminDraftByParams(
 
 }
 
-function renderAdminDraftPreviewNews(data) {
+function renderAdminDraftPreviewNews(
+  data,
+  creatorLabel
+) {
 
   const imageUrl =
     typeof resolveNewsImage === 'function'
@@ -513,6 +592,8 @@ function renderAdminDraftPreviewNews(data) {
       ${escapeAdminHtml(data.title || 'Ohne Titel')}
     </h1>
 
+    ${renderDraftCreatorMetaHtml(creatorLabel)}
+
     ${imageHtml}
 
     <div class="admin-draft-preview__body">
@@ -526,7 +607,10 @@ function renderAdminDraftPreviewNews(data) {
 
 }
 
-function renderAdminDraftPreviewEvent(event) {
+function renderAdminDraftPreviewEvent(
+  event,
+  creatorLabel
+) {
 
   const imageUrl =
     typeof resolveTerminImage === 'function'
@@ -576,6 +660,8 @@ function renderAdminDraftPreviewEvent(event) {
     <h1 class="admin-draft-preview__title">
       ${escapeAdminHtml(event.title || 'Ohne Titel')}
     </h1>
+
+    ${renderDraftCreatorMetaHtml(creatorLabel)}
 
     <p class="admin-draft-preview__meta">
       📅 ${
@@ -674,9 +760,20 @@ async function initDraftPreview() {
 
   }
 
+  const creatorLabel =
+    await resolveAdminDraftCreatorLabel(
+      data.created_by
+    );
+
   container.innerHTML =
     type === 'event'
-      ? renderAdminDraftPreviewEvent(data)
-      : renderAdminDraftPreviewNews(data);
+      ? renderAdminDraftPreviewEvent(
+        data,
+        creatorLabel
+      )
+      : renderAdminDraftPreviewNews(
+        data,
+        creatorLabel
+      );
 
 }

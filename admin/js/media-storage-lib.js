@@ -10,15 +10,297 @@ const MEDIA_STORAGE_ROOTS = [
     id: 'galleries',
     label: 'Galerien',
     path: 'galleries'
-  },
-
-  {
-    id: 'legacy',
-    label: 'Legacy (Root)',
-    path: ''
   }
 
 ];
+
+const mediaStoragePathResolveCache =
+  new Map();
+
+function mediaStorageBaseFileName(
+  fileName
+) {
+
+  return String(
+    fileName || ''
+  ).replace(
+    /^[0-9]+-/,
+    ''
+  );
+
+}
+
+function mediaStorageNamesMatch(
+  leftName,
+  rightName
+) {
+
+  if (
+    !leftName
+    || !rightName
+  ) {
+    return false;
+  }
+
+  if (leftName === rightName) {
+    return true;
+  }
+
+  return (
+    mediaStorageBaseFileName(
+      leftName
+    )
+    === mediaStorageBaseFileName(
+      rightName
+    )
+  );
+
+}
+
+function getMediaStorageFileSize(
+  item
+) {
+
+  const rawSize =
+    item?.metadata?.size
+    ?? item?.metadata?.contentLength
+    ?? 0;
+
+  const size =
+    Number(rawSize);
+
+  return Number.isFinite(size)
+    ? size
+    : 0;
+
+}
+
+function isMediaStorageShellFile(
+  file
+) {
+
+  if (!file) {
+    return false;
+  }
+
+  return (
+    file.size === 0
+    || file.size === '0'
+  );
+
+}
+
+async function getMediaStorageFileEntry(
+  path
+) {
+
+  const normalized =
+    normalizeMediaStorageBrowserPath(
+      path
+    );
+
+  if (!normalized) {
+    return null;
+  }
+
+  const prefix =
+    normalized.includes('/')
+      ? normalized.slice(
+        0,
+        normalized.lastIndexOf('/')
+      )
+      : '';
+
+  const rootId =
+    inferMediaStorageRootId(
+      normalized
+    );
+
+  try {
+
+    const listing =
+      await listMediaStorageEntries(
+        prefix,
+        { rootId }
+      );
+
+    return (
+      listing.files.find(
+        (file) =>
+          file.path === normalized
+      )
+      || null
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    return null;
+
+  }
+
+}
+
+async function discoverMediaStoragePathCandidates(
+  storagePath
+) {
+
+  const normalized =
+    normalizeMediaStorageBrowserPath(
+      storagePath
+    );
+
+  if (!normalized) {
+    return [];
+  }
+
+  const fileName =
+    normalized.split('/').pop();
+
+  const discovered = [];
+
+  const searchLocations = [
+    { prefix: 'shared', rootId: 'shared' },
+    { prefix: '', rootId: 'legacy' }
+  ];
+
+  for (const location of searchLocations) {
+
+    try {
+
+      const listing =
+        await listMediaStorageEntries(
+          location.prefix,
+          {
+            rootId:
+              location.rootId
+          }
+        );
+
+      listing.files.forEach(
+        (file) => {
+
+          if (
+            mediaStorageNamesMatch(
+              file.name,
+              fileName
+            )
+          ) {
+            discovered.push(
+              file.path
+            );
+          }
+
+        }
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  }
+
+  return [
+    ...new Set(
+      discovered.filter(Boolean)
+    )
+  ];
+
+}
+
+async function resolveActualMediaStoragePath(
+  storagePath
+) {
+
+  const normalized =
+    normalizeMediaStorageBrowserPath(
+      storagePath
+    );
+
+  if (!normalized) {
+    return storagePath;
+  }
+
+  if (
+    mediaStoragePathResolveCache.has(
+      normalized
+    )
+  ) {
+    return mediaStoragePathResolveCache.get(
+      normalized
+    );
+  }
+
+  const discovered =
+    await discoverMediaStoragePathCandidates(
+      normalized
+    );
+
+  const candidates =
+    [
+      ...new Set(
+        [
+          ...discovered,
+          ...buildMediaStoragePathCandidates(
+            normalized
+          )
+        ]
+      )
+    ];
+
+  let emptyFallback =
+    null;
+
+  for (const candidate of candidates) {
+
+    const entry =
+      await getMediaStorageFileEntry(
+        candidate
+      );
+
+    if (!entry) {
+      continue;
+    }
+
+    if (entry.size > 0) {
+
+      mediaStoragePathResolveCache.set(
+        normalized,
+        candidate
+      );
+
+      return candidate;
+
+    }
+
+    if (!emptyFallback) {
+      emptyFallback =
+        candidate;
+    }
+
+  }
+
+  const resolved =
+    emptyFallback
+    || normalized;
+
+  mediaStoragePathResolveCache.set(
+    normalized,
+    resolved
+  );
+
+  return resolved;
+
+}
+
+function invalidateMediaStoragePathResolveCache() {
+
+  mediaStoragePathResolveCache.clear();
+
+}
 
 let mediaStorageReferenceIndex = null;
 
@@ -238,6 +520,10 @@ async function listMediaStorageEntries(
     files.push({
       name: item.name,
       path: itemPath,
+      size:
+        getMediaStorageFileSize(
+          item
+        ),
       updatedAt:
         item.updated_at
         || item.created_at

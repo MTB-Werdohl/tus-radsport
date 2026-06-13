@@ -36,6 +36,20 @@ async function loadNews() {
 
   }
 
+  if (data.created_by) {
+
+    const creatorMap =
+      await fetchAdminMembersByIds([
+        data.created_by
+      ]);
+
+    showAdminContentCreatorHint(
+      data.created_by,
+      creatorMap
+    );
+
+  }
+
   document.getElementById('title').value =
     data.title || '';
 
@@ -193,6 +207,15 @@ async function saveNews() {
   if (imageStoragePath) {
     payload.image_storage_path =
       imageStoragePath;
+  }
+
+  const creator =
+    typeof getCurrentMember === 'function'
+      ? getCurrentMember()
+      : null;
+
+  if (creator?.id && !editId) {
+    payload.created_by = creator.id;
   }
 
   let error;

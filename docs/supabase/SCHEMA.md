@@ -133,6 +133,7 @@ SQL Profilbilder: [`supabase/supabase-member-avatars.sql`](supabase/supabase-mem
 | Spalte | Hinweis |
 |--------|---------|
 | `sichtbarkeit` | `public` \| `members` \| `draft` — **RLS-Leseregel** |
+| `created_by` | FK → `members.id` — Ersteller (Mitglied/Vorstand) |
 | `published` | Legacy; Admin schreibt parallel via `publishedFromVisibility()`; OG-Build fallback |
 | `image_storage_path` | Relativer Pfad im Bucket `media` (Phase 0 Medien-Storage); Legacy: `image` URL |
 
@@ -147,6 +148,7 @@ SQL Profilbilder: [`supabase/supabase-member-avatars.sql`](supabase/supabase-mem
 | `recurring`, `daysOfWeek`, `startTime`, `startRecur`, `endRecur`, `exclude` | Wiederkehrend |
 | `durationDays` | Wiederkehrend: aufeinanderfolgende Tage pro Termin (optional, >1) |
 | `sichtbarkeit` | `public` \| `members` \| `draft` |
+| `created_by` | FK → `members.id` — Ersteller (Mitglied/Vorstand) |
 | `image`, `gpx` | Legacy: volle Public-URL |
 | `image_storage_path`, `gpx_storage_path` | Relativer Pfad im Bucket `media` (Phase 0 Medien-Storage) |
 

@@ -209,7 +209,8 @@ function buildMediaFileContextMenuItems(
 
   const publicUrl =
     resolveMediaPublicUrl(
-      file.path
+      file.resolvedPath
+      || file.path
     ) || '';
 
   const canMove =
@@ -221,6 +222,9 @@ function buildMediaFileContextMenuItems(
     canDeleteMediaStoragePath(
       file.path
     );
+
+  const needsRepair =
+    isMediaStorageShellFile(file);
 
   const items = [];
 
@@ -263,6 +267,23 @@ function buildMediaFileContextMenuItems(
         );
       }
     });
+
+  }
+
+  if (needsRepair) {
+
+    items.push(
+      { separator: true },
+      {
+        id: 'repair',
+        label: 'Inhalt wiederherstellen',
+        action: () => {
+          promptRepairMediaStorageFile(
+            file
+          );
+        }
+      }
+    );
 
   }
 
@@ -1197,6 +1218,17 @@ function getMediaBrowserFileFromElement(
 
   return {
     path,
+    resolvedPath:
+      element.dataset.mediaResolvedPath
+      || path,
+    size:
+      Number(
+        element.dataset.mediaFileSize
+      ) || 0,
+    resolvedSize:
+      Number(
+        element.dataset.mediaResolvedSize
+      ) || 0,
     kind:
       element.dataset.mediaFileKind
       || classifyMediaStoragePath(

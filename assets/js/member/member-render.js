@@ -285,6 +285,10 @@ function renderMemberProfileTabsNav(
       label: 'Profil'
     },
     {
+      id: 'content',
+      label: 'Content'
+    },
+    {
       id: 'abstimmungen',
       label: 'Teilnahmen'
     },
@@ -997,6 +1001,18 @@ ${renderMemberProfileTabsNav(
   ${activeTab !== 'profil' ? 'hidden' : ''}>
 
   ${renderClubMemberProfilContent(member)}
+
+</div>
+
+<div
+  id="member-profile-tab-content"
+  class="member-profile-tab-panel"
+  role="tabpanel"
+  aria-labelledby="member-profile-tab-btn-content"
+  data-profile-panel="content"
+  ${activeTab !== 'content' ? 'hidden' : ''}>
+
+  ${renderMemberContentPanelShell()}
 
 </div>
 

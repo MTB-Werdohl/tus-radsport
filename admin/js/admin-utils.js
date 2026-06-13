@@ -275,6 +275,122 @@ function formatMemberLastLogin(value) {
 
 }
 
+function formatAdminContentCreatorLabel(
+  member
+) {
+
+  if (!member) {
+    return 'Unbekannt';
+  }
+
+  if (member.anonymized_at) {
+    return 'Anonym (gelöscht)';
+  }
+
+  const parts = [
+    member.vorname,
+    member.nachname
+  ].filter(Boolean);
+
+  if (parts.length) {
+    return parts.join(' ');
+  }
+
+  if (member.email) {
+    return member.email;
+  }
+
+  return 'Unbekannt';
+
+}
+
+async function fetchAdminMembersByIds(
+  memberIds
+) {
+
+  const ids = [
+    ...new Set(
+      (memberIds || [])
+        .filter((id) => id != null)
+    )
+  ];
+
+  if (!ids.length) {
+    return new Map();
+  }
+
+  const { data, error } =
+    await window.supabaseClient
+      .from(
+        window.siteConfig.tables.members
+      )
+      .select(
+        'id, vorname, nachname, email, anonymized_at'
+      )
+      .in('id', ids);
+
+  if (error) {
+
+    console.error(error);
+
+    return new Map();
+
+  }
+
+  const map = new Map();
+
+  (data || []).forEach((member) => {
+    map.set(member.id, member);
+  });
+
+  return map;
+
+}
+
+function resolveAdminContentCreatorLabel(
+  memberId,
+  creatorMap
+) {
+
+  if (!memberId) {
+    return null;
+  }
+
+  return formatAdminContentCreatorLabel(
+    creatorMap?.get(memberId)
+  );
+
+}
+
+function showAdminContentCreatorHint(
+  memberId,
+  creatorMap
+) {
+
+  const hint =
+    document.querySelector(
+      '#admin .page-header p'
+    );
+
+  if (!hint || !memberId) {
+    return;
+  }
+
+  const label =
+    resolveAdminContentCreatorLabel(
+      memberId,
+      creatorMap
+    );
+
+  if (!label) {
+    return;
+  }
+
+  hint.textContent =
+    `Erstellt von ${label}`;
+
+}
+
 function memberHasLoggedIn(member) {
 
   return !!member?.last_login_at;

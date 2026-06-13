@@ -240,30 +240,70 @@ async function renderMediaBrowserDetail() {
   const filePath =
     mediaBrowserSelectedFilePath;
 
+  container.innerHTML =
+    '<p class="admin-hint">Details werden geladen …</p>';
+
+  const resolvedPath =
+    await resolveActualMediaStoragePath(
+      filePath
+    );
+
+  const [
+    targetEntry,
+    resolvedEntry
+  ] =
+    await Promise.all([
+      getMediaStorageFileEntry(
+        filePath
+      ),
+      getMediaStorageFileEntry(
+        resolvedPath
+      )
+    ]);
+
+  const targetSize =
+    targetEntry?.size || 0;
+
+  const resolvedSize =
+    resolvedEntry?.size || 0;
+
+  const isShell =
+    isMediaStorageShellFile(
+      { size: targetSize }
+    );
+
+  const repairSource =
+    isShell
+      ? await findMediaRepairSourcePath(
+        filePath
+      )
+      : null;
+
   const fileKind =
     classifyMediaStoragePath(
-      filePath
+      resolvedPath
     );
 
   const file = {
     path: filePath,
     kind: fileKind,
     name:
-      formatMediaFileLabel(
-        filePath
+      resolvedPath.split('/').pop()
+      || formatMediaFileLabel(
+        resolvedPath
       )
   };
 
   const publicUrl =
     resolveMediaPublicUrl(
-      filePath
+      resolvedPath
     ) || '';
 
   const isLegacy =
-    !filePath.includes('/');
+    !resolvedPath.includes('/');
 
-  container.innerHTML =
-    '<p class="admin-hint">Details werden geladen …</p>';
+  const pathMismatch =
+    resolvedPath !== filePath;
 
   let referencesHtml =
     '<p class="admin-hint">Referenzen werden geladen …</p>';
@@ -312,12 +352,26 @@ ${renderMediaBrowserDetailPreview(
 
 <dl class="admin-media-detail__meta">
 
+  ${
+    pathMismatch
+      ? `
   <dt>
-    Pfad
+    Referenz
   </dt>
 
   <dd>
     ${escapeAdminHtml(filePath)}
+  </dd>
+      `.trim()
+      : ''
+  }
+
+  <dt>
+    ${pathMismatch ? 'Speicherort' : 'Pfad'}
+  </dt>
+
+  <dd>
+    ${escapeAdminHtml(resolvedPath)}
   </dd>
 
   <dt>
@@ -331,6 +385,57 @@ ${renderMediaBrowserDetailPreview(
       )
     )}
   </dd>
+
+  <dt>
+    Größe
+  </dt>
+
+  <dd>
+    ${escapeAdminHtml(
+      formatMediaStorageFileSize(
+        targetSize
+      )
+    )}
+    ${
+      isShell
+        ? ' <span class="admin-media-badge admin-media-badge--shell">Leer</span>'
+        : ''
+    }
+  </dd>
+
+  ${
+    pathMismatch
+    && resolvedSize > 0
+      ? `
+  <dt>
+    Vorschau aus
+  </dt>
+
+  <dd>
+    ${escapeAdminHtml(resolvedPath)}
+    (${escapeAdminHtml(
+      formatMediaStorageFileSize(
+        resolvedSize
+      )
+    )})
+  </dd>
+      `.trim()
+      : ''
+  }
+
+  ${
+    isShell
+      ? `
+<p class="admin-hint admin-hint--error">
+  ${
+    repairSource
+      ? `Leere Datei (0 Byte) — typisch nach Backfill-Move. Original vermutlich unter <strong>${escapeAdminHtml(repairSource)}</strong>. Rechtsklick → „Inhalt wiederherstellen“.`
+      : 'Leere Datei (0 Byte) — kein Original im Storage gefunden. Bild neu hochladen oder aus Backup importieren.'
+  }
+</p>
+      `.trim()
+      : ''
+  }
 
   ${
     publicUrl
@@ -356,6 +461,16 @@ ${renderMediaBrowserDetailPreview(
   }
 
 </dl>
+
+${
+  publicUrl
+    ? ''
+    : `
+<p class="admin-hint admin-hint--error">
+  Keine öffentliche URL — Datei im Storage nicht gefunden.
+</p>
+    `.trim()
+}
 
 <section class="admin-media-detail__section">
 

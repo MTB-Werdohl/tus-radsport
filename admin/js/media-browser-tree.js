@@ -52,6 +52,10 @@ function invalidateMediaBrowserTreeCache(
 
 
 
+  invalidateMediaStoragePathResolveCache();
+
+
+
   if (!pathPrefix) {
 
     mediaBrowserTreeCache.clear();
@@ -319,29 +323,13 @@ function syncMediaBrowserTreeSelection() {
 
 
 function renderMediaBrowserTreeIcon(
-
-  file
-
+  file,
+  publicUrl
 ) {
 
-
-
-  const publicUrl =
-
-    resolveMediaPublicUrl(
-
-      file.path
-
-    ) || '';
-
-
-
   if (
-
     file.kind === 'image'
-
     && publicUrl
-
   ) {
 
 
@@ -403,44 +391,33 @@ function renderMediaBrowserTreeIcon(
 
 
 function renderMediaBrowserFileTreeNode(
-
   file,
-
   rootId,
-
-  depth
-
+  depth,
+  resolvedPath,
+  publicUrl,
+  resolvedSize
 ) {
 
-
-
   const isLegacy =
-
     !file.path.includes('/');
 
-
-
   const canMove =
-
     canMoveMediaStoragePath(
-
       file.path
-
     );
-
-
 
   const fileName =
-
     escapeAdminHtml(
-
-      formatMediaFileLabel(
-
-        file.path
-
-      )
-
+      file.name
+      || file.path.split('/').pop()
+      || file.path
     );
+
+  const shellBadge =
+    isMediaStorageShellFile(file)
+      ? '<span class="admin-media-badge admin-media-badge--shell">Leer</span>'
+      : '';
 
 
 
@@ -516,6 +493,12 @@ function renderMediaBrowserFileTreeNode(
 
     data-media-file-path="${escapeAdminHtml(file.path)}"
 
+    data-media-resolved-path="${escapeAdminHtml(resolvedPath)}"
+
+    data-media-file-size="${file.size || 0}"
+
+    data-media-resolved-size="${resolvedSize || 0}"
+
     data-media-file-kind="${escapeAdminHtml(file.kind)}"
 
     data-media-tree-file-select="${escapeAdminHtml(file.path)}"
@@ -536,7 +519,10 @@ function renderMediaBrowserFileTreeNode(
 
 
 
-    ${renderMediaBrowserTreeIcon(file)}
+    ${renderMediaBrowserTreeIcon(
+      file,
+      publicUrl
+    )}
 
 
 
@@ -545,6 +531,8 @@ function renderMediaBrowserFileTreeNode(
       ${fileName}
 
       ${legacyBadge}
+
+      ${shellBadge}
 
     </span>
 
@@ -731,21 +719,41 @@ async function renderMediaBrowserTreeNode(
 
 
     const fileNodes =
+      await Promise.all(
+        (listing.files || []).map(
+          async (file) => {
 
-      (listing.files || []).map(
+            const resolvedPath =
+              await resolveActualMediaStoragePath(
+                file.path
+              );
 
-        (file) =>
+            const resolvedEntry =
+              await getMediaStorageFileEntry(
+                resolvedPath
+              );
 
-          renderMediaBrowserFileTreeNode(
+            const publicUrl =
+              resolveMediaPublicUrl(
+                resolvedPath,
+                {
+                  updatedAt:
+                    resolvedEntry?.updatedAt
+                    || file.updatedAt
+                }
+              ) || '';
 
-            file,
+            return renderMediaBrowserFileTreeNode(
+              file,
+              rootId,
+              depth + 1,
+              resolvedPath,
+              publicUrl,
+              resolvedEntry?.size || 0
+            );
 
-            rootId,
-
-            depth + 1
-
-          )
-
+          }
+        )
       );
 
 

@@ -371,9 +371,14 @@ async function moveMediaStorageFileToFolder(
   fileKind
 ) {
 
+  const resolvedSource =
+    await resolveActualMediaStoragePath(
+      sourcePath
+    );
+
   const currentPath =
     normalizeMediaStorageBrowserPath(
-      sourcePath
+      resolvedSource
     );
 
   const targetFolder =
@@ -471,6 +476,8 @@ async function moveMediaStorageFileToFolder(
   if (
     mediaBrowserSelectedFilePath
     === currentPath
+    || mediaBrowserSelectedFilePath
+    === sourcePath
   ) {
     mediaBrowserSelectedFilePath =
       newPath;
@@ -530,9 +537,14 @@ async function promptMoveMediaStorageFile(
   file
 ) {
 
+  const resolvedPath =
+    await resolveActualMediaStoragePath(
+      file.path
+    );
+
   const currentPath =
     normalizeMediaStorageBrowserPath(
-      file.path
+      resolvedPath
     );
 
   if (
@@ -642,9 +654,14 @@ async function promptRenameMediaStorageFile(
   file
 ) {
 
+  const resolvedPath =
+    await resolveActualMediaStoragePath(
+      file.path
+    );
+
   const currentPath =
     normalizeMediaStorageBrowserPath(
-      file.path
+      resolvedPath
     );
 
   if (
@@ -770,9 +787,14 @@ async function promptDeleteMediaStorageFile(
   file
 ) {
 
+  const resolvedPath =
+    await resolveActualMediaStoragePath(
+      file.path
+    );
+
   const currentPath =
     normalizeMediaStorageBrowserPath(
-      file.path
+      resolvedPath
     );
 
   if (
@@ -898,6 +920,246 @@ async function promptDeleteMediaStorageFile(
     window.alert(
       error.message
       || 'Löschen fehlgeschlagen.'
+    );
+
+  }
+
+}
+
+function formatMediaStorageFileSize(
+  size
+) {
+
+  const bytes =
+    Number(size) || 0;
+
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
+
+  if (bytes < 1024 * 1024) {
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
+
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+
+}
+
+function guessMediaStorageContentType(
+  path
+) {
+
+  const lower =
+    String(path || '')
+      .toLowerCase();
+
+  if (lower.endsWith('.png')) {
+    return 'image/png';
+  }
+
+  if (
+    lower.endsWith('.jpg')
+    || lower.endsWith('.jpeg')
+  ) {
+    return 'image/jpeg';
+  }
+
+  if (lower.endsWith('.webp')) {
+    return 'image/webp';
+  }
+
+  if (lower.endsWith('.gif')) {
+    return 'image/gif';
+  }
+
+  if (lower.endsWith('.gpx')) {
+    return 'application/gpx+xml';
+  }
+
+  return 'application/octet-stream';
+
+}
+
+async function copyMediaStorageBlob(
+  sourcePath,
+  targetPath
+) {
+
+  const source =
+    normalizeMediaStorageBrowserPath(
+      sourcePath
+    );
+
+  const target =
+    normalizeMediaStorageBrowserPath(
+      targetPath
+    );
+
+  const bucket =
+    getMediaStorageBucket();
+
+  const { data, error } =
+    await window.supabaseClient
+      .storage
+      .from(bucket)
+      .download(source);
+
+  if (error) {
+    throw error;
+  }
+
+  const { error: uploadError } =
+    await window.supabaseClient
+      .storage
+      .from(bucket)
+      .upload(
+        target,
+        data,
+        {
+          upsert: true,
+          contentType:
+            data.type
+            || guessMediaStorageContentType(
+              target
+            )
+        }
+      );
+
+  if (uploadError) {
+    throw uploadError;
+  }
+
+}
+
+async function findMediaRepairSourcePath(
+  targetPath
+) {
+
+  const target =
+    normalizeMediaStorageBrowserPath(
+      targetPath
+    );
+
+  const candidates =
+    [
+      ...new Set(
+        [
+          ...(await discoverMediaStoragePathCandidates(
+            target
+          )),
+          ...buildMediaStoragePathCandidates(
+            target
+          )
+        ]
+      )
+    ];
+
+  for (const candidate of candidates) {
+
+    if (candidate === target) {
+      continue;
+    }
+
+    const entry =
+      await getMediaStorageFileEntry(
+        candidate
+      );
+
+    if (
+      entry
+      && entry.size > 0
+    ) {
+      return candidate;
+    }
+
+  }
+
+  return null;
+
+}
+
+async function repairMediaStorageShell(
+  targetPath
+) {
+
+  const target =
+    normalizeMediaStorageBrowserPath(
+      targetPath
+    );
+
+  const sourcePath =
+    await findMediaRepairSourcePath(
+      target
+    );
+
+  if (!sourcePath) {
+    throw new Error(
+      'Keine Quelldatei mit Inhalt gefunden. Prüfe shared/ (z. B. Datei mit Zeitstempel-Prefix) oder lade das Bild neu hoch.'
+    );
+  }
+
+  await copyMediaStorageBlob(
+    sourcePath,
+    target
+  );
+
+  invalidateMediaStoragePathResolveCache();
+
+  return {
+    sourcePath,
+    targetPath: target
+  };
+
+}
+
+async function promptRepairMediaStorageFile(
+  file
+) {
+
+  const targetPath =
+    normalizeMediaStorageBrowserPath(
+      file.path
+    );
+
+  const sourcePath =
+    await findMediaRepairSourcePath(
+      targetPath
+    );
+
+  if (!sourcePath) {
+    window.alert(
+      'Keine Quelldatei mit Inhalt gefunden.\n\nTypisch nach Backfill: Original liegt noch unter shared/ mit Zeitstempel (z. B. 1731378609-datei.png). Alternativ Bild neu hochladen.'
+    );
+    return;
+  }
+
+  if (
+    !window.confirm(
+      `Leere Datei reparieren?\n\nQuelle: ${sourcePath}\nZiel: ${targetPath}`
+    )
+  ) {
+    return;
+  }
+
+  try {
+
+    await repairMediaStorageShell(
+      targetPath
+    );
+
+    await refreshMediaBrowserAfterMutation();
+
+    window.alert(
+      'Inhalt wiederhergestellt.'
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    window.alert(
+      error.message
+      || 'Reparatur fehlgeschlagen.'
     );
 
   }

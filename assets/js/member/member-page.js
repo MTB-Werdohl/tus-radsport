@@ -498,6 +498,12 @@ function switchMemberProfileTab(
     void loadMemberActivitiesIfNeeded();
   }
 
+  if (tabId === 'content') {
+    void loadMemberContentListIfNeeded(
+      getCurrentMember()
+    );
+  }
+
 }
 
 async function reloadStravaProfileView(
@@ -547,6 +553,13 @@ async function reloadStravaProfileView(
 
     if (profileActiveTab === 'abstimmungen') {
       void loadMemberVotesIfNeeded(true);
+    }
+
+    if (profileActiveTab === 'content') {
+      void loadMemberContentListIfNeeded(
+        member,
+        true
+      );
     }
 
   }
@@ -1446,6 +1459,15 @@ async function loadMemberProfilePage() {
       profileStravaState =
         await fetchStravaProfileStatus();
 
+      const urlTab =
+        new URLSearchParams(
+          window.location.search
+        ).get('tab');
+
+      if (urlTab === 'content') {
+        profileActiveTab = 'content';
+      }
+
       profileActiveTab =
         resolveMemberProfileActiveTab(
           profileActiveTab,
@@ -1484,6 +1506,13 @@ async function loadMemberProfilePage() {
 
       if (profileActiveTab === 'abstimmungen') {
         void loadMemberVotesIfNeeded(true);
+      }
+
+      if (profileActiveTab === 'content') {
+        void loadMemberContentListIfNeeded(
+          member,
+          true
+        );
       }
 
     }
