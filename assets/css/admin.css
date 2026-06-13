@@ -1220,6 +1220,237 @@ h3 {
   gap: 1rem;
 }
 
+.admin-media-explorer {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.admin-media-explorer__tree-toggle {
+  display: none;
+}
+
+.admin-media-explorer__tree-backdrop {
+  display: none;
+}
+
+.admin-media-explorer__tree-panel {
+  position: sticky;
+  top: 1rem;
+  max-height: calc(100vh - 8rem);
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.admin-media-explorer__tree-header {
+  display: none;
+}
+
+.admin-media-explorer__tree {
+  padding: 0.75rem;
+}
+
+.admin-media-explorer__workspace {
+  min-width: 0;
+}
+
+.admin-media-explorer__hint {
+  margin: 0;
+}
+
+.admin-media-browser__toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.admin-media-tree {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-media-tree__children {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-media-tree__row {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding-left: calc(var(--tree-depth, 0) * 0.85rem);
+}
+
+.admin-media-tree__toggle {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: none;
+  background: transparent;
+  color: #ccc;
+  cursor: pointer;
+  font: inherit;
+  flex-shrink: 0;
+}
+
+.admin-media-tree__label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 1;
+  min-width: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: #eee;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  padding: 0.35rem 0.45rem;
+}
+
+.admin-media-tree__label.is-selected {
+  background: rgba(237, 28, 36, 0.16);
+  border-color: rgba(237, 28, 36, 0.35);
+}
+
+.admin-media-tree__text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-media-explorer-item {
+  position: relative;
+}
+
+.admin-media-explorer-item--folder {
+  display: grid;
+  grid-template-columns: 2rem 2rem minmax(0, 1fr) auto;
+  gap: 0.65rem;
+  align-items: center;
+}
+
+.admin-media-browser__row.admin-media-explorer-item {
+  grid-template-columns: 2rem 72px minmax(0, 1fr) auto;
+}
+
+.admin-media-explorer-item__handle {
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ddd;
+  border-radius: 6px;
+  cursor: grab;
+  font: inherit;
+  line-height: 1;
+  padding: 0.35rem 0.45rem;
+  touch-action: none;
+}
+
+.admin-media-explorer-item__handle--spacer {
+  display: block;
+  background: transparent;
+  cursor: default;
+}
+
+.admin-media-explorer-item__handle:active {
+  cursor: grabbing;
+}
+
+.admin-media-explorer-item__menu {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  line-height: 1;
+  padding: 0.45rem 0.65rem;
+}
+
+.admin-media-explorer-item__folder-icon {
+  font-size: 1.2rem;
+}
+
+.admin-media-explorer-item__folder-open {
+  border: none;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  padding: 0;
+}
+
+.admin-media-explorer-item--dragging {
+  opacity: 0.55;
+}
+
+.admin-media-drop-target--active {
+  outline: 2px dashed rgba(237, 28, 36, 0.75);
+  outline-offset: 2px;
+  background: rgba(237, 28, 36, 0.08);
+}
+
+.admin-media-context-menu {
+  position: fixed;
+  z-index: 1200;
+  min-width: 11rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  background: #1f1f1f;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  padding: 0.35rem;
+}
+
+.admin-media-context-menu.is-sheet {
+  left: 0 !important;
+  right: 0;
+  bottom: 0;
+  top: auto !important;
+  width: auto;
+  min-width: 0;
+  border-radius: 14px 14px 0 0;
+  padding: 0.5rem 0.5rem calc(0.75rem + env(safe-area-inset-bottom));
+}
+
+.admin-media-context-menu__item {
+  display: block;
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+}
+
+.admin-media-context-menu__item:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.admin-media-context-menu__item--danger {
+  color: #ffb4b4;
+}
+
+.admin-media-context-menu__item:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.admin-media-context-menu__sep {
+  height: 1px;
+  margin: 0.25rem 0.35rem;
+  background: rgba(255, 255, 255, 0.1);
+}
+
 .admin-media-browser__toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -1383,8 +1614,87 @@ h3 {
 
 @media (max-width: 760px) {
 
-  .admin-media-browser__row {
+  .admin-media-explorer {
     grid-template-columns: 1fr;
+  }
+
+  .admin-media-explorer__tree-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    width: auto;
+    margin-bottom: 0.25rem;
+  }
+
+  .admin-media-explorer__tree-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 900;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .admin-media-explorer__tree-backdrop.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .admin-media-explorer__tree-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(88vw, 320px);
+    max-height: none;
+    z-index: 950;
+    transform: translateX(-105%);
+    transition: transform 0.22s ease;
+    border-radius: 0;
+  }
+
+  .admin-media-explorer__tree-panel.is-open {
+    transform: translateX(0);
+  }
+
+  .admin-media-explorer__tree-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.85rem 0.85rem 0.35rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .admin-media-explorer__tree-close {
+    border: none;
+    background: transparent;
+    color: #ccc;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+
+  .admin-media-browser__row {
+    grid-template-columns: 2rem 1fr;
+    grid-template-areas:
+      "handle meta"
+      "handle menu";
+  }
+
+  .admin-media-browser__row.admin-media-explorer-item .admin-media-browser__thumb,
+  .admin-media-browser__row.admin-media-explorer-item .admin-media-browser__thumb--file {
+    display: none;
+  }
+
+  .admin-media-browser__row.admin-media-explorer-item .admin-media-browser__meta {
+    grid-area: meta;
+  }
+
+  .admin-media-browser__row.admin-media-explorer-item .admin-media-explorer-item__menu {
+    grid-area: menu;
+    justify-self: start;
   }
 
   .admin-media-browser__actions {

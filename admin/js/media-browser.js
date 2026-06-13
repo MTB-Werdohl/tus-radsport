@@ -94,7 +94,7 @@ function renderMediaBrowserRoots() {
     .querySelectorAll('[data-media-root]')
     .forEach((button) => {
 
-      button.addEventListener('click', () => {
+      button.addEventListener('click', async () => {
 
         const rootId =
           button.dataset.mediaRoot;
@@ -110,8 +110,17 @@ function renderMediaBrowserRoots() {
         mediaBrowserCurrentPath =
           root.path;
 
+        mediaBrowserTreeExpanded.clear();
+
+        if (root.path) {
+          mediaBrowserTreeExpanded.add(
+            root.path
+          );
+        }
+
         renderMediaBrowserRoots();
-        loadMediaBrowserView();
+        await renderMediaBrowserTree();
+        await loadMediaBrowserView();
 
       });
 
@@ -210,12 +219,13 @@ function renderMediaBrowserBreadcrumb() {
     .querySelectorAll('[data-media-path]')
     .forEach((button) => {
 
-      button.addEventListener('click', () => {
+      button.addEventListener('click', async () => {
 
         mediaBrowserCurrentPath =
           button.dataset.mediaPath || '';
 
-        loadMediaBrowserView();
+        syncMediaBrowserTreeSelection();
+        await loadMediaBrowserView();
 
       });
 
@@ -273,55 +283,6 @@ function renderMediaBrowserFileRow(
       file.path
     );
 
-  const canDelete =
-    canDeleteMediaStoragePath(
-      file.path
-    );
-
-  const manageActionsHtml =
-    canMove || canDelete
-      ? `
-    ${
-      canMove
-        ? `
-    <button
-      type="button"
-      class="secondary-button"
-      data-media-rename="${escapeAdminHtml(file.path)}">
-
-      Umbenennen
-
-    </button>
-
-    <button
-      type="button"
-      class="secondary-button"
-      data-media-move="${escapeAdminHtml(file.path)}">
-
-      Verschieben
-
-    </button>
-        `
-        : ''
-    }
-
-    ${
-      canDelete
-        ? `
-    <button
-      type="button"
-      class="danger-button"
-      data-media-delete="${escapeAdminHtml(file.path)}">
-
-      Löschen
-
-    </button>
-        `
-        : ''
-    }
-      `
-      : '';
-
   const previewHtml =
     file.kind === 'image'
       && publicUrl
@@ -338,7 +299,30 @@ function renderMediaBrowserFileRow(
       `;
 
   return `
-<article class="admin-media-browser__row">
+<article
+  class="admin-media-browser__row admin-media-explorer-item"
+  data-media-file-path="${escapeAdminHtml(file.path)}"
+  data-media-file-kind="${escapeAdminHtml(file.kind)}"
+  draggable="${canMove ? 'true' : 'false'}">
+
+  ${
+    canMove
+      ? `
+  <button
+    type="button"
+    class="admin-media-explorer-item__handle"
+    data-media-drag-handle
+    aria-label="Verschieben"
+    title="Ziehen zum Verschieben">
+
+    ☰
+
+  </button>
+      `
+      : `
+  <span class="admin-media-explorer-item__handle admin-media-explorer-item__handle--spacer"></span>
+      `
+  }
 
   ${previewHtml}
 
@@ -375,45 +359,16 @@ function renderMediaBrowserFileRow(
 
   </div>
 
-  <div class="admin-media-browser__actions">
+  <button
+    type="button"
+    class="admin-media-explorer-item__menu"
+    data-media-context-trigger
+    aria-label="Aktionen"
+    title="Aktionen">
 
-    <button
-      type="button"
-      class="secondary-button"
-      data-copy-path="${escapeAdminHtml(file.path)}">
+    ⋮
 
-      Pfad kopieren
-
-    </button>
-
-    ${
-      publicUrl
-        ? `
-    <button
-      type="button"
-      class="secondary-button"
-      data-copy-url="${escapeAdminHtml(publicUrl)}">
-
-      URL kopieren
-
-    </button>
-
-    <a
-      class="secondary-button"
-      href="${escapeAdminHtml(publicUrl)}"
-      target="_blank"
-      rel="noopener">
-
-      Öffnen
-
-    </a>
-        `
-        : ''
-    }
-
-    ${manageActionsHtml}
-
-  </div>
+  </button>
 
 </article>
   `.trim();
@@ -424,139 +379,57 @@ function renderMediaBrowserFolderRow(
   folder
 ) {
 
-  return `
-<button
-  type="button"
-  class="admin-media-browser__folder"
-  data-media-folder="${escapeAdminHtml(folder.path)}">
-
-  📁 ${escapeAdminHtml(folder.name)}
-
-</button>
-  `.trim();
-
-}
-
-function bindMediaBrowserListActions(
-  container,
-  files
-) {
-
-  const fileByPath =
-    new Map(
-      (files || []).map((file) => [
-        file.path,
-        file
-      ])
+  const canDrop =
+    canDropMediaFileOnFolderTarget(
+      folder.path
     );
 
-  container
-    .querySelectorAll('[data-media-folder]')
-    .forEach((button) => {
+  return `
+<article
+  class="admin-media-browser__folder admin-media-explorer-item admin-media-explorer-item--folder${
+    canDrop
+      ? ' admin-media-drop-target'
+      : ''
+  }"
+  data-media-folder-path="${escapeAdminHtml(folder.path)}"
+  data-media-drop-folder="${escapeAdminHtml(folder.path)}">
 
-      button.addEventListener('click', () => {
+  <span
+    class="admin-media-explorer-item__handle admin-media-explorer-item__handle--spacer"
+    aria-hidden="true">
 
-        mediaBrowserCurrentPath =
-          button.dataset.mediaFolder || '';
+  </span>
 
-        loadMediaBrowserView();
+  <span
+    class="admin-media-explorer-item__folder-icon"
+    aria-hidden="true">
 
-      });
+    📁
 
-    });
+  </span>
 
-  container
-    .querySelectorAll('[data-copy-path]')
-    .forEach((button) => {
+  <button
+    type="button"
+    class="admin-media-explorer-item__folder-open"
+    data-media-folder-open="${escapeAdminHtml(folder.path)}">
 
-      button.addEventListener('click', () => {
+    ${escapeAdminHtml(folder.name)}
 
-        copyTextToClipboard(
-          button.dataset.copyPath,
-          'Pfad kopiert.'
-        );
+  </button>
 
-      });
+  <button
+    type="button"
+    class="admin-media-explorer-item__menu"
+    data-media-context-trigger
+    aria-label="Aktionen"
+    title="Aktionen">
 
-    });
+    ⋮
 
-  container
-    .querySelectorAll('[data-copy-url]')
-    .forEach((button) => {
+  </button>
 
-      button.addEventListener('click', () => {
-
-        copyTextToClipboard(
-          button.dataset.copyUrl,
-          'URL kopiert.'
-        );
-
-      });
-
-    });
-
-  container
-    .querySelectorAll('[data-media-rename]')
-    .forEach((button) => {
-
-      button.addEventListener('click', () => {
-
-        const file =
-          fileByPath.get(
-            button.dataset.mediaRename
-          );
-
-        if (file) {
-          promptRenameMediaStorageFile(
-            file
-          );
-        }
-
-      });
-
-    });
-
-  container
-    .querySelectorAll('[data-media-move]')
-    .forEach((button) => {
-
-      button.addEventListener('click', () => {
-
-        const file =
-          fileByPath.get(
-            button.dataset.mediaMove
-          );
-
-        if (file) {
-          promptMoveMediaStorageFile(
-            file
-          );
-        }
-
-      });
-
-    });
-
-  container
-    .querySelectorAll('[data-media-delete]')
-    .forEach((button) => {
-
-      button.addEventListener('click', () => {
-
-        const file =
-          fileByPath.get(
-            button.dataset.mediaDelete
-          );
-
-        if (file) {
-          promptDeleteMediaStorageFile(
-            file
-          );
-        }
-
-      });
-
-    });
+</article>
+  `.trim();
 
 }
 
@@ -580,11 +453,30 @@ async function loadMediaBrowserView() {
   }
 
   renderMediaBrowserBreadcrumb();
+  updateMediaBrowserUploadButtonState();
+  syncMediaBrowserTreeSelection();
 
   statusEl.textContent =
     'Medien werden geladen …';
 
   listEl.innerHTML = '';
+
+  const currentCanDrop =
+    canDropMediaFileOnFolderTarget(
+      mediaBrowserCurrentPath
+    );
+
+  listEl.classList.toggle(
+    'admin-media-drop-target',
+    currentCanDrop
+  );
+
+  if (currentCanDrop) {
+    listEl.dataset.mediaDropFolder =
+      mediaBrowserCurrentPath;
+  } else {
+    delete listEl.dataset.mediaDropFolder;
+  }
 
   try {
 
@@ -631,12 +523,18 @@ async function loadMediaBrowserView() {
       || `
 <p class="admin-hint">
   Keine passenden Dateien für den gewählten Filter.
+  ${
+    currentCanDrop
+      ? ' Dateien hierher ziehen zum Hochladen.'
+      : ''
+  }
 </p>
       `.trim();
 
-    bindMediaBrowserListActions(
-      listEl,
-      files
+    bindMediaBrowserExplorerRoot(
+      document.getElementById(
+        'media-browser-workspace'
+      )
     );
 
   } catch (error) {
@@ -661,6 +559,9 @@ async function loadMediaBrowserView() {
 async function initMediaBrowser() {
 
   renderMediaBrowserRoots();
+  bindMediaBrowserTreeDrawer();
+  bindMediaBrowserUploadControl();
+  bindMediaBrowserTreeDropTargets();
 
   document
     .getElementById('media-browser-filter')
@@ -672,6 +573,12 @@ async function initMediaBrowser() {
       loadMediaBrowserView();
 
     });
+
+  bindMediaBrowserExplorerRoot(
+    document.getElementById(
+      'media-browser-workspace'
+    )
+  );
 
   try {
 
@@ -688,6 +595,7 @@ async function initMediaBrowser() {
 
   }
 
+  await renderMediaBrowserTree();
   await loadMediaBrowserView();
 
 }

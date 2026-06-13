@@ -280,7 +280,164 @@ async function refreshMediaBrowserAfterMutation() {
     true
   );
 
+  invalidateMediaBrowserTreeCache();
+
+  await renderMediaBrowserTree();
+
   await loadMediaBrowserView();
+
+}
+
+async function moveMediaStorageFileToFolder(
+  sourcePath,
+  targetFolderPath,
+  fileKind
+) {
+
+  const currentPath =
+    normalizeMediaStorageBrowserPath(
+      sourcePath
+    );
+
+  const targetFolder =
+    normalizeMediaStorageBrowserPath(
+      targetFolderPath
+    );
+
+  if (
+    !canMoveMediaStoragePath(
+      currentPath
+    )
+  ) {
+    throw new Error(
+      'Diese Datei kann nicht verschoben werden.'
+    );
+  }
+
+  if (
+    !canDropMediaFileOnFolderTarget(
+      targetFolder
+    )
+  ) {
+    throw new Error(
+      'Zielordner nicht erlaubt.'
+    );
+  }
+
+  const fileName =
+    currentPath.split('/').pop()
+    || currentPath;
+
+  let newPath =
+    buildMediaPathInFolder(
+      targetFolder,
+      fileName
+    );
+
+  if (
+    isLegacyRootMediaPath(currentPath)
+  ) {
+
+    const folder =
+      fileKind === 'gpx'
+        ? (
+          window.MEDIA_STORAGE_FOLDERS
+            ?.sharedRoutes
+          || 'shared/routes'
+        )
+        : (
+          window.MEDIA_STORAGE_FOLDERS
+            ?.sharedImages
+          || 'shared/images'
+        );
+
+    newPath =
+      `${folder}/${sanitizeMediaStorageFilename(fileName)}`;
+
+  }
+
+  if (
+    !newPath.startsWith('shared/')
+  ) {
+    throw new Error(
+      'Zielpfad muss mit shared/ beginnen.'
+    );
+  }
+
+  if (newPath === currentPath) {
+    return {
+      skipped: true
+    };
+  }
+
+  if (
+    isLegacyRootMediaPath(currentPath)
+  ) {
+
+    const confirmed =
+      window.confirm(
+        'Legacy-Datei verschieben: Alle Referenzen werden aktualisiert. Fortfahren?'
+      );
+
+    if (!confirmed) {
+      throw new Error('Abgebrochen.');
+    }
+
+  }
+
+  const result =
+    await moveMediaObjectRpc(
+      currentPath,
+      newPath
+    );
+
+  return result;
+
+}
+
+async function uploadFilesToMediaFolder(
+  folderPath,
+  fileList
+) {
+
+  const folder =
+    normalizeMediaStorageBrowserPath(
+      folderPath
+    );
+
+  if (
+    !canDropMediaFileOnFolderTarget(
+      folder
+    )
+  ) {
+    throw new Error(
+      'Upload nur in shared/-Ordner möglich.'
+    );
+  }
+
+  const uploads = [];
+
+  for (const file of fileList) {
+
+    if (!file) {
+      continue;
+    }
+
+    const upload =
+      await uploadMediaStorageFile(
+        folder,
+        file
+      );
+
+    if (upload.error) {
+      throw upload.error;
+    }
+
+    uploads.push(upload);
+
+  }
+
+  return uploads;
 
 }
 
