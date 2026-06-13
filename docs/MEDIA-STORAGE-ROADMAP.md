@@ -1,6 +1,6 @@
 # Medien-Storage — Architektur, Roadmap & Implementierungsplan
 
-**Status:** Phase 0 + 1 implementiert (Frontend) — SQL [`supabase-media-storage-paths.sql`](supabase-media-storage-paths.sql) in Supabase ausführen  
+**Status:** Phase 0 + 1 + 2 implementiert (Frontend) — SQL [`supabase-media-storage-paths.sql`](supabase-media-storage-paths.sql) in Supabase ausführen  
 **Zielgruppe:** Vorstand / Entwickler  
 **Letzte Aktualisierung:** 2026-05-26
 
@@ -281,6 +281,7 @@ Optional später: RPC `get_media_references(p_path)` (performanter, eine Quelle)
 
 | Datei | Inhalt |
 |-------|--------|
+| `admin/js/media-storage-lib.js` | Shared Listing, Referenz-Index, „Zuletzt verwendet“ |
 | `admin/js/media-picker.js` | Modal: „Zuletzt verwendet“ + Browser-Auszug |
 | `admin/js/termine-edit.js` | Buttons „Aus Mediathek“ für Bild + GPX |
 | `admin/js/news-edit.js` | Button „Aus Mediathek“ für Bild |
@@ -303,8 +304,8 @@ Optional später: RPC `get_media_references(p_path)` (performanter, eine Quelle)
 
 **Definition of Done Phase 2:**
 
-- [ ] Picker in Termin + News
-- [ ] Wiederverwendung ohne doppelten Storage-Verbrauch
+- [x] Picker in Termin + News
+- [x] Wiederverwendung ohne doppelten Storage-Verbrauch
 - [ ] Smoke M2.1–M2.3 bestanden
 
 ---
@@ -461,7 +462,7 @@ Phase 4   Backfill Legacy → deprecate URL-Spalten
 |-------|--------|--------------|---------|
 | 0 Fundament | ✅ Code live | | SQL in Supabase noch ausführen |
 | 1 Medien-Browser | ✅ Code live | | `/admin/medien.html` |
-| 2 Mediathek-Picker | ⏳ Geplant | | |
+| 2 Mediathek-Picker | ✅ Code live | | Termin/News „Aus Mediathek“ |
 | 3 Move/Delete | ⏳ Geplant | | |
 | 4 Legacy-Migration | ⏳ Geplant | | |
 

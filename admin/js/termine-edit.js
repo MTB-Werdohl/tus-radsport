@@ -483,6 +483,21 @@ async function saveEvent() {
 
     }
 
+  } else {
+
+    const pickedImage =
+      resolveMediaPickerSelectionForSave(
+        'imageStoragePathPick',
+        imageStoragePath,
+        image
+      );
+
+    imageStoragePath =
+      pickedImage.storagePath;
+
+    image =
+      pickedImage.publicUrl;
+
   }
 
   if (gpxFile) {
@@ -507,6 +522,21 @@ async function saveEvent() {
       );
 
     }
+
+  } else {
+
+    const pickedGpx =
+      resolveMediaPickerSelectionForSave(
+        'gpxStoragePathPick',
+        gpxStoragePath,
+        gpx
+      );
+
+    gpxStoragePath =
+      pickedGpx.storagePath;
+
+    gpx =
+      pickedGpx.publicUrl;
 
   }
 
@@ -673,6 +703,22 @@ function initTerminEdit() {
   populateTerminCategorySelect(
     document.getElementById('category')
   );
+
+  bindMediaPickerButton('pick-image-btn', {
+    kind: 'image',
+    hiddenInputId: 'imageStoragePathPick',
+    previewContainerId: 'currentImage',
+    fileInputId: 'imageFile',
+    title: 'Bild aus Mediathek'
+  });
+
+  bindMediaPickerButton('pick-gpx-btn', {
+    kind: 'gpx',
+    hiddenInputId: 'gpxStoragePathPick',
+    previewContainerId: 'currentGpx',
+    fileInputId: 'gpxFile',
+    title: 'GPX aus Mediathek'
+  });
 
   window.adminUnsavedGuard =
     initAdminUnsavedGuard({

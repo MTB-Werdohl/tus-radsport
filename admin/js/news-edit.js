@@ -168,6 +168,21 @@ async function saveNews() {
 
     }
 
+  } else {
+
+    const pickedImage =
+      resolveMediaPickerSelectionForSave(
+        'imageStoragePathPick',
+        imageStoragePath,
+        image
+      );
+
+    imageStoragePath =
+      pickedImage.storagePath;
+
+    image =
+      pickedImage.publicUrl;
+
   }
 
   const payload = {
@@ -262,6 +277,14 @@ document
   ?.addEventListener('click', saveNews);
 
 async function initNewsEdit() {
+
+  bindMediaPickerButton('pick-image-btn', {
+    kind: 'image',
+    hiddenInputId: 'imageStoragePathPick',
+    previewContainerId: 'currentImage',
+    fileInputId: 'imageFile',
+    title: 'Bild aus Mediathek'
+  });
 
   window.adminUnsavedGuard =
     initAdminUnsavedGuard({

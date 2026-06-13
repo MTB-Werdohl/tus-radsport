@@ -1,27 +1,3 @@
-const MEDIA_BROWSER_ROOTS = [
-
-  {
-    id: 'shared',
-    label: 'Shared',
-    path: 'shared'
-  },
-
-  {
-    id: 'galleries',
-    label: 'Galerien',
-    path: 'galleries'
-  },
-
-  {
-    id: 'legacy',
-    label: 'Legacy (Root)',
-    path: ''
-  }
-
-];
-
-let mediaBrowserReferenceIndex = null;
-
 let mediaBrowserCurrentRoot =
   'shared';
 
@@ -30,372 +6,6 @@ let mediaBrowserCurrentPath =
 
 let mediaBrowserCurrentFilter =
   'all';
-
-function isMediaBrowserFolderEntry(
-  item
-) {
-
-  return !item?.id;
-
-}
-
-function getMediaBrowserRootConfig(
-  rootId
-) {
-
-  return MEDIA_BROWSER_ROOTS.find(
-    (root) => root.id === rootId
-  ) || MEDIA_BROWSER_ROOTS[0];
-
-}
-
-function normalizeMediaBrowserPath(
-  value
-) {
-
-  return String(value || '')
-    .trim()
-    .replace(/^\/+|\/+$/g, '');
-
-}
-
-function isTopLevelManagedFolder(
-  name
-) {
-
-  return [
-    'shared',
-    'galleries',
-    'protocols'
-  ].includes(name);
-
-}
-
-async function listMediaBrowserEntries(
-  relativePath
-) {
-
-  const bucket =
-    getMediaStorageBucket();
-
-  const prefix =
-    normalizeMediaBrowserPath(
-      relativePath
-    );
-
-  const { data, error } =
-    await window.supabaseClient
-      .storage
-      .from(bucket)
-      .list(
-        prefix || '',
-        {
-          limit: 100,
-          sortBy: {
-            column: 'name',
-            order: 'asc'
-          }
-        }
-      );
-
-  if (error) {
-    throw error;
-  }
-
-  const folders = [];
-  const files = [];
-
-  (data || []).forEach((item) => {
-
-    if (
-      item.name === '.emptyFolderPlaceholder'
-    ) {
-      return;
-    }
-
-    const itemPath =
-      prefix
-        ? `${prefix}/${item.name}`
-        : item.name;
-
-    if (
-      isMediaBrowserExcludedPath(
-        itemPath
-      )
-    ) {
-      return;
-    }
-
-    if (isMediaBrowserFolderEntry(item)) {
-
-      if (
-        !prefix
-        && mediaBrowserCurrentRoot === 'legacy'
-      ) {
-        return;
-      }
-
-      if (
-        !prefix
-        && isTopLevelManagedFolder(
-          item.name
-        )
-        && item.name !== 'shared'
-        && item.name !== 'galleries'
-      ) {
-        return;
-      }
-
-      folders.push({
-        name: item.name,
-        path: itemPath
-      });
-
-      return;
-
-    }
-
-    files.push({
-      name: item.name,
-      path: itemPath,
-      updatedAt:
-        item.updated_at
-        || item.created_at
-        || null,
-      kind:
-        classifyMediaStoragePath(
-          itemPath
-        )
-    });
-
-  });
-
-  return {
-    folders,
-    files
-  };
-
-}
-
-async function loadMediaBrowserReferenceIndex() {
-
-  const termineTable =
-    window.siteConfig.tables.termine;
-
-  const newsTable =
-    window.siteConfig.tables.news;
-
-  const [
-    termineResult,
-    newsResult,
-    galleryResult
-  ] =
-    await Promise.all([
-
-      window.supabaseClient
-        .from(termineTable)
-        .select(
-          'id,title,slug,image,gpx,image_storage_path,gpx_storage_path'
-        ),
-
-      window.supabaseClient
-        .from(newsTable)
-        .select(
-          'id,title,slug,image,image_storage_path'
-        ),
-
-      window.supabaseClient
-        .from('gallery_images')
-        .select(
-          'id,gallery_id,image_path'
-        )
-
-    ]);
-
-  if (termineResult.error) {
-    throw termineResult.error;
-  }
-
-  if (newsResult.error) {
-    throw newsResult.error;
-  }
-
-  if (galleryResult.error) {
-    throw galleryResult.error;
-  }
-
-  mediaBrowserReferenceIndex = {
-    termine:
-      termineResult.data || [],
-    news:
-      newsResult.data || [],
-    gallery:
-      galleryResult.data || []
-  };
-
-}
-
-function findMediaBrowserReferences(
-  storagePath
-) {
-
-  const references = {
-    termine: [],
-    news: [],
-    gallery: []
-  };
-
-  if (
-    !mediaBrowserReferenceIndex
-    || !storagePath
-  ) {
-    return references;
-  }
-
-  mediaBrowserReferenceIndex
-    .termine
-    .forEach((termin) => {
-
-      if (
-        mediaPathMatchesReference(
-          storagePath,
-          termin.image_storage_path,
-          termin.image
-        )
-      ) {
-
-        references.termine.push({
-          id: termin.id,
-          title: termin.title,
-          kind: 'Bild'
-        });
-
-      }
-
-      if (
-        mediaPathMatchesReference(
-          storagePath,
-          termin.gpx_storage_path,
-          termin.gpx
-        )
-      ) {
-
-        references.termine.push({
-          id: termin.id,
-          title: termin.title,
-          kind: 'GPX'
-        });
-
-      }
-
-    });
-
-  mediaBrowserReferenceIndex
-    .news
-    .forEach((news) => {
-
-      if (
-        mediaPathMatchesReference(
-          storagePath,
-          news.image_storage_path,
-          news.image
-        )
-      ) {
-
-        references.news.push({
-          id: news.id,
-          title: news.title
-        });
-
-      }
-
-    });
-
-  mediaBrowserReferenceIndex
-    .gallery
-    .forEach((image) => {
-
-      if (
-        mediaPathMatchesReference(
-          storagePath,
-          extractMediaStoragePath(
-            image.image_path
-          ),
-          image.image_path
-        )
-      ) {
-
-        references.gallery.push({
-          id: image.id,
-          galleryId:
-            image.gallery_id
-        });
-
-      }
-
-    });
-
-  return references;
-
-}
-
-function countMediaBrowserReferences(
-  references
-) {
-
-  return (
-    references.termine.length
-    + references.news.length
-    + references.gallery.length
-  );
-
-}
-
-function renderMediaBrowserReferenceSummary(
-  references
-) {
-
-  const parts = [];
-
-  if (references.termine.length) {
-
-    parts.push(
-      `${references.termine.length} Termin${
-        references.termine.length === 1
-          ? ''
-          : 'e'
-      }`
-    );
-
-  }
-
-  if (references.news.length) {
-
-    parts.push(
-      `${references.news.length} News`
-    );
-
-  }
-
-  if (references.gallery.length) {
-
-    parts.push(
-      `${references.gallery.length} Galerie${
-        references.gallery.length === 1
-          ? ''
-          : 'n'
-      }`
-    );
-
-  }
-
-  if (!parts.length) {
-    return 'Nicht referenziert';
-  }
-
-  return `Verwendet in: ${parts.join(', ')}`;
-
-}
 
 function renderMediaBrowserReferenceLinks(
   references
@@ -461,7 +71,7 @@ function renderMediaBrowserRoots() {
   }
 
   container.innerHTML =
-    MEDIA_BROWSER_ROOTS
+    MEDIA_STORAGE_ROOTS
       .map((root) => `
 
 <button
@@ -490,7 +100,7 @@ function renderMediaBrowserRoots() {
           button.dataset.mediaRoot;
 
         const root =
-          getMediaBrowserRootConfig(
+          getMediaStorageRootConfig(
             rootId
           );
 
@@ -521,12 +131,12 @@ function renderMediaBrowserBreadcrumb() {
   }
 
   const root =
-    getMediaBrowserRootConfig(
+    getMediaStorageRootConfig(
       mediaBrowserCurrentRoot
     );
 
   const currentPath =
-    normalizeMediaBrowserPath(
+    normalizeMediaStorageBrowserPath(
       mediaBrowserCurrentPath
     );
 
@@ -613,20 +223,6 @@ function renderMediaBrowserBreadcrumb() {
 
 }
 
-function mediaBrowserPassesFilter(
-  kind
-) {
-
-  if (
-    mediaBrowserCurrentFilter === 'all'
-  ) {
-    return true;
-  }
-
-  return kind === mediaBrowserCurrentFilter;
-
-}
-
 async function copyTextToClipboard(
   value,
   successMessage
@@ -660,7 +256,7 @@ function renderMediaBrowserFileRow(
 ) {
 
   const references =
-    findMediaBrowserReferences(
+    findMediaStorageReferences(
       file.path
     );
 
@@ -713,7 +309,7 @@ function renderMediaBrowserFileRow(
 
     <p class="admin-media-browser__refs-summary">
       ${escapeAdminHtml(
-        renderMediaBrowserReferenceSummary(
+        renderMediaStorageReferenceSummary(
           references
         )
       )}
@@ -865,19 +461,21 @@ async function loadMediaBrowserView() {
   try {
 
     const listing =
-      await listMediaBrowserEntries(
-        mediaBrowserCurrentPath
+      await listMediaStorageEntries(
+        mediaBrowserCurrentPath,
+        {
+          rootId:
+            mediaBrowserCurrentRoot,
+          kindFilter:
+            mediaBrowserCurrentFilter
+        }
       );
 
     const folders =
       listing.folders;
 
     const files =
-      listing.files.filter((file) =>
-        mediaBrowserPassesFilter(
-          file.kind
-        )
-      );
+      listing.files;
 
     const totalItems =
       folders.length
@@ -948,7 +546,7 @@ async function initMediaBrowser() {
 
   try {
 
-    await loadMediaBrowserReferenceIndex();
+    await ensureMediaStorageReferenceIndex();
 
   } catch (error) {
 

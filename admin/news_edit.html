@@ -76,6 +76,15 @@ title: News bearbeiten
   <input id="imageFile"
          type="file"
          accept="image/*">
+  <input id="imageStoragePathPick"
+         type="hidden">
+  <div class="admin-media-field-actions">
+    <button id="pick-image-btn"
+            type="button"
+            class="secondary-button">
+      Aus Mediathek
+    </button>
+  </div>
   <div id="currentImage"></div>
 </label>
 
@@ -113,6 +122,8 @@ title: News bearbeiten
 <script src="/assets/js/feedback/feedback-types.js?v={{ site.admin_js_version }}"></script>
 <script src="/assets/js/feedback/feedback-service.js?v={{ site.admin_js_version }}"></script>
 <script src="/admin/js/feedback-module-form.js?v={{ site.admin_js_version }}"></script>
+<script src="/admin/js/media-storage-lib.js?v={{ site.admin_js_version }}"></script>
+<script src="/admin/js/media-picker.js?v={{ site.admin_js_version }}"></script>
 <script src="/admin/js/news-edit.js?v={{ site.admin_js_version }}"></script>
 <script>
 requireAdminSession(initNewsEdit);
