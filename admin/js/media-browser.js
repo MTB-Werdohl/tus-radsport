@@ -268,6 +268,60 @@ function renderMediaBrowserFileRow(
   const isLegacy =
     !file.path.includes('/');
 
+  const canMove =
+    canMoveMediaStoragePath(
+      file.path
+    );
+
+  const canDelete =
+    canDeleteMediaStoragePath(
+      file.path
+    );
+
+  const manageActionsHtml =
+    canMove || canDelete
+      ? `
+    ${
+      canMove
+        ? `
+    <button
+      type="button"
+      class="secondary-button"
+      data-media-rename="${escapeAdminHtml(file.path)}">
+
+      Umbenennen
+
+    </button>
+
+    <button
+      type="button"
+      class="secondary-button"
+      data-media-move="${escapeAdminHtml(file.path)}">
+
+      Verschieben
+
+    </button>
+        `
+        : ''
+    }
+
+    ${
+      canDelete
+        ? `
+    <button
+      type="button"
+      class="danger-button"
+      data-media-delete="${escapeAdminHtml(file.path)}">
+
+      Löschen
+
+    </button>
+        `
+        : ''
+    }
+      `
+      : '';
+
   const previewHtml =
     file.kind === 'image'
       && publicUrl
@@ -357,6 +411,8 @@ function renderMediaBrowserFileRow(
         : ''
     }
 
+    ${manageActionsHtml}
+
   </div>
 
 </article>
@@ -382,8 +438,17 @@ function renderMediaBrowserFolderRow(
 }
 
 function bindMediaBrowserListActions(
-  container
+  container,
+  files
 ) {
+
+  const fileByPath =
+    new Map(
+      (files || []).map((file) => [
+        file.path,
+        file
+      ])
+    );
 
   container
     .querySelectorAll('[data-media-folder]')
@@ -425,6 +490,69 @@ function bindMediaBrowserListActions(
           button.dataset.copyUrl,
           'URL kopiert.'
         );
+
+      });
+
+    });
+
+  container
+    .querySelectorAll('[data-media-rename]')
+    .forEach((button) => {
+
+      button.addEventListener('click', () => {
+
+        const file =
+          fileByPath.get(
+            button.dataset.mediaRename
+          );
+
+        if (file) {
+          promptRenameMediaStorageFile(
+            file
+          );
+        }
+
+      });
+
+    });
+
+  container
+    .querySelectorAll('[data-media-move]')
+    .forEach((button) => {
+
+      button.addEventListener('click', () => {
+
+        const file =
+          fileByPath.get(
+            button.dataset.mediaMove
+          );
+
+        if (file) {
+          promptMoveMediaStorageFile(
+            file
+          );
+        }
+
+      });
+
+    });
+
+  container
+    .querySelectorAll('[data-media-delete]')
+    .forEach((button) => {
+
+      button.addEventListener('click', () => {
+
+        const file =
+          fileByPath.get(
+            button.dataset.mediaDelete
+          );
+
+        if (file) {
+          promptDeleteMediaStorageFile(
+            file
+          );
+        }
 
       });
 
@@ -507,7 +635,8 @@ async function loadMediaBrowserView() {
       `.trim();
 
     bindMediaBrowserListActions(
-      listEl
+      listEl,
+      files
     );
 
   } catch (error) {

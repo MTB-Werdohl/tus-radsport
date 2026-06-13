@@ -1,6 +1,6 @@
 # Medien-Storage — Architektur, Roadmap & Implementierungsplan
 
-**Status:** Phase 0 + 1 + 2 implementiert (Frontend) — SQL [`supabase-media-storage-paths.sql`](supabase-media-storage-paths.sql) in Supabase ausführen  
+**Status:** Phase 0 + 1 + 2 + 3 implementiert (Frontend) — SQL [`supabase-media-storage-paths.sql`](supabase-media-storage-paths.sql) + [`supabase-media-move.sql`](supabase-media-move.sql) in Supabase ausführen  
 **Zielgruppe:** Vorstand / Entwickler  
 **Letzte Aktualisierung:** 2026-05-26
 
@@ -330,11 +330,17 @@ Neue Datei: `docs/supabase-media-move.sql`
 
 #### 5.3.2 Admin-UI
 
-Erweiterung `admin/js/media-browser.js`:
+| Datei | Inhalt |
+|-------|--------|
+| `docs/supabase-media-move.sql` | RPCs `get_media_references`, `move_media_object`, `delete_media_object` |
+| `admin/js/media-storage-ops.js` | RPC-Wrapper + Bestätigungsdialoge |
+| `admin/js/media-browser.js` | Umbenennen, Verschieben, Löschen |
 
-- Move/Rename (nur `shared/**`, nicht Legacy-Root ohne Warnung)
+Erweiterung Medien-Browser:
+
+- Move/Rename (nur `shared/**`, Legacy-Root mit Warnung)
 - Delete (nur Waisen oder mit Bestätigung + Referenzliste)
-- UI-Muster: `moveProtocolStoragePath` aus `protocol-utils.js`
+- UI-Muster: Bestätigungsdialoge wie bei Protokollen
 
 #### 5.3.3 Smoke-Tests Phase 3
 
@@ -347,8 +353,8 @@ Erweiterung `admin/js/media-browser.js`:
 
 **Definition of Done Phase 3:**
 
-- [ ] RPC deployed
-- [ ] Move aktualisiert alle Referenzen
+- [x] RPC deployed (SQL-Datei im Repo)
+- [x] Move aktualisiert alle Referenzen (Frontend + RPC)
 - [ ] Smoke M3.1–M3.4 bestanden
 
 ---
@@ -463,7 +469,7 @@ Phase 4   Backfill Legacy → deprecate URL-Spalten
 | 0 Fundament | ✅ Code live | | SQL in Supabase noch ausführen |
 | 1 Medien-Browser | ✅ Code live | | `/admin/medien.html` |
 | 2 Mediathek-Picker | ✅ Code live | | Termin/News „Aus Mediathek“ |
-| 3 Move/Delete | ⏳ Geplant | | |
+| 3 Move/Delete | ✅ Code live | | RPC + `/admin/medien.html` |
 | 4 Legacy-Migration | ⏳ Geplant | | |
 
 *Bei Abschluss einer Phase: Status auf ✅ setzen, Datum eintragen, Smoke-Tests verlinken.*

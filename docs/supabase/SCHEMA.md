@@ -272,6 +272,14 @@ RPCs: `set_event_feedback_answer`, `list_feedback_participation_changes` (Vorsta
 
 Pfade z. B. `shared/images/…`, `shared/routes/…`, `galleries/{jahr}/{slug}/…`, Legacy-Root-Uploads. Siehe [MEDIA-STORAGE-ROADMAP.md](../MEDIA-STORAGE-ROADMAP.md).
 
+| RPC | Rolle | Zweck |
+|-----|-------|--------|
+| `get_media_references(p_path)` | Vorstand | Referenzen in Terminen/News/Galerien |
+| `move_media_object(p_old_path, p_new_path)` | Vorstand | Storage verschieben + DB-Referenzen aktualisieren |
+| `delete_media_object(p_path, p_force)` | Vorstand | Löschen; mit Referenzen nur bei `p_force=true` |
+
+SQL: [`supabase-media-move.sql`](../supabase-media-move.sql)
+
 ## Storage `avatars`
 
 Profilbilder — öffentlich lesbar. Pfad: `{member_id}/avatar.webp` (WebP, max. 512×512, 1:1-Crop clientseitig).
