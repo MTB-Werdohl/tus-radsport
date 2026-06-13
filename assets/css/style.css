@@ -622,23 +622,18 @@ a:hover {
   align-items: baseline;
   gap: 8px 12px;
   min-width: 0;
-}
-
-.member-content-item-kind {
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.55);
+  flex: 1 1 12rem;
 }
 
 .member-content-item-title {
   color: #fff;
+  min-width: 0;
 }
 
 .member-content-item-date {
   font-size: 0.88rem;
   color: rgba(255, 255, 255, 0.65);
+  flex-shrink: 0;
 }
 
 .member-content-item-meta {
@@ -646,6 +641,7 @@ a:hover {
   flex-wrap: wrap;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .member-content-status {
@@ -670,6 +666,49 @@ a:hover {
   font-size: 0.88rem;
   font-weight: 600;
   color: #fff;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+
+  .member-content-item {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .member-content-item-main {
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .member-content-item-title {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .member-content-item-date {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 5.5rem;
+  }
+
+  .member-content-item-meta {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .member-content-status {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 7.5rem;
+  }
+
 }
 
 .member-content-empty {

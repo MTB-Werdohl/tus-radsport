@@ -396,10 +396,6 @@ function renderMemberContentListItem(
 
   <div class="member-content-item-main">
 
-    <span class="member-content-item-kind">
-      ${kind === 'news' ? 'News' : 'Termin'}
-    </span>
-
     <strong class="member-content-item-title">
       ${escapeMemberHtml(item.title || 'Ohne Titel')}
     </strong>
