@@ -100,11 +100,12 @@ async function loadMemberNewsEdit() {
 
   if (data.image_storage_path) {
 
-    applySavedMediaPickerSelection({
-      kind: 'image',
-      hiddenInputId: 'imageStoragePathPick',
-      previewContainerId: 'currentImage'
-    }, data.image_storage_path);
+    applyMemberEditMediaSelection(
+      'currentImage',
+      'image',
+      data.image_storage_path,
+      'imageStoragePathPick'
+    );
 
   }
 
@@ -141,7 +142,7 @@ async function saveMemberNewsEdit(
       .trim();
 
   const slug =
-    buildAdminSlug(title);
+    buildMemberContentSlug(title);
 
   let imageStoragePath =
     readMediaPickerHiddenPath(
@@ -243,6 +244,14 @@ async function initMemberNewsEditPage() {
 
   if (!editable) {
     return;
+  }
+
+  if (
+    typeof renderMemberEditMediaPreview
+      === 'function'
+  ) {
+    renderAdminSelectedMediaPreview =
+      renderMemberEditMediaPreview;
   }
 
   bindMediaPickerButton('pick-image-btn', {

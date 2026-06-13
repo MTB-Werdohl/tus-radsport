@@ -160,23 +160,122 @@ async function loadMemberTerminEdit() {
 
   if (data.image_storage_path) {
 
-    applySavedMediaPickerSelection({
-      kind: 'image',
-      hiddenInputId: 'imageStoragePathPick',
-      previewContainerId: 'currentImage'
-    }, data.image_storage_path);
+    applyMemberEditMediaSelection(
+      'currentImage',
+      'image',
+      data.image_storage_path,
+      'imageStoragePathPick'
+    );
 
   }
 
   if (data.gpx_storage_path) {
 
-    applySavedMediaPickerSelection({
-      kind: 'gpx',
-      hiddenInputId: 'gpxStoragePathPick',
-      previewContainerId: 'currentGpx'
-    }, data.gpx_storage_path);
+    applyMemberEditMediaSelection(
+      'currentGpx',
+      'gpx',
+      data.gpx_storage_path,
+      'gpxStoragePathPick'
+    );
 
   }
+
+}
+
+function memberTerminClearFieldErrors() {
+
+  document
+    .querySelectorAll(
+      '.member-edit-field--invalid'
+    )
+    .forEach((element) => {
+      element.classList.remove(
+        'member-edit-field--invalid'
+      );
+    });
+
+}
+
+function validateMemberTerminRequiredFields() {
+
+  memberTerminClearFieldErrors();
+
+  const missing = [];
+
+  const titleInput =
+    document.getElementById('title');
+
+  const dateInput =
+    document.getElementById('date');
+
+  const startTimeInput =
+    document.getElementById('startTime');
+
+  const locationInput =
+    document.getElementById('location');
+
+  const title =
+    titleInput?.value.trim() || '';
+
+  const date =
+    dateInput?.value || '';
+
+  const startTime =
+    startTimeInput?.value || '';
+
+  const location =
+    locationInput?.value.trim() || '';
+
+  if (!title) {
+    missing.push('Titel');
+    titleInput?.classList.add(
+      'member-edit-field--invalid'
+    );
+  }
+
+  if (!date) {
+    missing.push('Datum');
+    dateInput?.classList.add(
+      'member-edit-field--invalid'
+    );
+  }
+
+  if (!startTime) {
+    missing.push('Uhrzeit');
+    startTimeInput?.classList.add(
+      'member-edit-field--invalid'
+    );
+  }
+
+  if (!location) {
+    missing.push('Ort');
+    locationInput?.classList.add(
+      'member-edit-field--invalid'
+    );
+  }
+
+  if (missing.length) {
+
+    alert(
+      `Bitte ausfüllen: ${missing.join(', ')}`
+    );
+
+    const firstFieldId = {
+      Titel: 'title',
+      Datum: 'date',
+      Uhrzeit: 'startTime',
+      Ort: 'location'
+    }[missing[0]];
+
+    document
+      .getElementById(firstFieldId)
+      ?.focus();
+
+    return false;
+
+  }
+
+  return true;
 
 }
 
@@ -184,19 +283,15 @@ async function saveMemberTerminEdit(
   member
 ) {
 
+  if (!validateMemberTerminRequiredFields()) {
+    return;
+  }
+
   const title =
     document
       .getElementById('title')
       .value
       .trim();
-
-  if (!title) {
-
-    alert('Bitte einen Titel eingeben.');
-
-    return;
-
-  }
 
   const date =
     document
@@ -227,7 +322,7 @@ async function saveMemberTerminEdit(
       .trim();
 
   const slug =
-    buildAdminSlug(title);
+    buildMemberContentSlug(title);
 
   let imageStoragePath =
     readMediaPickerHiddenPath(
@@ -366,6 +461,14 @@ async function initMemberTerminEditPage() {
 
   if (!editable) {
     return;
+  }
+
+  if (
+    typeof renderMemberEditMediaPreview
+      === 'function'
+  ) {
+    renderAdminSelectedMediaPreview =
+      renderMemberEditMediaPreview;
   }
 
   bindMediaPickerButton('pick-image-btn', {

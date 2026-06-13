@@ -31,71 +31,75 @@ load_member_content_edit_css: true
 
   </div>
 
-  <div class="member-content-edit-form member-admin-form">
+  <div class="member-content-edit-form">
 
-    <label class="admin-field">
+    <label class="member-edit-field member-edit-field--required">
       Titel
       <input id="title"
+             required
              placeholder="Titel">
     </label>
 
-    <div class="row">
+    <div class="member-edit-row">
 
-      <label class="admin-field">
+      <label class="member-edit-field member-edit-field--required">
         Datum
         <input id="date"
-               type="date">
+               type="date"
+               required>
       </label>
 
-      <label class="admin-field">
+      <label class="member-edit-field member-edit-field--required">
         Uhrzeit
         <input id="startTime"
-               type="time">
+               type="time"
+               required>
       </label>
 
     </div>
 
-    <label class="admin-field">
+    <label class="member-edit-field member-edit-field--required">
       Ort
       <input id="location"
+             required
              placeholder="Ort">
     </label>
 
-    <label class="admin-field">
+    <label class="member-edit-field">
       Bild
       <input id="imageStoragePathPick"
              type="hidden">
-      <div class="admin-media-field-actions">
+      <div class="member-edit-media-actions">
         <button id="pick-image-btn"
                 type="button"
-                class="secondary-button">
+                class="member-edit-btn member-edit-btn--secondary">
           Aus Mediathek
         </button>
       </div>
       <div id="currentImage"></div>
     </label>
 
-    <label class="admin-field">
+    <label class="member-edit-field">
       GPX
       <input id="gpxStoragePathPick"
              type="hidden">
-      <div class="admin-media-field-actions">
+      <div class="member-edit-media-actions">
         <button id="pick-gpx-btn"
                 type="button"
-                class="secondary-button">
+                class="member-edit-btn member-edit-btn--secondary">
           Aus Mediathek
         </button>
       </div>
       <div id="currentGpx"></div>
     </label>
 
-    <label class="admin-field">
+    <label class="member-edit-field">
       Komoot Link
       <input id="komoot"
              placeholder="Komoot Link">
     </label>
 
-    <label class="admin-field">
+    <label class="member-edit-field">
       Inhalt
       <textarea id="content"
                 rows="8"
@@ -104,7 +108,7 @@ load_member_content_edit_css: true
 
     <button id="save-event"
             type="button"
-            class="admin-form-save">
+            class="member-edit-save">
 
       Speichern
 
@@ -116,7 +120,7 @@ load_member_content_edit_css: true
 
 <script src="/assets/js/core/visibility.js"></script>
 <script src="/assets/js/core/media-url.js"></script>
-<script src="/admin/js/admin-utils.js"></script>
+<script src="/assets/js/member/member-edit-utils.js"></script>
 <script src="/admin/js/media-storage-lib.js"></script>
 <script src="/admin/js/media-picker.js"></script>
 <script src="/assets/js/member/member-content.js"></script>

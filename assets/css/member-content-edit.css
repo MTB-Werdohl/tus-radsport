@@ -1,0 +1,350 @@
+/* Profil Content-Edit (/profil/termin_edit/, /profil/news_edit/) — ohne admin.css */
+
+body:has(.member-content-edit-section) {
+  max-width: none;
+}
+
+.member-content-edit-section {
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 24px 16px 48px;
+}
+
+.member-content-edit-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.member-content-edit-header h1 {
+  margin: 0 0 6px;
+  color: #fff;
+}
+
+.member-content-edit-header p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.member-content-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.member-edit-field {
+  display: block;
+  margin-bottom: 15px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.member-edit-field--required::after {
+  content: ' *';
+  color: #ffb4b4;
+  font-weight: 700;
+}
+
+.member-edit-field input,
+.member-edit-field select,
+.member-edit-field textarea {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  margin-bottom: 0;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  font-weight: 400;
+  box-sizing: border-box;
+  color: #111;
+}
+
+.member-edit-field textarea {
+  min-height: 180px;
+  resize: vertical;
+}
+
+.member-edit-field input:invalid:not(:focus):not(:placeholder-shown),
+.member-edit-field input.member-edit-field--invalid {
+  outline: 2px solid rgba(255, 107, 107, 0.65);
+}
+
+.member-edit-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.member-edit-row .member-edit-field {
+  margin-bottom: 0;
+}
+
+.member-edit-media-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.member-edit-btn {
+  display: inline-block;
+  width: auto;
+  margin: 0;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.member-edit-btn--secondary {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+}
+
+.member-edit-btn--secondary:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.member-edit-save {
+  width: auto;
+  margin-top: 8px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background: #2e8b57;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.member-edit-save:hover {
+  background: #3aa86a;
+}
+
+.member-edit-preview-image {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 12px;
+  margin-top: 10px;
+  display: block;
+}
+
+.member-edit-media-path {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  font-weight: 400;
+  opacity: 0.75;
+  word-break: break-all;
+}
+
+.member-edit-gpx-name {
+  margin-top: 8px;
+  font-size: 0.9rem;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+@media (max-width: 640px) {
+
+  .member-edit-row {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+/* Mediathek-Dialog (JS: admin-media-picker — nur Struktur, kein admin.css) */
+
+.admin-media-picker {
+  border: none;
+  border-radius: 12px;
+  padding: 0;
+  width: min(720px, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  background: #1a1a1a;
+  color: #f5f5f5;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+}
+
+.admin-media-picker::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.admin-media-picker__form {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 2rem);
+}
+
+.admin-media-picker__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-media-picker__title {
+  margin: 0;
+  font-size: 1.125rem;
+  color: #fff;
+}
+
+.admin-media-picker__close {
+  border: none;
+  background: transparent;
+  color: #ccc;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  width: auto;
+  margin-bottom: 0;
+}
+
+.admin-media-picker__tabs {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem 0;
+}
+
+.admin-media-picker__tab {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  background: rgba(255, 255, 255, 0.04);
+  color: #ccc;
+  cursor: pointer;
+  padding: 0.5rem 0.875rem;
+  width: auto;
+  margin-bottom: 0;
+}
+
+.admin-media-picker__tab.is-active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.admin-media-picker__panel {
+  flex: 1;
+  overflow: auto;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  min-height: 240px;
+}
+
+.admin-media-picker__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-media-picker__footer .secondary-button,
+.admin-media-picker__footer .member-edit-btn--secondary {
+  width: auto;
+  white-space: nowrap;
+  background: #444;
+  color: #fff;
+  cursor: pointer;
+  margin-bottom: 0;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.admin-media-picker__breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.admin-media-picker__crumb {
+  border: none;
+  background: transparent;
+  color: #8ec5ff;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  width: auto;
+  margin-bottom: 0;
+}
+
+.admin-media-picker__list {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.admin-media-picker__folder,
+.admin-media-picker__item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  color: inherit;
+  cursor: pointer;
+  padding: 0.625rem 0.75rem;
+  margin-bottom: 0;
+}
+
+.admin-media-picker__item {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.admin-media-picker__item:hover,
+.admin-media-picker__folder:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.admin-media-picker__thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 6px;
+  display: block;
+}
+
+.admin-media-picker__thumb--file {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ccc;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.admin-media-picker__item-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.admin-media-picker__item-path {
+  color: #aaa;
+  font-size: 0.8125rem;
+  word-break: break-all;
+}
