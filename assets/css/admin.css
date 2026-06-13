@@ -16,10 +16,7 @@ body:has(#dashboard-view) {
 #dashboard-view button,
 .member-content-edit-form select,
 .member-content-edit-form textarea,
-.member-content-edit-form button,
-.admin-media-picker select,
-.admin-media-picker textarea,
-.admin-media-picker button {
+.member-content-edit-form button {
   width: 100%;
   margin-bottom: 15px;
   padding: 12px;
@@ -31,15 +28,13 @@ body:has(#dashboard-view) {
 
 #admin textarea,
 #dashboard-view textarea,
-.member-content-edit-form textarea,
-.admin-media-picker textarea {
+.member-content-edit-form textarea {
   min-height: 180px;
 }
 
 #admin button,
 #dashboard-view button,
-.member-content-edit-form button,
-.admin-media-picker button {
+.member-content-edit-form button {
   background: #2e8b57;
   color: white;
   cursor: pointer;
@@ -1684,6 +1679,8 @@ body:has(#dashboard-view) {
   line-height: 1;
   cursor: pointer;
   padding: 0.25rem 0.5rem;
+  width: auto;
+  margin-bottom: 0;
 }
 
 .admin-media-picker__tabs {
@@ -1700,6 +1697,8 @@ body:has(#dashboard-view) {
   color: #ccc;
   cursor: pointer;
   padding: 0.5rem 0.875rem;
+  width: auto;
+  margin-bottom: 0;
 }
 
 .admin-media-picker__tab.is-active {
@@ -1723,6 +1722,11 @@ body:has(#dashboard-view) {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.admin-media-picker__footer .secondary-button {
+  width: auto;
+  margin-bottom: 0;
+}
+
 .admin-media-picker__breadcrumb {
   display: flex;
   flex-wrap: wrap;
@@ -1739,6 +1743,8 @@ body:has(#dashboard-view) {
   cursor: pointer;
   padding: 0;
   text-decoration: underline;
+  width: auto;
+  margin-bottom: 0;
 }
 
 .admin-media-picker__list {
@@ -1756,6 +1762,7 @@ body:has(#dashboard-view) {
   color: inherit;
   cursor: pointer;
   padding: 0.625rem 0.75rem;
+  margin-bottom: 0;
 }
 
 .admin-media-picker__item {
@@ -1771,6 +1778,7 @@ body:has(#dashboard-view) {
   color: inherit;
   cursor: pointer;
   padding: 0.625rem 0.75rem;
+  margin-bottom: 0;
 }
 
 .admin-media-picker__item:hover,
