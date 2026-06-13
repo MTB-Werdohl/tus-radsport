@@ -590,6 +590,10 @@ a:hover {
   color: rgba(255, 255, 255, 0.85);
 }
 
+.member-content-list .member-votes-pagination-wrap {
+  margin-bottom: 24px;
+}
+
 .member-content-items {
   list-style: none;
   margin: 0 0 24px;

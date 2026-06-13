@@ -15,6 +15,202 @@ function memberContentStatusLabel(
 
 }
 
+const MEMBER_CONTENT_PAGE_SIZE = 5;
+
+let memberContentSubmissionsCache = null;
+let memberContentNewsPage = 1;
+let memberContentTerminePage = 1;
+
+function normalizeMemberContentPage(
+  page,
+  totalItems,
+  pageSize
+) {
+
+  const size =
+    Math.max(
+      1,
+      Number(pageSize) || 1
+    );
+
+  const totalPages =
+    Math.max(
+      1,
+      Math.ceil(totalItems / size)
+    );
+
+  const safePage =
+    Math.min(
+      Math.max(
+        1,
+        Number(page) || 1
+      ),
+      totalPages
+    );
+
+  return {
+    page: safePage,
+    totalPages,
+    pageSize: size
+  };
+
+}
+
+function paginateMemberContentItems(
+  items,
+  page,
+  pageSize
+) {
+
+  const totalItems =
+    items.length;
+
+  const normalized =
+    normalizeMemberContentPage(
+      page,
+      totalItems,
+      pageSize
+    );
+
+  const startIndex =
+    (normalized.page - 1)
+    * normalized.pageSize;
+
+  return {
+    items:
+      items.slice(
+        startIndex,
+        startIndex + normalized.pageSize
+      ),
+    ...normalized
+  };
+
+}
+
+function renderMemberContentPagination(
+  container,
+  totalItems,
+  currentPage,
+  onPageChange
+) {
+
+  if (!container) {
+    return;
+  }
+
+  const normalized =
+    normalizeMemberContentPage(
+      currentPage,
+      totalItems,
+      MEMBER_CONTENT_PAGE_SIZE
+    );
+
+  if (
+    totalItems
+    <= MEMBER_CONTENT_PAGE_SIZE
+  ) {
+
+    container.innerHTML = '';
+    container.hidden = true;
+
+    return;
+
+  }
+
+  container.hidden = false;
+
+  container.innerHTML = `
+
+<div class="member-votes-pagination">
+
+  <button
+    type="button"
+    class="member-votes-pagination__btn member-votes-pagination__prev"
+    ${normalized.page <= 1 ? 'disabled' : ''}>
+
+    ← Zurück
+
+  </button>
+
+  <span class="member-votes-pagination__info">
+    Seite ${normalized.page} von ${normalized.totalPages}
+  </span>
+
+  <button
+    type="button"
+    class="member-votes-pagination__btn member-votes-pagination__next"
+    ${normalized.page >= normalized.totalPages ? 'disabled' : ''}>
+
+    Weiter →
+
+  </button>
+
+</div>
+
+  `;
+
+  container
+    .querySelector('.member-votes-pagination__prev')
+    ?.addEventListener('click', () => {
+
+      onPageChange(normalized.page - 1);
+
+    });
+
+  container
+    .querySelector('.member-votes-pagination__next')
+    ?.addEventListener('click', () => {
+
+      onPageChange(normalized.page + 1);
+
+    });
+
+}
+
+function bindMemberContentListPagination(
+  listContainer,
+  newsTotal,
+  termineTotal
+) {
+
+  renderMemberContentPagination(
+    document.getElementById(
+      'member-content-news-pagination'
+    ),
+    newsTotal,
+    memberContentNewsPage,
+    (page) => {
+
+      memberContentNewsPage = page;
+
+      renderMemberContentList(
+        listContainer,
+        memberContentSubmissionsCache
+      );
+
+    }
+  );
+
+  renderMemberContentPagination(
+    document.getElementById(
+      'member-content-termine-pagination'
+    ),
+    termineTotal,
+    memberContentTerminePage,
+    (page) => {
+
+      memberContentTerminePage = page;
+
+      renderMemberContentList(
+        listContainer,
+        memberContentSubmissionsCache
+      );
+
+    }
+  );
+
+}
+
 function memberContentStatusClass(
   sichtbarkeit
 ) {
@@ -281,6 +477,20 @@ function renderMemberContentList(
           - memberContentSortTimestamp(left)
       );
 
+  memberContentNewsPage =
+    normalizeMemberContentPage(
+      memberContentNewsPage,
+      news.length,
+      MEMBER_CONTENT_PAGE_SIZE
+    ).page;
+
+  memberContentTerminePage =
+    normalizeMemberContentPage(
+      memberContentTerminePage,
+      termine.length,
+      MEMBER_CONTENT_PAGE_SIZE
+    ).page;
+
   if (
     !news.length
     && !termine.length
@@ -296,21 +506,39 @@ function renderMemberContentList(
 
   }
 
+  const paginatedNews =
+    paginateMemberContentItems(
+      news,
+      memberContentNewsPage,
+      MEMBER_CONTENT_PAGE_SIZE
+    );
+
+  const paginatedTermine =
+    paginateMemberContentItems(
+      termine,
+      memberContentTerminePage,
+      MEMBER_CONTENT_PAGE_SIZE
+    );
+
   const newsItems =
-    news.map((item) =>
-      renderMemberContentListItem(
-        item,
-        'news'
+    paginatedNews.items
+      .map((item) =>
+        renderMemberContentListItem(
+          item,
+          'news'
+        )
       )
-    ).join('');
+      .join('');
 
   const terminItems =
-    termine.map((item) =>
-      renderMemberContentListItem(
-        item,
-        'termin'
+    paginatedTermine.items
+      .map((item) =>
+        renderMemberContentListItem(
+          item,
+          'termin'
+        )
       )
-    ).join('');
+      .join('');
 
   container.innerHTML = `
 
@@ -324,6 +552,11 @@ ${
 <ul class="member-content-items">
   ${newsItems}
 </ul>
+
+<div
+  id="member-content-news-pagination"
+  class="member-votes-pagination-wrap">
+</div>
     `.trim()
     : ''
 }
@@ -338,11 +571,22 @@ ${
 <ul class="member-content-items">
   ${terminItems}
 </ul>
+
+<div
+  id="member-content-termine-pagination"
+  class="member-votes-pagination-wrap">
+</div>
     `.trim()
     : ''
 }
 
   `.trim();
+
+  bindMemberContentListPagination(
+    container,
+    news.length,
+    termine.length
+  );
 
 }
 
@@ -370,6 +614,11 @@ async function loadMemberContentListIfNeeded(
     return;
   }
 
+  if (force) {
+    memberContentNewsPage = 1;
+    memberContentTerminePage = 1;
+  }
+
   container.innerHTML =
     '<p>Einträge werden geladen …</p>';
 
@@ -377,6 +626,9 @@ async function loadMemberContentListIfNeeded(
     await fetchMemberContentSubmissions(
       member.id
     );
+
+  memberContentSubmissionsCache =
+    submissions;
 
   renderMemberContentList(
     container,
