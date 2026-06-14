@@ -1494,6 +1494,45 @@ width: 1%;
 
 }
 
+.feedback-poll-layout {
+
+display: flex;
+
+flex-direction: column;
+
+gap: 16px;
+
+align-items: stretch;
+
+}
+
+.feedback-poll-layout__vote,
+.feedback-poll-layout__results {
+
+min-width: 0;
+
+}
+
+.feedback-poll-results--compact {
+
+margin-top: 0;
+
+padding-top: 0;
+
+border-top: none;
+
+}
+
+.feedback-poll-results__item--compact {
+
+grid-template-columns:
+
+  minmax(0, 1fr)
+
+  auto;
+
+}
+
 .feedback-poll-results {
 
 margin-top: 16px;
@@ -1501,6 +1540,8 @@ margin-top: 16px;
 padding-top: 14px;
 
 border-top: 1px solid rgba(255, 255, 255, 0.14);
+
+color: #ffffff;
 
 }
 
@@ -1512,7 +1553,9 @@ font-size: 0.92rem;
 
 font-weight: 600;
 
-opacity: 0.9;
+color: #ffffff;
+
+opacity: 1;
 
 }
 
@@ -1554,6 +1597,8 @@ font-size: 0.9rem;
 
 line-height: 1.3;
 
+color: #ffffff;
+
 }
 
 .feedback-poll-results__bar {
@@ -1588,7 +1633,9 @@ font-size: 0.84rem;
 
 white-space: nowrap;
 
-opacity: 0.92;
+color: #ffffff;
+
+opacity: 1;
 
 }
 

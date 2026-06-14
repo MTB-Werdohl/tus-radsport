@@ -760,8 +760,12 @@ function normalizeFeedbackSummaryCounts(
 
 function renderFeedbackPollResultsSummary(
   module,
-  summary
+  summary,
+  options = {}
 ) {
+
+  const omitLabels =
+    options.omitLabels === true;
 
   const total =
     Number(summary?.total) || 0;
@@ -776,13 +780,13 @@ function renderFeedbackPollResultsSummary(
       summary
     );
 
-  const options =
+  const pollOptions =
     getFeedbackPollAllOptions(
       module.config
     );
 
   const items =
-    options
+    pollOptions
       .map((option) => {
 
         const count =
@@ -795,12 +799,27 @@ function renderFeedbackPollResultsSummary(
             )
             : 0;
 
-        return `
-<li class="feedback-poll-results__item">
-
+        const labelHtml =
+          omitLabels
+            ? ''
+            : `
 <span class="feedback-poll-results__label">
   ${escapeFeedbackHtml(option.label)}
 </span>
+`;
+
+        return `
+<li
+  class="feedback-poll-results__item${
+    omitLabels
+      ? ' feedback-poll-results__item--compact'
+      : ''
+  }"
+  aria-label="${escapeFeedbackHtml(
+    `${option.label}: ${percent} Prozent, ${count} Stimmen`
+  )}">
+
+${labelHtml}
 
 <div
   class="feedback-poll-results__bar"
@@ -831,7 +850,11 @@ function renderFeedbackPollResultsSummary(
 
   return `
 <div
-  class="feedback-poll-results"
+  class="feedback-poll-results${
+    omitLabels
+      ? ' feedback-poll-results--compact'
+      : ''
+  }"
   data-feedback-poll-results>
 
 <p class="feedback-poll-results__total">
@@ -877,15 +900,39 @@ async function refreshFeedbackPollResults(
   const html =
     renderFeedbackPollResultsSummary(
       module,
-      summary
+      summary,
+      {
+        omitLabels:
+          !!container.querySelector(
+            '[data-feedback-poll-results-slot]'
+          )
+      }
     );
 
   if (!html) {
+
+    container
+      .querySelector(
+        '[data-feedback-poll-results-slot]'
+      )
+      ?.replaceChildren();
 
     if (existing) {
       existing.remove();
     }
 
+    return;
+
+  }
+
+  const resultsSlot =
+    container.querySelector(
+      '[data-feedback-poll-results-slot]'
+    );
+
+  if (resultsSlot) {
+
+    resultsSlot.innerHTML = html;
     return;
 
   }
@@ -1013,11 +1060,26 @@ function renderFeedbackModule(
       === window.siteConfig.feedback.types.poll
     ) {
 
-      body =
-        renderFeedbackPoll(
-          module,
-          ownAnswer
-        );
+      body = `
+<div class="feedback-poll-layout">
+
+  <div class="feedback-poll-layout__vote">
+
+    ${renderFeedbackPoll(
+      module,
+      ownAnswer
+    )}
+
+  </div>
+
+  <div
+    class="feedback-poll-layout__results"
+    data-feedback-poll-results-slot>
+
+  </div>
+
+</div>
+`;
 
     }
 

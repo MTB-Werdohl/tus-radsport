@@ -40,20 +40,20 @@
 }
 
 .news-vorstand-btn {
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 999px;
-  padding: 0.35rem 0.85rem;
-  background: rgba(0, 0, 0, 0.18);
-  color: #fff;
-  font-size: 0.82rem;
+  padding: 10px 18px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  font-size: 0.9375rem;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
 .news-vorstand-btn:hover {
-  background: rgba(0, 0, 0, 0.32);
-  border-color: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 @media (min-width: 768px) {
@@ -164,13 +164,57 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
-.event-header__feedback .feedback-poll-results {
-  margin-top: 12px;
-  padding-top: 12px;
+.event-header__feedback .feedback-poll-layout {
+  gap: 20px;
 }
 
-.event-header__feedback .feedback-poll-results__item {
-  grid-template-columns: minmax(0, 1fr) minmax(72px, 1fr) auto;
+.event-header__feedback .feedback-poll-results,
+.event-header__feedback .feedback-poll-results__total,
+.event-header__feedback .feedback-poll-results__label,
+.event-header__feedback .feedback-poll-results__meta {
+  color: #ffffff;
+}
+
+.event-header__feedback .feedback-poll-results {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+@media (min-width: 768px) {
+
+  .event-header__feedback .feedback-poll-layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 28px;
+  }
+
+  .event-header__feedback .feedback-poll-layout__vote {
+    flex: 1 1 260px;
+    max-width: 360px;
+  }
+
+  .event-header__feedback .feedback-poll-layout__results {
+    flex: 1 1 220px;
+    min-width: 200px;
+  }
+
+  .event-header__feedback .feedback-poll-layout__results:not(:empty) {
+    padding-top: 0;
+    padding-left: 28px;
+    border-top: none;
+    border-left: 1px solid rgba(255, 255, 255, 0.22);
+  }
+
+  .event-header__feedback .feedback-poll-results__item--compact {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+}
+
+.event-header__feedback .feedback-poll-layout__results:not(:empty) {
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
 }
 
 .event-header__feedback .feedback-freetext {
