@@ -689,7 +689,8 @@ ${totalLine}
 function renderFeedbackAnswersTable(
   module,
   displayRows,
-  entityRecurring
+  entityRecurring,
+  options = {}
 ) {
 
   if (!displayRows.length) {
@@ -702,8 +703,12 @@ function renderFeedbackAnswersTable(
 
   }
 
+  const compactTable =
+    options.compactTable === true;
+
   const historyMode =
-    isFeedbackEventResultsHistoryMode(
+    !compactTable
+    && isFeedbackEventResultsHistoryMode(
       module,
       entityRecurring
     );
@@ -711,6 +716,24 @@ function renderFeedbackAnswersTable(
   const rows =
     displayRows
       .map((row) => {
+
+        if (compactTable) {
+
+          return `
+<tr>
+
+<td>
+  ${escapeAdminHtml(row.name)}
+</td>
+
+<td class="feedback-admin-answer-cell">
+  ${escapeAdminHtml(row.answerLabel)}
+</td>
+
+</tr>
+`;
+
+        }
 
         if (historyMode) {
 
@@ -794,8 +817,13 @@ function renderFeedbackAnswersTable(
       .join('');
 
   const head =
-    historyMode
+    compactTable
       ? `
+<th>Name</th>
+<th>Antwort</th>
+`
+      : historyMode
+        ? `
 <th>Name</th>
 <th>E-Mail</th>
 <th>Antwort</th>
@@ -803,7 +831,7 @@ function renderFeedbackAnswersTable(
 <th>Aktualisiert</th>
 <th>Absagegrund</th>
 `
-      : `
+        : `
 <th>Name</th>
 <th>E-Mail</th>
 <th>Antwort</th>
@@ -1057,27 +1085,43 @@ async function loadFeedbackResultsForModule(
         entityRecurring
       );
 
-    const summary =
-      buildFeedbackSummary(
-        module,
-        answers
-      );
+    const showSummary =
+      options.showSummary !== false;
+
+    const showFreeTextList =
+      options.showFreeTextList !== false;
 
     const showExport =
       options.showExport !== false;
 
+    const compactTable =
+      options.compactTable === true;
+
+    const summaryHtml =
+      showSummary
+        ? renderFeedbackSummaryHtml(
+          module,
+          buildFeedbackSummary(
+            module,
+            answers
+          ),
+          entityRecurring
+        )
+        : '';
+
+    const freeTextHtml =
+      showFreeTextList
+        ? renderFeedbackFreeTextResponses(
+          module,
+          answers
+        )
+        : '';
+
     container.innerHTML = `
 
-${renderFeedbackSummaryHtml(
-  module,
-  summary,
-  entityRecurring
-)}
+${summaryHtml}
 
-${renderFeedbackFreeTextResponses(
-  module,
-  answers
-)}
+${freeTextHtml}
 
 ${
   showExport
@@ -1098,14 +1142,17 @@ ${
     : ''
 }
 
+${compactTable ? '' : `
 <h2>
   Rückmeldungen
 </h2>
+`}
 
 ${renderFeedbackAnswersTable(
   module,
   displayRows,
-  entityRecurring
+  entityRecurring,
+  { compactTable }
 )}
 
 `;

@@ -806,7 +806,10 @@ async function openNewsFeedbackResultsModal(
     moduleId,
     body,
     {
-      showExport: true
+      showSummary: false,
+      showFreeTextList: false,
+      showExport: false,
+      compactTable: true
     }
   );
 
