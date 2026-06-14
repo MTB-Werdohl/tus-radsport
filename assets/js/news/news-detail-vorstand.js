@@ -268,44 +268,17 @@ function ensureNewsEditModal() {
   body.innerHTML = `
 <div class="news-vorstand-edit-form">
 
-<label class="admin-field">
+<label class="admin-field admin-field--required">
   Titel
   <input
     id="news-vorstand-title"
     type="text"
+    required
     placeholder="Titel">
-</label>
-
-<section class="admin-feedback-section">
-
-  <h3>Feedback (optional)</h3>
-
-  <div id="news-vorstand-feedback-wrap"></div>
-
-</section>
-
-<label class="admin-field">
-  Kurztext
-  <textarea
-    id="news-vorstand-excerpt"
-    rows="3"
-    placeholder="Kurztext"></textarea>
-</label>
-
-<label class="admin-field">
-  Inhalt
-  <textarea
-    id="news-vorstand-content"
-    rows="8"
-    placeholder="Inhalt"></textarea>
 </label>
 
 <label class="admin-field">
   Bild
-  <input
-    id="news-vorstand-image-file"
-    type="file"
-    accept="image/*">
   <input
     id="news-vorstand-image-path"
     type="hidden">
@@ -321,6 +294,38 @@ function ensureNewsEditModal() {
   </div>
   <div id="news-vorstand-current-image"></div>
 </label>
+
+<label class="admin-field">
+  Inhalt
+  <textarea
+    id="news-vorstand-content"
+    rows="8"
+    placeholder="Inhalt"></textarea>
+</label>
+
+<div class="member-edit-poll-config">
+
+  <div class="member-edit-media-actions">
+
+    <button
+      id="open-news-vorstand-poll-config"
+      type="button"
+      class="secondary-button">
+
+      Umfrage hinzufügen
+
+    </button>
+
+  </div>
+
+  <p
+    id="news-vorstand-poll-summary"
+    class="member-edit-poll-summary news-vorstand-poll-summary"
+    hidden>
+
+  </p>
+
+</div>
 
 <label class="admin-field">
   Sichtbarkeit
@@ -375,6 +380,14 @@ function ensureNewsEditModal() {
     });
 
   if (
+    typeof renderMemberEditMediaPreview
+      === 'function'
+  ) {
+    renderAdminSelectedMediaPreview =
+      renderMemberEditMediaPreview;
+  }
+
+  if (
     typeof bindMediaPickerButton
       === 'function'
   ) {
@@ -387,8 +400,6 @@ function ensureNewsEditModal() {
           'news-vorstand-image-path',
         previewContainerId:
           'news-vorstand-current-image',
-        fileInputId:
-          'news-vorstand-image-file',
         title: 'Bild aus Mediathek'
       }
     );
@@ -432,11 +443,6 @@ async function loadNewsIntoVorstandModal(
       data.title || '';
 
   document
-    .getElementById('news-vorstand-excerpt')
-    .value =
-      data.excerpt || '';
-
-  document
     .getElementById('news-vorstand-content')
     .value =
       data.content || '';
@@ -464,48 +470,7 @@ async function loadNewsIntoVorstandModal(
     );
 
   if (preview) {
-
-    if (data.image) {
-
-      const imageUrl =
-        typeof resolveNewsImage === 'function'
-          ? resolveNewsImage(data)
-          : data.image;
-
-      const pathHint =
-        data.image_storage_path
-          ? `
-<p class="admin-media-path">
-  Pfad: ${escapeNewsVorstandHtml(
-    data.image_storage_path
-  )}
-</p>
-          `
-          : '';
-
-      preview.innerHTML = `
-<p>Aktuelles Bild:</p>
-<img
-  src="${typeof safeMediaUrl === 'function'
-    ? safeMediaUrl(imageUrl)
-    : escapeNewsVorstandHtml(imageUrl)}"
-  class="preview-image">
-${pathHint}
-      `;
-
-    } else {
-      preview.innerHTML = '';
-    }
-
-  }
-
-  const fileInput =
-    document.getElementById(
-      'news-vorstand-image-file'
-    );
-
-  if (fileInput) {
-    fileInput.value = '';
+    preview.innerHTML = '';
   }
 
   const pathInput =
@@ -515,6 +480,31 @@ ${pathHint}
 
   if (pathInput) {
     pathInput.value = '';
+  }
+
+  if (
+    data.image_storage_path
+    && typeof applyMemberEditMediaSelection
+      === 'function'
+  ) {
+
+    applyMemberEditMediaSelection(
+      'news-vorstand-current-image',
+      'image',
+      data.image_storage_path,
+      'news-vorstand-image-path'
+    );
+
+  }
+
+  const pollSummary =
+    document.getElementById(
+      'news-vorstand-poll-summary'
+    );
+
+  if (pollSummary) {
+    pollSummary.textContent = '';
+    pollSummary.hidden = true;
   }
 
   ensureNewsEditModal().dataset.newsId =
@@ -529,8 +519,12 @@ ${pathHint}
       entityType:
         window.siteConfig.feedback.entityTypes.news,
       entityId: newsId,
-      mountId:
-        'news-vorstand-feedback-wrap'
+      presentation: 'modal',
+      triggerId:
+        'open-news-vorstand-poll-config',
+      summaryId:
+        'news-vorstand-poll-summary',
+      memberMode: true
     });
 
   }
@@ -565,17 +559,19 @@ async function saveNewsFromVorstandModal() {
     return;
   }
 
-  const excerpt =
-    document
-      .getElementById('news-vorstand-excerpt')
-      ?.value
-      || '';
-
   const content =
     document
       .getElementById('news-vorstand-content')
       ?.value
       || '';
+
+  const excerpt =
+    typeof buildMemberNewsExcerpt === 'function'
+      ? buildMemberNewsExcerpt(
+        content,
+        title
+      )
+      : content.slice(0, 200);
 
   const sichtbarkeitRaw =
     document
@@ -594,25 +590,20 @@ async function saveNewsFromVorstandModal() {
       : sichtbarkeit
         !== window.siteConfig.visibility.draft;
 
-  const imageFile =
-    document
-      .getElementById('news-vorstand-image-file')
-      ?.files?.[0];
-
   const slug =
-    typeof buildAdminSlug === 'function'
-      ? buildAdminSlug(title)
-      : title
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '');
+    typeof buildMemberContentSlug === 'function'
+      ? buildMemberContentSlug(title)
+      : (
+        typeof buildAdminSlug === 'function'
+          ? buildAdminSlug(title)
+          : title
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+      );
 
   let imageStoragePath = null;
-
-  const sharedImagesFolder =
-    window.MEDIA_STORAGE_FOLDERS?.sharedImages
-    || 'shared/images';
 
   const { data: existing } =
     await window.supabaseClient
@@ -626,27 +617,7 @@ async function saveNewsFromVorstandModal() {
   imageStoragePath =
     existing?.image_storage_path || null;
 
-  if (imageFile) {
-
-    const upload =
-      await uploadMediaStorageFile(
-        sharedImagesFolder,
-        imageFile
-      );
-
-    if (!upload.error) {
-      imageStoragePath =
-        upload.storagePath;
-    } else {
-      alert(
-        'Bild-Upload fehlgeschlagen: '
-        + (upload.error.message
-          || 'Unbekannter Fehler')
-      );
-      return;
-    }
-
-  } else if (
+  if (
     typeof resolveMediaPickerSelectionForSave
       === 'function'
   ) {

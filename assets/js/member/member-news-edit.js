@@ -6,57 +6,6 @@ const memberNewsEditParams =
 const memberNewsEditId =
   memberNewsEditParams.get('id');
 
-const memberNewsExcerptMaxLength = 200;
-
-function buildMemberNewsExcerpt(
-  content,
-  title
-) {
-
-  const plain =
-    String(content || '')
-      .replace(/```[\s\S]*?```/g, ' ')
-      .replace(/`[^`]*`/g, ' ')
-      .replace(
-        /!\[[^\]]*\]\([^)]*\)/g,
-        ' '
-      )
-      .replace(
-        /\[([^\]]*)\]\([^)]*\)/g,
-        '$1'
-      )
-      .replace(/^#+\s+/gm, '')
-      .replace(/[*_~>#-]/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-
-  const source =
-    plain
-    || String(title || '').trim();
-
-  if (!source) {
-    return '';
-  }
-
-  if (
-    source.length
-    <= memberNewsExcerptMaxLength
-  ) {
-    return source;
-  }
-
-  return (
-    source
-      .slice(
-        0,
-        memberNewsExcerptMaxLength - 1
-      )
-      .trim()
-    + '…'
-  );
-
-}
-
 async function memberNewsAssertEditable(
   member
 ) {

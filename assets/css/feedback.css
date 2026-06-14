@@ -1708,6 +1708,28 @@ overflow: auto;
 
 }
 
+.member-feedback-modal__dialog--wide .news-vorstand-edit-form .member-edit-poll-config {
+
+margin: 4px 0 16px;
+
+}
+
+.member-feedback-modal__dialog--wide .news-vorstand-poll-summary {
+
+color: rgba(0, 0, 0, 0.62);
+
+}
+
+.member-feedback-modal__dialog--wide .admin-field--required::after {
+
+content: ' *';
+
+color: #c8102e;
+
+font-weight: 700;
+
+}
+
 .member-feedback-modal__dialog--results {
 
 width: min(100%, 960px);
