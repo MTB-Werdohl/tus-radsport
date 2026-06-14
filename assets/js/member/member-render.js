@@ -610,6 +610,42 @@ function renderMemberAvatarProfileBlock(
 
 }
 
+function renderMemberConsentSection(
+  member
+) {
+
+  return `
+<section class="member-profile-section-block">
+
+  <h2>Datenschutz-Einwilligungen</h2>
+
+  ${renderConsentBlock(
+    member.einwilligung_kontakt,
+    member.kontakt_eingewilligt_am,
+    member.kontakt_widerrufen_am,
+    'kontakt'
+  )}
+
+  ${renderConsentBlock(
+    member.einwilligung_bilder,
+    member.bilder_eingewilligt_am,
+    member.bilder_widerrufen_am,
+    'bilder'
+  )}
+
+  <p class="member-consent-footnote">
+    Die Einwilligungen sind freiwillig und können jederzeit mit Wirkung für die Zukunft
+    widerrufen werden. Der Widerruf ist in Textform (z.&nbsp;B. per E-Mail) gegenüber dem Verein
+    zu richten.
+  </p>
+
+  ${renderConsentDialogs()}
+
+</section>
+  `.trim();
+
+}
+
 function renderClubMemberProfilContent(
   member
 ) {
@@ -699,33 +735,7 @@ ${renderMemberAvatarProfileBlock(member)}
 
 </section>
 
-<section class="member-profile-section-block">
-
-  <h2>Datenschutz-Einwilligungen</h2>
-
-  ${renderConsentBlock(
-    member.einwilligung_kontakt,
-    member.kontakt_eingewilligt_am,
-    member.kontakt_widerrufen_am,
-    'kontakt'
-  )}
-
-  ${renderConsentBlock(
-    member.einwilligung_bilder,
-    member.bilder_eingewilligt_am,
-    member.bilder_widerrufen_am,
-    'bilder'
-  )}
-
-  <p class="member-consent-footnote">
-    Die Einwilligungen sind freiwillig und können jederzeit mit Wirkung für die Zukunft
-    widerrufen werden. Der Widerruf ist in Textform (z.&nbsp;B. per E-Mail) gegenüber dem Verein
-    zu richten.
-  </p>
-
-  ${renderConsentDialogs()}
-
-</section>
+${renderMemberConsentSection(member)}
 
 <section class="member-profile-section-block member-profile-actions">
 
@@ -1001,7 +1011,7 @@ function renderMemberProfile(
 
   <p class="member-public-hint">
     Du bist als externer Teilnehmer registriert — kein Vereinsmitglied.
-    Du kannst dich an Veranstaltungen anmelden und teilnehmen.
+    Du kannst dich trotzdem an Veranstaltungen anmelden und teilnehmen.
   </p>
 
   <dl class="member-profile-list">
@@ -1030,6 +1040,8 @@ function renderMemberProfile(
 
 </section>
 
+${renderMemberConsentSection(member)}
+
 <section class="member-profile-section-block member-profile-actions">
 
   <button type="button" id="member-logout-btn" class="member-logout-btn">
@@ -1041,12 +1053,6 @@ function renderMemberProfile(
 <section class="member-profile-section-block member-profile-delete">
 
   <h2>Account löschen</h2>
-
-  <p class="member-delete-hint">
-    Deine personenbezogenen Daten (Name, E-Mail, Telefon) werden entfernt.
-    Bereits abgegebene Abstimmungen bleiben <strong>anonym</strong> gezählt,
-    damit Auswertungen korrekt bleiben (z.&nbsp;B. Teilnehmerzahl einer Tour).
-  </p>
 
   <button
     type="button"
