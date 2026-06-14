@@ -1746,6 +1746,46 @@ overflow-x: auto;
 
 }
 
+.feedback-admin-table--compact {
+
+width: 100%;
+
+table-layout: auto;
+
+}
+
+.feedback-admin-table--compact th:first-child,
+.feedback-admin-table--compact td:first-child {
+
+white-space: nowrap;
+
+width: 1%;
+
+padding-right: 0;
+
+}
+
+.feedback-admin-table--compact th:last-child,
+.feedback-admin-table--compact td:last-child {
+
+padding-left: 10px;
+
+text-align: left;
+
+white-space: normal;
+
+width: auto;
+
+}
+
+.feedback-admin-table--compact .feedback-admin-answer-cell {
+
+white-space: normal;
+
+width: auto;
+
+}
+
 .news-vorstand-edit-form .admin-feedback-section h3 {
 
 margin: 0 0 10px;

@@ -839,11 +839,20 @@ function renderFeedbackAnswersTable(
 <th>Aktualisiert</th>
 `;
 
+  const tableClass =
+    compactTable
+      ? 'feedback-admin-table feedback-admin-table--results feedback-admin-table--compact'
+      : 'feedback-admin-table feedback-admin-table--results';
+
   return `
 
-<div class="feedback-admin-table-wrap">
+<div class="feedback-admin-table-wrap${
+  compactTable
+    ? ' feedback-admin-table-wrap--compact'
+    : ''
+}">
 
-<table class="feedback-admin-table feedback-admin-table--results">
+<table class="${tableClass}">
 
 <thead>
 
