@@ -80,14 +80,18 @@ async function loadEvent() {
 
   }
 
+  const fromErlebtes =
+    new URLSearchParams(
+      window.location.search
+    ).get('from') === 'erlebtes'
+    || window.location.hash
+      === '#event-recap';
+
   renderEvent(
     event,
     recap,
     {
-      fromErlebtes:
-        new URLSearchParams(
-          window.location.search
-        ).get('from') === 'erlebtes'
+      fromErlebtes
     }
   );
 
@@ -103,11 +107,31 @@ async function loadEvent() {
     container: 'event-feedback'
   });
 
-window.history.replaceState(
-  {},
-  '',
-  getEventUrl(event.slug)
-);
+  if (
+    fromErlebtes
+    && recap
+    && recap.status === 'published'
+    && typeof scrollEventRecapIntoView
+      === 'function'
+  ) {
+    scrollEventRecapIntoView();
+  }
+
+  const eventUrl =
+    getEventUrl(event.slug);
+
+  const hash =
+    fromErlebtes
+    && recap
+    && recap.status === 'published'
+      ? '#event-recap'
+      : '';
+
+  window.history.replaceState(
+    {},
+    '',
+    `${eventUrl}${hash}`
+  );
 
 }
 

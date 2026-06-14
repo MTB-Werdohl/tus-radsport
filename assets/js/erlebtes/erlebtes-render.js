@@ -144,7 +144,7 @@ function renderErlebtesCards(
             : `/event.html?slug=${encodeURIComponent(termin.slug || '')}`;
 
         const href =
-          `${baseHref}${baseHref.includes('?') ? '&' : '?'}from=erlebtes`;
+          `${baseHref}${baseHref.includes('?') ? '&' : '?'}from=erlebtes#event-recap`;
 
         const imageHtml =
           imageUrl

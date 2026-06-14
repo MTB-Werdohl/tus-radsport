@@ -73,8 +73,8 @@ function memberTerminEventUrl(
   }
 
   return typeof getEventUrl === 'function'
-    ? getEventUrl(termin.slug)
-    : `/kalender/${termin.slug}/`;
+    ? `${getEventUrl(termin.slug)}#event-recap`
+    : `/kalender/${termin.slug}/#event-recap`;
 
 }
 

@@ -219,6 +219,31 @@ initEventRecapLightbox();
 
 }
 
+function scrollEventRecapIntoView() {
+
+  const target =
+    document.getElementById(
+      'event-recap'
+    );
+
+  if (!target) {
+    return;
+  }
+
+  requestAnimationFrame(() => {
+
+    target.scrollIntoView({
+      block: 'start'
+    });
+
+    target.focus({
+      preventScroll: true
+    });
+
+  });
+
+}
+
 function renderEventRecap(
   recap,
   event
@@ -291,9 +316,15 @@ function renderEventRecap(
       : '';
 
   return `
-    <section class="event-recap">
+    <section
+      id="event-recap"
+      class="event-recap"
+      tabindex="-1"
+      aria-labelledby="event-recap-title">
 
-      <h2 class="event-recap-title">
+      <h2
+        id="event-recap-title"
+        class="event-recap-title">
         Rückblick
       </h2>
 

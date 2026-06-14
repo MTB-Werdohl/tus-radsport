@@ -407,6 +407,7 @@
 }
 
 .event-recap {
+  scroll-margin-top: calc(var(--header-height, 72px) + 12px);
   margin-top: 2.5rem;
   padding-top: 2rem;
   border-top: 1px solid rgba(255, 255, 255, 0.18);
