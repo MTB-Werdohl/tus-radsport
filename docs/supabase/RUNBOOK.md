@@ -27,6 +27,8 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Feedback Deaktivieren (ohne Löschen):** [`supabase-feedback-enabled.sql`](../supabase-feedback-enabled.sql) — Spalte `enabled`; deaktiviertes Modul ist öffentlich ausgeblendet, Antworten bleiben bis Entity-Löschung.
 
+**Feedback Umfrage-Auswertung (aggregiert):** [`supabase-feedback-module-summary.sql`](../supabase-feedback-module-summary.sql) — RPC `get_feedback_module_summary(module_id)` für Stimmenanzahl und Prozentverteilung auf News-/Termin-Detailseiten (Mitglieder/Vorstand, ohne Einzelantworten). **Nach** Feedback-Basis und `supabase-member-change-summary.sql` (`member_can_view_sichtbarkeit`).
+
 **Phase 4a — Einzeltermine (Verbindlichkeit):** [`supabase-phase4a-feedback-events.sql`](../supabase-phase4a-feedback-events.sql) — `feedback_answer_events`, RPCs `set_event_feedback_answer` / `list_feedback_participation_changes`, RLS: Einzeltermine nur noch über RPC schreibbar; `anonymize_member` bereinigt Event-Freitexte. **Nach** Feedback-Basis und `supabase-feedback-answers-delete-own.sql`. Frontend/Admin: `admin_js_version` **20260562**.
 
 **Phase 4a Review:** [`supabase-phase4a-public-feedback-rpc-fix.sql`](../supabase-phase4a-public-feedback-rpc-fix.sql) — `submit_public_feedback` an 4a-Logik (`set_event_feedback_answer_for_member`); nach Phase-4a-Basis.

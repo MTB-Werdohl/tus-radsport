@@ -920,3 +920,57 @@ async function countFeedbackAnswers(moduleId) {
   return count || 0;
 
 }
+
+async function fetchFeedbackModuleSummary(
+  moduleId
+) {
+
+  if (!moduleId) {
+    return null;
+  }
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'get_feedback_module_summary',
+      {
+        p_module_id: moduleId
+      }
+    );
+
+  if (error) {
+
+    const message =
+      String(error.message || '');
+
+    if (
+      message.includes('Could not find the function')
+      || error.code === 'PGRST202'
+    ) {
+
+      console.warn(
+        'get_feedback_module_summary fehlt — '
+        + 'docs/supabase-feedback-module-summary.sql ausführen.'
+      );
+
+      return null;
+
+    }
+
+    console.error(error);
+
+    return null;
+
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  return {
+    total:
+      Number(data.total) || 0,
+    counts:
+      data.counts || {}
+  };
+
+}

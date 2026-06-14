@@ -952,23 +952,11 @@ function downloadFeedbackCsv(
 
 }
 
-async function loadFeedbackResults() {
-
-  const params =
-    new URLSearchParams(
-      window.location.search
-    );
-
-  const moduleId =
-    parseInt(
-      params.get('module_id'),
-      10
-    );
-
-  const container =
-    document.getElementById(
-      'feedback-results-content'
-    );
+async function loadFeedbackResultsForModule(
+  moduleId,
+  container,
+  options = {}
+) {
 
   if (
     !moduleId
@@ -1016,6 +1004,23 @@ async function loadFeedbackResults() {
       entityRecurring
     );
 
+  const titleEl =
+    options.titleElement || null;
+
+  if (titleEl) {
+    titleEl.textContent =
+      formatFeedbackResultsEntityTitle(
+        module,
+        entity
+      );
+  }
+
+  container.innerHTML = `
+<p class="admin-hint">
+  Auswertung wird geladen …
+</p>
+  `;
+
   try {
 
     const answers =
@@ -1058,13 +1063,8 @@ async function loadFeedbackResults() {
         answers
       );
 
-    document
-      .getElementById('feedback-results-title')
-      .textContent =
-        formatFeedbackResultsEntityTitle(
-          module,
-          entity
-        );
+    const showExport =
+      options.showExport !== false;
 
     container.innerHTML = `
 
@@ -1079,18 +1079,24 @@ ${renderFeedbackFreeTextResponses(
   answers
 )}
 
+${
+  showExport
+    ? `
 <div class="feedback-admin-results-actions">
 
 <button
-  id="feedback-export-csv"
   type="button"
-  class="new-button">
+  class="new-button"
+  data-feedback-export-csv>
 
   CSV exportieren
 
 </button>
 
 </div>
+`
+    : ''
+}
 
 <h2>
   Rückmeldungen
@@ -1104,17 +1110,21 @@ ${renderFeedbackAnswersTable(
 
 `;
 
-    document
-      .getElementById('feedback-export-csv')
-      ?.addEventListener('click', () => {
+    if (showExport) {
 
-        downloadFeedbackCsv(
-          module,
-          displayRows,
-          entityRecurring
-        );
+      container
+        .querySelector('[data-feedback-export-csv]')
+        ?.addEventListener('click', () => {
 
-      });
+          downloadFeedbackCsv(
+            module,
+            displayRows,
+            entityRecurring
+          );
+
+        });
+
+    }
 
   } catch (error) {
 
@@ -1130,6 +1140,39 @@ ${renderFeedbackAnswersTable(
     `;
 
   }
+
+}
+
+async function loadFeedbackResults() {
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  const moduleId =
+    parseInt(
+      params.get('module_id'),
+      10
+    );
+
+  const container =
+    document.getElementById(
+      'feedback-results-content'
+    );
+
+  const titleEl =
+    document.getElementById(
+      'feedback-results-title'
+    );
+
+  await loadFeedbackResultsForModule(
+    moduleId,
+    container,
+    {
+      titleElement: titleEl
+    }
+  );
 
 }
 

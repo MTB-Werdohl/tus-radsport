@@ -86,11 +86,6 @@ load_member_content_edit_css: true
 
     </div>
 
-    <p class="member-edit-hint">
-      Der Kurztext in der Übersicht wird beim Speichern automatisch
-      aus dem Inhalt erzeugt.
-    </p>
-
     <button id="save-news"
             type="button"
             class="member-edit-save">

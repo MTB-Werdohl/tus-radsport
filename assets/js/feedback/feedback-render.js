@@ -678,6 +678,245 @@ function confirmFeedbackYesCommitment() {
 
 }
 
+function shouldShowFeedbackPollResults(
+  module,
+  member,
+  entityVisibility
+) {
+
+  if (
+    !module
+    || module.enabled === false
+  ) {
+    return false;
+  }
+
+  if (
+    resolveFeedbackModuleType(module)
+    !== window.siteConfig.feedback.types.poll
+  ) {
+    return false;
+  }
+
+  if (
+    !shouldShowFeedbackToViewer(
+      module,
+      member
+    )
+  ) {
+    return false;
+  }
+
+  if (
+    typeof isClubMember === 'function'
+    && isClubMember(member)
+  ) {
+    return true;
+  }
+
+  if (
+    typeof isVorstand === 'function'
+    && isVorstand(member)
+  ) {
+    return true;
+  }
+
+  return (
+    isFeedbackEntityPublic(entityVisibility)
+    && module?.public_voting === true
+  );
+
+}
+
+function normalizeFeedbackSummaryCounts(
+  module,
+  summary
+) {
+
+  const counts =
+    summary?.counts || {};
+
+  if (
+    module?.type
+    === window.siteConfig.feedback.types.poll
+  ) {
+
+    const normalized = {};
+
+    getFeedbackPollAllOptions(
+      module.config
+    ).forEach((option) => {
+      normalized[option.id] =
+        Number(counts[option.id]) || 0;
+    });
+
+    return normalized;
+
+  }
+
+  return counts;
+
+}
+
+function renderFeedbackPollResultsSummary(
+  module,
+  summary
+) {
+
+  const total =
+    Number(summary?.total) || 0;
+
+  if (total <= 0) {
+    return '';
+  }
+
+  const counts =
+    normalizeFeedbackSummaryCounts(
+      module,
+      summary
+    );
+
+  const options =
+    getFeedbackPollAllOptions(
+      module.config
+    );
+
+  const items =
+    options
+      .map((option) => {
+
+        const count =
+          Number(counts[option.id]) || 0;
+
+        const percent =
+          total > 0
+            ? Math.round(
+              (count / total) * 100
+            )
+            : 0;
+
+        return `
+<li class="feedback-poll-results__item">
+
+<span class="feedback-poll-results__label">
+  ${escapeFeedbackHtml(option.label)}
+</span>
+
+<div
+  class="feedback-poll-results__bar"
+  role="presentation">
+
+  <span
+    class="feedback-poll-results__bar-fill"
+    style="width: ${percent}%;">
+  </span>
+
+</div>
+
+<span class="feedback-poll-results__meta">
+  <strong>${percent}%</strong>
+  (${count})
+</span>
+
+</li>
+`;
+
+      })
+      .join('');
+
+  const voteLabel =
+    total === 1
+      ? '1 Stimme'
+      : `${total} Stimmen`;
+
+  return `
+<div
+  class="feedback-poll-results"
+  data-feedback-poll-results>
+
+<p class="feedback-poll-results__total">
+  ${escapeFeedbackHtml(voteLabel)}
+</p>
+
+<ul class="feedback-poll-results__list">
+  ${items}
+</ul>
+
+</div>
+`;
+
+}
+
+async function refreshFeedbackPollResults(
+  container,
+  module,
+  member,
+  entityVisibility
+) {
+
+  if (
+    !shouldShowFeedbackPollResults(
+      module,
+      member,
+      entityVisibility
+    )
+  ) {
+    return;
+  }
+
+  const summary =
+    await fetchFeedbackModuleSummary(
+      module.id
+    );
+
+  const existing =
+    container.querySelector(
+      '[data-feedback-poll-results]'
+    );
+
+  const html =
+    renderFeedbackPollResultsSummary(
+      module,
+      summary
+    );
+
+  if (!html) {
+
+    if (existing) {
+      existing.remove();
+    }
+
+    return;
+
+  }
+
+  if (existing) {
+    existing.outerHTML = html;
+    return;
+  }
+
+  const statusEl =
+    container.querySelector(
+      '#feedback-status'
+    );
+
+  if (statusEl) {
+    statusEl.insertAdjacentHTML(
+      'afterend',
+      html
+    );
+    return;
+  }
+
+  container
+    .querySelector('.feedback-module')
+    ?.insertAdjacentHTML(
+      'beforeend',
+      html
+    );
+
+}
+
 function renderFeedbackModule(
   container,
   module,
@@ -824,6 +1063,13 @@ ${
   } else if (showPublicGate) {
     bindFeedbackPublicGateEvents(container);
   }
+
+  void refreshFeedbackPollResults(
+    container,
+    module,
+    member,
+    entityVisibility
+  );
 
 }
 

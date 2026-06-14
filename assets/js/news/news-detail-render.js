@@ -14,6 +14,13 @@ function renderNewsDetail(
     return;
   }
 
+  const escapeAttr =
+    (value) =>
+      String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;');
+
   const newsImage =
     typeof resolveNewsImage === 'function'
       ? resolveNewsImage(data)
@@ -21,7 +28,12 @@ function renderNewsDetail(
 
   wrapper.innerHTML = `
 
-<article class="news-page event-page">
+<article
+  class="news-page event-page"
+  data-news-id="${data.id}"
+  data-news-title="${escapeAttr(
+    data.title
+  )}">
 
 <header class="event-header news-header">
 
@@ -51,6 +63,12 @@ ${renderContentCreatorMeta(
 </a>
 
 <div id="share"></div>
+
+<div
+  id="news-vorstand-actions"
+  class="news-vorstand-actions">
+
+</div>
 
 </div>
 

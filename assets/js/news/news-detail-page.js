@@ -74,6 +74,16 @@ await initFeedbackModule({
   container: 'news-feedback'
 });
 
+const vorstandMember =
+  typeof getCurrentMember === 'function'
+    ? getCurrentMember()
+    : member;
+
+await initNewsDetailVorstand(
+  data,
+  vorstandMember
+);
+
 window.history.replaceState(
   {},
   '',
