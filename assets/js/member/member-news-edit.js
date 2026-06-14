@@ -258,7 +258,8 @@ async function initMemberNewsEditPage() {
     kind: 'image',
     hiddenInputId: 'imageStoragePathPick',
     previewContainerId: 'currentImage',
-    title: 'Bild aus Mediathek'
+    title: 'Bild aus Mediathek',
+    pickerMode: 'member'
   });
 
   window.memberEditUnsavedGuard =

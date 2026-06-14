@@ -207,3 +207,166 @@ function applyMemberEditMediaSelection(
   );
 
 }
+
+function sanitizeMemberMediaStorageFilename(
+  name
+) {
+
+  const raw =
+    String(name || 'datei').trim();
+
+  const dotIndex =
+    raw.lastIndexOf('.');
+
+  const extension =
+    dotIndex > 0
+      ? raw.slice(dotIndex + 1)
+      : '';
+
+  const baseName =
+    dotIndex > 0
+      ? raw.slice(0, dotIndex)
+      : raw;
+
+  let safeBase =
+    baseName
+      .toLowerCase()
+      .replace(/ä/g, 'ae')
+      .replace(/ö/g, 'oe')
+      .replace(/ü/g, 'ue')
+      .replace(/ß/g, 'ss')
+      .replace(/[^a-z0-9._-]+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+
+  if (!safeBase) {
+    safeBase = 'datei';
+  }
+
+  const safeExtension =
+    extension
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '')
+      .slice(0, 10);
+
+  if (!safeExtension) {
+    return safeBase.slice(0, 120);
+  }
+
+  return (
+    `${safeBase}.${safeExtension}`
+      .slice(0, 120)
+  );
+
+}
+
+function buildMemberMediaStoragePath(
+  folderPrefix,
+  fileName
+) {
+
+  const folder =
+    String(folderPrefix || '')
+      .trim()
+      .replace(/^\/+|\/+$/g, '');
+
+  const fileKey =
+    `${Date.now()}-${
+      sanitizeMemberMediaStorageFilename(
+        fileName
+      )
+    }`;
+
+  if (!folder) {
+    return fileKey;
+  }
+
+  return `${folder}/${fileKey}`;
+
+}
+
+async function uploadMemberMediaStorageFile(
+  folderPrefix,
+  file
+) {
+
+  if (!file) {
+    return {
+      error: new Error('Keine Datei'),
+      storagePath: null,
+      publicUrl: null
+    };
+  }
+
+  const normalizedFolder =
+    String(folderPrefix || '')
+      .trim()
+      .replace(/^\/+|\/+$/g, '');
+
+  const allowedPrefixes = [
+    window.MEDIA_STORAGE_FOLDERS?.sharedImages
+    || 'shared/images',
+    window.MEDIA_STORAGE_FOLDERS?.sharedRoutes
+    || 'shared/routes'
+  ];
+
+  const allowed =
+    allowedPrefixes.some(
+      (prefix) =>
+        normalizedFolder === prefix
+        || normalizedFolder.startsWith(
+          `${prefix}/`
+        )
+    );
+
+  if (!allowed) {
+    return {
+      error: new Error(
+        'Upload in diesen Ordner ist nicht erlaubt.'
+      ),
+      storagePath: null,
+      publicUrl: null
+    };
+  }
+
+  const storagePath =
+    buildMemberMediaStoragePath(
+      normalizedFolder,
+      file.name
+    );
+
+  const bucket =
+    window.siteConfig?.storage?.media
+    || 'media';
+
+  const { error } =
+    await window.supabaseClient
+      .storage
+      .from(bucket)
+      .upload(storagePath, file);
+
+  if (error) {
+    return {
+      error,
+      storagePath: null,
+      publicUrl: null
+    };
+  }
+
+  const publicUrl =
+    typeof resolveMediaPublicUrl === 'function'
+      ? resolveMediaPublicUrl(storagePath)
+      : window.supabaseClient
+        .storage
+        .from(bucket)
+        .getPublicUrl(storagePath)
+        .data?.publicUrl
+      || null;
+
+  return {
+    error: null,
+    storagePath,
+    publicUrl
+  };
+
+}

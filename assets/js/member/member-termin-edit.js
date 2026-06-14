@@ -475,14 +475,16 @@ async function initMemberTerminEditPage() {
     kind: 'image',
     hiddenInputId: 'imageStoragePathPick',
     previewContainerId: 'currentImage',
-    title: 'Bild aus Mediathek'
+    title: 'Bild aus Mediathek',
+    pickerMode: 'member'
   });
 
   bindMediaPickerButton('pick-gpx-btn', {
     kind: 'gpx',
     hiddenInputId: 'gpxStoragePathPick',
     previewContainerId: 'currentGpx',
-    title: 'GPX aus Mediathek'
+    title: 'GPX aus Mediathek',
+    pickerMode: 'member'
   });
 
   window.memberEditUnsavedGuard =

@@ -307,11 +307,229 @@ function renderMediaPickerRecentItems(
 
 }
 
+function getMediaPickerKindRootPath(
+  kind
+) {
+
+  return getDefaultMediaBrowsePathForKind(
+    kind
+  );
+
+}
+
+function isMemberMediaPicker(
+  options
+) {
+
+  return options?.pickerMode === 'member';
+
+}
+
+function buildMemberMediaPickerBreadcrumbs(
+  state,
+  kind
+) {
+
+  const kindRoot =
+    getMediaPickerKindRootPath(kind);
+
+  const currentPath =
+    normalizeMediaStorageBrowserPath(
+      state.currentPath
+    );
+
+  if (
+    !currentPath
+    || currentPath === kindRoot
+  ) {
+    return [];
+  }
+
+  if (
+    !currentPath.startsWith(
+      `${kindRoot}/`
+    )
+  ) {
+    return [];
+  }
+
+  const relative =
+    currentPath.slice(
+      kindRoot.length + 1
+    );
+
+  const parts =
+    relative
+      .split('/')
+      .filter(Boolean);
+
+  const crumbs = [
+    {
+      label: '← Zurück',
+      path: kindRoot
+    }
+  ];
+
+  let builtPath =
+    kindRoot;
+
+  parts.forEach((part) => {
+
+    builtPath =
+      `${builtPath}/${part}`;
+
+    crumbs.push({
+      label: part,
+      path: builtPath
+    });
+
+  });
+
+  return crumbs;
+
+}
+
+function buildMediaPickerBreadcrumbs(
+  state,
+  options
+) {
+
+  if (isMemberMediaPicker(options)) {
+
+    return buildMemberMediaPickerBreadcrumbs(
+      state,
+      options.kind
+    );
+
+  }
+
+  const crumbs = [];
+
+  const root =
+    getMediaStorageRootConfig(
+      state.rootId
+    );
+
+  crumbs.push({
+    label: root.label,
+    path: root.path
+  });
+
+  let relativePath =
+    normalizeMediaStorageBrowserPath(
+      state.currentPath
+    );
+
+  if (
+    root.path
+    && (
+      relativePath === root.path
+      || relativePath.startsWith(
+        `${root.path}/`
+      )
+    )
+  ) {
+
+    relativePath =
+      relativePath === root.path
+        ? ''
+        : relativePath.slice(
+          root.path.length + 1
+        );
+
+  }
+
+  let builtPath =
+    root.path;
+
+  relativePath
+    .split('/')
+    .filter(Boolean)
+    .forEach((part) => {
+
+      builtPath =
+        builtPath
+          ? `${builtPath}/${part}`
+          : part;
+
+      crumbs.push({
+        label: part,
+        path: builtPath
+      });
+
+    });
+
+  return crumbs;
+
+}
+
+function renderMediaPickerFileItemHtml(
+  file,
+  options
+) {
+
+  const publicUrl =
+    resolveMediaPublicUrl(
+      file.path
+    ) || '';
+
+  const preview =
+    file.kind === 'image'
+    && publicUrl
+      ? `
+<img
+  class="admin-media-picker__thumb"
+  src="${escapeAdminHtml(publicUrl)}"
+  alt="">
+      `
+      : `
+<span class="admin-media-picker__thumb admin-media-picker__thumb--file">
+  GPX
+</span>
+      `;
+
+  const pathMarkup =
+    isMemberMediaPicker(options)
+      ? ''
+      : `
+    <span class="admin-media-picker__item-path">
+      ${escapeAdminHtml(file.path)}
+    </span>
+      `.trim();
+
+  return `
+<button
+  type="button"
+  class="admin-media-picker__item"
+  data-media-path="${escapeAdminHtml(file.path)}">
+
+  ${preview}
+
+  <span class="admin-media-picker__item-copy">
+
+    <strong>
+      ${escapeAdminHtml(
+        formatMediaFileLabel(
+          file.path
+        )
+      )}
+    </strong>
+
+    ${pathMarkup}
+
+  </span>
+
+</button>
+  `.trim();
+
+}
+
 async function renderMediaPickerBrowseView(
   container,
   state,
   kind,
-  onSelect
+  onSelect,
+  options = {}
 ) {
 
   container.innerHTML = `
@@ -331,72 +549,28 @@ async function renderMediaPickerBrowseView(
         }
       );
 
-    const crumbs = [];
-    const root =
-      getMediaStorageRootConfig(
-        state.rootId
+    const breadcrumbItems =
+      buildMediaPickerBreadcrumbs(
+        state,
+        {
+          ...options,
+          kind
+        }
       );
 
-    crumbs.push(`
+    const crumbsHtml =
+      breadcrumbItems
+        .map((crumb) => `
 <button
   type="button"
   class="admin-media-picker__crumb"
-  data-media-picker-path="${escapeAdminHtml(root.path)}">
+  data-media-picker-path="${escapeAdminHtml(crumb.path)}">
 
-  ${escapeAdminHtml(root.label)}
-
-</button>
-    `.trim());
-
-    let relativePath =
-      normalizeMediaStorageBrowserPath(
-        state.currentPath
-      );
-
-    if (
-      root.path
-      && (
-        relativePath === root.path
-        || relativePath.startsWith(
-          `${root.path}/`
-        )
-      )
-    ) {
-
-      relativePath =
-        relativePath === root.path
-          ? ''
-          : relativePath.slice(
-            root.path.length + 1
-          );
-
-    }
-
-    let builtPath =
-      root.path;
-
-    relativePath
-      .split('/')
-      .filter(Boolean)
-      .forEach((part) => {
-
-        builtPath =
-          builtPath
-            ? `${builtPath}/${part}`
-            : part;
-
-        crumbs.push(`
-<button
-  type="button"
-  class="admin-media-picker__crumb"
-  data-media-picker-path="${escapeAdminHtml(builtPath)}">
-
-  ${escapeAdminHtml(part)}
+  ${escapeAdminHtml(crumb.label)}
 
 </button>
-        `.trim());
-
-      });
+        `.trim())
+        .join('<span aria-hidden="true"> / </span>');
 
     const foldersHtml =
       listing.folders
@@ -414,66 +588,29 @@ async function renderMediaPickerBrowseView(
 
     const filesHtml =
       listing.files
-        .map((file) => {
-
-          const publicUrl =
-            resolveMediaPublicUrl(
-              file.path
-            ) || '';
-
-          const preview =
-            file.kind === 'image'
-            && publicUrl
-              ? `
-<img
-  class="admin-media-picker__thumb"
-  src="${escapeAdminHtml(publicUrl)}"
-  alt="">
-              `
-              : `
-<span class="admin-media-picker__thumb admin-media-picker__thumb--file">
-  GPX
-</span>
-              `;
-
-          return `
-<button
-  type="button"
-  class="admin-media-picker__item"
-  data-media-path="${escapeAdminHtml(file.path)}">
-
-  ${preview}
-
-  <span class="admin-media-picker__item-copy">
-
-    <strong>
-      ${escapeAdminHtml(
-        formatMediaFileLabel(
-          file.path
+        .map((file) =>
+          renderMediaPickerFileItemHtml(
+            file,
+            options
+          )
         )
-      )}
-    </strong>
-
-    <span class="admin-media-picker__item-path">
-      ${escapeAdminHtml(file.path)}
-    </span>
-
-  </span>
-
-</button>
-          `.trim();
-
-        })
         .join('');
 
-    container.innerHTML = `
+    const breadcrumbMarkup =
+      crumbsHtml
+        ? `
 <nav
   class="admin-media-picker__breadcrumb"
   aria-label="Ordnerpfad">
 
-  ${crumbs.join('<span aria-hidden="true"> / </span>')}
+  ${crumbsHtml}
 
 </nav>
+        `.trim()
+        : '';
+
+    container.innerHTML = `
+${breadcrumbMarkup}
 
 <div class="admin-media-picker__list">
 
@@ -519,7 +656,8 @@ async function renderMediaPickerBrowseView(
             container,
             state,
             kind,
-            onSelect
+            onSelect,
+            options
           );
 
         });
@@ -585,7 +723,8 @@ async function renderMediaPickerPanel(
     panelEl,
     state,
     options.kind,
-    onSelect
+    onSelect,
+    options
   );
 
 }
@@ -598,11 +737,16 @@ async function openMediaPicker(
 
   removeMediaPickerDialog();
 
+  const memberPicker =
+    isMemberMediaPicker(options);
+
   const dialog =
     document.createElement('dialog');
 
   dialog.className =
-    'admin-media-picker';
+    memberPicker
+      ? 'admin-media-picker admin-media-picker--member'
+      : 'admin-media-picker';
 
   dialog.id =
     'media-picker-dialog';
@@ -611,6 +755,66 @@ async function openMediaPicker(
     getMediaPickerKindLabel(
       options.kind
     );
+
+  const tabsMarkup =
+    memberPicker
+      ? ''
+      : `
+  <div class="admin-media-picker__tabs">
+
+    <button
+      type="button"
+      class="admin-media-picker__tab is-active"
+      data-media-picker-tab="recent">
+
+      Zuletzt verwendet
+
+    </button>
+
+    <button
+      type="button"
+      class="admin-media-picker__tab"
+      data-media-picker-tab="browse">
+
+      Storage
+
+    </button>
+
+  </div>
+      `.trim();
+
+  const adminUploadMarkup =
+    options.fileInputId
+      ? `
+    <button
+      type="button"
+      class="secondary-button"
+      data-media-picker-upload>
+
+      Neue Datei hochladen
+
+    </button>
+        `
+      : '';
+
+  const memberUploadMarkup =
+    memberPicker
+      ? `
+    <button
+      type="button"
+      class="member-edit-btn member-edit-btn--secondary"
+      data-media-picker-member-upload>
+
+      Hochladen
+
+    </button>
+        `
+      : '';
+
+  const cancelButtonClass =
+    memberPicker
+      ? 'member-edit-btn member-edit-btn--secondary'
+      : 'secondary-button';
 
   dialog.innerHTML = `
 <form method="dialog" class="admin-media-picker__form">
@@ -636,27 +840,7 @@ async function openMediaPicker(
 
   </div>
 
-  <div class="admin-media-picker__tabs">
-
-    <button
-      type="button"
-      class="admin-media-picker__tab is-active"
-      data-media-picker-tab="recent">
-
-      Zuletzt verwendet
-
-    </button>
-
-    <button
-      type="button"
-      class="admin-media-picker__tab"
-      data-media-picker-tab="browse">
-
-      Storage
-
-    </button>
-
-  </div>
+  ${tabsMarkup}
 
   <div
     class="admin-media-picker__panel"
@@ -666,29 +850,18 @@ async function openMediaPicker(
 
   <div class="admin-media-picker__footer">
 
-    ${
-      options.fileInputId
-        ? `
-    <button
-      type="button"
-      class="secondary-button"
-      data-media-picker-upload>
-
-      Neue Datei hochladen
-
-    </button>
-        `
-        : ''
-    }
+    ${adminUploadMarkup}
 
     <button
       type="button"
-      class="secondary-button"
+      class="${cancelButtonClass}"
       data-media-picker-close>
 
       Abbrechen
 
     </button>
+
+    ${memberUploadMarkup}
 
   </div>
 
@@ -712,7 +885,10 @@ async function openMediaPicker(
       )
   };
 
-  let activeTab = 'recent';
+  let activeTab =
+    memberPicker
+      ? 'browse'
+      : 'recent';
 
   const handleSelect = (selection) => {
 
@@ -728,19 +904,23 @@ async function openMediaPicker(
 
   const renderActivePanel = async () => {
 
-    dialog
-      .querySelectorAll(
-        '[data-media-picker-tab]'
-      )
-      .forEach((button) => {
+    if (!memberPicker) {
 
-        button.classList.toggle(
-          'is-active',
-          button.dataset.mediaPickerTab
-            === activeTab
-        );
+      dialog
+        .querySelectorAll(
+          '[data-media-picker-tab]'
+        )
+        .forEach((button) => {
 
-      });
+          button.classList.toggle(
+            'is-active',
+            button.dataset.mediaPickerTab
+              === activeTab
+          );
+
+        });
+
+    }
 
     await renderMediaPickerPanel(
       panelEl,
@@ -752,23 +932,27 @@ async function openMediaPicker(
 
   };
 
-  dialog
-    .querySelectorAll(
-      '[data-media-picker-tab]'
-    )
-    .forEach((button) => {
+  if (!memberPicker) {
 
-      button.addEventListener('click', () => {
+    dialog
+      .querySelectorAll(
+        '[data-media-picker-tab]'
+      )
+      .forEach((button) => {
 
-        activeTab =
-          button.dataset.mediaPickerTab
-          || 'recent';
+        button.addEventListener('click', () => {
 
-        renderActivePanel();
+          activeTab =
+            button.dataset.mediaPickerTab
+            || 'recent';
+
+          renderActivePanel();
+
+        });
 
       });
 
-    });
+  }
 
   dialog
     .querySelectorAll(
@@ -804,6 +988,125 @@ async function openMediaPicker(
       }
 
     });
+
+  if (memberPicker) {
+
+    const memberFileInput =
+      document.createElement('input');
+
+    memberFileInput.type = 'file';
+    memberFileInput.hidden = true;
+    memberFileInput.accept =
+      options.kind === 'gpx'
+        ? '.gpx,application/gpx+xml'
+        : 'image/*';
+
+    dialog
+      .querySelector('.admin-media-picker__form')
+      ?.appendChild(memberFileInput);
+
+    dialog
+      .querySelector(
+        '[data-media-picker-member-upload]'
+      )
+      ?.addEventListener('click', () => {
+        memberFileInput.click();
+      });
+
+    memberFileInput.addEventListener(
+      'change',
+      async () => {
+
+        const file =
+          memberFileInput.files?.[0];
+
+        memberFileInput.value = '';
+
+        if (!file) {
+          return;
+        }
+
+        if (
+          options.kind === 'gpx'
+          && !/\.gpx$/i.test(file.name)
+        ) {
+
+          window.alert(
+            'Bitte eine GPX-Datei wählen.'
+          );
+
+          return;
+
+        }
+
+        if (
+          options.kind === 'image'
+          && !file.type.startsWith('image/')
+        ) {
+
+          window.alert(
+            'Bitte eine Bilddatei wählen.'
+          );
+
+          return;
+
+        }
+
+        if (
+          typeof uploadMemberMediaStorageFile
+            !== 'function'
+        ) {
+
+          window.alert(
+            'Upload ist derzeit nicht verfügbar.'
+          );
+
+          return;
+
+        }
+
+        const uploadButton =
+          dialog.querySelector(
+            '[data-media-picker-member-upload]'
+          );
+
+        if (uploadButton) {
+          uploadButton.disabled = true;
+          uploadButton.textContent =
+            'Wird hochgeladen …';
+        }
+
+        const upload =
+          await uploadMemberMediaStorageFile(
+            browseState.currentPath,
+            file
+          );
+
+        if (uploadButton) {
+          uploadButton.disabled = false;
+          uploadButton.textContent =
+            'Hochladen';
+        }
+
+        if (upload.error) {
+
+          console.error(upload.error);
+
+          window.alert(
+            upload.error.message
+            || 'Upload fehlgeschlagen.'
+          );
+
+          return;
+
+        }
+
+        await renderActivePanel();
+
+      }
+    );
+
+  }
 
   dialog.addEventListener('close', () => {
     removeMediaPickerDialog();
