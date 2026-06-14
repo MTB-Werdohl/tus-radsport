@@ -52,6 +52,64 @@ function formatConsentDate(value) {
 
 }
 
+function consentRevokedBeforeGrant(
+  grantedDate,
+  revokedDate
+) {
+
+  if (
+    !grantedDate
+    || !revokedDate
+  ) {
+    return false;
+  }
+
+  return (
+    String(revokedDate).slice(0, 10)
+    < String(grantedDate).slice(0, 10)
+  );
+
+}
+
+function buildConsentStatusLines(
+  granted,
+  grantedDate,
+  revokedDate
+) {
+
+  if (granted) {
+
+    const lines = [
+      `Erteilt am ${formatConsentDate(grantedDate)}`
+    ];
+
+    if (
+      consentRevokedBeforeGrant(
+        grantedDate,
+        revokedDate
+      )
+    ) {
+
+      lines.push(
+        `Zuvor widerrufen am ${formatConsentDate(revokedDate)}`
+      );
+
+    }
+
+    return lines;
+
+  }
+
+  if (revokedDate) {
+    return [
+      `Widerrufen am ${formatConsentDate(revokedDate)}`
+    ];
+  }
+
+  return ['Noch nicht erteilt'];
+
+}
+
 const MEMBER_CONSENT_TEXTS = {
 
   kontakt: {
@@ -199,11 +257,35 @@ function renderConsentDialogs() {
 function renderConsentBlock(
   granted,
   grantedDate,
+  revokedDate,
   consentKey
 ) {
 
   const labelHtml =
     renderConsentLabel(consentKey);
+
+  const statusLines =
+    buildConsentStatusLines(
+      granted,
+      grantedDate,
+      revokedDate
+    );
+
+  const statusClass =
+    granted
+      ? 'member-consent-status--yes'
+      : revokedDate
+        ? 'member-consent-status--revoked'
+        : 'member-consent-status--no';
+
+  const statusHtml =
+    statusLines
+      .map((line) => `
+          <span class="member-consent-status ${statusClass}">
+            ${escapeMemberHtml(line)}
+          </span>
+        `.trim())
+      .join('');
 
   if (granted) {
 
@@ -211,9 +293,7 @@ function renderConsentBlock(
       <div class="member-consent-row">
         <div class="member-consent-info">
           ${labelHtml}
-          <span class="member-consent-status member-consent-status--yes">
-            Erteilt am ${formatConsentDate(grantedDate)}
-          </span>
+          ${statusHtml}
         </div>
         <button
           type="button"
@@ -231,9 +311,7 @@ function renderConsentBlock(
     <div class="member-consent-row">
       <div class="member-consent-info">
         ${labelHtml}
-        <span class="member-consent-status member-consent-status--no">
-          Noch nicht erteilt
-        </span>
+        ${statusHtml}
       </div>
       <button
         type="button"
@@ -628,12 +706,14 @@ ${renderMemberAvatarProfileBlock(member)}
   ${renderConsentBlock(
     member.einwilligung_kontakt,
     member.kontakt_eingewilligt_am,
+    member.kontakt_widerrufen_am,
     'kontakt'
   )}
 
   ${renderConsentBlock(
     member.einwilligung_bilder,
     member.bilder_eingewilligt_am,
+    member.bilder_widerrufen_am,
     'bilder'
   )}
 

@@ -846,6 +846,30 @@ h3 {
   opacity: 0.9;
 }
 
+.member-consent-admin-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.member-consent-admin-row:last-child {
+  margin-bottom: 0;
+}
+
+.member-consent-admin-copy {
+  flex: 1;
+  min-width: 200px;
+}
+
+.member-consent-revoke-btn {
+  width: auto;
+  white-space: nowrap;
+  margin: 0;
+}
+
 .gallery-images-section {
   margin-top: 30px;
 }

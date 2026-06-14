@@ -158,17 +158,42 @@ function formatPdfYesNo(value) {
 function formatPdfConsent(
   label,
   granted,
-  date
+  grantedDate,
+  revokedDate
 ) {
 
   if (granted === true) {
 
     const dateText =
-      date
-        ? ` (am ${formatPdfDate(date)})`
+      grantedDate
+        ? ` (erteilt am ${formatPdfDate(grantedDate)})`
         : '';
 
-    return `${label}: Ja${dateText}`;
+    let line =
+      `${label}: Ja${dateText}`;
+
+    if (
+      revokedDate
+      && grantedDate
+      && String(revokedDate).slice(0, 10)
+        < String(grantedDate).slice(0, 10)
+    ) {
+
+      line +=
+        ` — zuvor widerrufen am ${formatPdfDate(revokedDate)}`;
+
+    }
+
+    return line;
+
+  }
+
+  if (revokedDate) {
+
+    return (
+      `${label}: Nein — widerrufen am `
+      + formatPdfDate(revokedDate)
+    );
 
   }
 
@@ -315,12 +340,14 @@ function buildMemberPdfDefinition(member) {
           formatPdfConsent(
             'Kontakt',
             member.einwilligung_kontakt === true,
-            member.kontakt_eingewilligt_am
+            member.kontakt_eingewilligt_am,
+            member.kontakt_widerrufen_am
           ),
           formatPdfConsent(
             'Bilder',
             member.einwilligung_bilder === true,
-            member.bilder_eingewilligt_am
+            member.bilder_eingewilligt_am,
+            member.bilder_widerrufen_am
           )
         ],
         margin: [0, 0, 0, 0]

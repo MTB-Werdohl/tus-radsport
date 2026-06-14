@@ -218,11 +218,17 @@ function normalizeMemberRow(row) {
     kontakt_eingewilligt_am:
       row.kontakt_eingewilligt_am || '',
 
+    kontakt_widerrufen_am:
+      row.kontakt_widerrufen_am || '',
+
     einwilligung_bilder:
       row.einwilligung_bilder === true,
 
     bilder_eingewilligt_am:
       row.bilder_eingewilligt_am || '',
+
+    bilder_widerrufen_am:
+      row.bilder_widerrufen_am || '',
 
     rolle:
       row.rolle || MEMBER_ROLE_MITGLIED,
@@ -326,6 +332,65 @@ async function grantMemberConsent(
     payload = {
       einwilligung_bilder: true,
       bilder_eingewilligt_am: today
+    };
+
+  }
+
+  if (!payload) {
+    return null;
+  }
+
+  const { data, error } =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.members)
+      .update(payload)
+      .eq('id', memberId)
+      .select('*')
+      .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return normalizeMemberRow(data);
+
+}
+
+async function revokeMemberConsent(
+  memberId,
+  kind,
+  member
+) {
+
+  const today =
+    new Date()
+      .toISOString()
+      .slice(0, 10);
+
+  let payload = null;
+
+  if (kind === 'kontakt') {
+
+    if (!member?.einwilligung_kontakt) {
+      return null;
+    }
+
+    payload = {
+      einwilligung_kontakt: false,
+      kontakt_widerrufen_am: today
+    };
+
+  }
+
+  if (kind === 'bilder') {
+
+    if (!member?.einwilligung_bilder) {
+      return null;
+    }
+
+    payload = {
+      einwilligung_bilder: false,
+      bilder_widerrufen_am: today
     };
 
   }

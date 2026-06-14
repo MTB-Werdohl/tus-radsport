@@ -1373,6 +1373,10 @@ body.member-consent-modal-open {
   color: #ffe0e0;
 }
 
+.member-consent-status--revoked {
+  color: #ffb4b4;
+}
+
 .member-consent-btn {
   background: rgba(255, 255, 255, 0.15);
   color: var(--text-main);

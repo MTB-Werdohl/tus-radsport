@@ -60,6 +60,8 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Mitglieder-Mediathek-Upload:** [`supabase-member-media-upload.sql`](../supabase-member-media-upload.sql) — Storage-Policy: Vereinsmitglieder dürfen in `shared/images/` und `shared/routes/` hochladen (Picker „Hochladen“ im Profil). **Nach** `supabase-member-change-summary.sql` und `supabase-vorstand-roles.sql`.
 
+**Einwilligung Widerruf:** [`supabase-member-consent-revoke.sql`](../supabase-member-consent-revoke.sql) — Spalten `kontakt_widerrufen_am`, `bilder_widerrufen_am` für dokumentierten Widerruf (Admin + Profil-Anzeige).
+
 **Ersteller-Anzeige (Kalender/Details):** [`supabase-content-creator-display.sql`](../supabase-content-creator-display.sql) — RPC `get_content_creator_labels()` für öffentliche Anzeigenamen bei freigegebenen News/Terminen. **Nach** `supabase-member-content.sql`.
 
 **Medien-Storage Phase 4 (optional aufräumen):** [`supabase-media-backfill-drop.sql`](../supabase-media-backfill-drop.sql) — Backfill-RPCs in Supabase entfernen, nachdem die einmalige Migration gelaufen ist.

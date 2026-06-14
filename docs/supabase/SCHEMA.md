@@ -17,8 +17,10 @@ Stand: Projekt MTB Werdohl. Spalten aus Code + Supabase; bei Abweichungen Dashbo
 | `rolle` | text | `Mitglied` (default) \| `Vorstand` \| `public` (extern, kein Vereinszugang) |
 | `einwilligung_kontakt` | boolean | Profil: nur Erteilen |
 | `kontakt_eingewilligt_am` | date | |
+| `kontakt_widerrufen_am` | date | letzter Widerruf Kontakt |
 | `einwilligung_bilder` | boolean | Profil: nur Erteilen |
 | `bilder_eingewilligt_am` | date | |
+| `bilder_widerrufen_am` | date | letzter Widerruf Bilder |
 | `anonymized_at` | timestamptz | gesetzt nach Account-Löschung; `id` bleibt für `feedback_answers` |
 | `last_login_at` | timestamptz | letzter erfolgreicher Magic-Link-Login (Admin: grün/rot) |
 | `last_change_summary_seen_at` | timestamptz | letzte geschlossene Veränderungs-Zusammenfassung (Popup) |

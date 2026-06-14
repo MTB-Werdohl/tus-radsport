@@ -186,24 +186,126 @@ function fillMemberForm(member) {
 
 }
 
+function formatConsentAdminDate(value) {
+
+  if (!value) {
+    return '';
+  }
+
+  const date =
+    new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  return date.toLocaleDateString('de-DE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+
+}
+
+function consentAdminRevokedBeforeGrant(
+  grantedDate,
+  revokedDate
+) {
+
+  if (
+    !grantedDate
+    || !revokedDate
+  ) {
+    return false;
+  }
+
+  return (
+    String(revokedDate).slice(0, 10)
+    < String(grantedDate).slice(0, 10)
+  );
+
+}
+
 function formatConsentLine(
   label,
   granted,
-  date
+  grantedDate,
+  revokedDate
 ) {
 
   if (granted) {
 
-    const dateText =
-      date
-        ? ` (${date})`
+    const grantedText =
+      grantedDate
+        ? ` (erteilt ${formatConsentAdminDate(grantedDate)})`
         : '';
 
-    return `${label}: Ja${dateText}`;
+    let line =
+      `${label}: Ja${grantedText}`;
+
+    if (
+      consentAdminRevokedBeforeGrant(
+        grantedDate,
+        revokedDate
+      )
+    ) {
+
+      line +=
+        ` — zuvor widerrufen `
+        + formatConsentAdminDate(revokedDate);
+
+    }
+
+    return line;
+
+  }
+
+  if (revokedDate) {
+
+    return (
+      `${label}: Nein — widerrufen am `
+      + formatConsentAdminDate(revokedDate)
+    );
 
   }
 
   return `${label}: Nein`;
+
+}
+
+function updateConsentRevokeButtons(member) {
+
+  const kontaktBtn =
+    document.getElementById(
+      'revoke-consent-kontakt'
+    );
+
+  const bilderBtn =
+    document.getElementById(
+      'revoke-consent-bilder'
+    );
+
+  if (kontaktBtn) {
+
+    kontaktBtn.classList.toggle(
+      'hidden',
+      member.einwilligung_kontakt !== true
+    );
+
+    kontaktBtn.disabled = false;
+
+  }
+
+  if (bilderBtn) {
+
+    bilderBtn.classList.toggle(
+      'hidden',
+      member.einwilligung_bilder !== true
+    );
+
+    bilderBtn.disabled = false;
+
+  }
 
 }
 
@@ -217,15 +319,123 @@ function showConsentInfo(member) {
     formatConsentLine(
       'Kontakt',
       member.einwilligung_kontakt === true,
-      member.kontakt_eingewilligt_am
+      member.kontakt_eingewilligt_am,
+      member.kontakt_widerrufen_am
     );
 
   document.getElementById('consent-bilder').textContent =
     formatConsentLine(
       'Bilder',
       member.einwilligung_bilder === true,
-      member.bilder_eingewilligt_am
+      member.bilder_eingewilligt_am,
+      member.bilder_widerrufen_am
     );
+
+  updateConsentRevokeButtons(member);
+
+}
+
+async function revokeMemberConsentAdmin(kind) {
+
+  if (!editingMember?.id) {
+    return;
+  }
+
+  const label =
+    kind === 'kontakt'
+      ? 'Kontakt'
+      : 'Bilder';
+
+  const confirmed =
+    confirm(
+      `${label}-Einwilligung wirklich widerrufen?\n\n`
+      + 'Der Widerruf wird sofort gespeichert und dokumentiert.'
+    );
+
+  if (!confirmed) {
+    return;
+  }
+
+  const button =
+    document.getElementById(
+      kind === 'kontakt'
+        ? 'revoke-consent-kontakt'
+        : 'revoke-consent-bilder'
+    );
+
+  if (button) {
+    button.disabled = true;
+  }
+
+  setMemberEditStatus(
+    `${label}-Einwilligung wird widerrufen …`,
+    false
+  );
+
+  try {
+
+    if (
+      typeof revokeMemberConsent
+        !== 'function'
+    ) {
+
+      throw new Error(
+        'Widerruf ist nicht verfügbar.'
+      );
+
+    }
+
+    const updated =
+      await revokeMemberConsent(
+        editingMember.id,
+        kind,
+        editingMember
+      );
+
+    if (!updated) {
+
+      setMemberEditStatus(
+        'Einwilligung war bereits widerrufen.',
+        false
+      );
+
+      updateConsentRevokeButtons(
+        editingMember
+      );
+
+      return;
+
+    }
+
+    editingMember = updated;
+
+    showConsentInfo(updated);
+
+    setMemberEditStatus(
+      `${label}-Einwilligung widerrufen und gespeichert.`,
+      false
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    setMemberEditStatus(
+      error.message
+      || 'Widerruf fehlgeschlagen.',
+      true
+    );
+
+    alert(
+      error.message
+      || 'Widerruf fehlgeschlagen.'
+    );
+
+    updateConsentRevokeButtons(
+      editingMember
+    );
+
+  }
 
 }
 
@@ -462,10 +672,14 @@ function buildMemberExportData() {
       editingMember?.einwilligung_kontakt,
     kontakt_eingewilligt_am:
       editingMember?.kontakt_eingewilligt_am,
+    kontakt_widerrufen_am:
+      editingMember?.kontakt_widerrufen_am,
     einwilligung_bilder:
       editingMember?.einwilligung_bilder,
     bilder_eingewilligt_am:
-      editingMember?.bilder_eingewilligt_am
+      editingMember?.bilder_eingewilligt_am,
+    bilder_widerrufen_am:
+      editingMember?.bilder_widerrufen_am
   };
 
 }
@@ -665,3 +879,15 @@ document
 document
   .getElementById('export-member-pdf')
   ?.addEventListener('click', exportCurrentMemberPdf);
+
+document
+  .getElementById('revoke-consent-kontakt')
+  ?.addEventListener('click', () => {
+    void revokeMemberConsentAdmin('kontakt');
+  });
+
+document
+  .getElementById('revoke-consent-bilder')
+  ?.addEventListener('click', () => {
+    void revokeMemberConsentAdmin('bilder');
+  });
