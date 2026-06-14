@@ -1,7 +1,32 @@
 function renderEvent(
   event,
-  recap
+  recap,
+  options
 ) {
+
+  const fromErlebtes =
+    options?.fromErlebtes === true;
+
+  const erlebtesUrl = '/erlebtes/';
+
+  const backUrl =
+    fromErlebtes
+      ? erlebtesUrl
+      : (
+        typeof getCalendarUrl === 'function'
+          ? getCalendarUrl()
+          : '/kalender/'
+      );
+
+  const backLabelTop =
+    fromErlebtes
+      ? '← Erlebtes'
+      : '← Zurück';
+
+  const backLabelBottom =
+    fromErlebtes
+      ? '← Zurück zur Übersicht'
+      : '← Zurück zum Kalender';
 
   const wrapper =
     document
@@ -28,10 +53,7 @@ function renderEvent(
     `${event.title}
     · MTB Werdohl`;
 
-  const calendarBackUrl =
-    typeof getCalendarUrl === 'function'
-      ? getCalendarUrl()
-      : '/kalender/';
+  const calendarBackUrl = backUrl;
 
   wrapper.innerHTML = `
 
@@ -56,7 +78,7 @@ ${formatContentCardTitle(
   class="event-back-link"
   href="${calendarBackUrl}">
 
-← Zurück
+${backLabelTop}
 
 </a>
 
@@ -178,7 +200,7 @@ ${renderEventRecap(recap, event)}
 
 <a href="${calendarBackUrl}">
 
-← Zurück zum Kalender
+${backLabelBottom}
 
 </a>
 
@@ -215,9 +237,17 @@ function renderEventRecap(
     || 'Rückblick';
 
   const images =
-    recap.images
-    || recap.termin_recap_images
-    || [];
+    typeof sortRecapImages === 'function'
+      ? sortRecapImages(
+        recap.images
+        || recap.termin_recap_images
+        || []
+      )
+      : (
+        recap.images
+        || recap.termin_recap_images
+        || []
+      );
 
   const imagesHtml =
     images.length

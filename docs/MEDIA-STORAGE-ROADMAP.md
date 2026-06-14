@@ -69,7 +69,7 @@ Medien (Bilder, GPX) sollen im Admin **strukturiert**, **wiederverwendbar** und 
 |------|--------|------------------|-----------------|
 | `shared/routes/` | GPX für mehrere Ausfahrten | **Ja (Hauptfall)** | Vorstand |
 | `shared/images/` | Wiederkehrende Header/Motive | **Ja** | Vorstand |
-| `recaps/{termin_id}/` | Rückblick-Bilder (Erlebtes) | Nein — 1:1 am Termin | Vorstand; Mitglied (eigener Termin, Phase 2) |
+| `recaps/{termin_id}/` | Rückblick-Bilder (Erlebtes) | Nein — 1:1 am Termin | Vorstand; Mitglied (eigener Termin, Phase 2); **Admin Medien:** Ordner „Rückblicke“ (Ansehen/Löschen, kein Upload/Verschieben) |
 | `termine/{id}/` | Termin-spezifische Dateien | Selten | Vorstand |
 | `news/{id}/` | News-spezifische Dateien | Selten | Vorstand |
 | `galleries/{jahr}/{slug}/…` | Galerie (bestehend) | Unverändert | Vorstand |

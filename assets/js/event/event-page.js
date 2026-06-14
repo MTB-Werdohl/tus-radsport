@@ -82,7 +82,13 @@ async function loadEvent() {
 
   renderEvent(
     event,
-    recap
+    recap,
+    {
+      fromErlebtes:
+        new URLSearchParams(
+          window.location.search
+        ).get('from') === 'erlebtes'
+    }
   );
 
   await initFeedbackModule({

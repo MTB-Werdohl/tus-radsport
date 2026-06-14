@@ -83,20 +83,56 @@ function renderRecapImagesList() {
 
   container.innerHTML =
     recapEditState.images
-      .map((image) => {
+      .map((image, index) => {
 
         const url =
           resolveRecapImageUrl(image);
 
+        const isCover =
+          typeof getRecapCoverImageId
+            === 'function'
+            ? getRecapCoverImageId(
+              recapEditState.images
+            ) === image.id
+            : index === 0;
+
+        const coverBadge =
+          isCover
+            ? `
+              <span class="admin-recap-image-cover-badge">
+                Vorschaubild
+              </span>
+            `
+            : '';
+
+        const coverButton =
+          isCover
+            ? ''
+            : `
+              <button
+                type="button"
+                class="admin-recap-image-cover"
+                data-image-id="${image.id}"
+                title="Als Vorschaubild">
+
+                ★ Vorschaubild
+
+              </button>
+            `;
+
         return `
           <div
-            class="admin-recap-image-item"
+            class="admin-recap-image-item${isCover ? ' admin-recap-image-item--cover' : ''}"
             data-image-id="${image.id}">
 
             <img
               src="${safeMediaUrl(url)}"
               alt=""
               class="admin-recap-image-thumb">
+
+            ${coverBadge}
+
+            ${coverButton}
 
             <button
               type="button"
@@ -125,6 +161,25 @@ function renderRecapImagesList() {
         () => {
 
           void handleDeleteRecapImage(
+            Number(button.dataset.imageId)
+          );
+
+        }
+      );
+
+    });
+
+  container
+    .querySelectorAll(
+      '.admin-recap-image-cover'
+    )
+    .forEach((button) => {
+
+      button.addEventListener(
+        'click',
+        () => {
+
+          void handleSetRecapCoverImage(
             Number(button.dataset.imageId)
           );
 
@@ -565,6 +620,56 @@ async function handleRecapImageUpload(
     if (input) {
       input.value = '';
     }
+
+  }
+
+}
+
+async function handleSetRecapCoverImage(
+  imageId
+) {
+
+  if (
+    recapEditState.busy
+    || !imageId
+    || !recapEditState.recap?.id
+  ) {
+    return;
+  }
+
+  recapEditState.busy = true;
+
+  try {
+
+    const { error } =
+      await setRecapCoverImage(
+        recapEditState.recap.id,
+        imageId
+      );
+
+    if (error) {
+      throw error;
+    }
+
+    await reloadRecapState();
+
+    setRecapStatusMessage(
+      'Vorschaubild gesetzt.'
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    setRecapStatusMessage(
+      error.message
+      || 'Vorschaubild konnte nicht gesetzt werden.',
+      true
+    );
+
+  } finally {
+
+    recapEditState.busy = false;
 
   }
 

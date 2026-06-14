@@ -167,6 +167,38 @@ body:has(.member-content-edit-section) {
   max-width: 160px;
 }
 
+.member-recap-image-item--cover {
+  outline: 2px solid rgba(255, 215, 0, 0.75);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.member-recap-image-cover-badge {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffd966;
+}
+
+.member-recap-image-cover {
+  display: block;
+  margin-top: 6px;
+  width: 100%;
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  padding: 4px 6px;
+}
+
+.member-recap-image-cover:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
 .member-recap-image-thumb {
   display: block;
   width: 100%;
@@ -212,7 +244,9 @@ body:has(.member-content-edit-section) {
 
 .member-recap-form--readonly input,
 .member-recap-form--readonly textarea,
-.member-recap-form--readonly button {
+.member-recap-form--readonly button,
+.member-recap-form--readonly .member-recap-image-delete,
+.member-recap-form--readonly .member-recap-image-cover {
   pointer-events: none;
   opacity: 0.65;
 }

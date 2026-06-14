@@ -143,20 +143,56 @@ function renderMemberRecapImagesList() {
 
   container.innerHTML =
     memberRecapEditState.images
-      .map((image) => {
+      .map((image, index) => {
 
         const url =
           resolveRecapImageUrl(image);
 
+        const isCover =
+          typeof getRecapCoverImageId
+            === 'function'
+            ? getRecapCoverImageId(
+              memberRecapEditState.images
+            ) === image.id
+            : index === 0;
+
+        const coverBadge =
+          isCover
+            ? `
+              <span class="member-recap-image-cover-badge">
+                Vorschaubild
+              </span>
+            `
+            : '';
+
+        const coverButton =
+          isCover
+            ? ''
+            : `
+              <button
+                type="button"
+                class="member-recap-image-cover"
+                data-image-id="${image.id}"
+                title="Als Vorschaubild">
+
+                ★ Vorschaubild
+
+              </button>
+            `;
+
         return `
           <div
-            class="member-recap-image-item"
+            class="member-recap-image-item${isCover ? ' member-recap-image-item--cover' : ''}"
             data-image-id="${image.id}">
 
             <img
               src="${safeMediaUrl(url)}"
               alt=""
               class="member-recap-image-thumb">
+
+            ${coverBadge}
+
+            ${coverButton}
 
             <button
               type="button"
@@ -185,6 +221,25 @@ function renderMemberRecapImagesList() {
         () => {
 
           void handleMemberDeleteRecapImage(
+            Number(button.dataset.imageId)
+          );
+
+        }
+      );
+
+    });
+
+  container
+    .querySelectorAll(
+      '.member-recap-image-cover'
+    )
+    .forEach((button) => {
+
+      button.addEventListener(
+        'click',
+        () => {
+
+          void handleMemberSetRecapCoverImage(
             Number(button.dataset.imageId)
           );
 
@@ -428,6 +483,56 @@ async function handleMemberRecapImageUpload(
     if (input) {
       input.value = '';
     }
+
+  }
+
+}
+
+async function handleMemberSetRecapCoverImage(
+  imageId
+) {
+
+  if (
+    memberRecapEditState.busy
+    || !imageId
+    || !memberRecapEditState.recap?.id
+  ) {
+    return;
+  }
+
+  memberRecapEditState.busy = true;
+
+  try {
+
+    const { error } =
+      await setRecapCoverImage(
+        memberRecapEditState.recap.id,
+        imageId
+      );
+
+    if (error) {
+      throw error;
+    }
+
+    await reloadMemberRecapState();
+
+    setMemberRecapStatusMessage(
+      'Vorschaubild gesetzt.'
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    setMemberRecapStatusMessage(
+      error.message
+      || 'Vorschaubild konnte nicht gesetzt werden.',
+      true
+    );
+
+  } finally {
+
+    memberRecapEditState.busy = false;
 
   }
 

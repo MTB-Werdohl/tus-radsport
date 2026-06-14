@@ -138,10 +138,13 @@ function renderErlebtesCards(
             )
             : null;
 
-        const href =
+        const baseHref =
           typeof getEventUrl === 'function'
             ? getEventUrl(termin.slug)
             : `/event.html?slug=${encodeURIComponent(termin.slug || '')}`;
+
+        const href =
+          `${baseHref}${baseHref.includes('?') ? '&' : '?'}from=erlebtes`;
 
         const imageHtml =
           imageUrl

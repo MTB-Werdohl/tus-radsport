@@ -2,6 +2,7 @@
 layout: default
 title: Erlebtes
 permalink: /erlebtes/
+hide_title: true
 load_calendar_css: true
 load_erlebtes_css: true
 load_events_css: true
@@ -10,26 +11,24 @@ description: "Rückblicke auf vergangene Veranstaltungen der Radsportabteilung T
 
 <div id="erlebtes-page">
 
-  <header class="erlebtes-header">
+  <h1 class="erlebtes-title">
+    Erlebtes
+  </h1>
 
-    <h1>
-      Erlebtes
-    </h1>
+  <div
+    id="erlebtes-year-filter"
+    class="erlebtes-year-filter"
+    aria-label="Jahr filtern">
 
-    <p class="erlebtes-intro">
-      Rückblicke auf vergangene Veranstaltungen.
-    </p>
-
-    <div
-      id="erlebtes-year-filter"
-      class="erlebtes-year-filter"
-      aria-label="Jahr filtern">
-
-    </div>
-
-  </header>
+  </div>
 
   <div id="erlebtes-cards"></div>
+
+  <p class="erlebtes-back">
+    <a href="/">
+      ← Zurück zur Übersicht
+    </a>
+  </p>
 
 </div>
 

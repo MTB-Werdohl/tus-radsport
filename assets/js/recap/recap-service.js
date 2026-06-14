@@ -217,6 +217,86 @@ async function addRecapImage(
 
 }
 
+function getRecapCoverImageId(
+  images
+) {
+
+  const sorted =
+    sortRecapImages(images);
+
+  return sorted[0]?.id || null;
+
+}
+
+async function setRecapCoverImage(
+  recapId,
+  imageId
+) {
+
+  const tables =
+    getRecapTables();
+
+  const images =
+    await listRecapImages(recapId);
+
+  const sorted =
+    sortRecapImages(images);
+
+  const target =
+    sorted.find(
+      (image) =>
+        image.id === imageId
+    );
+
+  if (!target) {
+
+    return {
+      error: new Error(
+        'Bild nicht gefunden.'
+      )
+    };
+
+  }
+
+  const others =
+    sorted.filter(
+      (image) =>
+        image.id !== imageId
+    );
+
+  const updates = [
+    {
+      id: imageId,
+      sort_order: 0
+    },
+    ...others.map(
+      (image, index) => ({
+        id: image.id,
+        sort_order: index + 1
+      })
+    )
+  ];
+
+  for (const row of updates) {
+
+    const { error } =
+      await window.supabaseClient
+        .from(tables.images)
+        .update({
+          sort_order: row.sort_order
+        })
+        .eq('id', row.id);
+
+    if (error) {
+      return { error };
+    }
+
+  }
+
+  return { error: null };
+
+}
+
 async function deleteRecapImage(imageId) {
 
   const tables =
@@ -584,6 +664,12 @@ window.listRecapImages =
 
 window.addRecapImage =
   addRecapImage;
+
+window.setRecapCoverImage =
+  setRecapCoverImage;
+
+window.getRecapCoverImageId =
+  getRecapCoverImageId;
 
 window.deleteRecapImage =
   deleteRecapImage;

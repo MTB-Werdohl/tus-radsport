@@ -1856,6 +1856,38 @@ h3 {
   width: 96px;
 }
 
+.admin-recap-image-item--cover {
+  outline: 2px solid rgba(255, 215, 0, 0.75);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.admin-recap-image-cover-badge {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ffd966;
+}
+
+.admin-recap-image-cover {
+  display: block;
+  margin-top: 6px;
+  width: 100%;
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  padding: 4px 6px;
+}
+
+.admin-recap-image-cover:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
 .admin-recap-image-thumb {
   width: 96px;
   height: 72px;

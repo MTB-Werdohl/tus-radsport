@@ -1,22 +1,14 @@
-.erlebtes-header {
-  margin-bottom: 1.5rem;
-}
-
-.erlebtes-header h1 {
+.erlebtes-title {
   color: #ffffff;
-  margin: 0 0 0.5rem;
-}
-
-.erlebtes-intro {
-  color: rgba(255, 255, 255, 0.88);
   margin: 0 0 1rem;
-  line-height: 1.5;
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
 }
 
 .erlebtes-year-filter {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .erlebtes-year-button {
@@ -92,6 +84,20 @@
 
 .erlebtes-loading {
   color: rgba(255, 255, 255, 0.88);
+}
+
+.erlebtes-back {
+  margin: 1.5rem 0 0;
+}
+
+.erlebtes-back a {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.erlebtes-back a:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 560px) {
