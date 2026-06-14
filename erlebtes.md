@@ -24,12 +24,6 @@ description: "Rückblicke auf vergangene Veranstaltungen der Radsportabteilung T
 
   <div id="erlebtes-cards"></div>
 
-  <p class="erlebtes-back">
-    <a href="/">
-      ← Zurück zur Übersicht
-    </a>
-  </p>
-
 </div>
 
 <script src="/assets/js/core/visibility.js"></script>

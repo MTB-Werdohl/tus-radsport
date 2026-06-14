@@ -121,13 +121,13 @@ function renderErlebtesCards(
             ? formatEventDate(termin)
             : '';
 
-        const location =
-          termin.location || '';
-
         const teaser =
           typeof buildRecapTeaser === 'function'
-            ? buildRecapTeaser(item.body)
-            : '';
+            ? buildRecapTeaser(
+              item.body,
+              10000
+            )
+            : String(item.body || '').trim();
 
         const imageUrl =
           typeof resolveRecapPreviewImage
@@ -149,22 +149,17 @@ function renderErlebtesCards(
         const imageHtml =
           imageUrl
             ? `
-              <img
-                class="erlebtes-card-image"
-                src="${escapeErlebtesHtml(imageUrl)}"
-                alt=""
-                loading="lazy">
+              <div class="erlebtes-card-media">
+                <img
+                  class="erlebtes-card-image"
+                  src="${escapeErlebtesHtml(imageUrl)}"
+                  alt=""
+                  loading="lazy">
+              </div>
             `
-            : '';
-
-        const locationHtml =
-          location
-            ? `
-              <p class="erlebtes-card-location">
-                📍 ${escapeErlebtesHtml(location)}
-              </p>
-            `
-            : '';
+            : `
+              <div class="erlebtes-card-media erlebtes-card-media--empty"></div>
+            `;
 
         return `
           <article class="erlebtes-card">
@@ -184,8 +179,6 @@ function renderErlebtesCards(
                 <p class="erlebtes-card-meta">
                   ${escapeErlebtesHtml(dateLabel)}
                 </p>
-
-                ${locationHtml}
 
                 <p class="erlebtes-card-teaser">
                   ${escapeErlebtesHtml(teaser || 'Mehr lesen')}

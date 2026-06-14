@@ -1,3 +1,5 @@
+/* Erlebtes-Karten: gleiche Breite wie Kalender, doppelte Kartenhöhe (~9.5rem). */
+
 .erlebtes-title {
   color: #ffffff;
   margin: 0 0 1rem;
@@ -27,7 +29,8 @@
 }
 
 #erlebtes-cards {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
 
@@ -46,24 +49,44 @@
 }
 
 .erlebtes-card-link {
+  --erlebtes-card-height: 9.5rem;
   display: grid;
-  grid-template-columns: 120px 1fr;
+  grid-template-columns: 120px minmax(0, 1fr);
   gap: 0;
+  align-items: stretch;
+  min-height: var(--erlebtes-card-height);
   text-decoration: none;
   color: inherit;
 }
 
+.erlebtes-card-media {
+  width: 120px;
+  height: var(--erlebtes-card-height);
+  flex-shrink: 0;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.erlebtes-card-media--empty {
+  background: rgba(255, 255, 255, 0.06);
+}
+
 .erlebtes-card-image {
-  width: 100%;
-  height: 100%;
-  min-height: 100px;
-  object-fit: cover;
   display: block;
+  width: 120px;
+  height: var(--erlebtes-card-height);
+  object-fit: cover;
 }
 
 .erlebtes-card-copy {
   padding: 10px 14px;
   min-width: 0;
+  height: var(--erlebtes-card-height);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow: hidden;
 }
 
 .erlebtes-card h3 {
@@ -71,43 +94,58 @@
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .erlebtes-card-meta,
-.erlebtes-card-location,
 .erlebtes-card-teaser {
-  margin: 4px 0 0;
+  margin: 0;
   font-size: 0.88rem;
   opacity: 0.82;
   line-height: 1.35;
+}
+
+.erlebtes-card-meta {
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.erlebtes-card-teaser {
+  flex: 1;
+  min-height: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .erlebtes-loading {
   color: rgba(255, 255, 255, 0.88);
 }
 
-.erlebtes-back {
-  margin: 1.5rem 0 0;
-}
-
-.erlebtes-back a {
-  color: #fff;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.erlebtes-back a:hover {
-  text-decoration: underline;
-}
-
 @media (max-width: 560px) {
 
   .erlebtes-card-link {
     grid-template-columns: 1fr;
+    min-height: 0;
   }
 
+  .erlebtes-card-media,
   .erlebtes-card-image {
-    min-height: 140px;
+    width: 100%;
+    height: var(--erlebtes-card-height);
+  }
+
+  .erlebtes-card-copy {
+    height: auto;
+    min-height: 0;
   }
 
 }
