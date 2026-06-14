@@ -27,8 +27,7 @@ begin
   select *
   into v_module
   from public.feedback_modules fm
-  where fm.id = p_module_id
-    and fm.enabled = true;
+  where fm.id = p_module_id;
 
   if not found then
     return null;

@@ -40,6 +40,17 @@ function shouldShowFeedbackToViewer(
 
 }
 
+function shouldShowFeedbackPollVoting(
+  module
+) {
+
+  return (
+    !!module
+    && module.enabled !== false
+  );
+
+}
+
 function renderFeedbackMembersOnlyHint() {
 
   return `
@@ -708,12 +719,20 @@ function confirmFeedbackYesCommitment() {
 function shouldShowFeedbackPollResults(
   module,
   member,
-  entityVisibility
+  entityVisibility,
+  options = {}
 ) {
 
+  if (!module) {
+    return false;
+  }
+
+  const allowDisabled =
+    options.allowDisabled === true;
+
   if (
-    !module
-    || module.enabled === false
+    module.enabled === false
+    && !allowDisabled
   ) {
     return false;
   }
@@ -726,12 +745,39 @@ function shouldShowFeedbackPollResults(
   }
 
   if (
-    !shouldShowFeedbackToViewer(
+    !allowDisabled
+    && !shouldShowFeedbackToViewer(
       module,
       member
     )
   ) {
     return false;
+  }
+
+  if (
+    allowDisabled
+    && module.enabled === false
+  ) {
+
+    if (
+      typeof isClubMember === 'function'
+      && isClubMember(member)
+    ) {
+      return true;
+    }
+
+    if (
+      typeof isVorstand === 'function'
+      && isVorstand(member)
+    ) {
+      return true;
+    }
+
+    return (
+      isFeedbackEntityPublic(entityVisibility)
+      && module?.public_voting === true
+    );
+
   }
 
   if (
@@ -971,14 +1017,19 @@ async function refreshFeedbackPollResults(
   container,
   module,
   member,
-  entityVisibility
+  entityVisibility,
+  options = {}
 ) {
+
+  const allowDisabled =
+    options.allowDisabled === true;
 
   if (
     !shouldShowFeedbackPollResults(
       module,
       member,
-      entityVisibility
+      entityVisibility,
+      { allowDisabled }
     )
   ) {
     return;
@@ -1066,6 +1117,62 @@ async function refreshFeedbackPollResults(
 
 }
 
+async function renderFeedbackPollResultsOnly(
+  container,
+  module,
+  member,
+  entityVisibility
+) {
+
+  if (
+    !container
+    || !module
+  ) {
+    return;
+  }
+
+  if (
+    !shouldShowFeedbackPollResults(
+      module,
+      member,
+      entityVisibility,
+      { allowDisabled: true }
+    )
+  ) {
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = `
+
+<section class="feedback-module feedback-module--results-only">
+
+<h2 class="feedback-question">
+
+${escapeFeedbackHtml(module.question)}
+
+</h2>
+
+<p class="feedback-hint">
+  Die Umfrage ist beendet. Es können keine weiteren Stimmen abgegeben werden.
+</p>
+
+<div id="feedback-status"></div>
+
+</section>
+
+`;
+
+  await refreshFeedbackPollResults(
+    container,
+    module,
+    member,
+    entityVisibility,
+    { allowDisabled: true }
+  );
+
+}
+
 function renderFeedbackModule(
   container,
   module,
@@ -1084,6 +1191,12 @@ function renderFeedbackModule(
       module,
       member
     )
+    && !shouldShowFeedbackPollResults(
+      module,
+      member,
+      entityVisibility,
+      { allowDisabled: true }
+    )
   ) {
     container.innerHTML = '';
     return;
@@ -1092,7 +1205,8 @@ function renderFeedbackModule(
   ensurePublicFeedbackModal();
 
   const canVote =
-    canVoteOnFeedbackModule(
+    shouldShowFeedbackPollVoting(module)
+    && canVoteOnFeedbackModule(
       module,
       member
     );

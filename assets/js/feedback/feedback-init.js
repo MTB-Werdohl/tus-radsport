@@ -40,27 +40,27 @@ async function initFeedbackModule(options) {
       entityId
     );
 
-  if (!module || module.enabled === false) {
+  if (!module) {
     container.innerHTML = '';
     return;
   }
 
+  const answerCount =
+    typeof countFeedbackAnswers === 'function'
+      ? await countFeedbackAnswers(
+        module.id
+      )
+      : 0;
+
+  const pollActive =
+    module.enabled !== false;
+
   if (
-    entityType
-    === window.siteConfig.feedback.entityTypes.event
-    && options?.entityTermin
-    && typeof isTerminStillUpcoming === 'function'
-    && !isTerminStillUpcoming(options.entityTermin)
+    !pollActive
+    && answerCount === 0
   ) {
-
-    container.innerHTML = `
-<p class="feedback-hint">
-  Die Abstimmung für diesen Termin ist beendet.
-</p>
-    `.trim();
-
+    container.innerHTML = '';
     return;
-
   }
 
   let member =
@@ -95,6 +95,40 @@ async function initFeedbackModule(options) {
     typeof getViewerMember === 'function'
       ? getViewerMember(member)
       : member;
+
+  if (
+    !pollActive
+    && answerCount > 0
+  ) {
+
+    await renderFeedbackPollResultsOnly(
+      container,
+      module,
+      viewerMember,
+      options?.entityVisibility ?? null
+    );
+
+    return;
+
+  }
+
+  if (
+    entityType
+    === window.siteConfig.feedback.entityTypes.event
+    && options?.entityTermin
+    && typeof isTerminStillUpcoming === 'function'
+    && !isTerminStillUpcoming(options.entityTermin)
+  ) {
+
+    container.innerHTML = `
+<p class="feedback-hint">
+  Die Abstimmung für diesen Termin ist beendet.
+</p>
+    `.trim();
+
+    return;
+
+  }
 
   if (
     !shouldShowFeedbackToViewer(

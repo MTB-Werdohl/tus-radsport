@@ -165,7 +165,8 @@ function closeNewsVorstandModal(id) {
 
 function renderNewsVorstandToolbar(
   newsData,
-  feedbackModule
+  feedbackModule,
+  showResults
 ) {
 
   const actions =
@@ -178,7 +179,7 @@ function renderNewsVorstandToolbar(
   }
 
   const resultsButton =
-    feedbackModule?.id
+    showResults
       ? `
 <button
   type="button"
@@ -325,6 +326,21 @@ function ensureNewsEditModal() {
 
   </p>
 
+  <label
+    class="admin-field admin-field--inline"
+    id="news-vorstand-poll-enabled-wrap"
+    hidden>
+
+    <input
+      id="news-vorstand-poll-enabled"
+      type="checkbox"
+      class="checkbox"
+      checked>
+
+    Umfrage aktiv
+
+  </label>
+
 </div>
 
 <label class="admin-field">
@@ -410,6 +426,29 @@ function ensureNewsEditModal() {
     .getElementById('news-vorstand-save')
     ?.addEventListener('click', () => {
       void saveNewsFromVorstandModal();
+    });
+
+  document
+    .getElementById('news-vorstand-poll-enabled')
+    ?.addEventListener('change', (event) => {
+
+      const subEnabled =
+        document.getElementById(
+          'feedback-admin-enabled'
+        );
+
+      if (subEnabled) {
+        subEnabled.checked =
+          event.target.checked;
+      }
+
+      if (
+        typeof updateFeedbackAdminModalSummary
+          === 'function'
+      ) {
+        updateFeedbackAdminModalSummary();
+      }
+
     });
 
   return modal;
@@ -515,7 +554,7 @@ async function loadNewsIntoVorstandModal(
       === 'function'
   ) {
 
-    initFeedbackModuleForm({
+    await initFeedbackModuleForm({
       entityType:
         window.siteConfig.feedback.entityTypes.news,
       entityId: newsId,
@@ -669,6 +708,24 @@ async function saveNewsFromVorstandModal() {
       === 'function'
   ) {
 
+    const parentEnabled =
+      document.getElementById(
+        'news-vorstand-poll-enabled'
+      );
+
+    const subEnabled =
+      document.getElementById(
+        'feedback-admin-enabled'
+      );
+
+    if (
+      parentEnabled
+      && subEnabled
+    ) {
+      subEnabled.checked =
+        parentEnabled.checked;
+    }
+
     const feedbackResult =
       await saveFeedbackAdminForEntity(
         window.siteConfig.feedback.entityTypes.news,
@@ -804,9 +861,32 @@ async function initNewsDetailVorstand(
       newsData.id
     );
 
+  let showResults = false;
+
+  if (feedbackModule?.id) {
+
+    if (feedbackModule.enabled !== false) {
+      showResults = true;
+    } else if (
+      typeof countFeedbackAnswers
+        === 'function'
+    ) {
+
+      const answerCount =
+        await countFeedbackAnswers(
+          feedbackModule.id
+        );
+
+      showResults = answerCount > 0;
+
+    }
+
+  }
+
   renderNewsVorstandToolbar(
     newsData,
-    feedbackModule
+    feedbackModule,
+    showResults
   );
 
 }
