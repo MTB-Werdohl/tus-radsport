@@ -155,6 +155,68 @@ body:has(.member-content-edit-section) {
   opacity: 0.85;
 }
 
+.member-recap-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 8px 0 16px;
+}
+
+.member-recap-image-item {
+  position: relative;
+  max-width: 160px;
+}
+
+.member-recap-image-thumb {
+  display: block;
+  width: 100%;
+  max-width: 160px;
+  border-radius: 8px;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.member-recap-image-delete {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 107, 107, 0.2);
+  color: #ffb4b4;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.member-recap-images-empty {
+  margin: 8px 0 16px;
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+.member-recap-status {
+  margin: 0 0 12px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.member-recap-status--error {
+  color: #ffb4b4;
+}
+
+.member-recap-edit-error {
+  color: #ffb4b4;
+}
+
+.member-recap-form--readonly input,
+.member-recap-form--readonly textarea,
+.member-recap-form--readonly button {
+  pointer-events: none;
+  opacity: 0.65;
+}
+
 @media (max-width: 640px) {
 
   .member-edit-row {

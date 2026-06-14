@@ -504,6 +504,12 @@ function switchMemberProfileTab(
     );
   }
 
+  if (tabId === 'rueckblicke') {
+    void loadMemberRecapsListIfNeeded(
+      getCurrentMember()
+    );
+  }
+
 }
 
 async function reloadStravaProfileView(
@@ -557,6 +563,13 @@ async function reloadStravaProfileView(
 
     if (profileActiveTab === 'content') {
       void loadMemberContentListIfNeeded(
+        member,
+        true
+      );
+    }
+
+    if (profileActiveTab === 'rueckblicke') {
+      void loadMemberRecapsListIfNeeded(
         member,
         true
       );
@@ -1464,8 +1477,11 @@ async function loadMemberProfilePage() {
           window.location.search
         ).get('tab');
 
-      if (urlTab === 'content') {
-        profileActiveTab = 'content';
+      if (
+        urlTab === 'content'
+        || urlTab === 'rueckblicke'
+      ) {
+        profileActiveTab = urlTab;
       }
 
       profileActiveTab =
@@ -1510,6 +1526,13 @@ async function loadMemberProfilePage() {
 
       if (profileActiveTab === 'content') {
         void loadMemberContentListIfNeeded(
+          member,
+          true
+        );
+      }
+
+      if (profileActiveTab === 'rueckblicke') {
+        void loadMemberRecapsListIfNeeded(
           member,
           true
         );

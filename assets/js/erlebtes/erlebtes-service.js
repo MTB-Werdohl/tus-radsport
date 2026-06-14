@@ -1,4 +1,4 @@
-function getHistoryTerminDate(termin) {
+function getErlebtesTerminDate(termin) {
 
   if (!termin?.date) {
     return null;
@@ -8,7 +8,7 @@ function getHistoryTerminDate(termin) {
 
 }
 
-function isHistoryEligibleRecap(row) {
+function isErlebtesEligibleRecap(row) {
 
   const termin = row.termin;
 
@@ -39,10 +39,10 @@ function isHistoryEligibleRecap(row) {
 
 }
 
-function getHistoryYear(termin) {
+function getErlebtesYear(termin) {
 
   const date =
-    getHistoryTerminDate(termin);
+    getErlebtesTerminDate(termin);
 
   if (!date || Number.isNaN(date.getTime())) {
     return null;
@@ -52,21 +52,21 @@ function getHistoryYear(termin) {
 
 }
 
-async function fetchHistoryItems() {
+async function fetchErlebtesItems() {
 
   const rows =
-    await fetchPublishedRecapsForHistory();
+    await fetchPublishedRecapsForErlebtes();
 
   return rows
-    .filter(isHistoryEligibleRecap)
+    .filter(isErlebtesEligibleRecap)
     .sort((a, b) => {
 
       const aDate =
-        getHistoryTerminDate(a.termin)
+        getErlebtesTerminDate(a.termin)
         || new Date(0);
 
       const bDate =
-        getHistoryTerminDate(b.termin)
+        getErlebtesTerminDate(b.termin)
         || new Date(0);
 
       return bDate - aDate;
@@ -75,7 +75,7 @@ async function fetchHistoryItems() {
 
 }
 
-function collectHistoryYears(items) {
+function collectErlebtesYears(items) {
 
   const years =
     new Set();
@@ -83,7 +83,7 @@ function collectHistoryYears(items) {
   items.forEach((item) => {
 
     const year =
-      getHistoryYear(item.termin);
+      getErlebtesYear(item.termin);
 
     if (year) {
       years.add(year);
@@ -96,7 +96,7 @@ function collectHistoryYears(items) {
 
 }
 
-function filterHistoryByYear(
+function filterErlebtesByYear(
   items,
   year
 ) {
@@ -113,19 +113,19 @@ function filterHistoryByYear(
   }
 
   return items.filter((item) =>
-    getHistoryYear(item.termin) === parsed
+    getErlebtesYear(item.termin) === parsed
   );
 
 }
 
-window.fetchHistoryItems =
-  fetchHistoryItems;
+window.fetchErlebtesItems =
+  fetchErlebtesItems;
 
-window.collectHistoryYears =
-  collectHistoryYears;
+window.collectErlebtesYears =
+  collectErlebtesYears;
 
-window.filterHistoryByYear =
-  filterHistoryByYear;
+window.filterErlebtesByYear =
+  filterErlebtesByYear;
 
-window.getHistoryYear =
-  getHistoryYear;
+window.getErlebtesYear =
+  getErlebtesYear;

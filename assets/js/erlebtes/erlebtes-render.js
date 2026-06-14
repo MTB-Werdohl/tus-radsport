@@ -1,4 +1,4 @@
-function escapeHistoryHtml(value) {
+function escapeErlebtesHtml(value) {
 
   if (value === null || value === undefined) {
     return '';
@@ -12,14 +12,14 @@ function escapeHistoryHtml(value) {
 
 }
 
-function renderHistoryYearFilter(
+function renderErlebtesYearFilter(
   years,
   activeYear
 ) {
 
   const container =
     document.getElementById(
-      'history-year-filter'
+      'erlebtes-year-filter'
     );
 
   if (!container) {
@@ -51,15 +51,15 @@ function renderHistoryYearFilter(
 
         <button
           type="button"
-          class="history-year-button${
+          class="erlebtes-year-button${
             String(activeYear || '')
             === button.value
               ? ' is-active'
               : ''
           }"
-          data-year="${escapeHistoryHtml(button.value)}">
+          data-year="${escapeErlebtesHtml(button.value)}">
 
-          ${escapeHistoryHtml(button.label)}
+          ${escapeErlebtesHtml(button.label)}
 
         </button>
 
@@ -68,13 +68,13 @@ function renderHistoryYearFilter(
 
 }
 
-function renderHistoryCards(
+function renderErlebtesCards(
   items
 ) {
 
   const wrapper =
     document.getElementById(
-      'history-cards'
+      'erlebtes-cards'
     );
 
   if (!wrapper) {
@@ -85,7 +85,7 @@ function renderHistoryCards(
 
     wrapper.innerHTML = `
 
-      <article class="history-card history-card--empty">
+      <article class="erlebtes-card erlebtes-card--empty">
 
         <h3>
           Noch keine Rückblicke
@@ -147,8 +147,8 @@ function renderHistoryCards(
           imageUrl
             ? `
               <img
-                class="history-card-image"
-                src="${escapeHistoryHtml(imageUrl)}"
+                class="erlebtes-card-image"
+                src="${escapeErlebtesHtml(imageUrl)}"
                 alt=""
                 loading="lazy">
             `
@@ -157,35 +157,35 @@ function renderHistoryCards(
         const locationHtml =
           location
             ? `
-              <p class="history-card-location">
-                📍 ${escapeHistoryHtml(location)}
+              <p class="erlebtes-card-location">
+                📍 ${escapeErlebtesHtml(location)}
               </p>
             `
             : '';
 
         return `
-          <article class="history-card">
+          <article class="erlebtes-card">
 
             <a
-              class="history-card-link"
-              href="${escapeHistoryHtml(href)}">
+              class="erlebtes-card-link"
+              href="${escapeErlebtesHtml(href)}">
 
               ${imageHtml}
 
-              <div class="history-card-copy">
+              <div class="erlebtes-card-copy">
 
                 <h3>
-                  ${escapeHistoryHtml(title)}
+                  ${escapeErlebtesHtml(title)}
                 </h3>
 
-                <p class="history-card-meta">
-                  ${escapeHistoryHtml(dateLabel)}
+                <p class="erlebtes-card-meta">
+                  ${escapeErlebtesHtml(dateLabel)}
                 </p>
 
                 ${locationHtml}
 
-                <p class="history-card-teaser">
-                  ${escapeHistoryHtml(teaser || 'Mehr lesen')}
+                <p class="erlebtes-card-teaser">
+                  ${escapeErlebtesHtml(teaser || 'Mehr lesen')}
                 </p>
 
               </div>
@@ -201,8 +201,8 @@ function renderHistoryCards(
 
 }
 
-window.renderHistoryYearFilter =
-  renderHistoryYearFilter;
+window.renderErlebtesYearFilter =
+  renderErlebtesYearFilter;
 
-window.renderHistoryCards =
-  renderHistoryCards;
+window.renderErlebtesCards =
+  renderErlebtesCards;

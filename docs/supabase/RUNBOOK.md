@@ -64,7 +64,9 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Rückblick-Bilder Storage:** [`supabase-recap-media-upload.sql`](../supabase-recap-media-upload.sql) — Mitglieder dürfen in `recaps/{termin_id}/` hochladen, wenn sie den Termin erstellt haben. Öffentliches Lesen über bestehende `media`-Policy (ohne `protocols/`). Vorstand: bestehende `media_insert_vorstand`. **Nach** `supabase-termin-recaps.sql`.
 
-**Termin-Rückblicke Phase 1 Frontend:** Nach SQL Phase 0 — Admin `/admin/termine_edit.html` (Rückblick-Abschnitt), Entwürfe-Liste, Terminseite (`/kalender/{slug}/`), Historie `/historie/`. JS: `assets/js/recap/*`, `assets/js/history/*`. Checkliste: [`SMOKE-TEST-RECAPS.md`](../SMOKE-TEST-RECAPS.md).
+**Termin-Rückblicke Phase 1 Frontend:** Nach SQL Phase 0 — Admin `/admin/termine_edit.html` (Rückblick-Abschnitt), Entwürfe-Liste, Terminseite (`/kalender/{slug}/`), **Erlebtes** `/erlebtes/` (Alt: `/historie/` → Redirect). JS: `assets/js/recap/*`, `assets/js/erlebtes/*`. Checkliste: [`SMOKE-TEST-RECAPS.md`](../SMOKE-TEST-RECAPS.md).
+
+**Termin-Rückblicke Phase 2 Frontend (Mitglieder):** Profil-Tab `/profil/?tab=rueckblicke`, Bearbeitung `/profil/recap_edit/?termin_id=…`. JS: `assets/js/member/member-recaps.js`, `member-recap-edit.js`. Mitglieder speichern nur Entwürfe; Vorstand veröffentlicht über Admin (Entwürfe oder Termin bearbeiten).
 
 **Einwilligung Widerruf:** [`supabase-member-consent-revoke.sql`](../supabase-member-consent-revoke.sql) — Spalten `kontakt_widerrufen_am`, `bilder_widerrufen_am` für dokumentierten Widerruf (Admin + Profil-Anzeige).
 

@@ -141,7 +141,7 @@ async function fetchAdminDrafts() {
     await fetchAdminMembersByIds([
       ...newsItems.map((item) => item.created_by),
       ...eventItems.map((item) => item.created_by),
-      ...recapItems.map((item) => item.created_by)
+      ...recapItems.map((item) => item.createdBy)
     ]);
 
   const mappedNews =

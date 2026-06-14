@@ -6,8 +6,8 @@
     url: "/aktivitaeten"
   - title: "Kalender"
     url: "/kalender"
-  - title: "Historie"
-    url: "/historie"
+  - title: "Erlebtes"
+    url: "/erlebtes"
   - title: "News"
     url: "/news"
 

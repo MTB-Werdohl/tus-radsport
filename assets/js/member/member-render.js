@@ -367,6 +367,10 @@ function renderMemberProfileTabsNav(
       label: 'Content'
     },
     {
+      id: 'rueckblicke',
+      label: 'Rückblicke'
+    },
+    {
       id: 'abstimmungen',
       label: 'Teilnahmen'
     },
@@ -1099,6 +1103,18 @@ ${renderMemberProfileTabsNav(
   ${activeTab !== 'content' ? 'hidden' : ''}>
 
   ${renderMemberContentPanelShell()}
+
+</div>
+
+<div
+  id="member-profile-tab-rueckblicke"
+  class="member-profile-tab-panel"
+  role="tabpanel"
+  aria-labelledby="member-profile-tab-btn-rueckblicke"
+  data-profile-panel="rueckblicke"
+  ${activeTab !== 'rueckblicke' ? 'hidden' : ''}>
+
+  ${renderMemberRecapsPanelShell()}
 
 </div>
 

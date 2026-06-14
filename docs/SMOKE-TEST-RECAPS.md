@@ -19,14 +19,21 @@ Kurz-Checkliste vor Pilotbetrieb. SQL Phase 0 muss deployt sein.
 - [ ] GLightbox öffnet Recap-Bilder
 - [ ] Unveröffentlichter Rückblick **nicht** sichtbar (auch nicht für Vorstand auf öffentlicher Seite)
 
-## Historie
+## Erlebtes
 
-- [ ] `/historie/` in Navigation verlinkt
+- [ ] `/erlebtes/` in Navigation als **Erlebtes** verlinkt
+- [ ] `/historie/` leitet auf `/erlebtes/` weiter
 - [ ] Nur **veröffentlichte** Rückblicke, Termin `public`, vergangen, Einzeltermin
 - [ ] Jahresfilter filtert Liste
 - [ ] Karte verlinkt zur Terminseite; Teaser + Vorschaubild
+- [ ] Mobile: Kartenlayout, Bilder, Ladezeit
+
+## Mitglieder (Phase 2, Stichprobe)
+
+- [ ] `/profil/?tab=rueckblicke` — Entwurf anlegen, Vorstand veröffentlicht
+- [ ] Veröffentlichter Rückblick erscheint auf Erlebtes (wenn Termin `public`)
 
 ## Berechtigungen (Stichprobe)
 
 - [ ] Anon: published + public-Termin lesbar
-- [ ] Mitglied: published + `members`-Termin lesbar auf Eventseite (Historie nur `public`)
+- [ ] Mitglied: published + `members`-Termin lesbar auf Eventseite (Erlebtes nur `public`)

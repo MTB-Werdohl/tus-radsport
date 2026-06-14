@@ -480,7 +480,7 @@ async function fetchRecapDraftsForAdmin() {
 
 }
 
-async function fetchPublishedRecapsForHistory() {
+async function fetchPublishedRecapsForErlebtes() {
 
   const tables =
     getRecapTables();
@@ -603,8 +603,8 @@ window.deleteRecapDraft =
 window.fetchRecapDraftsForAdmin =
   fetchRecapDraftsForAdmin;
 
-window.fetchPublishedRecapsForHistory =
-  fetchPublishedRecapsForHistory;
+window.fetchPublishedRecapsForErlebtes =
+  fetchPublishedRecapsForErlebtes;
 
 window.resolveRecapImageUrl =
   resolveRecapImageUrl;
