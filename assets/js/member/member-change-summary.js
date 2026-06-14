@@ -161,6 +161,16 @@ async function touchMemberChangeSummarySeen() {
 
 }
 
+async function dismissMemberChangeSummary() {
+
+  try {
+    await touchMemberChangeSummarySeen();
+  } catch (error) {
+    console.error(error);
+  }
+
+}
+
 function waitForDocumentReady() {
 
   if (
@@ -252,132 +262,6 @@ function shouldSkipMemberChangeSummary() {
 
 }
 
-function removeMemberChangeSummaryDialog() {
-
-  document
-    .getElementById(
-      'member-change-summary-dialog'
-    )
-    ?.remove();
-
-}
-
-async function dismissMemberChangeSummaryDialog() {
-
-  removeMemberChangeSummaryDialog();
-
-  try {
-    await touchMemberChangeSummarySeen();
-  } catch (error) {
-    console.error(error);
-  }
-
-}
-
-function renderMemberChangeSummaryDialog(
-  summary
-) {
-
-  removeMemberChangeSummaryDialog();
-
-  const lines =
-    buildMemberChangeSummaryLines(
-      summary
-    );
-
-  if (!lines.length) {
-    return;
-  }
-
-  const dialog =
-    document.createElement('dialog');
-
-  dialog.id =
-    'member-change-summary-dialog';
-
-  dialog.className =
-    'site-content-overlay member-change-summary-dialog';
-
-  dialog.innerHTML = `
-<form
-  method="dialog"
-  class="site-content-overlay__form member-change-summary-dialog__form">
-
-  <button
-    type="button"
-    class="member-change-summary-dialog__close-icon"
-    aria-label="Schließen"
-    data-change-summary-dismiss>
-
-    ✕
-
-  </button>
-
-  <div class="site-content-overlay__inner">
-
-    <h2 class="site-content-overlay__title">
-      🚴 Seit deinem letzten Besuch
-    </h2>
-
-    <ul class="member-change-summary-dialog__list">
-      ${lines.join('')}
-    </ul>
-
-    <div class="member-change-summary-dialog__actions">
-
-      <button
-        type="button"
-        class="site-content-overlay__close member-change-summary-dialog__primary"
-        data-change-summary-dismiss>
-
-        👍 Super
-
-      </button>
-
-    </div>
-
-  </div>
-
-</form>
-  `.trim();
-
-  document.body.appendChild(dialog);
-
-  dialog
-    .querySelectorAll(
-      '[data-change-summary-dismiss]'
-    )
-    .forEach((button) => {
-
-      button.addEventListener(
-        'click',
-        async (event) => {
-
-          event.preventDefault();
-
-          await dismissMemberChangeSummaryDialog();
-
-          if (
-            typeof dialog.close === 'function'
-          ) {
-            dialog.close();
-          }
-
-          dialog.remove();
-
-        }
-      );
-
-    });
-
-  if (
-    typeof dialog.showModal === 'function'
-  ) {
-    dialog.showModal();
-  }
-
-}
-
 async function runMemberChangeSummaryFlow(
   member
 ) {
@@ -388,7 +272,13 @@ async function runMemberChangeSummaryFlow(
     || typeof isClubMember !== 'function'
     || !isClubMember(member)
   ) {
+
+    if (typeof hidePushWidget === 'function') {
+      hidePushWidget();
+    }
+
     return;
+
   }
 
   await waitForDocumentReady();
@@ -405,6 +295,10 @@ async function runMemberChangeSummaryFlow(
       console.error(error);
     }
 
+    if (typeof hidePushWidget === 'function') {
+      hidePushWidget();
+    }
+
     return;
 
   }
@@ -416,7 +310,13 @@ async function runMemberChangeSummaryFlow(
       await fetchMemberChangeSummary();
   } catch (error) {
     console.error(error);
+
+    if (typeof hidePushWidget === 'function') {
+      hidePushWidget();
+    }
+
     return;
+
   }
 
   if (
@@ -424,12 +324,26 @@ async function runMemberChangeSummaryFlow(
       summary
     )
   ) {
+
+    if (typeof hidePushWidget === 'function') {
+      hidePushWidget();
+    }
+
     return;
+
   }
 
-  renderMemberChangeSummaryDialog(
-    summary
-  );
+  const lines =
+    buildMemberChangeSummaryLines(
+      summary
+    );
+
+  if (
+    typeof showPushWidgetChangeSummary
+      === 'function'
+  ) {
+    showPushWidgetChangeSummary(lines);
+  }
 
 }
 

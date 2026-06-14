@@ -202,7 +202,7 @@ Beim Aufruf von Seiten mit Mitgliederfunktionen oder beim Speichern von Inhalten
 - optional importierte Strava-Aktivitäten und Sichtbarkeits-Einstellungen (siehe Abschnitt 12.7)
 - optional **Profilbilder** von Vereinsmitgliedern (siehe Abschnitt 12.8)
 - **Versandprotokoll** für Vorstand-E-Mails (siehe Abschnitt 12.9)
-- letzte Mitteilung für die **Tröte** auf der Startseite (`site_state.last_push`, siehe Abschnitt 13)
+- **Tröte** — persönliche Zusammenfassung neuer Inhalte für Mitglieder/Vorstand (siehe Abschnitt 13)
 - **Website-Hinweise** (Banner, Saisonmodus, Overlay, Landing-Hinweise — siehe Abschnitt 14)
 
 Rechtsgrundlagen:
@@ -451,34 +451,20 @@ Rechtsgrundlagen:
 
 ---
 
-## 13. Tröte (Mitteilung auf der Startseite)
+## 13. Tröte (Zusammenfassung neuer Inhalte)
 
-Der Vorstand kann im Admin-Bereich eine **kurze Mitteilung** veröffentlichen. Sie erscheint als **Tröte** auf der Website (Titel, Text, optional Link zum Weiterlesen).
+Eingeloggte **Vereinsmitglieder** und **Vorstände** sehen auf der Website eine **Tröte** (Widget unten rechts) mit einer **persönlichen Zusammenfassung** neuer Inhalte — z. B. neue Termine, Internes, Aktivitäten oder Abstimmungen — sofern seit der letzten angezeigten Zusammenfassung relevante Änderungen vorhanden sind.
 
-Verarbeitete Daten:
-
-- Inhalt der Mitteilung (Titel, Text, optional Link, Zeitstempel)
-- technischer Speichereintrag in der Datenbank (`site_state.last_push`)
-- **lastSeenPush** im Local Storage deines Browsers — ob du die Mitteilung bereits geöffnet/gelesen markiert hast (siehe Abschnitt 15)
-
-Es werden **keine** Browser-Push-Benachrichtigungen versendet. Es ist **kein** Service Worker und **keine** Geräte-Registrierung nötig.
-
-Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (Information der Website-Besucher über aktuelle Vereinsmitteilungen).
-
----
-
-## 13a. Veränderungs-Zusammenfassung (Mitglieder / Vorstand)
-
-Eingeloggte **Vereinsmitglieder** und **Vorstände** können beim Besuch der Website eine **persönliche Zusammenfassung** neuer Inhalte sehen (z. B. neue Termine, News, Aktivitäten, Abstimmungen), sofern seit der letzten angezeigten Zusammenfassung relevante Änderungen vorhanden sind.
+Die Tröte öffnet sich automatisch, wenn es Neues gibt; nach dem Einklappen gilt die Zusammenfassung als gelesen. Gibt es keine Änderungen, bleibt die Tröte ausgeblendet. **Nicht eingeloggte Besucher** und die Rolle **public** (externe Teilnehmer) sehen **keine** Tröte.
 
 Verarbeitete Daten:
 
 - **last_change_summary_seen_at** in der Tabelle `members` — technischer Zeitpunkt, wann du die Zusammenfassung zuletzt geschlossen hast (nicht an Login/Logout gebunden)
-- serverseitige **Zählwerte** sichtbarer Inhalte seit diesem Zeitpunkt (keine Speicherung der Popup-Inhalte als separates Protokoll)
+- serverseitige **Zählwerte** sichtbarer Inhalte seit diesem Zeitpunkt (keine Speicherung der angezeigten Texte als separates Protokoll)
 
-Beim **ersten Besuch** nach Einführung der Funktion wird kein Popup gezeigt; der Zeitstempel wird still gesetzt, damit keine historischen Inhalte als „neu“ erscheinen.
+Beim **ersten Besuch** nach Einführung der Funktion wird keine Tröte gezeigt; der Zeitstempel wird still gesetzt, damit keine historischen Inhalte als „neu“ erscheinen.
 
-Rolle **public** (externe Teilnehmer) erhält **keine** Veränderungs-Zusammenfassung.
+Es werden **keine** Browser-Push-Benachrichtigungen versendet. Es ist **kein** Service Worker und **keine** Geräte-Registrierung nötig.
 
 Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (Orientierung im Mitgliederbereich, keine Werbung).
 
@@ -520,7 +506,6 @@ Diese Website verwendet:
 Zur technischen Funktion können Informationen **lokal im Browser** gespeichert werden (Local Storage), insbesondere:
 
 - **Supabase Auth-Session** — damit du eingeloggt bleibst (Magic Link)
-- **lastSeenPush** — ob die Tröte-Mitteilung auf der Website bereits als gelesen markiert wurde
 - **siteOverlayDismissedAt** — ob ein Website-Overlay bereits geschlossen wurde (Abschnitt 14)
 - **publicFeedbackReturnUrl** — Rückkehr-Adresse nach Magic Link bei externer Abstimmung (Session Storage, bis Tab geschlossen oder überschrieben)
 - **memberReturnUrl** — Rückkehr nach normalem Mitglieder-Login (z. B. `?next=` auf Termin/News), Session Storage
@@ -548,10 +533,9 @@ Es werden keine Cookies zu Werbe- oder Analysezwecken gesetzt.
 - **Strava-Verbindung und importierte Aktivitäten:** bis zur Trennung der Verbindung, Löschung des Mitgliedskontos oder auf Anfrage; OAuth-Tokens werden bei Trennung gelöscht.
 - **Öffentlich freigegebene Aktivitäten im Feed:** Anzeige höchstens **90 Tage** zurück; danach nicht mehr im Feed, ggf. weiter in Rankings oder Vereinszielen je nach gespeicherter Freigabe.
 - **Auth-Session:** bis zum Logout, Ablauf der Session oder Ungültigkeit des Login-Links.
-- **Tröte (`site_state.last_push`):** bis der Vorstand eine neue Mitteilung veröffentlicht oder den Eintrag entfernt.
 - **Website-Hinweise** (`site_banner`, `saison_mode`, `site_overlay`, `landing_hints`): bis der Vorstand sie ändert, deaktiviert oder löscht; Anzeige kann zusätzlich durch eingestellte Zeiträume begrenzt sein.
 - **Profilbilder:** bis zur Entfernung im Profil, Account-Löschung oder auf Anfrage.
-- **Local Storage im Browser** (z. B. `lastSeenPush`, `siteOverlayDismissedAt`) und **Session Storage** (z. B. `publicFeedbackReturnUrl`, `memberReturnUrl`, `publicRegistrationPending`): bis du die Website-Daten im Browser löschst, der Tab geschlossen wird oder der Eintrag überschrieben wird.
+- **Local Storage im Browser** (z. B. `siteOverlayDismissedAt`) und **Session Storage** (z. B. `publicFeedbackReturnUrl`, `memberReturnUrl`, `publicRegistrationPending`): bis du die Website-Daten im Browser löschst, der Tab geschlossen wird oder der Eintrag überschrieben wird.
 - **Server- und Verbindungslogs der Hosting-/Backend-Anbieter:** gemäß deren Richtlinien; auf diese Logs hat der Verein in der Regel keinen direkten Zugriff.
 
 ---

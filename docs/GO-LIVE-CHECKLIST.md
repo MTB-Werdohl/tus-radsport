@@ -85,7 +85,7 @@ Referenz: [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md) · Setup: [`supabase-stra
 - [ ] Mitglieder-Login Magic Link
 - [ ] Vorstand → `/admin/`
 - [ ] Termin + News öffentlich / nur Mitglieder / Entwurf
-- [ ] Tröte (`/admin/push.html`)
+- [ ] Tröte: eingeloggt als Mitglied → bei neuen Inhalten offen, nach Einklappen gelesen
 - [ ] Keine kritischen Console-Errors auf Startseite
 
 ---

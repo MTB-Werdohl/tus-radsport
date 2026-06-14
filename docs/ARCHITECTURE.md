@@ -58,7 +58,7 @@ Lädt global:
 
 - Supabase-Client (`site-config` → `core/supabase.js`)
 - Mitglieder-Auth (`member-service`, `member-auth`, `preview-role`)
-- Tröte (`push/state.js`, `push/widget.js`)
+- Tröte (`member/member-change-summary.js`, `push/widget.js`)
 - Website-Hinweise (`site/site-content-state.js`, `site/site-content-render.js`)
 - Rollen-Vorschau-Banner (`core/preview-banner.js`) — nur sichtbar bei aktiver Admin-Vorschau
 - Navigation (`member-nav.js`, `nav.js`)
@@ -132,7 +132,7 @@ SQL: [`docs/supabase-content-visibility.sql`](supabase-content-visibility.sql) �
 | `News` | Vereinsnachrichten |
 | `galleries` | Galerie-Metadaten |
 | `gallery_images` | Bilder pro Galerie |
-| `site_state` | Tröte (`last_push`), Website-Hinweise (Phase 5) |
+| `site_state` | Website-Hinweise (Phase 5) |
 | `members` | Vereinsmitglieder (`rolle`, Profil, Einwilligungen, `avatar_*`) |
 | `strava_connections` / `activities` | Strava-OAuth, importierte Touren (`sport_category`) |
 | `member_stats_*` / `club_stats_*` | Rankings und Vereinsziele (nur Rad) |
@@ -160,17 +160,16 @@ SQL Feedback: [`supabase-feedback.sql`](supabase-feedback.sql)
 
 Empfängerfilter serverseitig: `einwilligung_kontakt = true`, gültige E-Mail, nicht anonymisiert.
 
-## Tröte (Startseite)
+## Tröte (Mitglieder-Zusammenfassung)
 
-Der Vorstand veröffentlicht unter `/admin/push.html` eine Mitteilung. Gespeichert wird nur `site_state.last_push` (Titel, Text, optional Link, Zeitstempel). Die Tröte auf allen Seiten liest diesen Eintrag — **kein** Web Push, **kein** Service Worker.
+Die Tröte zeigt eingeloggten Vereinsmitgliedern und Vorständen automatisch **„Seit deinem letzten Besuch“** — Zähler für neue Termine, Internes, Aktivitäten und Abstimmungen. **Kein** manuelles Veröffentlichen mehr; Gelesen-Status liegt serverseitig in `members.last_change_summary_seen_at`.
 
 | Datei | Aufgabe |
 |-------|---------|
-| `push/state.js` | Lesen/Schreiben `last_push`, Gelesen-Status (Local Storage) |
+| `member/member-change-summary.js` | RPC `get_member_change_summary`, Anzeige-Logik |
 | `push/widget.js` | Tröte-Widget im Layout |
-| `admin/js/push-admin.js` | Formular → `saveLastPush()` |
 
-SQL: [`docs/supabase-drop-web-push.sql`](supabase-drop-web-push.sql) (entfernt alte Push-Tabellen nach Migration)
+SQL: RPCs in Phase-5-Migration (`get_member_change_summary`, `touch_member_change_summary_seen`)
 
 ---
 

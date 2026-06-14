@@ -17,7 +17,7 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Trö
 | Kalender | FullCalendar (lokal unter `assets/js/fullcalendar/`) |
 | Markdown (Inhalte) | [marked](https://marked.js.org/) |
 | Lightbox | GLightbox |
-| Tröte | Letzte Mitteilung (`site_state.last_push`) |
+| Tröte | Persönliche Zusammenfassung neuer Inhalte (Mitglieder/Vorstand) |
 | Strava / Aktivitäten | Feed, Rankings, Vereinsziele (`/aktivitaeten/`) |
 | Website-Hinweise | Banner, Saisonmodus, Overlay (`site_state`) |
 
@@ -44,7 +44,7 @@ Statische Site mit **Jekyll**, dynamische Inhalte (Termine, News, Galerien, Trö
 │       ├── member/      # Mitglieder-Login (Magic Link), Profil, Strava
 │       ├── aktivitaeten/ # Öffentliches Aktivitätsportal
 │       ├── site/        # Website-Hinweise (Banner, Saison, Overlay)
-│       └── push/        # Tröte (state.js, widget.js)
+│       └── push/        # Tröte-Widget (widget.js)
 ├── mitglieder-hilfe.md  # Hilfe für Mitglieder (Login, Abstimmung, Profil)
 ├── *.md, *.html         # Öffentliche Seiten (Jekyll)
 ├── scripts/
@@ -88,7 +88,7 @@ Unter `/admin/` (nicht in der Hauptnavigation verlinkt; Footer-Link).
 - **Feedback** — Auswertung, CSV; Löschung über DB-Kaskade beim Entity-Löschen
 - **Galerien** — `galleries` + `gallery_images`
 - **Mitglieder** — `members` (CRUD, Rolle Vorstand/Mitglied)
-- **Tröte** — `site_state.last_push` (`/admin/push.html`)
+- **Tröte** — automatische Zusammenfassung neuer Inhalte für eingeloggte Mitglieder/Vorstand
 - **Website-Hinweise** — Banner, Saisonmodus, Landing, Overlay (`/admin/site-content.html`)
 - **Rollen-Vorschau** — Website als Public/Mitglied betrachten (`/admin/preview.html`)
 - **E-Mail** — Edge Function `send-admin-email` (`/admin/email.html`)
@@ -111,7 +111,7 @@ Rollen & Sichtbarkeit: [`docs/supabase-vorstand-roles.sql`](docs/supabase-vorsta
 | `News` | Tabelle | News-Liste & Detail |
 | `galleries` | Tabelle | Galerie-Metadaten |
 | `gallery_images` | Tabelle | Bilder pro Galerie |
-| `site_state` | Tabelle | Tröte + Website-Hinweise (Key-Value JSONB) |
+| `site_state` | Tabelle | Website-Hinweise (Key-Value JSONB) |
 | `members` | Tabelle | Vereinsmitglieder inkl. `avatar_*` (Profilbilder) |
 | `activities` / `strava_connections` | Tabellen | Strava-Import (optional) |
 | `feedback_modules` / `feedback_answers` | Tabellen | Abstimmungen an Terminen/News |

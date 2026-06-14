@@ -3,7 +3,20 @@ document.addEventListener(
   initPushWidget
 );
 
-async function initPushWidget() {
+function hidePushWidget() {
+
+  const widget =
+    document.getElementById('push-widget');
+
+  if (widget) {
+    widget.classList.add('hidden');
+  }
+
+}
+
+function showPushWidgetChangeSummary(
+  lines
+) {
 
   const widget =
     document.getElementById('push-widget');
@@ -11,119 +24,88 @@ async function initPushWidget() {
   const content =
     document.getElementById('push-widget-content');
 
-  const toggle =
-    document.getElementById('push-widget-toggle');
-
-  if (!widget || !content) {
-    return;
-  }
-
-  const push =
-    await getLastPush();
-
-  if (!push) {
+  if (
+    !widget
+    || !content
+    || !lines?.length
+  ) {
+    hidePushWidget();
     return;
   }
 
   widget.classList.remove('hidden');
 
-  renderPush(content, push);
+  content.innerHTML = `
 
-  applyPushWidgetReadState(widget, push);
+<div class="push-widget-card push-widget-card--unread">
 
-  toggle.onclick = () => {
+  <h3>🚴 Seit deinem letzten Besuch</h3>
+
+  <ul class="push-widget-list">
+    ${lines.join('')}
+  </ul>
+
+</div>
+
+  `.trim();
+
+  widget.classList.remove('collapsed');
+
+}
+
+function markPushWidgetChangeSummarySeen() {
+
+  const widget =
+    document.getElementById('push-widget');
+
+  const card =
+    widget
+      ?.querySelector('.push-widget-card');
+
+  card?.classList.remove(
+    'push-widget-card--unread'
+  );
+
+}
+
+async function initPushWidget() {
+
+  const widget =
+    document.getElementById('push-widget');
+
+  const toggle =
+    document.getElementById('push-widget-toggle');
+
+  if (!widget || !toggle) {
+    return;
+  }
+
+  hidePushWidget();
+
+  toggle.onclick = async () => {
 
     widget.classList.toggle('collapsed');
 
-    if (widget.classList.contains('collapsed')) {
-      markPushSeen(push);
-      applyPushWidgetReadState(widget, push);
+    if (
+      widget.classList.contains('collapsed')
+    ) {
+
+      markPushWidgetChangeSummarySeen();
+
+      if (
+        typeof dismissMemberChangeSummary
+          === 'function'
+      ) {
+        await dismissMemberChangeSummary();
+      }
+
     }
 
   };
 
-}
-
-function applyPushWidgetReadState(widget, push) {
-
-  if (!widget) {
-    return;
-  }
-
-  const unread =
-    isPushUnread(push);
-
-  const card =
-    document
-      .getElementById('push-widget-content')
-      ?.querySelector('.push-widget-card');
-
-  card?.classList.toggle(
-    'push-widget-card--unread',
-    unread
-  );
-
-  if (unread) {
-
-    widget.classList.remove('collapsed');
-
-  } else {
-
-    widget.classList.add('collapsed');
-
-  }
+  setupFooterProtection();
 
 }
-
-function renderPush(target, push) {
-
-  const unread =
-    isPushUnread(push);
-
-  const url =
-    push.url && push.url !== '/'
-      ? push.url
-      : '';
-
-  target.innerHTML = `
-
-<div class="push-widget-card${
-  unread ? ' push-widget-card--unread' : ''
-}">
-
-  <h3>${escapePushHtml(push.title)}</h3>
-
-  <p>${escapePushHtml(push.body)}</p>
-
-  ${
-    url
-      ? `<div class="push-widget-links">
-  <a class="push-widget-more" href="${escapePushHtml(url)}">Mehr erfahren</a>
-  </div>`
-      : ''
-  }
-
-</div>
-
-`;
-
-  target
-    .querySelectorAll('.push-widget-links a')
-    .forEach((link) => {
-
-      link.addEventListener('click', () => {
-        markPushSeen(push);
-        applyPushWidgetReadState(
-          document.getElementById('push-widget'),
-          push
-        );
-      });
-
-    });
-
-}
-
-setupFooterProtection();
 
 function setupFooterProtection() {
 

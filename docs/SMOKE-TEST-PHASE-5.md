@@ -70,7 +70,7 @@ Manuelle Checkliste nach Deploy + SQL-Migration.
 
 ## Regression
 
-- [ ] Tröte (`/admin/push.html`) funktioniert unverändert
+- [ ] Tröte zeigt „Seit deinem letzten Besuch“ bei neuen Inhalten; bleibt zu ohne Änderungen
 - [ ] News/Termine CRUD im Admin unverändert
 - [ ] Mitglieder-Login Magic Link unverändert
 - [ ] Keine Console-Errors auf Startseite, `/profil/`, `/admin/`
