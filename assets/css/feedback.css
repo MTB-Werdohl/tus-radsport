@@ -746,7 +746,7 @@ display: grid;
 
 grid-template-columns: minmax(0, 1fr);
 
-gap: 6px 10px;
+gap: 6px 8px;
 
 align-items: center;
 
@@ -760,7 +760,7 @@ grid-template-columns:
 
   auto
 
-  minmax(52px, 1.15fr);
+  minmax(28px, 0.8fr);
 
 }
 
@@ -778,13 +778,27 @@ margin: 0;
 
 }
 
+.feedback-poll-option-row .feedback-poll-option span {
+
+min-width: 0;
+
+line-height: 1.35;
+
+word-break: break-word;
+
+}
+
 .feedback-poll-option-row__meta {
 
-font-size: 0.84rem;
+font-size: 0.8125rem;
 
 white-space: nowrap;
 
 color: #ffffff;
+
+justify-self: end;
+
+padding-left: 6px;
 
 }
 
@@ -792,11 +806,43 @@ color: #ffffff;
 
 height: 8px;
 
+width: 100%;
+
+max-width: 100%;
+
 border-radius: 999px;
 
 overflow: hidden;
 
 background: rgba(255, 255, 255, 0.14);
+
+justify-self: end;
+
+}
+
+@media (min-width: 768px) {
+
+.feedback-poll-option-row--has-results {
+
+grid-template-columns:
+
+  minmax(0, 1fr)
+
+  auto
+
+  minmax(52px, 1.15fr);
+
+gap: 6px 10px;
+
+}
+
+.feedback-poll-option-row__meta {
+
+font-size: 0.84rem;
+
+padding-left: 8px;
+
+}
 
 }
 
