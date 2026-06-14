@@ -1,5 +1,6 @@
 function renderEvent(
-  event
+  event,
+  recap
 ) {
 
   const wrapper =
@@ -171,6 +172,8 @@ event.content || ''
 
 </div>
 
+${renderEventRecap(recap, event)}
+
 <div class="event-back">
 
 <a href="${calendarBackUrl}">
@@ -189,6 +192,139 @@ buildShareButton(
   'share',
   event.title
 );
+
+initEventRecapLightbox();
+
+}
+
+function renderEventRecap(
+  recap,
+  event
+) {
+
+  if (
+    !recap
+    || recap.status !== 'published'
+  ) {
+    return '';
+  }
+
+  const headline =
+    recap.headline
+    || event.title
+    || 'Rückblick';
+
+  const images =
+    recap.images
+    || recap.termin_recap_images
+    || [];
+
+  const imagesHtml =
+    images.length
+      ? `
+        <div class="event-recap-images">
+          ${
+            images
+              .map((image, index) => {
+
+                const url =
+                  typeof resolveRecapImageUrl
+                    === 'function'
+                    ? resolveRecapImageUrl(image)
+                    : image.storage_path;
+
+                if (!url) {
+                  return '';
+                }
+
+                return `
+                  <a
+                    href="${url}"
+                    class="event-recap-image-link glightbox"
+                    data-glightbox="type: image"
+                    data-gallery="event-recap">
+
+                    <img
+                      class="event-recap-image"
+                      src="${url}"
+                      alt="Rückblick ${index + 1}"
+                      loading="lazy">
+
+                  </a>
+                `;
+
+              })
+              .join('')
+          }
+        </div>
+      `
+      : '';
+
+  return `
+    <section class="event-recap">
+
+      <h2 class="event-recap-title">
+        Rückblick
+      </h2>
+
+      <h3 class="event-recap-headline">
+        ${escapeEventHtml(headline)}
+      </h3>
+
+      <div class="event-recap-body">
+        ${
+          typeof marked !== 'undefined'
+            ? marked.parse(recap.body || '')
+            : escapeEventHtml(recap.body || '')
+        }
+      </div>
+
+      ${imagesHtml}
+
+    </section>
+  `;
+
+}
+
+function escapeEventHtml(value) {
+
+  if (value === null || value === undefined) {
+    return '';
+  }
+
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
+}
+
+function initEventRecapLightbox() {
+
+  if (typeof GLightbox !== 'function') {
+    return;
+  }
+
+  if (window._eventRecapLightbox) {
+
+    window._eventRecapLightbox.destroy();
+    window._eventRecapLightbox = null;
+
+  }
+
+  if (
+    !document.querySelector(
+      '.event-recap .glightbox'
+    )
+  ) {
+    return;
+  }
+
+  window._eventRecapLightbox =
+    GLightbox({
+      selector: '.event-recap .glightbox'
+    });
 
 }
 

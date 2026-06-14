@@ -210,21 +210,45 @@ async function uploadMediaStorageFile(
     };
   }
 
+  let uploadFile = file;
+
+  if (
+    typeof compressImageFileToWebp
+      === 'function'
+  ) {
+
+    uploadFile =
+      await compressImageFileToWebp(file);
+
+  }
+
   const storagePath =
     buildMediaStoragePath(
       folderPrefix,
-      file.name
+      uploadFile.name
     );
 
   const bucket =
     window.siteConfig?.storage?.media
     || 'media';
 
+  const uploadOptions =
+    uploadFile.type === 'image/webp'
+      ? {
+        contentType: 'image/webp',
+        cacheControl: '3600'
+      }
+      : undefined;
+
   const { error } =
     await window.supabaseClient
       .storage
       .from(bucket)
-      .upload(storagePath, file);
+      .upload(
+        storagePath,
+        uploadFile,
+        uploadOptions
+      );
 
   if (error) {
     return {

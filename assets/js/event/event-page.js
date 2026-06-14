@@ -67,8 +67,22 @@ async function loadEvent() {
 
   }
 
+  let recap = null;
+
+  if (
+    typeof getEventRecap === 'function'
+    && typeof terminAllowsRecapClient === 'function'
+    && terminAllowsRecapClient(event)
+  ) {
+
+    recap =
+      await getEventRecap(event.id);
+
+  }
+
   renderEvent(
-    event
+    event,
+    recap
   );
 
   await initFeedbackModule({

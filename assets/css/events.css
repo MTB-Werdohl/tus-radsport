@@ -405,3 +405,49 @@
   color:white;
 
 }
+
+.event-recap {
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.event-recap-title {
+  color: #ffffff;
+  margin: 0 0 0.75rem;
+  font-size: 1.35rem;
+}
+
+.event-recap-headline {
+  color: #ffffff;
+  margin: 0 0 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.event-recap-body {
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.event-recap-images {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(160px, 1fr)
+  );
+  gap: 0.75rem;
+}
+
+.event-recap-image-link {
+  display: block;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.event-recap-image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}

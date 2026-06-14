@@ -265,6 +265,76 @@ title: Termin bearbeiten
   </select>
 </label>
 
+<div id="recapSection"
+     class="hidden admin-recap-section">
+
+  <h2 class="admin-recap-title">
+    Rückblick
+  </h2>
+
+  <p class="admin-hint">
+    Nur für vergangene Einzeltermine (nicht Entwurf).
+    Veröffentlichen: mindestens 100 Zeichen Bericht und 1 Bild.
+  </p>
+
+  <label class="admin-field">
+    Überschrift (optional)
+    <input id="recapHeadline"
+           placeholder="Leer = Termintitel">
+  </label>
+
+  <label class="admin-field">
+    Bericht (Markdown)
+    <textarea id="recapBody"
+              placeholder="Wie war die Veranstaltung?"></textarea>
+  </label>
+
+  <label class="admin-field">
+    Bilder
+    <input id="recapImageFile"
+           type="file"
+           accept="image/*"
+           multiple>
+  </label>
+
+  <div id="recapImagesList"
+       class="admin-recap-images"></div>
+
+  <p id="recapStatus"
+     class="admin-recap-status"
+     aria-live="polite"></p>
+
+  <div class="admin-recap-actions">
+
+    <button id="save-recap-draft"
+            type="button"
+            class="secondary-button">
+
+      Entwurf speichern
+
+    </button>
+
+    <button id="publish-recap"
+            type="button"
+            class="admin-form-save">
+
+      Veröffentlichen
+
+    </button>
+
+    <button id="unpublish-recap"
+            type="button"
+            class="secondary-button"
+            hidden>
+
+      Zurückziehen
+
+    </button>
+
+  </div>
+
+</div>
+
 <button id="save-event"
         type="button"
         class="admin-form-save">
@@ -283,9 +353,15 @@ title: Termin bearbeiten
 <script src="/assets/js/feedback/feedback-service.js?v={{ site.admin_js_version }}"></script>
 <script src="/admin/js/media-storage-lib.js?v={{ site.admin_js_version }}"></script>
 <script src="/admin/js/media-picker.js?v={{ site.admin_js_version }}"></script>
+<script src="/assets/js/recap/recap-validation.js?v={{ site.admin_js_version }}"></script>
+<script src="/assets/js/recap/recap-service.js?v={{ site.admin_js_version }}"></script>
+<script src="/admin/js/termine-recap-edit.js?v={{ site.admin_js_version }}"></script>
 <script src="/admin/js/termine-edit.js?v={{ site.admin_js_version }}"></script>
 <script>
-requireAdminSession(initTerminEdit);
+requireAdminSession(() => {
+  initTerminRecapEdit();
+  initTerminEdit();
+});
 </script>
 
 </body>

@@ -1832,3 +1832,57 @@ h3 {
 .admin-hint--error {
   color: #ffb4b4;
 }
+
+.admin-recap-section {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.admin-recap-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+}
+
+.admin-recap-images {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0.75rem 0 1rem;
+}
+
+.admin-recap-image-item {
+  position: relative;
+  width: 96px;
+}
+
+.admin-recap-image-thumb {
+  width: 96px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
+
+.admin-recap-image-delete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+
+.admin-recap-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.admin-recap-status {
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
+  color: #9fd89f;
+}
+
+.admin-recap-status--error {
+  color: #ffb4b4;
+}

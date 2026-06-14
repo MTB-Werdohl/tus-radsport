@@ -154,6 +154,47 @@ SQL Profilbilder: [`supabase/supabase-member-avatars.sql`](supabase/supabase-mem
 | `image`, `gpx` | Legacy: volle Public-URL |
 | `image_storage_path`, `gpx_storage_path` | Relativer Pfad im Bucket `media` (Phase 0 Medien-Storage) |
 
+## `termin_recaps` / `termin_recap_images`
+
+Rückblicke zu vergangenen **Einzelterminen** — eigener Lebenszyklus, getrennte RLS von `"Termine"`.
+
+```
+Termine (bestehend)
+└─ termin_recaps (1:1)
+   └─ termin_recap_images (1:n)
+```
+
+### `termin_recaps`
+
+| Spalte | Typ | Hinweis |
+|--------|-----|---------|
+| `id` | bigint PK | |
+| `termin_id` | bigint UNIQUE FK → `"Termine".id` | `ON DELETE CASCADE`; max. ein Rückblick pro Termin |
+| `headline` | text | optional; leer = Termintitel in der Anzeige |
+| `body` | text | Bericht (Markdown); Phase 1: min. 100 Zeichen zum Veröffentlichen |
+| `status` | text | `draft` \| `published` |
+| `created_by` | bigint FK → `members.id` | Ersteller; Phase 2: Ausrichtung an `Termine.created_by` |
+| `published_at` | timestamptz | gesetzt bei Statuswechsel auf `published` |
+| `created_at`, `updated_at` | timestamptz | |
+
+**Voraussetzungen für Rückblick** (`termin_allows_recap()`): Einzeltermin (`recurring = false`), Termin in der Vergangenheit (`is_termin_still_upcoming = false`), `sichtbarkeit` ≠ `draft`.
+
+**Phase 1 Veröffentlichungsqualität:** mindestens **1 Bild** in `termin_recap_images` **und** `length(trim(body)) >= 100` (App/RPC; noch kein DB-CHECK in Phase 0).
+
+**Leserechte** (`can_select_termin_recap()`): anon/authenticated — `published` + Termin `public`; Mitglieder zusätzlich `published` + Termin `members`; Vorstand alles; eigene `draft`-Entwürfe wenn `Termine.created_by` passt.
+
+### `termin_recap_images`
+
+| Spalte | Typ | Hinweis |
+|--------|-----|---------|
+| `id` | bigint PK | |
+| `recap_id` | bigint FK → `termin_recaps.id` | `ON DELETE CASCADE` |
+| `storage_path` | text UNIQUE | z. B. `recaps/{termin_id}/{timestamp}-name.webp` |
+| `sort_order` | integer | Reihenfolge in der Galerie |
+| `created_at` | timestamptz | |
+
+SQL: [`supabase-termin-recaps.sql`](../supabase-termin-recaps.sql), Storage: [`supabase-recap-media-upload.sql`](../supabase-recap-media-upload.sql)
+
 ## `galleries` / `gallery_images`
 
 Metadaten + `image_path` (öffentliche Storage-URL).
@@ -274,7 +315,7 @@ RPCs: `set_event_feedback_answer`, `list_feedback_participation_changes` (Vorsta
 
 ## Storage `media`
 
-Pfade z. B. `shared/images/…`, `shared/routes/…`, `galleries/{jahr}/{slug}/…`, Legacy-Root-Uploads. Siehe [MEDIA-STORAGE-ROADMAP.md](../MEDIA-STORAGE-ROADMAP.md).
+Pfade z. B. `shared/images/…`, `shared/routes/…`, `recaps/{termin_id}/…`, `galleries/{jahr}/{slug}/…`, Legacy-Root-Uploads. Siehe [MEDIA-STORAGE-ROADMAP.md](../MEDIA-STORAGE-ROADMAP.md).
 
 | RPC | Rolle | Zweck |
 |-----|-------|--------|

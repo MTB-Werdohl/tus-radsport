@@ -291,6 +291,12 @@ async function loadEvent() {
 
   toggleRecurring();
 
+  if (
+    typeof showRecapSection === 'function'
+  ) {
+    showRecapSection(data);
+  }
+
 }
 
 function validateTerminDates(

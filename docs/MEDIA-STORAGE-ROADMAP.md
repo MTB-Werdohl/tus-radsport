@@ -1,8 +1,8 @@
 # Medien-Storage — Architektur, Roadmap & Implementierungsplan
 
-**Status:** Phase 0–3 live + Phase-4-Grundlage (keine Legacy-URL-Writes mehr) — SQL [`supabase-media-storage-paths.sql`](supabase-media-storage-paths.sql), [`supabase-media-move.sql`](supabase-media-move.sql) in Supabase  
+**Status:** Phase 0–3 live + Phase-4-Grundlage + Rückblick-Storage (Phase 0 Historie) — SQL [`supabase-media-storage-paths.sql`](supabase-media-storage-paths.sql), [`supabase-media-move.sql`](supabase-media-move.sql), [`supabase-termin-recaps.sql`](supabase-termin-recaps.sql) in Supabase  
 **Zielgruppe:** Vorstand / Entwickler  
-**Letzte Aktualisierung:** 2026-05-26
+**Letzte Aktualisierung:** 2026-06-14
 
 ---
 
@@ -30,7 +30,9 @@ Medien (Bilder, GPX) sollen im Admin **strukturiert**, **wiederverwendbar** und 
 | `members.avatar_storage_path` | Relativer Pfad im Bucket `avatars` | ✅ stabil |
 | Protokolle `protocols/{id}/…` | Relativer Pfad + eigene UI | ✅ Move mit UI |
 
-**Upload heute (Termin/News):** flacher Key im Bucket-Root, z. B. `{timestamp}-{dateiname}` — siehe `buildMediaStorageKey()` in `admin/js/admin-utils.js`.
+**Upload heute (Termin/News):** Ordner `shared/images/` bzw. `shared/routes/` — Bilder werden clientseitig nach WebP komprimiert (`assets/js/core/image-compress.js`, max. 1920px). GPX unverändert.
+
+**Rückblick-Bilder (Phase 0 Historie):** Namespace `recaps/{termin_id}/` — siehe [`FACHKONZEPT-TERMIN-RECAPS.md`](FACHKONZEPT-TERMIN-RECAPS.md).
 
 **Bereits umgesetzt (Bugfix, unabhängig von dieser Roadmap):**
 
@@ -67,6 +69,7 @@ Medien (Bilder, GPX) sollen im Admin **strukturiert**, **wiederverwendbar** und 
 |------|--------|------------------|-----------------|
 | `shared/routes/` | GPX für mehrere Ausfahrten | **Ja (Hauptfall)** | Vorstand |
 | `shared/images/` | Wiederkehrende Header/Motive | **Ja** | Vorstand |
+| `recaps/{termin_id}/` | Rückblick-Bilder (Historie) | Nein — 1:1 am Termin | Vorstand; Mitglied (eigener Termin, Phase 2) |
 | `termine/{id}/` | Termin-spezifische Dateien | Selten | Vorstand |
 | `news/{id}/` | News-spezifische Dateien | Selten | Vorstand |
 | `galleries/{jahr}/{slug}/…` | Galerie (bestehend) | Unverändert | Vorstand |

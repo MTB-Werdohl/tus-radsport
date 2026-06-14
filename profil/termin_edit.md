@@ -120,6 +120,7 @@ load_member_content_edit_css: true
 
 <script src="/assets/js/core/visibility.js"></script>
 <script src="/assets/js/core/media-url.js"></script>
+<script src="/assets/js/core/image-compress.js"></script>
 <script src="/assets/js/member/member-edit-utils.js"></script>
 <script src="/admin/js/media-storage-lib.js"></script>
 <script src="/admin/js/media-picker.js"></script>

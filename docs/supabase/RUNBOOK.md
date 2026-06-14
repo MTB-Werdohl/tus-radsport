@@ -60,6 +60,12 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Mitglieder-Mediathek-Upload:** [`supabase-member-media-upload.sql`](../supabase-member-media-upload.sql) — Storage-Policy: Vereinsmitglieder dürfen in `shared/images/` und `shared/routes/` hochladen (Picker „Hochladen“ im Profil). **Nach** `supabase-member-change-summary.sql` und `supabase-vorstand-roles.sql`.
 
+**Termin-Rückblicke (Historie) Phase 0:** [`supabase-termin-recaps.sql`](../supabase-termin-recaps.sql) — Tabellen `termin_recaps`, `termin_recap_images`, Hilfsfunktionen (`termin_allows_recap`, `can_select_termin_recap`), RLS (Vorstand CRUD; Mitglieder eigene Entwürfe wenn `Termine.created_by` passt). **Nach** `supabase-member-content.sql` und `supabase-anonymize-upcoming-feedback.sql` (`is_termin_still_upcoming`). Konzept: [`FACHKONZEPT-TERMIN-RECAPS.md`](../FACHKONZEPT-TERMIN-RECAPS.md).
+
+**Rückblick-Bilder Storage:** [`supabase-recap-media-upload.sql`](../supabase-recap-media-upload.sql) — Mitglieder dürfen in `recaps/{termin_id}/` hochladen, wenn sie den Termin erstellt haben. Öffentliches Lesen über bestehende `media`-Policy (ohne `protocols/`). Vorstand: bestehende `media_insert_vorstand`. **Nach** `supabase-termin-recaps.sql`.
+
+**Termin-Rückblicke Phase 1 Frontend:** Nach SQL Phase 0 — Admin `/admin/termine_edit.html` (Rückblick-Abschnitt), Entwürfe-Liste, Terminseite (`/kalender/{slug}/`), Historie `/historie/`. JS: `assets/js/recap/*`, `assets/js/history/*`. Checkliste: [`SMOKE-TEST-RECAPS.md`](../SMOKE-TEST-RECAPS.md).
+
 **Einwilligung Widerruf:** [`supabase-member-consent-revoke.sql`](../supabase-member-consent-revoke.sql) — Spalten `kontakt_widerrufen_am`, `bilder_widerrufen_am` für dokumentierten Widerruf (Admin + Profil-Anzeige).
 
 **Ersteller-Anzeige (Kalender/Details):** [`supabase-content-creator-display.sql`](../supabase-content-creator-display.sql) — RPC `get_content_creator_labels()` für öffentliche Anzeigenamen bei freigegebenen News/Terminen. **Nach** `supabase-member-content.sql`.
@@ -156,6 +162,7 @@ Falscher Slug (404): alte Test-Function im Dashboard löschen.
 | Tabelle | anon | authenticated (Mitglied) | authenticated (Vorstand) |
 |---------|------|----------------------------|---------------------------|
 | `News` / `Termine` | SELECT `sichtbarkeit=public` | + `members` + alle `public` | + alle Zeilen + CRUD |
+| `termin_recaps` / `termin_recap_images` | SELECT `published` + Termin `public` | + `published` + Termin `members`; eigene `draft` | ALL |
 | `members` | — | SELECT/UPDATE eigene Zeile | SELECT alle + CRUD alle |
 | `galleries` / `gallery_images` | SELECT | SELECT | CRUD |
 | `feedback_modules` | SELECT | SELECT | ALL |

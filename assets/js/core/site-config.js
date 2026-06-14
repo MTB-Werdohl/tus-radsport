@@ -26,7 +26,9 @@ window.siteConfig = {
     memberStatsMonth: 'member_stats_month',
     memberStatsYear: 'member_stats_year',
     clubStatsMonth: 'club_stats_month',
-    clubStatsYear: 'club_stats_year'
+    clubStatsYear: 'club_stats_year',
+    terminRecaps: 'termin_recaps',
+    terminRecapImages: 'termin_recap_images'
   },
 
   feedback: {
