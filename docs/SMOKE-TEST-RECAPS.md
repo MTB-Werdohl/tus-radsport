@@ -7,7 +7,7 @@ Kurz-Checkliste vor Pilotbetrieb. SQL Phase 0 muss deployt sein.
 - [ ] Als Vorstand einloggen, vergangenen **Einzeltermin** bearbeiten (`sichtbarkeit` ≠ Entwurf)
 - [ ] Abschnitt **Rückblick** sichtbar; bei zukünftigem/Serien-/Entwurf-Termin **nicht** sichtbar
 - [ ] Entwurf speichern mit kurzem Text (ohne Bild) — OK
-- [ ] Mindestens 1 Bild hochladen (WebP unter `recaps/{termin_id}/`)
+- [ ] Mindestens 1 Bild hochladen (WebP unter `recaps/{slug}/`, z. B. `recaps/ausfahrt-homert/`)
 - [ ] Veröffentlichen blockiert bei &lt;100 Zeichen oder 0 Bilder
 - [ ] Veröffentlichen klappt mit ≥100 Zeichen + ≥1 Bild
 - [ ] Entwurf erscheint unter `/admin/entwuerfe.html` und Dashboard-Entwürfe-Karte

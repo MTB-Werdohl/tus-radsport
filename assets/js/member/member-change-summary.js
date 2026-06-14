@@ -108,8 +108,8 @@ function buildMemberChangeSummaryLines(
   const newsLine =
     formatChangeSummaryCountLine(
       summary.news,
-      'neue News',
-      'neue News'
+      'neues Internes',
+      'neues Internes'
     );
 
   if (newsLine) {

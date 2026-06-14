@@ -37,8 +37,8 @@ function renderHomeNewsTeaser(news) {
     wrapper.innerHTML = `
 <article class="calendar-card">
   <div>
-    <h3>Keine News</h3>
-    <p>Aktuell nichts Neues.</p>
+    <h3>Kein Internes</h3>
+    <p>Aktuell keine internen Beiträge.</p>
   </div>
 </article>
 `;
@@ -127,10 +127,30 @@ async function loadHomeTeasers() {
             : null
         );
 
-    const news =
-      await fetchNewsForViewer(member);
+    const internesBlock =
+      document.getElementById(
+        'home-internes-block'
+      );
 
-    renderHomeNewsTeaser(news);
+    if (
+      typeof canAccessNewsSection === 'function'
+      && canAccessNewsSection(member)
+    ) {
+
+      if (internesBlock) {
+        internesBlock.hidden = false;
+      }
+
+      const news =
+        await fetchNewsForViewer(member);
+
+      renderHomeNewsTeaser(news);
+
+    } else if (internesBlock) {
+
+      internesBlock.hidden = true;
+
+    }
     await loadHomeTermineTeaser();
 
   } catch (error) {

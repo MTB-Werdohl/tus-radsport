@@ -21,14 +21,13 @@ function renderNewsCards(news){
 
         <h3>
 
-          Keine News
+          Kein Internes
 
         </h3>
 
         <p>
 
-          Aktuell gibt es
-          nichts Neues.
+          Aktuell keine internen Beiträge.
 
         </p>
 

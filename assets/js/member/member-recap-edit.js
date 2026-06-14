@@ -432,7 +432,7 @@ async function handleMemberRecapImageUpload(
 
       const upload =
         await uploadRecapImage(
-          memberRecapEditState.termin.id,
+          memberRecapEditState.termin,
           file
         );
 

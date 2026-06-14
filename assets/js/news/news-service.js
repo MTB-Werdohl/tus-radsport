@@ -34,33 +34,29 @@ async function fetchNewsForViewer(
   }
 
   return enrichContentRowsWithCreators(
-    data || []
+    (data || []).filter((item) =>
+      newsRowVisibleToViewer(
+        item,
+        member
+      )
+    )
   );
 
 }
 
 async function fetchNewsList() {
 
-  const { data, error } =
-    await window.supabaseClient
-      .from(window.siteConfig.tables.news)
-      .select('*')
-      .neq(
-        'sichtbarkeit',
-        window.siteConfig.visibility.draft
-      )
-      .order(
-        'created_at',
-        { ascending: false }
-      );
+  const current =
+    typeof getCurrentMember === 'function'
+      ? getCurrentMember()
+      : null;
 
-  if (error) {
-    throw error;
-  }
+  const member =
+    typeof getViewerMember === 'function'
+      ? getViewerMember(current)
+      : current;
 
-  return enrichContentRowsWithCreators(
-    data || []
-  );
+  return fetchNewsForViewer(member);
 
 }
 
@@ -112,6 +108,16 @@ async function fetchNewsBySlug(
 
     return null;
 
+  }
+
+  if (
+    !data
+    || !newsRowVisibleToViewer(
+      data,
+      member
+    )
+  ) {
+    return null;
   }
 
   return enrichContentRowWithCreator(data);

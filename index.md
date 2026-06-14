@@ -61,8 +61,12 @@ description: Radsportabteilung TuS Jahn Werdohl — gemeinsam MTB, Gravel & E-Bi
 <section class="home-section">
   <h2>Aktuell im Verein</h2>
 
-  <h3 class="home-teaser-heading">News</h3>
+  <div id="home-internes-block" hidden>
+
+  <h3 class="home-teaser-heading">Internes</h3>
   <div id="home-news-teaser" class="home-teaser-stack"></div>
+
+  </div>
 
   <h3 class="home-teaser-heading">Termine</h3>
   <div id="home-termine-teaser" class="home-teaser-stack"></div>

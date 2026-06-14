@@ -32,7 +32,7 @@ Medien (Bilder, GPX) sollen im Admin **strukturiert**, **wiederverwendbar** und 
 
 **Upload heute (Termin/News):** Ordner `shared/images/` bzw. `shared/routes/` — Bilder werden clientseitig nach WebP komprimiert (`assets/js/core/image-compress.js`, max. 1920px). GPX unverändert.
 
-**Rückblick-Bilder (Phase 0 Erlebtes):** Namespace `recaps/{termin_id}/` — siehe [`FACHKONZEPT-TERMIN-RECAPS.md`](FACHKONZEPT-TERMIN-RECAPS.md).
+**Rückblick-Bilder (Phase 0 Erlebtes):** Namespace `recaps/{slug}/` (Termin-Slug, lesbar im Medien-Browser) — siehe [`FACHKONZEPT-TERMIN-RECAPS.md`](FACHKONZEPT-TERMIN-RECAPS.md). Legacy `recaps/{termin_id}/` bleibt für alte Uploads gültig.
 
 **Bereits umgesetzt (Bugfix, unabhängig von dieser Roadmap):**
 
@@ -69,7 +69,7 @@ Medien (Bilder, GPX) sollen im Admin **strukturiert**, **wiederverwendbar** und 
 |------|--------|------------------|-----------------|
 | `shared/routes/` | GPX für mehrere Ausfahrten | **Ja (Hauptfall)** | Vorstand |
 | `shared/images/` | Wiederkehrende Header/Motive | **Ja** | Vorstand |
-| `recaps/{termin_id}/` | Rückblick-Bilder (Erlebtes) | Nein — 1:1 am Termin | Vorstand; Mitglied (eigener Termin, Phase 2); **Admin Medien:** Ordner „Rückblicke“ (Ansehen/Löschen, kein Upload/Verschieben) |
+| `recaps/{slug}/` | Rückblick-Bilder (Erlebtes) | Nein — 1:1 am Termin | Vorstand; Mitglied (eigener Termin, Phase 2); **Admin Medien:** Ordner „Rückblicke“ (Ansehen/Löschen, kein Upload/Verschieben). Legacy: `recaps/{termin_id}/` |
 | `termine/{id}/` | Termin-spezifische Dateien | Selten | Vorstand |
 | `news/{id}/` | News-spezifische Dateien | Selten | Vorstand |
 | `galleries/{jahr}/{slug}/…` | Galerie (bestehend) | Unverändert | Vorstand |

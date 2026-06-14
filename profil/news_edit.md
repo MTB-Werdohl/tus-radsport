@@ -1,6 +1,6 @@
 ---
 layout: default
-title: News einreichen
+title: Internes einreichen
 permalink: /profil/news_edit/
 hide_title: true
 load_member_content_edit_css: true
@@ -13,7 +13,7 @@ load_member_content_edit_css: true
     <div>
 
       <h1 id="form-title">
-        News einreichen
+        Internes einreichen
       </h1>
 
       <p>

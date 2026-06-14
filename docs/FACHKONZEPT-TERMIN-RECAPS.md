@@ -76,7 +76,7 @@ Termine (bestehend)
 
 
 
-- `storage_path` — `recaps/{termin_id}/…` im Bucket `media`
+- `storage_path` — `recaps/{slug}/…` im Bucket `media` (Legacy: `recaps/{termin_id}/…`)
 
 - `sort_order` — Reihenfolge
 

@@ -302,7 +302,7 @@ function getDraftTypeLabel(type) {
     return 'Rückblick';
   }
 
-  return 'News';
+  return 'Internes';
 
 }
 
@@ -708,7 +708,7 @@ function renderAdminDraftPreviewNews(
 
   return `
     <p class="admin-draft-preview__kind">
-      News · Entwurf
+      Internes · Entwurf
     </p>
 
     <h1 class="admin-draft-preview__title">

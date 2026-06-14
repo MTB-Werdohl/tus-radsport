@@ -75,7 +75,11 @@ function getContentAccessTexts(
 
   const kindLabel =
     kind === 'news'
-      ? 'Beitrag'
+      ? (
+        typeof getNewsSectionLabel === 'function'
+          ? getNewsSectionLabel()
+          : 'Internes'
+      )
       : 'Termin';
 
   if (

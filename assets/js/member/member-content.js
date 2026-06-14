@@ -304,7 +304,7 @@ function renderMemberContentPanelShell() {
   <h2>Content</h2>
 
   <p class="member-content-lead">
-    Reiche Termine oder News als Entwurf ein.
+    Reiche Termine oder Internes als Entwurf ein.
     Der Vorstand prüft und gibt sie frei.
     Nach freigegebenen, vergangenen Terminen kannst du
     einen Rückblick schreiben.
@@ -335,11 +335,11 @@ function renderMemberContentPanelShell() {
       <span class="member-content-card-icon">📰</span>
 
       <span class="member-content-card-title">
-        News
+        Internes
       </span>
 
       <span class="member-content-card-text">
-        Beitrag für die Startseite einreichen
+        Beitrag fürs Interne einreichen
       </span>
 
     </a>
@@ -617,7 +617,7 @@ ${
   news.length
     ? `
 <h3 class="member-content-list-heading">
-  News
+  Internes
 </h3>
 
 <ul class="member-content-items">

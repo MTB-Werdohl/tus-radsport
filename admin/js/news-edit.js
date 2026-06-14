@@ -15,7 +15,7 @@ async function loadNews() {
   document
     .getElementById('form-title')
     .innerText =
-      'News bearbeiten';
+      'Internes bearbeiten';
 
   const { data, error } =
     await window.supabaseClient
@@ -29,7 +29,7 @@ async function loadNews() {
     console.error(error);
 
     alert(
-      'News konnte nicht geladen werden.'
+      'Internes konnte nicht geladen werden.'
     );
 
     return;
@@ -60,12 +60,19 @@ async function loadNews() {
     data.content || '';
 
   document.getElementById('sichtbarkeit').value =
-    data.sichtbarkeit
-    || (
-      data.published
-        ? window.siteConfig.visibility.public
-        : window.siteConfig.visibility.draft
-    );
+    (
+      data.sichtbarkeit
+      === window.siteConfig.visibility.public
+    )
+      ? window.siteConfig.visibility.members
+      : (
+        data.sichtbarkeit
+        || (
+          data.published
+            ? window.siteConfig.visibility.members
+            : window.siteConfig.visibility.draft
+        )
+      );
 
   if (data.image) {
 
@@ -117,10 +124,16 @@ async function saveNews() {
       .getElementById('content')
       .value;
 
-  const sichtbarkeit =
+  const sichtbarkeitRaw =
     document
       .getElementById('sichtbarkeit')
       .value;
+
+  const sichtbarkeit =
+    sichtbarkeitRaw
+    === window.siteConfig.visibility.public
+      ? window.siteConfig.visibility.members
+      : sichtbarkeitRaw;
 
   const published =
     publishedFromVisibility(sichtbarkeit);
@@ -266,7 +279,7 @@ async function saveNews() {
   if (feedbackResult?.error) {
 
     alert(
-      'News gespeichert, Feedback fehlgeschlagen: '
+      'Internes gespeichert, Feedback fehlgeschlagen: '
       + feedbackResult.error.message
     );
 

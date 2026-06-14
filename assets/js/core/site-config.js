@@ -76,6 +76,10 @@ window.siteConfig = {
     public: 'public',
     members: 'members',
     draft: 'draft'
+  },
+
+  labels: {
+    newsSection: 'Internes'
   }
 
 };
@@ -117,5 +121,14 @@ window.getNewsUrl = function (slug) {
   }
 
   return `/news/${encodeURIComponent(slug)}/`;
+
+};
+
+window.getNewsSectionLabel = function () {
+
+  return (
+    window.siteConfig.labels?.newsSection
+    || 'Internes'
+  );
 
 };

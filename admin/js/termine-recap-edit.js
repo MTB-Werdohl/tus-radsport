@@ -569,7 +569,7 @@ async function handleRecapImageUpload(
 
       const upload =
         await uploadRecapImage(
-          recapEditState.termin.id,
+          recapEditState.termin,
           file
         );
 

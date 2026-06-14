@@ -26,7 +26,7 @@ async function memberNewsAssertEditable(
   if (error || !data) {
 
     alert(
-      'News konnte nicht geladen werden.'
+      'Internes konnte nicht geladen werden.'
     );
 
     window.location.href =
@@ -68,7 +68,7 @@ async function loadMemberNewsEdit() {
   document
     .getElementById('form-title')
     .innerText =
-      'News bearbeiten';
+      'Internes bearbeiten';
 
   const { data, error } =
     await window.supabaseClient
@@ -82,7 +82,7 @@ async function loadMemberNewsEdit() {
     console.error(error);
 
     alert(
-      'News konnte nicht geladen werden.'
+      'Internes konnte nicht geladen werden.'
     );
 
     return;

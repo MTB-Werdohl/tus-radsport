@@ -2,35 +2,45 @@ async function loadNews() {
 
   try {
 
+    const member =
+      await ensureContentViewerMember();
+
     if (
-      typeof waitForAuthSession === 'function'
+      typeof canAccessNewsSection === 'function'
+      && !canAccessNewsSection(member)
     ) {
 
-      const session =
-        await waitForAuthSession();
+      renderContentAccessDenied({
+        containerId: 'news-cards',
+        kind: 'news',
+        visibility:
+          window.siteConfig.visibility.members,
+        member,
+        backUrl: '/',
+        backLabel: '← Zurück zur Startseite'
+      });
 
-      if (
-        session
-        && typeof validateMemberSession === 'function'
-      ) {
+      document.title =
+        `${getNewsSectionLabel()} · MTB Werdohl`;
 
-        await validateMemberSession(
-          session,
-          { strict: false }
-        );
-
-      }
+      return;
 
     }
 
     const data =
-      await fetchNewsList();
+      await fetchNewsForViewer(member);
 
     renderNewsCards(data);
 
+    document.title =
+      `${getNewsSectionLabel()} · MTB Werdohl`;
+
   } catch (error) {
 
-    console.error('News Fehler:', error);
+    console.error(
+      `${getNewsSectionLabel()} Fehler:`,
+      error
+    );
 
   }
 

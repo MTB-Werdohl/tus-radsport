@@ -65,7 +65,7 @@ async function loadNews() {
     console.error(error);
 
     alert(
-      'News konnten nicht geladen werden.'
+      'Internes konnten nicht geladen werden.'
     );
 
     return;
@@ -123,7 +123,7 @@ async function loadNews() {
     container.innerHTML =
       paged.totalItems
         ? '<p class="admin-hint">Keine Treffer auf dieser Seite.</p>'
-        : '<p class="admin-hint">Noch keine News angelegt.</p>';
+        : '<p class="admin-hint">Noch kein Internes angelegt.</p>';
 
     renderAdminPagination({
       containerId: 'news-pagination',
@@ -207,7 +207,7 @@ async function deleteNews(id) {
 
   const confirmDelete =
     confirm(
-      'News löschen?'
+      'Internes löschen?'
     );
 
   if (!confirmDelete) {
@@ -225,7 +225,7 @@ async function deleteNews(id) {
     console.error(error);
 
     alert(
-      'News konnte nicht gelöscht werden.'
+      'Internes konnte nicht gelöscht werden.'
     );
 
     return;

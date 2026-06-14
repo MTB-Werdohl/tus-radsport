@@ -48,7 +48,8 @@ await handleContentUnavailable({
   member,
   containerId: 'news',
   backUrl: '/news/',
-  backLabel: '← Zurück zur Newsübersicht'
+  backLabel:
+    `← Zurück zu ${getNewsSectionLabel()}`
 });
 
 return;

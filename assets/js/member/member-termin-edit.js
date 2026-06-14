@@ -6,6 +6,9 @@ const memberTerminEditParams =
 const memberTerminEditId =
   memberTerminEditParams.get('id');
 
+const memberTerminDefaultImagePath =
+  'shared/images/1781467844219-gruppentour_1.webp';
+
 function memberTerminExtractTimeFromDate(
   value
 ) {
@@ -353,6 +356,11 @@ async function saveMemberTerminEdit(
 
   gpxStoragePath =
     pickedGpx.storagePath;
+
+  if (!imageStoragePath) {
+    imageStoragePath =
+      memberTerminDefaultImagePath;
+  }
 
   const payload = {
 

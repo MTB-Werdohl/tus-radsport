@@ -354,8 +354,55 @@ async function deleteRecapImage(imageId) {
 
 }
 
+function buildRecapSlugFromTitle(
+  title
+) {
+
+  return String(title || '')
+    .trim()
+    .toLowerCase()
+    .replace(/ä/g, 'ae')
+    .replace(/ö/g, 'oe')
+    .replace(/ü/g, 'ue')
+    .replace(/ß/g, 'ss')
+    .replaceAll(' ', '-')
+    .replace(/[^\w-]+/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+}
+
+function buildRecapStorageFolder(
+  termin
+) {
+
+  const slug =
+    String(termin?.slug || '')
+      .trim();
+
+  if (slug) {
+    return slug;
+  }
+
+  const fromTitle =
+    buildRecapSlugFromTitle(
+      termin?.title
+    );
+
+  if (fromTitle) {
+    return fromTitle;
+  }
+
+  if (termin?.id) {
+    return `termin-${termin.id}`;
+  }
+
+  return 'ohne-titel';
+
+}
+
 async function uploadRecapImage(
-  terminId,
+  terminOrId,
   file
 ) {
 
@@ -369,6 +416,12 @@ async function uploadRecapImage(
 
   }
 
+  const termin =
+    typeof terminOrId === 'object'
+      && terminOrId !== null
+      ? terminOrId
+      : { id: terminOrId };
+
   let uploadFile = file;
 
   if (
@@ -381,8 +434,11 @@ async function uploadRecapImage(
 
   }
 
+  const folder =
+    buildRecapStorageFolder(termin);
+
   const storagePath =
-    `recaps/${terminId}/${Date.now()}.webp`;
+    `recaps/${folder}/${Date.now()}.webp`;
 
   const bucket =
     window.siteConfig?.storage?.media
@@ -673,6 +729,9 @@ window.getRecapCoverImageId =
 
 window.deleteRecapImage =
   deleteRecapImage;
+
+window.buildRecapStorageFolder =
+  buildRecapStorageFolder;
 
 window.uploadRecapImage =
   uploadRecapImage;

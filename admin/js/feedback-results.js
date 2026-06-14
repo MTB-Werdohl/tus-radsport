@@ -1146,7 +1146,7 @@ function getFeedbackEntityTypeLabel(entityType) {
     entityType
     === window.siteConfig.feedback.entityTypes.news
   ) {
-    return 'News';
+    return 'Internes';
   }
 
   return entityType;

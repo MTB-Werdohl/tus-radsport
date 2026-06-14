@@ -189,7 +189,7 @@ Termine (bestehend)
 |--------|-----|---------|
 | `id` | bigint PK | |
 | `recap_id` | bigint FK → `termin_recaps.id` | `ON DELETE CASCADE` |
-| `storage_path` | text UNIQUE | z. B. `recaps/{termin_id}/{timestamp}-name.webp` |
+| `storage_path` | text UNIQUE | z. B. `recaps/{slug}/{timestamp}.webp` |
 | `sort_order` | integer | Reihenfolge in der Galerie |
 | `created_at` | timestamptz | |
 
@@ -315,7 +315,7 @@ RPCs: `set_event_feedback_answer`, `list_feedback_participation_changes` (Vorsta
 
 ## Storage `media`
 
-Pfade z. B. `shared/images/…`, `shared/routes/…`, `recaps/{termin_id}/…`, `galleries/{jahr}/{slug}/…`, Legacy-Root-Uploads. Siehe [MEDIA-STORAGE-ROADMAP.md](../MEDIA-STORAGE-ROADMAP.md).
+Pfade z. B. `shared/images/…`, `shared/routes/…`, `recaps/{slug}/…` (Legacy: `recaps/{termin_id}/…`), `galleries/{jahr}/{slug}/…`, Legacy-Root-Uploads. Siehe [MEDIA-STORAGE-ROADMAP.md](../MEDIA-STORAGE-ROADMAP.md).
 
 | RPC | Rolle | Zweck |
 |-----|-------|--------|

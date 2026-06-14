@@ -121,6 +121,44 @@ function viewerIncludesDrafts(member) {
 
 }
 
+function canAccessNewsSection(member) {
+
+  return (
+    (
+      typeof isClubMember === 'function'
+      && isClubMember(member)
+    )
+    || viewerIncludesDrafts(member)
+  );
+
+}
+
+function newsRowVisibleToViewer(
+  item,
+  member
+) {
+
+  const visibility =
+    item?.sichtbarkeit;
+
+  if (
+    visibility
+    === CONTENT_VISIBILITY.draft
+  ) {
+    return viewerIncludesDrafts(member);
+  }
+
+  if (
+    visibility
+    === CONTENT_VISIBILITY.public
+  ) {
+    return canAccessNewsSection(member);
+  }
+
+  return canAccessNewsSection(member);
+
+}
+
 async function ensureContentViewerMember() {
 
   if (

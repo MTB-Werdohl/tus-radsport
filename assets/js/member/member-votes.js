@@ -529,7 +529,7 @@ function renderMemberVotesList(
   <div>
     <h3>Keine Teilnahmen</h3>
     <p>
-      Zu kommenden Terminen und News hast du derzeit nichts abgestimmt.
+      Zu kommenden Terminen und Internem hast du derzeit nichts abgestimmt.
     </p>
   </div>
 </article>
@@ -557,7 +557,7 @@ ${renderMemberVotesSection(
 ${renderMemberVotesSection(
   'Abstimmungen',
   renderMemberVotesCards(pagedPolls.items),
-  'Keine Abstimmungen auf News.'
+  'Keine Abstimmungen im Internen.'
 )}
 
 <div
