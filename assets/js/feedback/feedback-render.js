@@ -264,11 +264,13 @@ function renderFeedbackPoll(
             : '';
 
         return `
-<div class="feedback-poll-option-block${
-  isFreeText
-    ? ' feedback-poll-option-block--freetext'
-    : ''
-}">
+<div
+  class="feedback-poll-option-row${
+    isFreeText
+      ? ' feedback-poll-option-row--freetext'
+      : ''
+  }"
+  data-feedback-option-id="${escapeFeedbackHtml(option.id)}">
 
 <label class="feedback-poll-option">
 
@@ -284,7 +286,32 @@ function renderFeedbackPoll(
 
 </label>
 
+<span
+  class="feedback-poll-option-row__meta feedback-poll-results__meta"
+  data-feedback-poll-result-meta
+  hidden>
+
+</span>
+
+<div
+  class="feedback-poll-option-row__bar feedback-poll-results__bar"
+  data-feedback-poll-result-bar
+  role="presentation"
+  hidden>
+
+  <span
+    class="feedback-poll-results__bar-fill"
+    style="width: 0%;">
+
+  </span>
+
+</div>
+
+${freeTextInput ? `
+<div class="feedback-poll-option-row__extra">
 ${freeTextInput}
+</div>
+` : ''}
 
 </div>
 `;
@@ -758,14 +785,110 @@ function normalizeFeedbackSummaryCounts(
 
 }
 
-function renderFeedbackPollResultsSummary(
+function applyFeedbackPollResultsInline(
+  container,
   module,
-  summary,
-  options = {}
+  summary
 ) {
 
-  const omitLabels =
-    options.omitLabels === true;
+  const total =
+    Number(summary?.total) || 0;
+
+  const counts =
+    total > 0
+      ? normalizeFeedbackSummaryCounts(
+        module,
+        summary
+      )
+      : {};
+
+  container
+    .querySelectorAll(
+      '[data-feedback-option-id]'
+    )
+    .forEach((row) => {
+
+      const optionId =
+        row.getAttribute(
+          'data-feedback-option-id'
+        );
+
+      const meta =
+        row.querySelector(
+          '[data-feedback-poll-result-meta]'
+        );
+
+      const bar =
+        row.querySelector(
+          '[data-feedback-poll-result-bar]'
+        );
+
+      const fill =
+        row.querySelector(
+          '.feedback-poll-results__bar-fill'
+        );
+
+      if (
+        total <= 0
+        || !optionId
+      ) {
+
+        if (meta) {
+          meta.textContent = '';
+          meta.hidden = true;
+        }
+
+        if (bar) {
+          bar.hidden = true;
+        }
+
+        if (fill) {
+          fill.style.width = '0%';
+        }
+
+        row.classList.remove(
+          'feedback-poll-option-row--has-results'
+        );
+
+        return;
+
+      }
+
+      const count =
+        Number(counts[optionId]) || 0;
+
+      const percent =
+        Math.round(
+          (count / total) * 100
+        );
+
+      if (meta) {
+        meta.textContent =
+          `${percent}% (${count})`;
+        meta.hidden = false;
+      }
+
+      if (bar) {
+        bar.hidden = false;
+      }
+
+      if (fill) {
+        fill.style.width =
+          `${percent}%`;
+      }
+
+      row.classList.add(
+        'feedback-poll-option-row--has-results'
+      );
+
+    });
+
+}
+
+function renderFeedbackPollResultsSummary(
+  module,
+  summary
+) {
 
   const total =
     Number(summary?.total) || 0;
@@ -799,27 +922,17 @@ function renderFeedbackPollResultsSummary(
             )
             : 0;
 
-        const labelHtml =
-          omitLabels
-            ? ''
-            : `
+        return `
+<li class="feedback-poll-results__item">
+
 <span class="feedback-poll-results__label">
   ${escapeFeedbackHtml(option.label)}
 </span>
-`;
 
-        return `
-<li
-  class="feedback-poll-results__item${
-    omitLabels
-      ? ' feedback-poll-results__item--compact'
-      : ''
-  }"
-  aria-label="${escapeFeedbackHtml(
-    `${option.label}: ${percent} Prozent, ${count} Stimmen`
-  )}">
-
-${labelHtml}
+<span class="feedback-poll-results__meta">
+  <strong>${percent}%</strong>
+  (${count})
+</span>
 
 <div
   class="feedback-poll-results__bar"
@@ -832,34 +945,16 @@ ${labelHtml}
 
 </div>
 
-<span class="feedback-poll-results__meta">
-  <strong>${percent}%</strong>
-  (${count})
-</span>
-
 </li>
 `;
 
       })
       .join('');
 
-  const voteLabel =
-    total === 1
-      ? '1 Stimme'
-      : `${total} Stimmen`;
-
   return `
 <div
-  class="feedback-poll-results${
-    omitLabels
-      ? ' feedback-poll-results--compact'
-      : ''
-  }"
+  class="feedback-poll-results"
   data-feedback-poll-results>
-
-<p class="feedback-poll-results__total">
-  ${escapeFeedbackHtml(voteLabel)}
-</p>
 
 <ul class="feedback-poll-results__list">
   ${items}
@@ -892,6 +987,35 @@ async function refreshFeedbackPollResults(
       module.id
     );
 
+  const pollRoot =
+    container.querySelector(
+      '.feedback-poll'
+    );
+
+  if (pollRoot) {
+
+    applyFeedbackPollResultsInline(
+      container,
+      module,
+      summary
+    );
+
+    container
+      .querySelector(
+        '[data-feedback-poll-results]'
+      )
+      ?.remove();
+
+    container
+      .querySelector(
+        '[data-feedback-poll-results-slot]'
+      )
+      ?.replaceChildren();
+
+    return;
+
+  }
+
   const existing =
     container.querySelector(
       '[data-feedback-poll-results]'
@@ -900,39 +1024,15 @@ async function refreshFeedbackPollResults(
   const html =
     renderFeedbackPollResultsSummary(
       module,
-      summary,
-      {
-        omitLabels:
-          !!container.querySelector(
-            '[data-feedback-poll-results-slot]'
-          )
-      }
+      summary
     );
 
   if (!html) {
-
-    container
-      .querySelector(
-        '[data-feedback-poll-results-slot]'
-      )
-      ?.replaceChildren();
 
     if (existing) {
       existing.remove();
     }
 
-    return;
-
-  }
-
-  const resultsSlot =
-    container.querySelector(
-      '[data-feedback-poll-results-slot]'
-    );
-
-  if (resultsSlot) {
-
-    resultsSlot.innerHTML = html;
     return;
 
   }
@@ -1060,26 +1160,11 @@ function renderFeedbackModule(
       === window.siteConfig.feedback.types.poll
     ) {
 
-      body = `
-<div class="feedback-poll-layout">
-
-  <div class="feedback-poll-layout__vote">
-
-    ${renderFeedbackPoll(
-      module,
-      ownAnswer
-    )}
-
-  </div>
-
-  <div
-    class="feedback-poll-layout__results"
-    data-feedback-poll-results-slot>
-
-  </div>
-
-</div>
-`;
+      body =
+        renderFeedbackPoll(
+          module,
+          ownAnswer
+        );
 
     }
 
