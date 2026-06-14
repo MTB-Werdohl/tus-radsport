@@ -42,20 +42,6 @@ load_member_content_edit_css: true
     </label>
 
     <label class="member-edit-field">
-      Kurztext
-      <textarea id="excerpt"
-                rows="3"
-                placeholder="Kurztext"></textarea>
-    </label>
-
-    <label class="member-edit-field">
-      Inhalt
-      <textarea id="content"
-                rows="8"
-                placeholder="Inhalt"></textarea>
-    </label>
-
-    <label class="member-edit-field">
       Bild
       <input id="imageStoragePathPick"
              type="hidden">
@@ -68,6 +54,38 @@ load_member_content_edit_css: true
       </div>
       <div id="currentImage"></div>
     </label>
+
+    <label class="member-edit-field">
+      Inhalt
+      <textarea id="content"
+                rows="8"
+                placeholder="Inhalt"></textarea>
+    </label>
+
+    <div class="member-edit-poll-config">
+
+      <button
+        id="open-news-poll-config"
+        type="button"
+        class="member-edit-link-button">
+
+        Umfrage konfigurieren (optional)
+
+      </button>
+
+      <p
+        id="news-poll-config-summary"
+        class="member-edit-poll-summary"
+        hidden>
+
+      </p>
+
+    </div>
+
+    <p class="member-edit-hint">
+      Der Kurztext in der Übersicht wird beim Speichern automatisch
+      aus dem Inhalt erzeugt.
+    </p>
 
     <button id="save-news"
             type="button"
@@ -87,6 +105,9 @@ load_member_content_edit_css: true
 <script src="/assets/js/member/member-edit-utils.js"></script>
 <script src="/admin/js/media-storage-lib.js"></script>
 <script src="/admin/js/media-picker.js"></script>
+<script src="/assets/js/feedback/feedback-types.js"></script>
+<script src="/assets/js/feedback/feedback-service.js"></script>
+<script src="/admin/js/feedback-module-form.js"></script>
 <script src="/assets/js/member/member-content.js"></script>
 <script src="/assets/js/member/member-news-edit.js"></script>
 <script>

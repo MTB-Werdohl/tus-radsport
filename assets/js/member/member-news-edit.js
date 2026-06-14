@@ -6,6 +6,57 @@ const memberNewsEditParams =
 const memberNewsEditId =
   memberNewsEditParams.get('id');
 
+const memberNewsExcerptMaxLength = 200;
+
+function buildMemberNewsExcerpt(
+  content,
+  title
+) {
+
+  const plain =
+    String(content || '')
+      .replace(/```[\s\S]*?```/g, ' ')
+      .replace(/`[^`]*`/g, ' ')
+      .replace(
+        /!\[[^\]]*\]\([^)]*\)/g,
+        ' '
+      )
+      .replace(
+        /\[([^\]]*)\]\([^)]*\)/g,
+        '$1'
+      )
+      .replace(/^#+\s+/gm, '')
+      .replace(/[*_~>#-]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+  const source =
+    plain
+    || String(title || '').trim();
+
+  if (!source) {
+    return '';
+  }
+
+  if (
+    source.length
+    <= memberNewsExcerptMaxLength
+  ) {
+    return source;
+  }
+
+  return (
+    source
+      .slice(
+        0,
+        memberNewsExcerptMaxLength - 1
+      )
+      .trim()
+    + '…'
+  );
+
+}
+
 async function memberNewsAssertEditable(
   member
 ) {
@@ -92,9 +143,6 @@ async function loadMemberNewsEdit() {
   document.getElementById('title').value =
     data.title || '';
 
-  document.getElementById('excerpt').value =
-    data.excerpt || '';
-
   document.getElementById('content').value =
     data.content || '';
 
@@ -129,17 +177,17 @@ async function saveMemberNewsEdit(
 
   }
 
-  const excerpt =
-    document
-      .getElementById('excerpt')
-      .value
-      .trim();
-
   const content =
     document
       .getElementById('content')
       .value
       .trim();
+
+  const excerpt =
+    buildMemberNewsExcerpt(
+      content,
+      title
+    );
 
   const slug =
     buildMemberContentSlug(title);
@@ -180,6 +228,10 @@ async function saveMemberNewsEdit(
   }
 
   let error;
+  let savedId =
+    memberNewsEditId
+      ? parseInt(memberNewsEditId, 10)
+      : null;
 
   if (memberNewsEditId) {
 
@@ -191,10 +243,15 @@ async function saveMemberNewsEdit(
 
   } else {
 
-    ({ error } =
+    const { data: inserted, error: insertError } =
       await window.supabaseClient
         .from(window.siteConfig.tables.news)
-        .insert([payload]));
+        .insert([payload])
+        .select('id')
+        .single();
+
+    error = insertError;
+    savedId = inserted?.id;
 
   }
 
@@ -203,6 +260,24 @@ async function saveMemberNewsEdit(
     console.error(error);
 
     alert(error.message);
+
+    return;
+
+  }
+
+  const feedbackResult =
+    await saveFeedbackAdminForEntity(
+      window.siteConfig.feedback.entityTypes.news,
+      savedId,
+      { silent: true }
+    );
+
+  if (feedbackResult?.error) {
+
+    alert(
+      'Beitrag gespeichert, Umfrage fehlgeschlagen: '
+      + feedbackResult.error.message
+    );
 
     return;
 
@@ -266,6 +341,19 @@ async function initMemberNewsEditPage() {
     initMemberEditUnsavedGuard();
 
   await loadMemberNewsEdit();
+
+  initFeedbackModuleForm({
+    entityType:
+      window.siteConfig.feedback.entityTypes.news,
+    entityId:
+      memberNewsEditId
+        ? parseInt(memberNewsEditId, 10)
+        : null,
+    presentation: 'modal',
+    triggerId: 'open-news-poll-config',
+    summaryId: 'news-poll-config-summary',
+    memberMode: true
+  });
 
   document
     .getElementById('save-news')

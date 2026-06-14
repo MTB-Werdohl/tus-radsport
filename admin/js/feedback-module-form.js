@@ -1,7 +1,10 @@
 let feedbackAdminState = {
   module: null,
   entityType: null,
-  entityId: null
+  entityId: null,
+  memberMode: false,
+  modalSummaryId: null,
+  modalTriggerId: null
 };
 
 function isFeedbackAdminNewsEntity() {
@@ -56,6 +59,13 @@ function isFeedbackAdminEnabled() {
 }
 
 function getFeedbackAdminPublicVoting() {
+
+  if (
+    feedbackAdminState.memberMode
+    && isFeedbackAdminNewsEntity()
+  ) {
+    return false;
+  }
 
   if (isFeedbackAdminEventEntity()) {
     return isFeedbackAdminPublicVotingFromSichtbarkeit();
@@ -659,6 +669,8 @@ function fillFeedbackAdminForm(module) {
 
   updateFeedbackAdminPublicVotingHint();
 
+  updateFeedbackAdminModalSummary();
+
 }
 
 async function loadFeedbackAdminModule() {
@@ -945,20 +957,28 @@ function mountFeedbackAdminForm(mountId) {
   const typeHint =
     isEvent
       ? 'Termin: Ja / Vielleicht — Frage standardmäßig „Bist du dabei?“'
-      : 'News: Umfrage mit wählbaren Antworten';
+      : (
+        feedbackAdminState.memberMode
+          ? 'Internes: Umfrage mit wählbaren Antworten'
+          : 'News: Umfrage mit wählbaren Antworten'
+      );
 
-  const eventIntroHtml =
-    isEvent
+  const newsIntroHtml =
+    feedbackAdminState.memberMode
       ? `
+  <label class="admin-field admin-field--inline">
+
+    <input
+      id="feedback-admin-enabled"
+      type="checkbox"
+      class="checkbox">
+
+    Umfrage aktivieren
+
+  </label>
+
   <p class="admin-hint">
-    ${typeHint}. Die Abstimmung ist bei jedem Termin aktiv.
-  </p>
-
-  <p
-    id="feedback-admin-public-voting-hint"
-    class="admin-hint"
-    hidden>
-
+    ${typeHint}. Nur für Vereinsmitglieder sichtbar.
   </p>
 `
       : `
@@ -998,6 +1018,22 @@ function mountFeedbackAdminForm(mountId) {
   </div>
 `;
 
+  const eventIntroHtml =
+    isEvent
+      ? `
+  <p class="admin-hint">
+    ${typeHint}. Die Abstimmung ist bei jedem Termin aktiv.
+  </p>
+
+  <p
+    id="feedback-admin-public-voting-hint"
+    class="admin-hint"
+    hidden>
+
+  </p>
+`
+      : newsIntroHtml;
+
   const configHiddenClass =
     isEvent ? '' : 'hidden';
 
@@ -1010,9 +1046,26 @@ function mountFeedbackAdminForm(mountId) {
   des Termins entfernt.
 </p>
 `
-      : `
+      : (
+        feedbackAdminState.memberMode
+          ? `
+<p class="admin-hint">
+  Die Umfrage wird zusammen mit „Speichern“ am Beitrag übernommen.
+</p>
+`
+          : `
 <p class="admin-hint">
   Deaktivieren blendet das Feedback auf der Website aus. Antworten bleiben gespeichert und werden erst beim Löschen des Termins bzw. der News entfernt.
+</p>
+`
+      );
+
+  const saveHintHtml =
+    feedbackAdminState.memberMode
+      ? ''
+      : `
+<p class="admin-hint">
+  Wird zusammen mit „Speichern“ am Ende des Formulars gesichert.
 </p>
 `;
 
@@ -1124,9 +1177,7 @@ ${eventIntroHtml}
 
 ${footerHintHtml}
 
-<p class="admin-hint">
-  Wird zusammen mit „Speichern“ am Ende des Formulars gesichert.
-</p>
+${saveHintHtml}
 
 `;
 
@@ -1137,6 +1188,238 @@ ${footerHintHtml}
   if (isEvent) {
     updateFeedbackAdminPublicVotingHint();
   }
+
+  updateFeedbackAdminModalSummary();
+
+}
+
+function ensureFeedbackAdminModal() {
+
+  if (
+    document.getElementById(
+      'feedback-admin-modal'
+    )
+  ) {
+    return;
+  }
+
+  const modal =
+    document.createElement('div');
+
+  modal.id = 'feedback-admin-modal';
+  modal.className = 'member-feedback-modal';
+  modal.hidden = true;
+  modal.setAttribute('aria-hidden', 'true');
+
+  modal.innerHTML = `
+
+<div
+  class="member-feedback-modal__backdrop"
+  data-close-feedback-modal="true">
+
+</div>
+
+<div
+  class="member-feedback-modal__dialog"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="feedback-admin-modal-title">
+
+  <button
+    type="button"
+    class="member-feedback-modal__close"
+    data-close-feedback-modal="true"
+    aria-label="Schließen">
+
+    ×
+
+  </button>
+
+  <h2
+    id="feedback-admin-modal-title"
+    class="member-feedback-modal__title">
+
+    Umfrage konfigurieren
+
+  </h2>
+
+  <div id="feedback-admin-form-wrap"></div>
+
+  <div class="member-feedback-modal__actions">
+
+    <button
+      type="button"
+      id="feedback-admin-modal-done"
+      class="member-edit-btn">
+
+      Fertig
+
+    </button>
+
+  </div>
+
+</div>
+
+`;
+
+  document.body.appendChild(modal);
+
+  bindFeedbackAdminModalEvents(modal);
+
+}
+
+function bindFeedbackAdminModalEvents(modal) {
+
+  modal
+    .querySelectorAll(
+      '[data-close-feedback-modal="true"]'
+    )
+    .forEach((element) => {
+
+      element.addEventListener(
+        'click',
+        closeFeedbackAdminModal
+      );
+
+    });
+
+  document
+    .getElementById('feedback-admin-modal-done')
+    ?.addEventListener(
+      'click',
+      closeFeedbackAdminModal
+    );
+
+  document.addEventListener('keydown', (event) => {
+
+    const dialog =
+      document.getElementById(
+        'feedback-admin-modal'
+      );
+
+    if (
+      event.key === 'Escape'
+      && dialog
+      && !dialog.hidden
+    ) {
+      closeFeedbackAdminModal();
+    }
+
+  });
+
+}
+
+function openFeedbackAdminModal() {
+
+  ensureFeedbackAdminModal();
+
+  const modal =
+    document.getElementById(
+      'feedback-admin-modal'
+    );
+
+  if (!modal) {
+    return;
+  }
+
+  document.body.appendChild(modal);
+
+  modal.hidden = false;
+  modal.removeAttribute('hidden');
+  modal.setAttribute('aria-hidden', 'false');
+
+  document.body.classList.add(
+    'member-feedback-modal-open'
+  );
+
+  modal
+    .querySelector('#feedback-admin-enabled')
+    ?.focus();
+
+}
+
+function closeFeedbackAdminModal() {
+
+  const modal =
+    document.getElementById(
+      'feedback-admin-modal'
+    );
+
+  if (!modal) {
+    return;
+  }
+
+  modal.hidden = true;
+  modal.setAttribute('aria-hidden', 'true');
+
+  document.body.classList.remove(
+    'member-feedback-modal-open'
+  );
+
+  updateFeedbackAdminModalSummary();
+
+  document
+    .getElementById(
+      feedbackAdminState.modalTriggerId
+    )
+    ?.focus();
+
+}
+
+function updateFeedbackAdminModalSummary() {
+
+  const summary =
+    document.getElementById(
+      feedbackAdminState.modalSummaryId
+    );
+
+  if (!summary) {
+    return;
+  }
+
+  const enabled =
+    isFeedbackAdminEnabled();
+
+  if (!enabled) {
+
+    summary.hidden = true;
+    summary.textContent = '';
+
+    return;
+
+  }
+
+  const question =
+    document
+      .getElementById('feedback-admin-question')
+      ?.value
+      .trim()
+    || getDefaultFeedbackQuestion(
+      feedbackAdminState.entityType
+    );
+
+  summary.textContent =
+    `Umfrage: ${question}`;
+
+  summary.hidden = false;
+
+}
+
+function bindFeedbackAdminModalTrigger() {
+
+  const trigger =
+    document.getElementById(
+      feedbackAdminState.modalTriggerId
+    );
+
+  if (!trigger) {
+    return;
+  }
+
+  trigger.addEventListener(
+    'click',
+    openFeedbackAdminModal
+  );
 
 }
 
@@ -1152,16 +1435,42 @@ async function initFeedbackModuleForm(options) {
     options?.mountId
     || 'feedback-admin-form-wrap';
 
+  const presentation =
+    options?.presentation
+    || 'inline';
+
   feedbackAdminState = {
     module: null,
     entityType,
-    entityId
+    entityId,
+    memberMode:
+      options?.memberMode === true,
+    modalSummaryId:
+      options?.summaryId || null,
+    modalTriggerId:
+      options?.triggerId || null
   };
 
-  mountFeedbackAdminForm(mountId);
+  if (presentation === 'modal') {
+
+    ensureFeedbackAdminModal();
+
+    mountFeedbackAdminForm(
+      'feedback-admin-form-wrap'
+    );
+
+    bindFeedbackAdminModalTrigger();
+
+  } else {
+
+    mountFeedbackAdminForm(mountId);
+
+  }
 
   if (entityId) {
     await loadFeedbackAdminModule();
   }
+
+  updateFeedbackAdminModalSummary();
 
 }
