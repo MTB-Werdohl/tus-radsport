@@ -432,15 +432,7 @@ function ensureNewsEditModal() {
     .getElementById('news-vorstand-poll-enabled')
     ?.addEventListener('change', (event) => {
 
-      const subEnabled =
-        document.getElementById(
-          'feedback-admin-enabled'
-        );
-
-      if (subEnabled) {
-        subEnabled.checked =
-          event.target.checked;
-      }
+      syncPollEnabledControlsFromParent();
 
       if (
         typeof updateFeedbackAdminModalSummary
@@ -713,17 +705,12 @@ async function saveNewsFromVorstandModal() {
         'news-vorstand-poll-enabled'
       );
 
-    const subEnabled =
-      document.getElementById(
-        'feedback-admin-enabled'
-      );
-
     if (
       parentEnabled
-      && subEnabled
+      && typeof syncPollEnabledControlsFromParent
+        === 'function'
     ) {
-      subEnabled.checked =
-        parentEnabled.checked;
+      syncPollEnabledControlsFromParent();
     }
 
     const feedbackResult =

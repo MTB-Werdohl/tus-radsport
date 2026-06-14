@@ -53,6 +53,27 @@ function isFeedbackAdminMemberNewsMode() {
 
 }
 
+function hasVorstandPollEnabledControl() {
+
+  return !!document.getElementById(
+    'news-vorstand-poll-enabled'
+  );
+
+}
+
+function getFeedbackAdminFormRoot() {
+
+  return (
+    document.getElementById(
+      'feedback-admin-form-wrap'
+    )
+    || document.getElementById(
+      'feedback-admin-modal'
+    )
+  );
+
+}
+
 function isFeedbackAdminEnabled() {
 
   if (isFeedbackAdminEventEntity()) {
@@ -87,14 +108,85 @@ function getMemberNewsPollEnabledFromDom() {
       'feedback-admin-enabled'
     );
 
-  if (
-    enabledEl
-    && !enabledEl.hidden
-  ) {
+  if (enabledEl) {
     return enabledEl.checked === true;
   }
 
   return isMemberFeedbackPollConfigured();
+
+}
+
+function syncPollEnabledControlsFromModule(
+  module
+) {
+
+  const enabled =
+    module
+      ? module.enabled !== false
+      : false;
+
+  const enabledEl =
+    document.getElementById(
+      'feedback-admin-enabled'
+    );
+
+  if (enabledEl) {
+    enabledEl.checked = enabled;
+  }
+
+  const parentEl =
+    document.getElementById(
+      'news-vorstand-poll-enabled'
+    );
+
+  if (parentEl) {
+    parentEl.checked = enabled;
+  }
+
+}
+
+function syncPollEnabledControlsFromParent() {
+
+  const parentEl =
+    document.getElementById(
+      'news-vorstand-poll-enabled'
+    );
+
+  const enabledEl =
+    document.getElementById(
+      'feedback-admin-enabled'
+    );
+
+  if (
+    parentEl
+    && enabledEl
+  ) {
+    enabledEl.checked =
+      parentEl.checked;
+  }
+
+}
+
+function updateMemberNewsPollEnabledVisibility(
+  module
+) {
+
+  const parentWrap =
+    document.getElementById(
+      'news-vorstand-poll-enabled-wrap'
+    );
+
+  if (!parentWrap) {
+    return;
+  }
+
+  const formState =
+    readMemberNewsPollFormState();
+
+  parentWrap.hidden =
+    !module?.id
+    && !formState.valid
+    && !formState.question;
 
 }
 
@@ -125,47 +217,19 @@ function readMemberNewsPollFormState() {
 }
 
 function syncMemberNewsPollEnabledControls(
-  module
+  module,
+  options = {}
 ) {
 
-  const enabledEl =
-    document.getElementById(
-      'feedback-admin-enabled'
-    );
-
-  if (enabledEl) {
-    enabledEl.checked =
+  if (options.applyFromModule === true) {
+    syncPollEnabledControlsFromModule(
       module
-        ? module.enabled !== false
-        : false;
-  }
-
-  const parentEl =
-    document.getElementById(
-      'news-vorstand-poll-enabled'
     );
-
-  const parentWrap =
-    document.getElementById(
-      'news-vorstand-poll-enabled-wrap'
-    );
-
-  if (parentEl) {
-
-    parentEl.checked =
-      module
-        ? module.enabled !== false
-        : false;
-
   }
 
-  if (parentWrap) {
-
-    parentWrap.hidden =
-      !module?.id
-      && !readMemberNewsPollFormState().valid;
-
-  }
+  updateMemberNewsPollEnabledVisibility(
+    module
+  );
 
 }
 
@@ -231,6 +295,34 @@ function renderFeedbackAdminPollOptions(options) {
   }
 
   list.innerHTML = '';
+
+  if (isFeedbackAdminMemberNewsMode()) {
+
+    const dataOptions =
+      options?.length
+        ? options
+        : [
+          { id: '', label: '' },
+          { id: '', label: '' }
+        ];
+
+    dataOptions.forEach((option) => {
+
+      list.appendChild(
+        createFeedbackAdminOptionRow(option)
+      );
+
+    });
+
+    list.appendChild(
+      createFeedbackAdminOptionRow()
+    );
+
+    syncMemberPollOptionRows();
+
+    return;
+
+  }
 
   const rows =
     options?.length
@@ -821,10 +913,17 @@ function updateFeedbackAdminPublicVotingHint() {
 
 function readFeedbackAdminPollConfig() {
 
+  const formRoot =
+    getFeedbackAdminFormRoot();
+
   const rows =
-    document.querySelectorAll(
-      '.admin-feedback-option-row'
-    );
+    formRoot
+      ? formRoot.querySelectorAll(
+        '#feedback-admin-options .admin-feedback-option-row'
+      )
+      : document.querySelectorAll(
+        '#feedback-admin-options .admin-feedback-option-row'
+      );
 
   const options = [];
   let allowFreeText = false;
@@ -1099,7 +1198,10 @@ function fillFeedbackAdminForm(module) {
     toggleFeedbackAdminPollFields();
 
     if (isFeedbackAdminMemberNewsMode()) {
-      syncMemberNewsPollEnabledControls(null);
+      syncMemberNewsPollEnabledControls(
+        null,
+        { applyFromModule: true }
+      );
     }
 
     return;
@@ -1116,7 +1218,8 @@ function fillFeedbackAdminForm(module) {
 
   if (isFeedbackAdminMemberNewsMode()) {
     syncMemberNewsPollEnabledControls(
-      module
+      module,
+      { applyFromModule: true }
     );
   }
 
@@ -1488,13 +1591,16 @@ function bindFeedbackAdminEvents() {
         'change',
         () => {
 
-          syncMemberNewsPollEnabledControls(
-            feedbackAdminState.module
-          );
-
           updateFeedbackAdminModalSummary();
 
         }
+      );
+
+    document
+      .getElementById('feedback-admin-options')
+      ?.addEventListener(
+        'input',
+        updateFeedbackAdminModalSummary
       );
 
   }
@@ -1530,7 +1636,20 @@ function mountFeedbackAdminForm(mountId) {
 
   const newsIntroHtml =
     feedbackAdminState.memberMode
-      ? `
+      ? (
+        hasVorstandPollEnabledControl()
+          ? `
+  <input
+    id="feedback-admin-enabled"
+    type="checkbox"
+    class="checkbox hidden"
+    hidden>
+
+  <p class="admin-hint">
+    ${typeHint}. „Umfrage aktiv“ stellst du im Bearbeiten-Dialog ein. Ausgeschaltet bleibt die Auswertung erhalten.
+  </p>
+`
+          : `
   <label class="admin-field admin-field--inline">
 
     <input
@@ -1546,6 +1665,7 @@ function mountFeedbackAdminForm(mountId) {
     ${typeHint}. Ausgeschaltet: keine Abstimmung mehr, bestehende Auswertung bleibt erhalten.
   </p>
 `
+      )
       : `
   <label class="admin-field admin-field--inline">
 
@@ -1928,7 +2048,7 @@ function bindFeedbackAdminModalEvents(modal) {
 
 }
 
-function openFeedbackAdminModal() {
+async function openFeedbackAdminModal() {
 
   ensureFeedbackAdminModal();
 
@@ -1941,17 +2061,17 @@ function openFeedbackAdminModal() {
     return;
   }
 
-  if (feedbackAdminState.module) {
+  if (feedbackAdminState.entityId) {
 
-    fillFeedbackAdminForm(
-      feedbackAdminState.module
-    );
+    await loadFeedbackAdminModule();
 
-  } else if (feedbackAdminState.entityId) {
+  } else {
 
-    void loadFeedbackAdminModule();
+    fillFeedbackAdminForm(null);
 
   }
+
+  syncPollEnabledControlsFromParent();
 
   document.body.appendChild(modal);
 
@@ -2014,7 +2134,29 @@ function closeFeedbackAdminModal() {
       enabledEl.checked = true;
     }
 
+    const parentEl =
+      document.getElementById(
+        'news-vorstand-poll-enabled'
+      );
+
+    const parentWrap =
+      document.getElementById(
+        'news-vorstand-poll-enabled-wrap'
+      );
+
+    if (parentEl) {
+      parentEl.checked = true;
+    }
+
+    if (parentWrap) {
+      parentWrap.hidden = false;
+    }
+
   }
+
+  updateMemberNewsPollEnabledVisibility(
+    feedbackAdminState.module
+  );
 
   document
     .getElementById(
@@ -2064,7 +2206,7 @@ function updateFeedbackAdminModalSummary() {
     summary.hidden = true;
     summary.textContent = '';
 
-    syncMemberNewsPollEnabledControls(
+    updateMemberNewsPollEnabledVisibility(
       module
     );
 
@@ -2080,12 +2222,24 @@ function updateFeedbackAdminModalSummary() {
       ? ''
       : ' (inaktiv)';
 
+  const configError =
+    isFeedbackAdminMemberNewsMode()
+      ? validateMemberFeedbackPollConfig(
+        formState.config
+      )
+      : null;
+
+  const validationHint =
+    configError
+      ? ` — ${configError}`
+      : '';
+
   summary.textContent =
-    `Umfrage${statusLabel}: ${question}`;
+    `Umfrage${statusLabel}: ${question}${validationHint}`;
 
   summary.hidden = false;
 
-  syncMemberNewsPollEnabledControls(
+  updateMemberNewsPollEnabledVisibility(
     module
   );
 
