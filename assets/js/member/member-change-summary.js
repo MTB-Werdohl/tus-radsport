@@ -206,7 +206,7 @@ function waitForSiteContentInit() {
       { once: true }
     );
 
-    setTimeout(resolve, 4000);
+    setTimeout(resolve, 12000);
 
   });
 
@@ -252,13 +252,7 @@ function waitForSiteOverlaySequence() {
 
 function shouldSkipMemberChangeSummary() {
 
-  const path =
-    window.location.pathname || '';
-
-  return (
-    path.startsWith('/admin')
-    || path.includes('/admin/')
-  );
+  return false;
 
 }
 
@@ -268,7 +262,6 @@ async function runMemberChangeSummaryFlow(
 
   if (
     !member?.id
-    || shouldSkipMemberChangeSummary()
     || typeof isClubMember !== 'function'
     || !isClubMember(member)
   ) {
@@ -281,27 +274,18 @@ async function runMemberChangeSummaryFlow(
 
   }
 
+  if (
+    typeof showPushWidgetForClubMember
+      === 'function'
+  ) {
+    showPushWidgetForClubMember({
+      collapsed: true
+    });
+  }
+
   await waitForDocumentReady();
   await waitForSiteContentInit();
   await waitForSiteOverlaySequence();
-
-  if (
-    !member.last_change_summary_seen_at
-  ) {
-
-    try {
-      await touchMemberChangeSummarySeen();
-    } catch (error) {
-      console.error(error);
-    }
-
-    if (typeof hidePushWidget === 'function') {
-      hidePushWidget();
-    }
-
-    return;
-
-  }
 
   let summary;
 
@@ -311,22 +295,20 @@ async function runMemberChangeSummaryFlow(
   } catch (error) {
     console.error(error);
 
-    if (typeof hidePushWidget === 'function') {
-      hidePushWidget();
-    }
+    if (
+      typeof showPushWidgetForClubMember
+        === 'function'
+    ) {
+      showPushWidgetForClubMember({
+        collapsed: true
+      });
 
-    return;
-
-  }
-
-  if (
-    !hasMemberChangeSummaryItems(
-      summary
-    )
-  ) {
-
-    if (typeof hidePushWidget === 'function') {
-      hidePushWidget();
+      if (
+        typeof refreshPushWidgetContent
+          === 'function'
+      ) {
+        refreshPushWidgetContent([]);
+      }
     }
 
     return;
@@ -338,11 +320,38 @@ async function runMemberChangeSummaryFlow(
       summary
     );
 
+  const hasItems =
+    hasMemberChangeSummaryItems(
+      summary
+    );
+
   if (
     typeof showPushWidgetChangeSummary
       === 'function'
   ) {
-    showPushWidgetChangeSummary(lines);
+
+    if (hasItems) {
+
+      showPushWidgetChangeSummary(
+        lines,
+        {
+          open: true,
+          unread: true
+        }
+      );
+
+    } else {
+
+      showPushWidgetChangeSummary(
+        [],
+        {
+          open: false,
+          unread: false
+        }
+      );
+
+    }
+
   }
 
 }
@@ -394,12 +403,44 @@ document.addEventListener(
         ? getCurrentMember()
         : null;
 
+    if (!member?.id) {
+      return;
+    }
+
+    const widget =
+      document.getElementById('push-widget');
+
     if (
       memberChangeSummaryInitialized
-      || !member?.id
+      && widget
+      && !widget.classList.contains('hidden')
     ) {
       return;
     }
+
+    memberChangeSummaryInitialized = false;
+    memberChangeSummaryPending = false;
+
+    queueMemberChangeSummary(member);
+
+  }
+);
+
+window.addEventListener(
+  'load',
+  () => {
+
+    if (
+      memberChangeSummaryInitialized
+      || memberChangeSummaryPending
+    ) {
+      return;
+    }
+
+    const member =
+      typeof getCurrentMember === 'function'
+        ? getCurrentMember()
+        : null;
 
     queueMemberChangeSummary(member);
 

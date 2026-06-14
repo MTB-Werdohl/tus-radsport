@@ -162,7 +162,12 @@ begin
 
   end if;
 
-  if v_member.last_change_summary_seen_at is null then
+  v_since := coalesce(
+    v_member.last_change_summary_seen_at,
+    v_member.last_login_at
+  );
+
+  if v_since is null then
 
     return jsonb_build_object(
       'activities_own', 0,
@@ -174,9 +179,6 @@ begin
     );
 
   end if;
-
-  v_since :=
-    v_member.last_change_summary_seen_at;
 
   select count(*)::integer
   into v_own
@@ -269,7 +271,7 @@ end;
 $$;
 
 comment on function public.get_member_change_summary() is
-  'Zähler neuer sichtbarer Inhalte seit last_change_summary_seen_at — nur Mitglied/Vorstand.';
+  'Zähler neuer sichtbarer Inhalte seit last_change_summary_seen_at bzw. last_login_at — nur Mitglied/Vorstand.';
 
 revoke all on function public.get_member_change_summary() from public;
 
