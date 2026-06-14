@@ -273,7 +273,8 @@ async function fetchMemberContentSubmissions(
       window.supabaseClient
         .from(termineTable)
         .select(
-          'id, title, slug, sichtbarkeit, date, created_at, updated_at'
+          `id, title, slug, sichtbarkeit, date, endDate, recurring, created_at, updated_at,
+          termin_recaps ( id, status )`
         )
         .eq('created_by', memberId)
         .order('created_at', { ascending: false })
@@ -305,6 +306,8 @@ function renderMemberContentPanelShell() {
   <p class="member-content-lead">
     Reiche Termine oder News als Entwurf ein.
     Der Vorstand prüft und gibt sie frei.
+    Nach freigegebenen, vergangenen Terminen kannst du
+    einen Rückblick schreiben.
   </p>
 
   <div class="member-content-cards">
@@ -361,10 +364,12 @@ function renderMemberContentListItem(
   kind
 ) {
 
+  if (kind === 'termin') {
+    return renderMemberTerminContentListItem(item);
+  }
+
   const editUrl =
-    kind === 'news'
-      ? `/profil/news_edit/?id=${item.id}`
-      : `/profil/termin_edit/?id=${item.id}`;
+    `/profil/news_edit/?id=${item.id}`;
 
   const canEdit =
     item.sichtbarkeit
@@ -372,11 +377,6 @@ function renderMemberContentListItem(
       window.siteConfig?.visibility?.draft
       || 'draft'
     );
-
-  const dateHint =
-    kind === 'termin' && item.date
-      ? `<span class="member-content-item-date">${escapeMemberHtml(formatMemberContentDate(item.date))}</span>`
-      : '';
 
   const editLink =
     canEdit
@@ -400,8 +400,6 @@ function renderMemberContentListItem(
       ${escapeMemberHtml(item.title || 'Ohne Titel')}
     </strong>
 
-    ${dateHint}
-
   </div>
 
   <div class="member-content-item-meta">
@@ -411,6 +409,83 @@ function renderMemberContentListItem(
     </span>
 
     ${editLink}
+
+  </div>
+
+</li>
+  `;
+
+}
+
+function renderMemberTerminContentListItem(
+  item
+) {
+
+  const editUrl =
+    `/profil/termin_edit/?id=${item.id}`;
+
+  const canEditTermin =
+    memberTerminIsDraft(item);
+
+  const dateHint =
+    item.date
+      ? `<span class="member-content-item-date">${escapeMemberHtml(formatMemberContentDate(item.date))}</span>`
+      : '';
+
+  const terminEditLink =
+    canEditTermin
+      ? `
+<a
+  class="member-content-item-edit"
+  href="${editUrl}">
+
+  Bearbeiten
+
+</a>
+      `.trim()
+      : '';
+
+  const recapMeta =
+    typeof renderMemberTerminRecapMeta
+      === 'function'
+      ? renderMemberTerminRecapMeta(item)
+      : { statusHtml: '', actionHtml: '' };
+
+  const terminStatusHtml =
+    canEditTermin
+      ? `
+<span class="member-content-status ${memberContentStatusClass(item.sichtbarkeit)}">
+  ${escapeMemberHtml(memberContentStatusLabel(item.sichtbarkeit))}
+</span>
+      `.trim()
+      : `
+<span class="member-content-status member-content-status--approved">
+  Freigegeben
+</span>
+      `.trim();
+
+  return `
+<li class="member-content-item member-content-item--termin">
+
+  <div class="member-content-item-main">
+
+    <strong class="member-content-item-title">
+      ${escapeMemberHtml(item.title || 'Ohne Titel')}
+    </strong>
+
+    ${dateHint}
+
+  </div>
+
+  <div class="member-content-item-meta member-content-item-meta--stacked">
+
+    ${terminStatusHtml}
+
+    ${recapMeta.statusHtml}
+
+    ${terminEditLink}
+
+    ${recapMeta.actionHtml}
 
   </div>
 

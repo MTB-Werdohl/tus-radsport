@@ -22,10 +22,10 @@ load_member_content_edit_css: true
 
     </div>
 
-    <a href="/profil/?tab=rueckblicke"
+    <a href="/profil/?tab=content"
        class="back-link member-logout-btn">
 
-      ← Rückblicke
+      ← Content
 
     </a>
 

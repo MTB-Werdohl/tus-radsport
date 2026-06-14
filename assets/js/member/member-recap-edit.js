@@ -44,10 +44,10 @@ function showMemberRecapEditError(
 
   </div>
 
-  <a href="/profil/?tab=rueckblicke"
+  <a href="/profil/?tab=content"
      class="back-link member-logout-btn">
 
-    ← Rückblicke
+    ← Content
 
   </a>
 
@@ -316,7 +316,7 @@ async function handleMemberSaveRecapDraft() {
     }
 
     window.location.href =
-      '/profil/?tab=rueckblicke';
+      '/profil/?tab=content';
 
   } catch (error) {
 

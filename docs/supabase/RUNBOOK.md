@@ -66,7 +66,7 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Termin-Rückblicke Phase 1 Frontend:** Nach SQL Phase 0 — Admin `/admin/termine_edit.html` (Rückblick-Abschnitt), Entwürfe-Liste, Terminseite (`/kalender/{slug}/`), **Erlebtes** `/erlebtes/` (Alt: `/historie/` → Redirect). JS: `assets/js/recap/*`, `assets/js/erlebtes/*`. Checkliste: [`SMOKE-TEST-RECAPS.md`](../SMOKE-TEST-RECAPS.md).
 
-**Termin-Rückblicke Phase 2 Frontend (Mitglieder):** Profil-Tab `/profil/?tab=rueckblicke`, Bearbeitung `/profil/recap_edit/?termin_id=…`. JS: `assets/js/member/member-recaps.js`, `member-recap-edit.js`. Mitglieder speichern nur Entwürfe; Vorstand veröffentlicht über Admin (Entwürfe oder Termin bearbeiten).
+**Termin-Rückblicke Phase 2 Frontend (Mitglieder):** Content-Tab `/profil/?tab=content` (Rückblick-Aktionen an freigegebenen Terminen), Bearbeitung `/profil/recap_edit/?termin_id=…`. JS: `assets/js/member/member-content.js`, `member-recaps.js`, `member-recap-edit.js`. Alt-Tab `?tab=rueckblicke` → Content.
 
 **Einwilligung Widerruf:** [`supabase-member-consent-revoke.sql`](../supabase-member-consent-revoke.sql) — Spalten `kontakt_widerrufen_am`, `bilder_widerrufen_am` für dokumentierten Widerruf (Admin + Profil-Anzeige).
 

@@ -662,6 +662,16 @@ a:hover {
   color: #9be7a0;
 }
 
+.member-content-status--recap-pending {
+  background: rgba(144, 202, 249, 0.16);
+  color: #b3e5fc;
+}
+
+.member-content-item-meta--stacked {
+  justify-content: flex-end;
+  max-width: 100%;
+}
+
 .member-content-item-edit {
   font-size: 0.88rem;
   font-weight: 600;

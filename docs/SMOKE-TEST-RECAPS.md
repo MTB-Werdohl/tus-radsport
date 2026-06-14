@@ -30,8 +30,9 @@ Kurz-Checkliste vor Pilotbetrieb. SQL Phase 0 muss deployt sein.
 
 ## Mitglieder (Phase 2, Stichprobe)
 
-- [ ] `/profil/?tab=rueckblicke` — Entwurf anlegen, Vorstand veröffentlicht
-- [ ] Veröffentlichter Rückblick erscheint auf Erlebtes (wenn Termin `public`)
+- [ ] `/profil/?tab=content` — freigegebener vergangener Termin zeigt **Rückblick schreiben**
+- [ ] Entwurf speichern → Status **Rückblick in Bearbeitung** + **Rückblick bearbeiten**
+- [ ] Vorstand veröffentlicht → **Rückblick veröffentlicht** + **Ansehen**
 
 ## Berechtigungen (Stichprobe)
 
