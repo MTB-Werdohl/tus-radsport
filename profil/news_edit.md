@@ -64,14 +64,18 @@ load_member_content_edit_css: true
 
     <div class="member-edit-poll-config">
 
-      <button
-        id="open-news-poll-config"
-        type="button"
-        class="member-edit-link-button">
+      <div class="member-edit-media-actions">
 
-        Umfrage konfigurieren (optional)
+        <button
+          id="open-news-poll-config"
+          type="button"
+          class="member-edit-btn member-edit-btn--secondary">
 
-      </button>
+          Umfrage hinzufügen
+
+        </button>
+
+      </div>
 
       <p
         id="news-poll-config-summary"

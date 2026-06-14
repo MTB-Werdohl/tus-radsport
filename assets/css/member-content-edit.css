@@ -714,3 +714,17 @@ body.member-feedback-modal-open {
   font-size: 0.8125rem;
   color: rgba(0, 0, 0, 0.62);
 }
+
+.member-feedback-modal .admin-feedback-poll-multiple {
+  margin-top: 14px;
+}
+
+.member-feedback-modal .feedback-option-freetext-wrap {
+  margin: 0;
+  font-weight: 600;
+}
+
+.member-feedback-modal .feedback-option-freetext-wrap input {
+  width: auto;
+  margin-top: 0;
+}

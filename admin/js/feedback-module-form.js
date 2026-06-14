@@ -44,16 +44,50 @@ function isFeedbackAdminPublicVotingFromSichtbarkeit() {
 
 }
 
+function isFeedbackAdminMemberNewsMode() {
+
+  return (
+    feedbackAdminState.memberMode
+    && isFeedbackAdminNewsEntity()
+  );
+
+}
+
 function isFeedbackAdminEnabled() {
 
   if (isFeedbackAdminEventEntity()) {
     return true;
   }
 
+  if (isFeedbackAdminMemberNewsMode()) {
+    return isMemberFeedbackPollConfigured();
+  }
+
   return (
     document.getElementById(
       'feedback-admin-enabled'
     )?.checked === true
+  );
+
+}
+
+function isMemberFeedbackPollConfigured() {
+
+  const question =
+    document
+      .getElementById('feedback-admin-question')
+      ?.value
+      .trim();
+
+  if (!question) {
+    return false;
+  }
+
+  const config =
+    readFeedbackAdminPollConfig();
+
+  return !validateMemberFeedbackPollConfig(
+    config
   );
 
 }
@@ -112,6 +146,131 @@ function renderFeedbackAdminPollOptions(options) {
     );
 
   });
+
+  syncMemberPollOptionRows();
+
+}
+
+function syncMemberPollOptionRows() {
+
+  if (!isFeedbackAdminMemberNewsMode()) {
+    return;
+  }
+
+  const rows =
+    document.querySelectorAll(
+      '#feedback-admin-options .admin-feedback-option-row'
+    );
+
+  rows.forEach((row, index) => {
+
+    const isLast =
+      index === rows.length - 1;
+
+    const freetextWrap =
+      row.querySelector(
+        '.feedback-option-freetext-wrap'
+      );
+
+    freetextWrap?.classList.toggle(
+      'hidden',
+      !isLast
+    );
+
+    if (!isLast) {
+
+      const freetextCheckbox =
+        row.querySelector(
+          '.feedback-option-freetext'
+        );
+
+      if (freetextCheckbox) {
+        freetextCheckbox.checked = false;
+      }
+
+      applyMemberPollOptionFreetextState(
+        row,
+        false
+      );
+
+    }
+
+  });
+
+  const lastRow =
+    rows[rows.length - 1];
+
+  if (lastRow) {
+
+    const freetextCheckbox =
+      lastRow.querySelector(
+        '.feedback-option-freetext'
+      );
+
+    applyMemberPollOptionFreetextState(
+      lastRow,
+      freetextCheckbox?.checked === true
+    );
+
+  }
+
+}
+
+function applyMemberPollOptionFreetextState(
+  row,
+  isFreeText
+) {
+
+  const labelInput =
+    row.querySelector('.feedback-option-label');
+
+  if (!labelInput) {
+    return;
+  }
+
+  if (isFreeText) {
+
+    labelInput.value = '';
+    labelInput.placeholder = '';
+    labelInput.disabled = true;
+
+  } else {
+
+    labelInput.disabled = false;
+
+    if (!labelInput.placeholder) {
+      labelInput.placeholder =
+        'z. B. Waldtour, gemütlich';
+    }
+
+  }
+
+}
+
+function bindMemberPollOptionFreetextToggle(
+  row
+) {
+
+  const freetextCheckbox =
+    row.querySelector(
+      '.feedback-option-freetext'
+    );
+
+  if (!freetextCheckbox) {
+    return;
+  }
+
+  freetextCheckbox.addEventListener(
+    'change',
+    () => {
+
+      applyMemberPollOptionFreetextState(
+        row,
+        freetextCheckbox.checked === true
+      );
+
+    }
+  );
 
 }
 
@@ -229,6 +388,95 @@ function createFeedbackAdminOptionRow(option = {}) {
 
   row.className =
     'admin-feedback-option-row';
+
+  const isMemberNews =
+    isFeedbackAdminMemberNewsMode();
+
+  if (isMemberNews) {
+
+    row.innerHTML = `
+
+<div class="admin-feedback-option-main">
+
+  <label>
+    Antwort
+    <input
+      type="text"
+      class="feedback-option-label"
+      value="${escapeAdminHtml(option.label || '')}"
+      placeholder="z. B. Waldtour, gemütlich">
+  </label>
+
+  <div class="admin-feedback-option-actions">
+
+    <label
+      class="admin-field admin-field--inline feedback-option-freetext-wrap hidden">
+
+      <input
+        type="checkbox"
+        class="feedback-option-freetext">
+
+      Als Freitext-Option
+
+    </label>
+
+    <button
+      type="button"
+      class="feedback-option-remove secondary-button">
+
+      Entfernen
+
+    </button>
+
+  </div>
+
+</div>
+
+<input
+  type="hidden"
+  class="feedback-option-id"
+  value="${escapeAdminHtml(option.id || '')}">
+
+`;
+
+    const labelInput =
+      row.querySelector('.feedback-option-label');
+
+    labelInput?.addEventListener('blur', () => {
+
+      syncFeedbackOptionIdFromLabel(row);
+
+    });
+
+    bindMemberPollOptionFreetextToggle(row);
+
+    row
+      .querySelector('.feedback-option-remove')
+      ?.addEventListener('click', () => {
+
+        row.remove();
+
+        const list =
+          document.getElementById(
+            'feedback-admin-options'
+          );
+
+        if (
+          list
+          && !list.children.length
+        ) {
+          list.appendChild(
+            createFeedbackAdminOptionRow()
+          );
+        }
+
+        syncMemberPollOptionRows();
+
+      });
+
+    return row;
+
+  }
 
   const showIdAdvanced =
     isFeedbackOptionIdCustom(
@@ -379,10 +627,18 @@ function toggleFeedbackAdminPollFields() {
       'feedback-admin-config'
     );
 
-  configWrap?.classList.toggle(
-    'hidden',
-    !enabled
-  );
+  if (isFeedbackAdminMemberNewsMode()) {
+
+    configWrap?.classList.remove('hidden');
+
+  } else {
+
+    configWrap?.classList.toggle(
+      'hidden',
+      !enabled
+    );
+
+  }
 
   const pollWrap =
     document.getElementById(
@@ -391,8 +647,11 @@ function toggleFeedbackAdminPollFields() {
 
   pollWrap?.classList.toggle(
     'hidden',
-    !enabled
-    || !isFeedbackAdminNewsEntity()
+    !isFeedbackAdminMemberNewsMode()
+    && (
+      !enabled
+      || !isFeedbackAdminNewsEntity()
+    )
   );
 
   const publicVotingWrap =
@@ -470,8 +729,26 @@ function readFeedbackAdminPollConfig() {
     );
 
   const options = [];
+  let allowFreeText = false;
 
-  rows.forEach((row) => {
+  rows.forEach((row, index) => {
+
+    const isLast =
+      index === rows.length - 1;
+
+    const freetextCheckbox =
+      row.querySelector(
+        '.feedback-option-freetext'
+      );
+
+    if (
+      isFeedbackAdminMemberNewsMode()
+      && isLast
+      && freetextCheckbox?.checked === true
+    ) {
+      allowFreeText = true;
+      return;
+    }
 
     syncFeedbackOptionIdFromLabel(row);
 
@@ -512,24 +789,80 @@ function readFeedbackAdminPollConfig() {
         'feedback-admin-poll-multiple'
       )?.checked === true;
 
-    config.allowFreeText =
-      document.getElementById(
-        'feedback-admin-poll-freetext'
-      )?.checked === true;
+    if (isFeedbackAdminMemberNewsMode()) {
 
-    const freeTextLabel =
-      document.getElementById(
-        'feedback-admin-poll-freetext-label'
-      )?.value
-        .trim();
+      config.allowFreeText = allowFreeText;
 
-    if (freeTextLabel) {
-      config.freeTextLabel = freeTextLabel;
+      if (allowFreeText) {
+        config.freeTextLabel = 'Freitext';
+      }
+
+    } else {
+
+      config.allowFreeText =
+        document.getElementById(
+          'feedback-admin-poll-freetext'
+        )?.checked === true;
+
+      const freeTextLabel =
+        document.getElementById(
+          'feedback-admin-poll-freetext-label'
+        )?.value
+          .trim();
+
+      if (freeTextLabel) {
+        config.freeTextLabel = freeTextLabel;
+      }
+
     }
 
   }
 
   return config;
+
+}
+
+function validateMemberFeedbackPollConfig(
+  config
+) {
+
+  const normalized =
+    normalizeFeedbackPollConfig(config);
+
+  if (
+    normalized.allowFreeText
+    && normalized.options.length < 1
+  ) {
+    return 'Mindestens eine Antwortoption angeben.';
+  }
+
+  if (
+    !normalized.allowFreeText
+    && normalized.options.length < 2
+  ) {
+    return 'Mindestens zwei Antwortoptionen angeben.';
+  }
+
+  const ids =
+    new Set();
+
+  for (const option of normalized.options) {
+
+    if (
+      !/^[a-z0-9_-]+$/.test(option.id)
+    ) {
+      return `Option-ID „${option.id}“ ungültig (nur a-z, 0-9, _, -).`;
+    }
+
+    if (ids.has(option.id)) {
+      return `Option-ID „${option.id}“ doppelt.`;
+    }
+
+    ids.add(option.id);
+
+  }
+
+  return null;
 
 }
 
@@ -543,6 +876,44 @@ function fillFeedbackAdminPollSettings(config) {
       'feedback-admin-poll-multiple'
     );
 
+  if (multipleEl) {
+    multipleEl.checked =
+      normalized.multiple === true;
+  }
+
+  if (isFeedbackAdminMemberNewsMode()) {
+
+    syncMemberPollOptionRows();
+
+    if (!normalized.allowFreeText) {
+      return;
+    }
+
+    const rows =
+      document.querySelectorAll(
+        '#feedback-admin-options .admin-feedback-option-row'
+      );
+
+    const lastRow =
+      rows[rows.length - 1];
+
+    const freetextCheckbox =
+      lastRow?.querySelector(
+        '.feedback-option-freetext'
+      );
+
+    if (freetextCheckbox) {
+      freetextCheckbox.checked = true;
+      applyMemberPollOptionFreetextState(
+        lastRow,
+        true
+      );
+    }
+
+    return;
+
+  }
+
   const freeTextEl =
     document.getElementById(
       'feedback-admin-poll-freetext'
@@ -552,11 +923,6 @@ function fillFeedbackAdminPollSettings(config) {
     document.getElementById(
       'feedback-admin-poll-freetext-label'
     );
-
-  if (multipleEl) {
-    multipleEl.checked =
-      normalized.multiple === true;
-  }
 
   if (freeTextEl) {
     freeTextEl.checked =
@@ -606,15 +972,20 @@ function fillFeedbackAdminForm(module) {
 
   if (!module) {
 
-    if (enabled) {
+    if (
+      enabled
+      && !isFeedbackAdminMemberNewsMode()
+    ) {
       enabled.checked = false;
     }
 
     typeInput.value = forcedType;
     questionInput.value =
-      getDefaultFeedbackQuestion(
-        feedbackAdminState.entityType
-      );
+      isFeedbackAdminMemberNewsMode()
+        ? ''
+        : getDefaultFeedbackQuestion(
+          feedbackAdminState.entityType
+        );
 
     const publicVotingInput =
       document.getElementById(
@@ -632,7 +1003,10 @@ function fillFeedbackAdminForm(module) {
 
   }
 
-  if (enabled) {
+  if (
+    enabled
+    && !isFeedbackAdminMemberNewsMode()
+  ) {
     enabled.checked =
       module.enabled !== false;
   }
@@ -711,6 +1085,7 @@ async function saveFeedbackAdminForEntity(
   if (
     !isFeedbackAdminEventEntity()
     && !enabledEl
+    && !feedbackAdminState.memberMode
   ) {
     return { ok: true };
   }
@@ -844,7 +1219,13 @@ async function saveFeedbackAdminForEntity(
       readFeedbackAdminPollConfig();
 
     const configError =
-      validateFeedbackPollConfig(config);
+      isFeedbackAdminMemberNewsMode()
+        ? validateMemberFeedbackPollConfig(
+          config
+        )
+        : validateFeedbackPollConfig(
+          config
+        );
 
     if (configError) {
 
@@ -932,7 +1313,20 @@ function bindFeedbackAdminEvents() {
           createFeedbackAdminOptionRow()
         );
 
+      syncMemberPollOptionRows();
+
     });
+
+  if (isFeedbackAdminMemberNewsMode()) {
+
+    document
+      .getElementById('feedback-admin-question')
+      ?.addEventListener(
+        'input',
+        updateFeedbackAdminModalSummary
+      );
+
+  }
 
 }
 
@@ -966,19 +1360,14 @@ function mountFeedbackAdminForm(mountId) {
   const newsIntroHtml =
     feedbackAdminState.memberMode
       ? `
-  <label class="admin-field admin-field--inline">
-
-    <input
-      id="feedback-admin-enabled"
-      type="checkbox"
-      class="checkbox">
-
-    Umfrage aktivieren
-
-  </label>
+  <input
+    id="feedback-admin-enabled"
+    type="checkbox"
+    class="checkbox hidden"
+    hidden>
 
   <p class="admin-hint">
-    ${typeHint}. Nur für Vereinsmitglieder sichtbar.
+    ${typeHint}. Wird beim Speichern des Beitrags übernommen.
   </p>
 `
       : `
@@ -1035,74 +1424,63 @@ function mountFeedbackAdminForm(mountId) {
       : newsIntroHtml;
 
   const configHiddenClass =
-    isEvent ? '' : 'hidden';
-
-  const footerHintHtml =
     isEvent
-      ? `
-<p class="admin-hint">
-  Öffentliche Termine: externe Abstimmung folgt automatisch der Sichtbarkeit
-  „Öffentlich“. Antworten bleiben gespeichert und werden erst beim Löschen
-  des Termins entfernt.
-</p>
-`
+      ? ''
       : (
         feedbackAdminState.memberMode
-          ? `
-<p class="admin-hint">
-  Die Umfrage wird zusammen mit „Speichern“ am Beitrag übernommen.
-</p>
-`
-          : `
-<p class="admin-hint">
-  Deaktivieren blendet das Feedback auf der Website aus. Antworten bleiben gespeichert und werden erst beim Löschen des Termins bzw. der News entfernt.
-</p>
-`
+          ? ''
+          : 'hidden'
       );
 
-  const saveHintHtml =
-    feedbackAdminState.memberMode
-      ? ''
-      : `
-<p class="admin-hint">
-  Wird zusammen mit „Speichern“ am Ende des Formulars gesichert.
-</p>
-`;
-
-  mount.innerHTML = `
-
-<div class="admin-feedback-checkboxes">
-
-${eventIntroHtml}
-
-</div>
-
-<div
-  id="feedback-admin-config"
-  class="${configHiddenClass} admin-feedback-config">
-
-  <input
-    id="feedback-admin-type"
-    type="hidden"
-    value="${forcedType}">
-
-  <label class="admin-field">
-    Frage
-    <input
-      id="feedback-admin-question"
-      type="text"
-      value="${escapeAdminHtml(
-        getDefaultFeedbackQuestion(
-          feedbackAdminState.entityType
-        )
-      )}"
-      placeholder="${
-        isEvent
-          ? 'Bist du dabei?'
+  const questionPlaceholder =
+    isEvent
+      ? 'Bist du dabei?'
+      : (
+        feedbackAdminState.memberMode
+          ? 'z. B. Was gefällt dir?'
           : 'z. B. Welches Trikot-Design gefällt dir?'
-      }">
-  </label>
+      );
 
+  const pollWrapHtml =
+    isFeedbackAdminMemberNewsMode()
+      ? `
+  <div
+    id="feedback-admin-poll-wrap"
+    class="${isNews ? '' : 'hidden'}">
+
+    <p class="admin-hint">
+      Antwortoptionen für die Umfrage.
+    </p>
+
+    <div
+      id="feedback-admin-options"
+      class="admin-feedback-options">
+
+    </div>
+
+    <button
+      id="feedback-admin-add-option"
+      type="button"
+      class="secondary-button">
+
+      Option hinzufügen
+
+    </button>
+
+    <label class="admin-field admin-field--inline admin-feedback-poll-multiple">
+
+      <input
+        id="feedback-admin-poll-multiple"
+        type="checkbox"
+        class="checkbox">
+
+      Mehrfachauswahl erlauben
+
+    </label>
+
+  </div>
+`
+      : `
   <div
     id="feedback-admin-poll-wrap"
     class="${isNews ? '' : 'hidden'}">
@@ -1172,6 +1550,69 @@ ${eventIntroHtml}
     </button>
 
   </div>
+`;
+
+  const footerHintHtml =
+    isEvent
+      ? `
+<p class="admin-hint">
+  Öffentliche Termine: externe Abstimmung folgt automatisch der Sichtbarkeit
+  „Öffentlich“. Antworten bleiben gespeichert und werden erst beim Löschen
+  des Termins entfernt.
+</p>
+`
+      : (
+        feedbackAdminState.memberMode
+          ? ''
+          : `
+<p class="admin-hint">
+  Deaktivieren blendet das Feedback auf der Website aus. Antworten bleiben gespeichert und werden erst beim Löschen des Termins bzw. der News entfernt.
+</p>
+`
+      );
+
+  const saveHintHtml =
+    feedbackAdminState.memberMode
+      ? ''
+      : `
+<p class="admin-hint">
+  Wird zusammen mit „Speichern“ am Ende des Formulars gesichert.
+</p>
+`;
+
+  mount.innerHTML = `
+
+<div class="admin-feedback-checkboxes">
+
+${eventIntroHtml}
+
+</div>
+
+<div
+  id="feedback-admin-config"
+  class="${configHiddenClass} admin-feedback-config">
+
+  <input
+    id="feedback-admin-type"
+    type="hidden"
+    value="${forcedType}">
+
+  <label class="admin-field">
+    Frage
+    <input
+      id="feedback-admin-question"
+      type="text"
+      value="${escapeAdminHtml(
+        feedbackAdminState.memberMode
+          ? ''
+          : getDefaultFeedbackQuestion(
+            feedbackAdminState.entityType
+          )
+      )}"
+      placeholder="${questionPlaceholder}">
+  </label>
+
+  ${pollWrapHtml}
 
 </div>
 
@@ -1332,9 +1773,19 @@ function openFeedbackAdminModal() {
     'member-feedback-modal-open'
   );
 
-  modal
-    .querySelector('#feedback-admin-enabled')
-    ?.focus();
+  if (isFeedbackAdminMemberNewsMode()) {
+
+    modal
+      .querySelector('#feedback-admin-question')
+      ?.focus();
+
+  } else {
+
+    modal
+      .querySelector('#feedback-admin-enabled')
+      ?.focus();
+
+  }
 
 }
 
