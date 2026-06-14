@@ -125,6 +125,58 @@ function getFeedbackPollAllOptions(config) {
 
 }
 
+function getFeedbackPollSelectionTotal(
+  counts
+) {
+
+  if (
+    !counts
+    || typeof counts !== 'object'
+  ) {
+    return 0;
+  }
+
+  return Object.values(counts).reduce(
+    (sum, value) =>
+      sum
+      + Math.max(
+        0,
+        Number(value) || 0
+      ),
+    0
+  );
+
+}
+
+function getFeedbackPollOptionPercent(
+  count,
+  counts
+) {
+
+  const total =
+    getFeedbackPollSelectionTotal(
+      counts
+    );
+
+  const safeCount =
+    Math.max(
+      0,
+      Number(count) || 0
+    );
+
+  if (
+    total <= 0
+    || safeCount <= 0
+  ) {
+    return 0;
+  }
+
+  return Math.round(
+    (safeCount / total) * 100
+  );
+
+}
+
 function feedbackPollAnswerIncludesFreeText(
   answer,
   config

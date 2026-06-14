@@ -14,6 +14,7 @@ declare
   v_module public.feedback_modules%rowtype;
   v_sichtbarkeit text;
   v_total integer := 0;
+  v_selection_total integer := 0;
   v_counts jsonb := '{}'::jsonb;
   v_row record;
   v_key text;
@@ -113,6 +114,16 @@ begin
 
     end loop;
 
+    select coalesce(
+      sum(value::integer),
+      0
+    )
+    into v_selection_total
+    from jsonb_each_text(v_counts) as entry(
+      key,
+      value
+    );
+
   else
 
     for v_row in
@@ -138,10 +149,13 @@ begin
 
     end loop;
 
+    v_selection_total := v_total;
+
   end if;
 
   return jsonb_build_object(
     'total', v_total,
+    'selection_total', v_selection_total,
     'counts', v_counts
   );
 

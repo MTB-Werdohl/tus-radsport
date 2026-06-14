@@ -791,16 +791,16 @@ function applyFeedbackPollResultsInline(
   summary
 ) {
 
-  const total =
-    Number(summary?.total) || 0;
-
   const counts =
-    total > 0
-      ? normalizeFeedbackSummaryCounts(
-        module,
-        summary
-      )
-      : {};
+    normalizeFeedbackSummaryCounts(
+      module,
+      summary
+    );
+
+  const selectionTotal =
+    getFeedbackPollSelectionTotal(
+      counts
+    );
 
   container
     .querySelectorAll(
@@ -829,7 +829,7 @@ function applyFeedbackPollResultsInline(
         );
 
       if (
-        total <= 0
+        selectionTotal <= 0
         || !optionId
       ) {
 
@@ -858,8 +858,9 @@ function applyFeedbackPollResultsInline(
         Number(counts[optionId]) || 0;
 
       const percent =
-        Math.round(
-          (count / total) * 100
+        getFeedbackPollOptionPercent(
+          count,
+          counts
         );
 
       if (meta) {
@@ -890,18 +891,20 @@ function renderFeedbackPollResultsSummary(
   summary
 ) {
 
-  const total =
-    Number(summary?.total) || 0;
-
-  if (total <= 0) {
-    return '';
-  }
-
   const counts =
     normalizeFeedbackSummaryCounts(
       module,
       summary
     );
+
+  const selectionTotal =
+    getFeedbackPollSelectionTotal(
+      counts
+    );
+
+  if (selectionTotal <= 0) {
+    return '';
+  }
 
   const pollOptions =
     getFeedbackPollAllOptions(
@@ -916,11 +919,10 @@ function renderFeedbackPollResultsSummary(
           Number(counts[option.id]) || 0;
 
         const percent =
-          total > 0
-            ? Math.round(
-              (count / total) * 100
-            )
-            : 0;
+          getFeedbackPollOptionPercent(
+            count,
+            counts
+          );
 
         return `
 <li class="feedback-poll-results__item">

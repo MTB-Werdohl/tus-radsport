@@ -969,6 +969,11 @@ async function fetchFeedbackModuleSummary(
   return {
     total:
       Number(data.total) || 0,
+    selectionTotal:
+      Number(data.selection_total)
+      || getFeedbackPollSelectionTotal(
+        data.counts || {}
+      ),
     counts:
       data.counts || {}
   };
