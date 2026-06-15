@@ -876,7 +876,12 @@ async function openEventFeedbackResultsModal(
 
   await loadFeedbackResultsForModule(
     moduleId,
-    body
+    body,
+    {
+      showSummary: false,
+      showFreeTextList: false,
+      hideEmailColumn: true
+    }
   );
 
 }

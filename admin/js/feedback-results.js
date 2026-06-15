@@ -706,6 +706,9 @@ function renderFeedbackAnswersTable(
   const compactTable =
     options.compactTable === true;
 
+  const hideEmailColumn =
+    options.hideEmailColumn === true;
+
   const historyMode =
     !compactTable
     && isFeedbackEventResultsHistoryMode(
@@ -744,9 +747,15 @@ function renderFeedbackAnswersTable(
   ${escapeAdminHtml(row.name)}
 </td>
 
+${
+  hideEmailColumn
+    ? ''
+    : `
 <td>
   ${escapeAdminHtml(row.email)}
 </td>
+`
+}
 
 <td class="feedback-admin-answer-cell">
   ${escapeAdminHtml(row.answerLabel)}
@@ -786,9 +795,15 @@ function renderFeedbackAnswersTable(
   ${escapeAdminHtml(row.name)}
 </td>
 
+${
+  hideEmailColumn
+    ? ''
+    : `
 <td>
   ${escapeAdminHtml(row.email)}
 </td>
+`
+}
 
 <td class="feedback-admin-answer-cell">
   ${escapeAdminHtml(row.answerLabel)}
@@ -825,7 +840,7 @@ function renderFeedbackAnswersTable(
       : historyMode
         ? `
 <th>Name</th>
-<th>E-Mail</th>
+${hideEmailColumn ? '' : '<th>E-Mail</th>'}
 <th>Antwort</th>
 <th>Erstantwort</th>
 <th>Aktualisiert</th>
@@ -833,7 +848,7 @@ function renderFeedbackAnswersTable(
 `
         : `
 <th>Name</th>
-<th>E-Mail</th>
+${hideEmailColumn ? '' : '<th>E-Mail</th>'}
 <th>Antwort</th>
 <th>Erstantwort</th>
 <th>Aktualisiert</th>
@@ -1106,6 +1121,9 @@ async function loadFeedbackResultsForModule(
     const compactTable =
       options.compactTable === true;
 
+    const hideEmailColumn =
+      options.hideEmailColumn === true;
+
     const summaryHtml =
       showSummary
         ? renderFeedbackSummaryHtml(
@@ -1161,7 +1179,10 @@ ${renderFeedbackAnswersTable(
   module,
   displayRows,
   entityRecurring,
-  { compactTable }
+  {
+    compactTable,
+    hideEmailColumn
+  }
 )}
 
 `;
