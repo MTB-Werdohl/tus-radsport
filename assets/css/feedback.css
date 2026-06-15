@@ -1624,6 +1624,100 @@ margin: 0.15rem 0;
 
 }
 
+.feedback-admin-table--compact td:last-child {
+
+white-space: normal;
+
+}
+
+.feedback-participant-admin {
+
+margin: 0 0 1.25rem;
+
+padding: 1rem 1.1rem;
+
+border: 1px solid rgba(34, 81, 180, 0.18);
+
+border-radius: 12px;
+
+background: rgba(34, 81, 180, 0.06);
+
+}
+
+.feedback-participant-admin__title {
+
+margin: 0 0 0.75rem;
+
+font-size: 1rem;
+
+}
+
+.feedback-participant-admin__tabs {
+
+display: flex;
+
+flex-wrap: wrap;
+
+gap: 1rem;
+
+margin-bottom: 0.85rem;
+
+}
+
+.feedback-participant-admin__mode {
+
+display: inline-flex;
+
+align-items: center;
+
+gap: 0.4rem;
+
+font-size: 0.9375rem;
+
+}
+
+.feedback-participant-admin__panel .admin-field {
+
+margin-bottom: 0.75rem;
+
+}
+
+.feedback-participant-admin__checkbox {
+
+display: flex;
+
+align-items: center;
+
+gap: 0.5rem;
+
+}
+
+.feedback-participant-admin__actions {
+
+display: flex;
+
+flex-wrap: wrap;
+
+gap: 0.5rem;
+
+white-space: nowrap;
+
+}
+
+.feedback-participant-admin__fixed-answer {
+
+font-weight: 600;
+
+}
+
+.member-feedback-modal__dialog--results .feedback-participant-admin,
+
+.member-feedback-modal__dialog--results .feedback-participant-admin__table {
+
+color: inherit;
+
+}
+
 .feedback-poll-results {
 
 margin-top: 16px;

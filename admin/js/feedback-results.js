@@ -48,6 +48,27 @@ function formatFeedbackMemberName(memberRow) {
     return `${baseName} (extern)`;
   }
 
+  if (
+    member.rolle
+    && member.rolle.trim().toLowerCase() === 'guest'
+  ) {
+
+    if (
+      member.vorname
+      && member.vorname.trim().toLowerCase()
+        === 'inkognito'
+    ) {
+
+      return member.nachname
+        ? `${member.nachname} (Gast, inkognito)`
+        : 'Gast (inkognito)';
+
+    }
+
+    return `${baseName} (Gast)`;
+
+  }
+
   return baseName;
 
 }
@@ -1079,6 +1100,41 @@ async function loadFeedbackResultsForModule(
       await fetchFeedbackAnswersForModule(
         module.id
       );
+
+    const editable =
+      options.editable === true
+      && !entityRecurring
+      && module.type
+        === window.siteConfig.feedback.types.yesMaybe
+      && historyMode;
+
+    if (
+      editable
+      && typeof renderEditableEventParticipants
+        === 'function'
+    ) {
+
+      const reload = () =>
+        loadFeedbackResultsForModule(
+          moduleId,
+          container,
+          options
+        );
+
+      await renderEditableEventParticipants(
+        module,
+        answers,
+        container,
+        {
+          reload,
+          onParticipantsChanged:
+            options.onParticipantsChanged
+        }
+      );
+
+      return;
+
+    }
 
     let participationEvents =
       [];

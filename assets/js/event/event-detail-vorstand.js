@@ -880,7 +880,17 @@ async function openEventFeedbackResultsModal(
     {
       showSummary: false,
       showFreeTextList: false,
-      hideEmailColumn: true
+      hideEmailColumn: true,
+      editable: true,
+      onParticipantsChanged: () => {
+
+        window.dispatchEvent(
+          new CustomEvent(
+            'feedback-module-refresh'
+          )
+        );
+
+      }
     }
   );
 

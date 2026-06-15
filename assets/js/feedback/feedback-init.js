@@ -177,3 +177,18 @@ window.addEventListener(
 
   }
 );
+
+window.addEventListener(
+  'feedback-module-refresh',
+  () => {
+
+    if (
+      activeFeedbackModuleOptions
+    ) {
+      void initFeedbackModule(
+        activeFeedbackModuleOptions
+      );
+    }
+
+  }
+);

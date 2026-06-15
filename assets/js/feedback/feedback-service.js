@@ -458,7 +458,8 @@ async function fetchFeedbackAnswersForModule(
           email,
           rolle,
           anonymized_at,
-          einwilligung_kontakt
+          einwilligung_kontakt,
+          telefonnummer
         )
       `;
 
@@ -478,7 +479,8 @@ async function fetchFeedbackAnswersForModule(
           anonymized_at,
           einwilligung_kontakt,
           avatar_storage_path,
-          avatar_updated_at
+          avatar_updated_at,
+          telefonnummer
         )
       `;
 
@@ -977,5 +979,120 @@ async function fetchFeedbackModuleSummary(
     counts:
       data.counts || {}
   };
+
+}
+
+function isGuestInternalEmail(email) {
+
+  return /^guest\+.+\@walkin\.internal\.mtb-werdohl\.de$/i
+    .test(
+      String(email || '').trim()
+    );
+
+}
+
+function isGuestMember(member) {
+
+  return (
+    String(member?.rolle || '')
+      .trim()
+      .toLowerCase()
+    === 'guest'
+  );
+
+}
+
+function isIncognitoGuestMember(member) {
+
+  return (
+    isGuestMember(member)
+    && String(member?.vorname || '')
+      .trim()
+      .toLowerCase()
+    === 'inkognito'
+  );
+
+}
+
+async function fetchClubMembersForParticipantPicker() {
+
+  const { data, error } =
+    await window.supabaseClient
+      .from(
+        window.siteConfig.tables.members
+      )
+      .select(
+        'id,vorname,nachname,email,rolle,anonymized_at'
+      )
+      .is('anonymized_at', null)
+      .order('nachname', {
+        ascending: true
+      });
+
+  if (error) {
+
+    console.error(error);
+
+    return [];
+
+  }
+
+  return (data || [])
+    .filter((member) => {
+
+      const rolle =
+        String(member.rolle || '')
+          .trim()
+          .toLowerCase();
+
+      return (
+        rolle === 'mitglied'
+        || rolle === 'vorstand'
+      );
+
+    });
+
+}
+
+async function adminManageEventParticipant(
+  params
+) {
+
+  const payload = {
+    p_module_id: params.moduleId,
+    p_action: params.action,
+    p_member_id:
+      params.memberId ?? null,
+    p_answer:
+      params.answer ?? null,
+    p_vorname:
+      params.vorname ?? null,
+    p_nachname:
+      params.nachname ?? null,
+    p_incognito:
+      params.incognito === true,
+    p_telefon:
+      params.telefon ?? null,
+    p_email:
+      params.email ?? null,
+    p_admin_note:
+      params.adminNote ?? null
+  };
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'admin_manage_event_participant',
+      payload
+    );
+
+  if (error) {
+
+    console.error(error);
+
+    return { error };
+
+  }
+
+  return { data };
 
 }
