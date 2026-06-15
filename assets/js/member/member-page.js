@@ -567,6 +567,14 @@ async function reloadStravaProfileView(
       );
     }
 
+    if (
+      profileActiveTab === 'entwuerfe'
+      && typeof loadMemberVorstandDraftsList
+        === 'function'
+    ) {
+      void loadMemberVorstandDraftsList();
+    }
+
   }
 
 }

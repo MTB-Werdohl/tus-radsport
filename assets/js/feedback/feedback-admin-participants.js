@@ -1103,32 +1103,13 @@ async function openGuestWalkInEditModal(
     options.title || 'Walk-in Gast bearbeiten'
   );
 
-  if (!moduleId) {
-
-    const { data: answerRows } =
-      await window.supabaseClient
-        .from(
-          window.siteConfig.tables.feedbackAnswers
-        )
-        .select('module_id,updated_at')
-        .eq('member_id', memberId)
-        .order('updated_at', {
-          ascending: false
-        })
-        .limit(1);
-
-    moduleId =
-      answerRows?.[0]?.module_id || null;
-
-  }
-
   const { data: member, error } =
     await window.supabaseClient
       .from(
         window.siteConfig.tables.members
       )
       .select(
-        'id,vorname,nachname,email,telefonnummer,rolle,walkin_module_id'
+        'id,vorname,nachname,email,telefonnummer,rolle'
       )
       .eq('id', memberId)
       .single();
@@ -1146,7 +1127,22 @@ async function openGuestWalkInEditModal(
   }
 
   if (!moduleId) {
-    moduleId = member.walkin_module_id || null;
+
+    const { data: answerRows } =
+      await window.supabaseClient
+        .from(
+          window.siteConfig.tables.feedbackAnswers
+        )
+        .select('module_id,updated_at')
+        .eq('member_id', memberId)
+        .order('updated_at', {
+          ascending: false
+        })
+        .limit(1);
+
+    moduleId =
+      answerRows?.[0]?.module_id || null;
+
   }
 
   if (!moduleId) {

@@ -359,8 +359,12 @@ async function initMemberVorstandDraftsTab(
 ) {
 
   if (
-    typeof isVorstand !== 'function'
-    || !isVorstand(member)
+    typeof canLoadGuestWalkInDrafts === 'function'
+      ? !canLoadGuestWalkInDrafts()
+      : (
+        typeof isVorstand !== 'function'
+        || !isVorstand(member)
+      )
   ) {
     return;
   }

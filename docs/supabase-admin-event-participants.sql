@@ -1007,60 +1007,61 @@ grant execute on function public.submit_public_feedback(
 
 -- ---------------------------------------------------------------------------
 -- Walk-in-Entwürfe für Profil → Entwürfe (Vorstand)
+-- RETURNS TABLE statt jsonb — zuverlässiger mit PostgREST/Supabase-JS
 -- ---------------------------------------------------------------------------
 
+drop function if exists public.list_guest_walkin_drafts();
+
 create or replace function public.list_guest_walkin_drafts()
-returns jsonb
+returns table (
+  member_id bigint,
+  module_id bigint,
+  termin_id bigint,
+  termin_title text,
+  vorname text,
+  nachname text,
+  telefonnummer text,
+  email text,
+  sort_at timestamptz
+)
 language plpgsql
 security definer
 set search_path = public
 as $$
-declare
-  v_rows jsonb;
 begin
   if not public.is_vorstand() then
     raise exception 'Keine Berechtigung.';
   end if;
 
-  select coalesce(
-    jsonb_agg(row_to_json(x)::jsonb),
-    '[]'::jsonb
-  )
-  into v_rows
-  from (
+  return query
+  select
+    m.id,
+    fa.module_id,
+    fm.entity_id,
+    t.title,
+    m.vorname,
+    m.nachname,
+    m.telefonnummer,
+    m.email,
+    coalesce(fa.updated_at, m.updated_at)
+  from public.members m
+  left join lateral (
     select
-      m.id as member_id,
-      coalesce(
-        m.walkin_module_id,
-        fa.module_id
-      ) as module_id,
-      fm.entity_id as termin_id,
-      t.title as termin_title,
-      m.vorname,
-      m.nachname,
-      m.telefonnummer,
-      m.email,
-      coalesce(fa.updated_at, m.updated_at) as sort_at
-    from public.members m
-    left join lateral (
-      select
-        fa_inner.module_id,
-        fa_inner.updated_at
-      from public.feedback_answers fa_inner
-      where fa_inner.member_id = m.id
-      order by fa_inner.updated_at desc nulls last
-      limit 1
-    ) fa on true
-    left join public.feedback_modules fm
-      on fm.id = coalesce(m.walkin_module_id, fa.module_id)
-    left join public."Termine" t
-      on t.id = fm.entity_id
-    where lower(trim(coalesce(m.rolle, ''))) = 'guest'
-      and m.anonymized_at is null
-    order by coalesce(fa.updated_at, m.updated_at) desc nulls last
-  ) x;
+      fa_inner.module_id,
+      fa_inner.updated_at
+    from public.feedback_answers fa_inner
+    where fa_inner.member_id = m.id
+    order by fa_inner.updated_at desc nulls last
+    limit 1
+  ) fa on true
+  left join public.feedback_modules fm
+    on fm.id = fa.module_id
+  left join public."Termine" t
+    on t.id = fm.entity_id
+  where lower(trim(coalesce(m.rolle, ''))) = 'guest'
+    and m.anonymized_at is null
+  order by coalesce(fa.updated_at, m.updated_at) desc nulls last;
 
-  return coalesce(v_rows, '[]'::jsonb);
 end;
 $$;
 
@@ -1068,5 +1069,5 @@ revoke all on function public.list_guest_walkin_drafts() from public;
 
 grant execute on function public.list_guest_walkin_drafts() to authenticated;
 
-comment on function public.list_guest_walkin_drafts is
-  'Vorstand: alle Walk-in-Gäste (rolle guest) für Profil-Entwürfe.';
+comment on function public.list_guest_walkin_drafts() is
+  'Vorstand: alle Mitglieder mit rolle guest für Profil-Entwürfe.';

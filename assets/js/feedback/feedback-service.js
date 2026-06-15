@@ -1112,7 +1112,7 @@ function normalizeRpcJsonArray(data) {
 
 }
 
-async function fetchGuestWalkInDrafts() {
+function canLoadGuestWalkInDrafts() {
 
   const member =
     typeof getCurrentMember === 'function'
@@ -1120,9 +1120,26 @@ async function fetchGuestWalkInDrafts() {
       : null;
 
   if (
-    typeof isVorstand !== 'function'
-    || !isVorstand(member)
+    typeof isRealVorstand === 'function'
+    && isRealVorstand(member)
   ) {
+    return true;
+  }
+
+  if (
+    typeof isVorstand === 'function'
+    && isVorstand(member)
+  ) {
+    return true;
+  }
+
+  return false;
+
+}
+
+async function fetchGuestWalkInDrafts() {
+
+  if (!canLoadGuestWalkInDrafts()) {
     return [];
   }
 
@@ -1178,22 +1195,21 @@ async function fetchGuestWalkInDraftsViaRpc() {
 
   if (error) {
 
-    if (
-      error.code !== 'PGRST202'
-      && !String(error.message || '')
-        .includes('list_guest_walkin_drafts')
-    ) {
-      console.error(
-        'list_guest_walkin_drafts:',
-        error
-      );
-    }
+    console.error(
+      'list_guest_walkin_drafts:',
+      error
+    );
 
     return [];
 
   }
 
-  return normalizeRpcJsonArray(data)
+  const rows =
+    Array.isArray(data)
+      ? data
+      : (data ? [data] : []);
+
+  return rows
     .map(mapGuestWalkInDraftRow)
     .filter(Boolean);
 
@@ -1207,10 +1223,10 @@ async function fetchGuestWalkInDraftsDirect() {
         window.siteConfig.tables.members
       )
       .select(
-        'id,vorname,nachname,email,telefonnummer,updated_at,walkin_module_id,rolle'
+        'id,vorname,nachname,email,telefonnummer,updated_at,rolle'
       )
+      .ilike('rolle', 'guest')
       .is('anonymized_at', null)
-      .filter('rolle', 'ilike', 'guest')
       .order('updated_at', {
         ascending: false,
         nullsFirst: false
@@ -1282,8 +1298,7 @@ async function fetchGuestWalkInDraftsDirect() {
       ...new Set(
         guestRows
           .map((row) =>
-            row.walkin_module_id
-            || latestAnswerByMember
+            latestAnswerByMember
               .get(row.id)
               ?.module_id
           )
@@ -1355,8 +1370,7 @@ async function fetchGuestWalkInDraftsDirect() {
         latestAnswerByMember.get(row.id);
 
       const moduleId =
-        row.walkin_module_id
-        || answerRow?.module_id
+        answerRow?.module_id
         || null;
 
       const terminMeta =
