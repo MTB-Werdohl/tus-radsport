@@ -290,6 +290,155 @@ begin
     raise exception 'Aktion fehlt.';
   end if;
 
+  -- Walk-in-Gast: nur members, kein Termin-Modul nötig
+  if v_action in ('update_guest', 'complete_walkin') then
+
+    if p_member_id is null then
+      raise exception 'Mitglied fehlt.';
+    end if;
+
+    select *
+    into v_member
+    from public.members
+    where id = p_member_id;
+
+    if not found then
+      raise exception 'Person nicht gefunden.';
+    end if;
+
+    if v_member.anonymized_at is not null then
+      raise exception 'Anonymisierte Person kann nicht bearbeitet werden.';
+    end if;
+
+    if v_action = 'update_guest' then
+
+      if lower(trim(coalesce(v_member.rolle, ''))) <> 'guest' then
+        raise exception 'Nur Gäste können so bearbeitet werden.';
+      end if;
+
+      v_vorname :=
+        trim(coalesce(p_vorname, ''));
+
+      v_nachname :=
+        trim(coalesce(p_nachname, ''));
+
+      if v_vorname = '' and v_nachname = '' then
+
+        v_vorname :=
+          coalesce(v_member.vorname, '');
+
+        v_nachname :=
+          coalesce(v_member.nachname, '');
+
+        if v_vorname = '' and v_nachname = '' then
+          raise exception 'Bitte mindestens Vorname oder Nachname angeben.';
+        end if;
+
+      end if;
+
+      v_email :=
+        lower(trim(coalesce(p_email, '')));
+
+      if v_email <> ''
+        and position('@' in v_email) = 0 then
+        raise exception 'Bitte eine gültige E-Mail angeben.';
+      end if;
+
+      if v_email <> ''
+        and public.is_guest_internal_email(v_email) then
+        raise exception 'Diese E-Mail ist reserviert.';
+      end if;
+
+      if v_email <> '' then
+
+        select m.id
+        into v_existing_id
+        from public.members m
+        where lower(trim(m.email)) = v_email
+          and m.id <> p_member_id
+        limit 1;
+
+        if v_existing_id is not null then
+          raise exception 'E-Mail ist bereits vergeben.';
+        end if;
+
+      end if;
+
+      update public.members
+      set
+        vorname = nullif(v_vorname, ''),
+        nachname = nullif(v_nachname, ''),
+        telefonnummer =
+          case
+            when p_telefon is null then telefonnummer
+            else nullif(trim(p_telefon), '')
+          end,
+        email =
+          case
+            when v_email <> '' then v_email
+            else email
+          end,
+        walkin_open =
+          case
+            when v_email <> ''
+              and not public.is_guest_internal_email(v_email)
+              then false
+            else walkin_open
+          end
+      where id = p_member_id;
+
+      insert into public.feedback_answer_events (
+        module_id,
+        member_id,
+        answer_id,
+        event_type,
+        from_answer,
+        to_answer,
+        comment
+      )
+      select
+        fa.module_id,
+        p_member_id,
+        fa.id,
+        'admin_update_guest',
+        fa.answer,
+        fa.answer,
+        nullif(trim(coalesce(p_admin_note, '')), '')
+      from public.feedback_answers fa
+      where fa.member_id = p_member_id;
+
+      return jsonb_build_object(
+        'ok', true,
+        'member_id', p_member_id,
+        'action', v_action
+      );
+
+    end if;
+
+    if v_action = 'complete_walkin' then
+
+      if lower(trim(coalesce(v_member.rolle, ''))) <> 'guest' then
+        raise exception 'Nur Walk-in-Gäste können so abgeschlossen werden.';
+      end if;
+
+      update public.members
+      set walkin_open = false
+      where id = p_member_id;
+
+      return jsonb_build_object(
+        'ok', true,
+        'member_id', p_member_id,
+        'action', v_action
+      );
+
+    end if;
+
+  end if;
+
+  if p_module_id is null then
+    raise exception 'Modul fehlt.';
+  end if;
+
   select *
   into v_module
   from public.feedback_modules
@@ -431,139 +580,6 @@ begin
       );
 
     return v_result || jsonb_build_object(
-      'member_id', p_member_id,
-      'action', v_action
-    );
-
-  end if;
-
-  -- -------------------------------------------------------------------------
-  -- update_guest
-  -- -------------------------------------------------------------------------
-
-  if v_action = 'update_guest' then
-
-    if lower(trim(coalesce(v_member.rolle, ''))) <> 'guest' then
-      raise exception 'Nur Gäste können so bearbeitet werden.';
-    end if;
-
-    v_vorname :=
-      trim(coalesce(p_vorname, ''));
-
-    v_nachname :=
-      trim(coalesce(p_nachname, ''));
-
-    if v_vorname = '' and v_nachname = '' then
-
-      v_vorname :=
-        coalesce(v_member.vorname, '');
-
-      v_nachname :=
-        coalesce(v_member.nachname, '');
-
-      if v_vorname = '' and v_nachname = '' then
-        raise exception 'Bitte mindestens Vorname oder Nachname angeben.';
-      end if;
-
-    end if;
-
-    v_email :=
-      lower(trim(coalesce(p_email, '')));
-
-    if v_email <> ''
-      and position('@' in v_email) = 0 then
-      raise exception 'Bitte eine gültige E-Mail angeben.';
-    end if;
-
-    if v_email <> ''
-      and public.is_guest_internal_email(v_email) then
-      raise exception 'Diese E-Mail ist reserviert.';
-    end if;
-
-    if v_email <> '' then
-
-      select m.id
-      into v_existing_id
-      from public.members m
-      where lower(trim(m.email)) = v_email
-        and m.id <> p_member_id
-      limit 1;
-
-      if v_existing_id is not null then
-        raise exception 'E-Mail ist bereits vergeben.';
-      end if;
-
-    end if;
-
-    update public.members
-    set
-      vorname = nullif(v_vorname, ''),
-      nachname = nullif(v_nachname, ''),
-      telefonnummer =
-        case
-          when p_telefon is null then telefonnummer
-          else nullif(trim(p_telefon), '')
-        end,
-      email =
-        case
-          when v_email <> '' then v_email
-          else email
-        end,
-      walkin_open =
-        case
-          when v_email <> ''
-            and not public.is_guest_internal_email(v_email)
-            then false
-          else walkin_open
-        end
-    where id = p_member_id;
-
-    insert into public.feedback_answer_events (
-      module_id,
-      member_id,
-      answer_id,
-      event_type,
-      from_answer,
-      to_answer,
-      comment
-    )
-    select
-      p_module_id,
-      p_member_id,
-      fa.id,
-      'admin_update_guest',
-      fa.answer,
-      fa.answer,
-      nullif(trim(coalesce(p_admin_note, '')), '')
-    from public.feedback_answers fa
-    where fa.module_id = p_module_id
-      and fa.member_id = p_member_id
-    limit 1;
-
-    return jsonb_build_object(
-      'ok', true,
-      'member_id', p_member_id,
-      'action', v_action
-    );
-
-  end if;
-
-  -- -------------------------------------------------------------------------
-  -- complete_walkin (Entwurf schließen, Gast bleibt auf Teilnehmerliste)
-  -- -------------------------------------------------------------------------
-
-  if v_action = 'complete_walkin' then
-
-    if lower(trim(coalesce(v_member.rolle, ''))) <> 'guest' then
-      raise exception 'Nur Walk-in-Gäste können so abgeschlossen werden.';
-    end if;
-
-    update public.members
-    set walkin_open = false
-    where id = p_member_id;
-
-    return jsonb_build_object(
-      'ok', true,
       'member_id', p_member_id,
       'action', v_action
     );
@@ -1036,38 +1052,30 @@ begin
   return query
   select
     m.id,
-    coalesce(fa.module_id, m.walkin_module_id),
-    fm.entity_id,
-    t.title,
+    null::bigint,
+    null::bigint,
+    null::text,
     m.vorname,
     m.nachname,
     m.telefonnummer,
     m.email,
     coalesce(
-      fa.updated_at,
-      fa.created_at,
+      (
+        select max(fa.updated_at)
+        from public.feedback_answers fa
+        where fa.member_id = m.id
+      ),
       m.last_login_at
     )
   from public.members m
-  left join lateral (
-    select
-      fa_inner.module_id,
-      fa_inner.updated_at,
-      fa_inner.created_at
-    from public.feedback_answers fa_inner
-    where fa_inner.member_id = m.id
-    order by fa_inner.updated_at desc nulls last
-    limit 1
-  ) fa on true
-  left join public.feedback_modules fm
-    on fm.id = coalesce(fa.module_id, m.walkin_module_id)
-  left join public."Termine" t
-    on t.id = fm.entity_id
   where lower(trim(coalesce(m.rolle, ''))) = 'guest'
     and m.anonymized_at is null
   order by coalesce(
-    fa.updated_at,
-    fa.created_at,
+    (
+      select max(fa.updated_at)
+      from public.feedback_answers fa
+      where fa.member_id = m.id
+    ),
     m.last_login_at
   ) desc nulls last;
 
@@ -1079,4 +1087,4 @@ revoke all on function public.list_guest_walkin_drafts() from public;
 grant execute on function public.list_guest_walkin_drafts() to authenticated;
 
 comment on function public.list_guest_walkin_drafts() is
-  'Vorstand: alle Mitglieder mit rolle guest für Profil-Entwürfe.';
+  'Vorstand: Walk-in-Gäste (rolle guest) aus members für Profil-Entwürfe — ohne Terminbezug.';

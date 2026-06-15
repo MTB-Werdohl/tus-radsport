@@ -100,18 +100,13 @@ function renderMemberDraftCard(draft) {
       ? ` data-draft-termin-id="${draft.terminId}"`
       : '';
 
-  const walkinModuleAttr =
-    draft.type === 'walkin'
-      ? ` data-draft-module-id="${draft.moduleId || ''}"`
-      : '';
-
   return `
 <button
   type="button"
   class="member-draft-card"
   data-member-draft-open="true"
   data-draft-type="${escapeMemberDraftHtml(draft.type)}"
-  data-draft-id="${draft.id}"${terminIdAttr}${walkinModuleAttr}>
+  data-draft-id="${draft.id}"${terminIdAttr}>
 
   <span class="member-draft-card__title">
     ${escapeMemberDraftHtml(draft.title)}
@@ -176,7 +171,6 @@ async function openMemberDraftEdit(draft) {
     await openGuestWalkInEditModal({
       memberId:
         draft.memberId || draft.id,
-      moduleId: draft.moduleId,
       anonymizeOnRemove: true,
       onSaved: async () => {
 
@@ -218,11 +212,6 @@ function bindMemberDraftCardEvents(
             terminId:
               parseInt(
                 button.dataset.draftTerminId,
-                10
-              ) || null,
-            moduleId:
-              parseInt(
-                button.dataset.draftModuleId,
                 10
               ) || null,
             memberId:
@@ -287,9 +276,6 @@ async function loadMemberVorstandDraftsList() {
     }
 
     container.innerHTML = `
-<p class="member-content-lead">
-  ${drafts.length} offene Entwürfe — Internes, Termine, Rückblicke und Walk-in-Gäste warten auf Ergänzung oder Freigabe.
-</p>
 
 <div class="member-drafts-list">
   ${drafts.map(renderMemberDraftCard).join('')}

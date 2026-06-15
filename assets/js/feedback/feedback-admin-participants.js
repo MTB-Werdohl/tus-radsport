@@ -1021,16 +1021,13 @@ function bindEditableEventParticipants(
             10
           );
 
-        if (
-          !memberId
-          || !guestModuleId
-        ) {
+        if (!memberId) {
           return;
         }
 
         void openGuestWalkInEditModal({
           memberId,
-          moduleId: guestModuleId,
+          moduleId: guestModuleId || null,
           onSaved: async () => {
 
             if (callbacks?.onParticipantsChanged) {
@@ -1126,7 +1123,13 @@ async function openGuestWalkInEditModal(
 
   }
 
-  if (!moduleId) {
+  let removeModuleId =
+    moduleId || null;
+
+  if (
+    !removeModuleId
+    && !options.anonymizeOnRemove
+  ) {
 
     const { data: answerRows } =
       await window.supabaseClient
@@ -1140,17 +1143,8 @@ async function openGuestWalkInEditModal(
         })
         .limit(1);
 
-    moduleId =
+    removeModuleId =
       answerRows?.[0]?.module_id || null;
-
-  }
-
-  if (!moduleId) {
-
-    body.innerHTML =
-      '<p class="admin-hint admin-hint--error">Kein Termin zugeordnet — Gast kann nicht bearbeitet werden.</p>';
-
-    return;
 
   }
 
@@ -1206,9 +1200,8 @@ async function openGuestWalkInEditModal(
 </label>
 
 <p class="admin-hint">
-  Derselbe Datensatz wird später bei
-  Anmeldung per E-Mail weiterverwendet —
-  kein Duplikat.
+  Daten werden am Gast-Datensatz gespeichert. Auf Termin-Teilnehmerlisten
+  erscheinen Name und Kontakt automatisch aktualisiert.
 </p>
 
 <div class="member-feedback-modal__actions">
@@ -1303,7 +1296,7 @@ async function openGuestWalkInEditModal(
 
         const result =
           await adminManageEventParticipant({
-            moduleId,
+            moduleId: null,
             action: 'update_guest',
             memberId,
             vorname,
@@ -1350,7 +1343,7 @@ async function openGuestWalkInEditModal(
 
         const result =
           await adminManageEventParticipant({
-            moduleId,
+            moduleId: null,
             action: 'complete_walkin',
             memberId
           });
@@ -1448,9 +1441,20 @@ async function openGuestWalkInEditModal(
 
         } else {
 
+          if (!removeModuleId) {
+
+            alert(
+              'Gast ist keiner Teilnehmerliste zugeordnet — '
+              + 'bitte in Entwürfe entfernen (anonymisieren).'
+            );
+
+            return;
+
+          }
+
           const result =
             await adminManageEventParticipant({
-              moduleId,
+              moduleId: removeModuleId,
               action: 'remove',
               memberId
             });

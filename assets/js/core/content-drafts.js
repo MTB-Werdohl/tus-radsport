@@ -133,17 +133,11 @@ function mapGuestWalkInDraftRow(row) {
       .trim()
     || 'Walk-in Gast';
 
-  const terminTitle =
-    row.termin_title || 'Termin';
-
   return {
     type: 'walkin',
     id: memberId,
     memberId,
-    moduleId: row.module_id || null,
-    terminId: row.termin_id || null,
-    title:
-      `${guestLabel} · ${terminTitle}`,
+    title: guestLabel,
     sortAt:
       row.sort_at || null
   };

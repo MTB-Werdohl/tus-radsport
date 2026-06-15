@@ -303,13 +303,6 @@ function renderMemberContentPanelShell() {
 
   <h2>Content</h2>
 
-  <p class="member-content-lead">
-    Reiche Termine oder Internes als Entwurf ein.
-    Der Vorstand prüft und gibt sie frei.
-    Nach freigegebenen, vergangenen Terminen kannst du
-    einen Rückblick schreiben.
-  </p>
-
   <div class="member-content-cards">
 
     <a
