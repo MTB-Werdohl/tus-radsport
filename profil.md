@@ -3,7 +3,7 @@ layout: default
 title: Mein Profil
 permalink: /profil/
 hide_title: true
-.member_profile: true
+member_profile: true
 load_aktivitaeten_css: true
 load_calendar_css: true
 load_events_css: true
