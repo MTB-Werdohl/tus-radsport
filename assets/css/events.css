@@ -29,6 +29,36 @@
   width: 100%;
 }
 
+#event-vorstand-actions:not(:empty) {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+
+  #event-vorstand-actions:not(:empty) {
+    width: auto;
+    margin-left: auto;
+  }
+
+}
+
+.event-recap-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.event-recap-vorstand-actions:empty {
+  display: none;
+}
+
+.event-recap-draft-hint {
+  margin: 0 0 14px;
+}
+
 .news-vorstand-actions:empty {
   display: none;
 }

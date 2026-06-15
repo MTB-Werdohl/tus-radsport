@@ -67,16 +67,36 @@ async function loadEvent() {
 
   }
 
+  const isVorstandUser =
+    typeof isVorstand === 'function'
+    && isVorstand(member);
+
   let recap = null;
 
   if (
-    typeof getEventRecap === 'function'
-    && typeof terminAllowsRecapClient === 'function'
+    typeof terminAllowsRecapClient === 'function'
     && terminAllowsRecapClient(event)
   ) {
 
-    recap =
-      await getEventRecap(event.id);
+    if (
+      isVorstandUser
+      && typeof loadRecapByTerminId
+        === 'function'
+    ) {
+
+      recap =
+        await loadRecapByTerminId(
+          event.id
+        );
+
+    } else if (
+      typeof getEventRecap === 'function'
+    ) {
+
+      recap =
+        await getEventRecap(event.id);
+
+    }
 
   }
 
@@ -91,7 +111,8 @@ async function loadEvent() {
     event,
     recap,
     {
-      fromErlebtes
+      fromErlebtes,
+      isVorstand: isVorstandUser
     }
   );
 
@@ -108,9 +129,39 @@ async function loadEvent() {
   });
 
   if (
+    typeof initEventDetailVorstand
+      === 'function'
+  ) {
+
+    initEventDetailVorstand(
+      event,
+      member,
+      { fromErlebtes }
+    );
+
+  }
+
+  if (
+    typeof initEventRecapVorstand
+      === 'function'
+  ) {
+
+    initEventRecapVorstand(
+      event,
+      recap,
+      member,
+      { fromErlebtes }
+    );
+
+  }
+
+  if (
     fromErlebtes
     && recap
-    && recap.status === 'published'
+    && (
+      recap.status === 'published'
+      || isVorstandUser
+    )
     && typeof scrollEventRecapIntoView
       === 'function'
   ) {
@@ -123,7 +174,10 @@ async function loadEvent() {
   const hash =
     fromErlebtes
     && recap
-    && recap.status === 'published'
+    && (
+      recap.status === 'published'
+      || isVorstandUser
+    )
       ? '#event-recap'
       : '';
 

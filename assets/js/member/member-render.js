@@ -348,13 +348,31 @@ function resolveMemberProfileActiveTab(
     return 'profil';
   }
 
+  const allowed =
+    new Set([
+      'profil',
+      'content',
+      'entwuerfe',
+      'abstimmungen',
+      'aktivitaeten',
+      'strava'
+    ]);
+
+  if (
+    activeTab
+    && allowed.has(activeTab)
+  ) {
+    return activeTab;
+  }
+
   return activeTab || 'profil';
 
 }
 
 function renderMemberProfileTabsNav(
   activeTab,
-  stravaState
+  stravaState,
+  member
 ) {
 
   const tabs = [
@@ -379,6 +397,18 @@ function renderMemberProfileTabsNav(
       label: 'Strava'
     }
   ];
+
+  if (
+    typeof isVorstand === 'function'
+    && isVorstand(member)
+  ) {
+
+    tabs.splice(2, 0, {
+      id: 'entwuerfe',
+      label: 'Entwürfe'
+    });
+
+  }
 
   const visibleTabs =
     tabs.filter((tab) =>
@@ -418,6 +448,28 @@ function renderMemberProfileTabsNav(
   ${buttons}
 
 </nav>
+  `;
+
+}
+
+function renderMemberDraftsPanelShell() {
+
+  return `
+<section class="member-profile-section-block">
+
+  <h2>Entwürfe</h2>
+
+  <div
+    id="member-drafts-list"
+    class="member-drafts-list-wrap">
+
+    <p class="member-content-lead">
+      Entwürfe werden geladen …
+    </p>
+
+  </div>
+
+</section>
   `;
 
 }
@@ -992,6 +1044,10 @@ function renderMemberProfile(
   const showActivitiesTab =
     shouldShowMemberActivitiesTab(stravaState);
 
+  const showDraftsTab =
+    typeof isVorstand === 'function'
+    && isVorstand(member);
+
   const container =
     document.getElementById(
       'member-profile'
@@ -1075,7 +1131,8 @@ ${renderMemberConsentSection(member)}
 
 ${renderMemberProfileTabsNav(
   activeTab,
-  stravaState
+  stravaState,
+  member
 )}
 
 <div
@@ -1101,6 +1158,24 @@ ${renderMemberProfileTabsNav(
   ${renderMemberContentPanelShell()}
 
 </div>
+
+${
+  showDraftsTab
+    ? `
+<div
+  id="member-profile-tab-entwuerfe"
+  class="member-profile-tab-panel"
+  role="tabpanel"
+  aria-labelledby="member-profile-tab-btn-entwuerfe"
+  data-profile-panel="entwuerfe"
+  ${activeTab !== 'entwuerfe' ? 'hidden' : ''}>
+
+  ${renderMemberDraftsPanelShell()}
+
+</div>
+`
+    : ''
+}
 
 <div
   id="member-profile-tab-abstimmungen"

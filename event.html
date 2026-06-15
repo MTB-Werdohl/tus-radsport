@@ -3,6 +3,7 @@ layout: default
 permalink: /event.html
 load_events_css: true
 load_feedback_css: true
+load_member_content_edit_css: true
 ---
 
 <div id="event"></div>
@@ -31,6 +32,12 @@ load_feedback_css: true
 <script src="/assets/js/recap/recap-service.js"></script>
 
 <script src="/assets/js/event/event-render.js"></script>
+
+<script src="/admin/js/media-storage-lib.js?v={{ site.admin_js_version }}"></script>
+<script src="/admin/js/media-picker.js?v={{ site.admin_js_version }}"></script>
+<script src="/assets/js/member/member-edit-utils.js?v={{ site.admin_js_version }}"></script>
+<script src="/assets/js/event/event-detail-vorstand.js"></script>
+<script src="/assets/js/event/event-recap-vorstand.js"></script>
 
 <script src="/assets/js/event/event-page.js"></script>
 

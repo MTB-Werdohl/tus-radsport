@@ -82,6 +82,8 @@ ${backLabelTop}
 
 </a>
 
+<div id="event-vorstand-actions"></div>
+
 <div id="share"></div>
 
 </div>
@@ -194,7 +196,14 @@ event.content || ''
 
 </div>
 
-${renderEventRecap(recap, event)}
+${renderEventRecap(
+  recap,
+  event,
+  {
+    vorstandView:
+      options?.isVorstand === true
+  }
+)}
 
 <div class="event-back">
 
@@ -246,15 +255,32 @@ function scrollEventRecapIntoView() {
 
 function renderEventRecap(
   recap,
-  event
+  event,
+  options = {}
 ) {
+
+  const vorstandView =
+    options.vorstandView === true;
 
   if (
     !recap
-    || recap.status !== 'published'
+    || (
+      recap.status !== 'published'
+      && !vorstandView
+    )
   ) {
     return '';
   }
+
+  const draftBanner =
+    recap.status === 'draft'
+    && vorstandView
+      ? `
+<p class="feedback-hint event-recap-draft-hint">
+  Entwurf — nur für Vorstand sichtbar.
+</p>
+      `
+      : '';
 
   const headline =
     recap.headline
@@ -322,11 +348,23 @@ function renderEventRecap(
       tabindex="-1"
       aria-labelledby="event-recap-title">
 
-      <h2
-        id="event-recap-title"
-        class="event-recap-title">
-        Rückblick
-      </h2>
+      <div class="event-recap-header">
+
+        <h2
+          id="event-recap-title"
+          class="event-recap-title">
+          Rückblick
+        </h2>
+
+        <div
+          id="event-recap-vorstand-actions"
+          class="event-recap-vorstand-actions">
+
+        </div>
+
+      </div>
+
+      ${draftBanner}
 
       <h3 class="event-recap-headline">
         ${escapeEventHtml(headline)}

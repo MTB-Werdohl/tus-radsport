@@ -505,6 +505,10 @@ function switchMemberProfileTab(
     );
   }
 
+  if (tabId === 'entwuerfe') {
+    void loadMemberVorstandDraftsList();
+  }
+
 }
 
 async function reloadStravaProfileView(
@@ -1469,6 +1473,8 @@ async function loadMemberProfilePage() {
         profileActiveTab = urlTab;
       } else if (urlTab === 'rueckblicke') {
         profileActiveTab = 'content';
+      } else if (urlTab === 'entwuerfe') {
+        profileActiveTab = urlTab;
       }
 
       profileActiveTab =
@@ -1515,6 +1521,23 @@ async function loadMemberProfilePage() {
         void loadMemberContentListIfNeeded(
           member,
           true
+        );
+      }
+
+      if (
+        profileActiveTab === 'entwuerfe'
+        && typeof loadMemberVorstandDraftsList
+          === 'function'
+      ) {
+        void loadMemberVorstandDraftsList();
+      }
+
+      if (
+        typeof initMemberVorstandDraftsTab
+          === 'function'
+      ) {
+        void initMemberVorstandDraftsTab(
+          member
         );
       }
 
