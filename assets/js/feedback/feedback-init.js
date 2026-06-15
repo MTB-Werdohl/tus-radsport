@@ -120,9 +120,38 @@ async function initFeedbackModule(options) {
     && !isTerminStillUpcoming(options.entityTermin)
   ) {
 
+    let yesCount = 0;
+
+    if (
+      typeof fetchFeedbackModuleSummary
+        === 'function'
+    ) {
+
+      const summary =
+        await fetchFeedbackModuleSummary(
+          module.id
+        );
+
+      const yesKey =
+        window.siteConfig.feedback.answers.yes;
+
+      yesCount =
+        Number(summary?.counts?.[yesKey])
+        || 0;
+
+    }
+
+    const message =
+      typeof formatPastEventParticipationMessage
+        === 'function'
+        ? formatPastEventParticipationMessage(
+          yesCount
+        )
+        : 'Die Tour hat stattgefunden.';
+
     container.innerHTML = `
 <p class="feedback-hint">
-  Die Abstimmung für diesen Termin ist beendet.
+  ${message}
 </p>
     `.trim();
 

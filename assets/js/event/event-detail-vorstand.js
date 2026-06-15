@@ -905,7 +905,6 @@ function initEventDetailVorstand(
   if (
     !eventData
     || !canShowEventVorstandTools(member)
-    || options.fromErlebtes === true
   ) {
     return;
   }
@@ -978,12 +977,6 @@ window.addEventListener(
         : null;
 
     if (!canShowEventVorstandTools(member)) {
-      return;
-    }
-
-    if (
-      eventRoot.dataset.fromErlebtes === 'true'
-    ) {
       return;
     }
 

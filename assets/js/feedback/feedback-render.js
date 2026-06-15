@@ -1230,6 +1230,28 @@ async function refreshFeedbackYesMaybeCounts(
 
 }
 
+function formatPastEventParticipationMessage(
+  yesCount
+) {
+
+  const count =
+    Math.max(
+      0,
+      Number(yesCount) || 0
+    );
+
+  if (count === 0) {
+    return 'Die Tour hat stattgefunden.';
+  }
+
+  if (count === 1) {
+    return 'Die Tour hat mit 1 Person stattgefunden.';
+  }
+
+  return `Die Tour hat mit ${count} Personen stattgefunden.`;
+
+}
+
 async function renderFeedbackPollResultsOnly(
   container,
   module,
