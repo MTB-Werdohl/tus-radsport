@@ -400,11 +400,7 @@ function renderMemberProfileTabsNav(
 
   if (
     typeof isVorstand === 'function'
-    && (
-      typeof canLoadGuestWalkInDrafts === 'function'
-        ? canLoadGuestWalkInDrafts()
-        : isVorstand(member)
-    )
+    && isVorstand(member)
   ) {
 
     tabs.splice(2, 0, {
@@ -1049,12 +1045,8 @@ function renderMemberProfile(
     shouldShowMemberActivitiesTab(stravaState);
 
   const showDraftsTab =
-    typeof canLoadGuestWalkInDrafts === 'function'
-      ? canLoadGuestWalkInDrafts()
-      : (
-        typeof isVorstand === 'function'
-        && isVorstand(member)
-      );
+    typeof isVorstand === 'function'
+    && isVorstand(member);
 
   const container =
     document.getElementById(

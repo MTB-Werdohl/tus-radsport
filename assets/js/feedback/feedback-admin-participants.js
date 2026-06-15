@@ -1403,27 +1403,68 @@ async function openGuestWalkInEditModal(
 
         if (
           !confirm(
-            `${guestName} von der Teilnehmerliste entfernen?`
+            options.anonymizeOnRemove
+              ? (
+                `${guestName} wirklich entfernen?\n\n`
+                + 'Personenbezogene Daten werden entfernt. '
+                + 'Abstimmungen bleiben anonym gezählt.'
+              )
+              : `${guestName} von der Teilnehmerliste entfernen?`
           )
         ) {
           return;
         }
 
-        const result =
-          await adminManageEventParticipant({
-            moduleId,
-            action: 'remove',
-            memberId
-          });
+        if (options.anonymizeOnRemove) {
 
-        if (result?.error) {
+          if (
+            typeof anonymizeMemberAccount
+              !== 'function'
+          ) {
 
-          alert(
-            result.error.message
-              || 'Entfernen fehlgeschlagen.'
-          );
+            alert(
+              'Entfernen ist nicht verfügbar.'
+            );
 
-          return;
+            return;
+
+          }
+
+          const anonymizeResult =
+            await anonymizeMemberAccount({
+              memberId
+            });
+
+          if (anonymizeResult?.error) {
+
+            alert(
+              anonymizeResult.error.message
+                || 'Entfernen fehlgeschlagen.'
+            );
+
+            return;
+
+          }
+
+        } else {
+
+          const result =
+            await adminManageEventParticipant({
+              moduleId,
+              action: 'remove',
+              memberId
+            });
+
+          if (result?.error) {
+
+            alert(
+              result.error.message
+                || 'Entfernen fehlgeschlagen.'
+            );
+
+            return;
+
+          }
 
         }
 

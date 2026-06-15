@@ -113,6 +113,72 @@ function formatContentDraftDate(value) {
 
 }
 
+function mapGuestWalkInDraftRow(row) {
+
+  const memberId =
+    row?.member_id
+    || row?.id;
+
+  if (!memberId) {
+    return null;
+  }
+
+  const guestLabel =
+    [
+      row.vorname,
+      row.nachname
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .trim()
+    || 'Walk-in Gast';
+
+  const terminTitle =
+    row.termin_title || 'Termin';
+
+  return {
+    type: 'walkin',
+    id: memberId,
+    memberId,
+    moduleId: row.module_id || null,
+    terminId: row.termin_id || null,
+    title:
+      `${guestLabel} · ${terminTitle}`,
+    sortAt:
+      row.sort_at || null
+  };
+
+}
+
+async function fetchGuestWalkInContentDrafts() {
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'list_guest_walkin_drafts'
+    );
+
+  if (error) {
+
+    console.error(
+      'list_guest_walkin_drafts:',
+      error
+    );
+
+    return [];
+
+  }
+
+  const rows =
+    Array.isArray(data)
+      ? data
+      : (data ? [data] : []);
+
+  return rows
+    .map(mapGuestWalkInDraftRow)
+    .filter(Boolean);
+
+}
+
 async function fetchContentDrafts() {
 
   const newsResult =
@@ -277,10 +343,24 @@ async function fetchContentDrafts() {
         resolveCreator(item.createdBy)
     }));
 
+  let walkinItems = [];
+
+  try {
+
+    walkinItems =
+      await fetchGuestWalkInContentDrafts();
+
+  } catch (walkinError) {
+
+    console.error(walkinError);
+
+  }
+
   return [
     ...mappedNews,
     ...mappedEvents,
-    ...mappedRecaps
+    ...mappedRecaps,
+    ...walkinItems
   ]
     .sort((a, b) => {
 

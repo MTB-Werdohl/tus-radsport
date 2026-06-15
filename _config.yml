@@ -20,7 +20,7 @@ include:
   - kalender
   - news
 
-admin_js_version: "20260580"
+admin_js_version: "20260581"
 
 contact:
   name: "Tobias Withalm"

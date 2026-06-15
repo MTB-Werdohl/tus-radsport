@@ -31,44 +31,6 @@ function reloadAfterVorstandContentSave() {
 
 }
 
-async function fetchAllMemberVorstandDrafts() {
-
-  const contentDrafts =
-    typeof fetchContentDrafts === 'function'
-      ? await fetchContentDrafts()
-      : [];
-
-  const walkinDrafts =
-    typeof fetchGuestWalkInDrafts === 'function'
-      ? await fetchGuestWalkInDrafts()
-      : [];
-
-  return [
-    ...contentDrafts,
-    ...walkinDrafts
-  ]
-    .sort((left, right) => {
-
-      const leftTime =
-        left.sortAt
-          ? new Date(left.sortAt).getTime()
-          : 0;
-
-      const rightTime =
-        right.sortAt
-          ? new Date(right.sortAt).getTime()
-          : 0;
-
-      if (rightTime !== leftTime) {
-        return rightTime - leftTime;
-      }
-
-      return (right.id || 0) - (left.id || 0);
-
-    });
-
-}
-
 async function refreshMemberDraftsTabIndicator() {
 
   const tab =
@@ -78,12 +40,8 @@ async function refreshMemberDraftsTabIndicator() {
 
   if (
     !tab
-    || (
-      typeof fetchContentDrafts
-        !== 'function'
-      && typeof fetchGuestWalkInDrafts
-        !== 'function'
-    )
+    || typeof fetchContentDrafts
+      !== 'function'
   ) {
     return 0;
   }
@@ -91,7 +49,7 @@ async function refreshMemberDraftsTabIndicator() {
   try {
 
     const drafts =
-      await fetchAllMemberVorstandDrafts();
+      await fetchContentDrafts();
 
     const count =
       drafts.length;
@@ -219,6 +177,7 @@ async function openMemberDraftEdit(draft) {
       memberId:
         draft.memberId || draft.id,
       moduleId: draft.moduleId,
+      anonymizeOnRemove: true,
       onSaved: async () => {
 
         await loadMemberVorstandDraftsList();
@@ -299,8 +258,6 @@ async function loadMemberVorstandDraftsList() {
   if (
     typeof fetchContentDrafts
       !== 'function'
-    && typeof fetchGuestWalkInDrafts
-      !== 'function'
   ) {
 
     container.innerHTML =
@@ -313,7 +270,7 @@ async function loadMemberVorstandDraftsList() {
   try {
 
     const drafts =
-      await fetchAllMemberVorstandDrafts();
+      await fetchContentDrafts();
 
     void refreshMemberDraftsTabIndicator();
 
@@ -359,12 +316,8 @@ async function initMemberVorstandDraftsTab(
 ) {
 
   if (
-    typeof canLoadGuestWalkInDrafts === 'function'
-      ? !canLoadGuestWalkInDrafts()
-      : (
-        typeof isVorstand !== 'function'
-        || !isVorstand(member)
-      )
+    typeof isVorstand !== 'function'
+    || !isVorstand(member)
   ) {
     return;
   }
