@@ -4,6 +4,19 @@
 -- Nach Phase-4a-Basis + Public-Registrierung ausführen.
 -- Siehe docs/supabase/RUNBOOK.md
 
+-- Walk-in-Entwurf-Merkmal (Profil → Entwürfe)
+alter table public.members
+  add column if not exists walkin_open boolean not null default false;
+
+alter table public.members
+  add column if not exists walkin_module_id bigint null;
+
+comment on column public.members.walkin_open is
+  'Walk-in-Gast offen — erscheint in Profil → Entwürfe bis fertig oder entfernt.';
+
+comment on column public.members.walkin_module_id is
+  'Feedback-Modul des Termins, an dem der Walk-in angelegt wurde.';
+
 -- ---------------------------------------------------------------------------
 -- Hilfsfunktionen
 -- ---------------------------------------------------------------------------
@@ -224,7 +237,12 @@ revoke all on function public.admin_write_event_participant_answer(
 
 -- ---------------------------------------------------------------------------
 -- Vorstand-RPC: Teilnehmer verwalten (nur Einzeltermine)
+-- Alte Signatur (mit p_incognito) zuerst entfernen — sonst „function name is not unique“.
 -- ---------------------------------------------------------------------------
+
+drop function if exists public.admin_manage_event_participant(
+  bigint, text, bigint, text, text, text, boolean, text, text, text
+);
 
 create or replace function public.admin_manage_event_participant(
   p_module_id bigint,
@@ -328,14 +346,18 @@ begin
       vorname,
       nachname,
       telefonnummer,
-      rolle
+      rolle,
+      walkin_open,
+      walkin_module_id
     )
     values (
       v_placeholder_email,
       nullif(v_vorname, ''),
       nullif(v_nachname, ''),
       nullif(trim(coalesce(p_telefon, '')), ''),
-      'guest'
+      'guest',
+      true,
+      p_module_id
     )
     returning id
     into v_new_member_id;
@@ -486,6 +508,13 @@ begin
         case
           when v_email <> '' then v_email
           else email
+        end,
+      walkin_open =
+        case
+          when v_email <> ''
+            and not public.is_guest_internal_email(v_email)
+            then false
+          else walkin_open
         end
     where id = p_member_id;
 
@@ -510,6 +539,28 @@ begin
     where fa.module_id = p_module_id
       and fa.member_id = p_member_id
     limit 1;
+
+    return jsonb_build_object(
+      'ok', true,
+      'member_id', p_member_id,
+      'action', v_action
+    );
+
+  end if;
+
+  -- -------------------------------------------------------------------------
+  -- complete_walkin (Entwurf schließen, Gast bleibt auf Teilnehmerliste)
+  -- -------------------------------------------------------------------------
+
+  if v_action = 'complete_walkin' then
+
+    if lower(trim(coalesce(v_member.rolle, ''))) <> 'guest' then
+      raise exception 'Nur Walk-in-Gäste können so abgeschlossen werden.';
+    end if;
+
+    update public.members
+    set walkin_open = false
+    where id = p_member_id;
 
     return jsonb_build_object(
       'ok', true,
@@ -594,6 +645,16 @@ begin
         )
       );
 
+    if lower(trim(coalesce(v_member.rolle, ''))) = 'guest' then
+
+      update public.members
+      set
+        walkin_open = false,
+        walkin_module_id = null
+      where id = p_member_id;
+
+    end if;
+
     return v_result || jsonb_build_object(
       'member_id', p_member_id,
       'action', v_action
@@ -614,7 +675,9 @@ grant execute on function public.admin_manage_event_participant(
   bigint, text, bigint, text, text, text, text, text, text
 ) to authenticated;
 
-comment on function public.admin_manage_event_participant is
+comment on function public.admin_manage_event_participant(
+  bigint, text, bigint, text, text, text, text, text, text
+) is
   'Vorstand: Einzeltermin-Teilnehmer hinzufügen, ändern, entfernen; Walk-in-Gäste (rolle guest, immer Ja).';
 
 -- ---------------------------------------------------------------------------
@@ -723,7 +786,9 @@ begin
       vorname = nullif(v_vorname, ''),
       nachname = nullif(v_nachname, ''),
       telefonnummer = nullif(trim(coalesce(p_telefon, '')), ''),
-      rolle = 'public'
+      rolle = 'public',
+      walkin_open = false,
+      walkin_module_id = null
     where id = v_member_id;
 
     return jsonb_build_object(
@@ -856,7 +921,9 @@ begin
       vorname = nullif(v_vorname, ''),
       nachname = nullif(v_nachname, ''),
       telefonnummer = nullif(trim(coalesce(p_telefon, '')), ''),
-      rolle = 'public'
+      rolle = 'public',
+      walkin_open = false,
+      walkin_module_id = null
     where id = v_member_id;
 
   else
@@ -939,14 +1006,6 @@ grant execute on function public.submit_public_feedback(
 ) to authenticated;
 
 -- ---------------------------------------------------------------------------
--- Migration: Inkognito entfernt (alte Signatur droppen)
--- ---------------------------------------------------------------------------
-
-drop function if exists public.admin_manage_event_participant(
-  bigint, text, bigint, text, text, text, boolean, text, text, text
-);
-
--- ---------------------------------------------------------------------------
 -- Walk-in-Entwürfe für Profil → Entwürfe (Vorstand)
 -- ---------------------------------------------------------------------------
 
@@ -971,7 +1030,7 @@ begin
   from (
     select
       m.id as member_id,
-      fa.module_id,
+      m.walkin_module_id as module_id,
       fm.entity_id as termin_id,
       t.title as termin_title,
       m.vorname,
@@ -980,17 +1039,16 @@ begin
       m.email,
       coalesce(fa.updated_at, m.updated_at) as sort_at
     from public.members m
-    inner join public.feedback_answers fa
+    left join public.feedback_modules fm
+      on fm.id = m.walkin_module_id
+    left join public.feedback_answers fa
       on fa.member_id = m.id
-    inner join public.feedback_modules fm
-      on fm.id = fa.module_id
+      and fa.module_id = m.walkin_module_id
     left join public."Termine" t
       on t.id = fm.entity_id
-    where lower(trim(coalesce(m.rolle, ''))) = 'guest'
+    where m.walkin_open = true
+      and lower(trim(coalesce(m.rolle, ''))) = 'guest'
       and m.anonymized_at is null
-      and public.is_guest_internal_email(m.email)
-      and fm.entity_type = 'event'
-      and fm.type = 'yes_maybe'
     order by coalesce(fa.updated_at, m.updated_at) desc nulls last
   ) x;
 
@@ -1003,4 +1061,25 @@ revoke all on function public.list_guest_walkin_drafts() from public;
 grant execute on function public.list_guest_walkin_drafts() to authenticated;
 
 comment on function public.list_guest_walkin_drafts is
-  'Vorstand: offene Walk-in-Gäste (Platzhalter-E-Mail) mit Terminbezug für Profil-Entwürfe.';
+  'Vorstand: offene Walk-in-Gäste (members.walkin_open) für Profil-Entwürfe.';
+
+-- Bestehende Walk-ins nachziehen (einmalig / idempotent)
+update public.members m
+set
+  walkin_open = true,
+  walkin_module_id = x.module_id
+from (
+  select distinct on (fa.member_id)
+    fa.member_id,
+    fa.module_id
+  from public.feedback_answers fa
+  inner join public.feedback_modules fm
+    on fm.id = fa.module_id
+  where fm.entity_type = 'event'
+  order by fa.member_id, fa.updated_at desc nulls last
+) x
+where m.id = x.member_id
+  and lower(trim(coalesce(m.rolle, ''))) = 'guest'
+  and public.is_guest_internal_email(m.email)
+  and m.anonymized_at is null
+  and m.walkin_open = false;

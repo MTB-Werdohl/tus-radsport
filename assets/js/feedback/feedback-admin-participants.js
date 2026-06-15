@@ -769,6 +769,19 @@ async function runParticipantAdminAction(
     await callbacks.reload();
   }
 
+  if (
+    typeof refreshMemberDraftsTabIndicator
+      === 'function'
+    && (
+      payload.action === 'add_guest'
+      || payload.action === 'complete_walkin'
+      || payload.action === 'remove'
+      || payload.action === 'update_guest'
+    )
+  ) {
+    void refreshMemberDraftsTabIndicator();
+  }
+
 }
 
 function bindEditableEventParticipants(
@@ -1109,22 +1122,13 @@ async function openGuestWalkInEditModal(
 
   }
 
-  if (!moduleId) {
-
-    body.innerHTML =
-      '<p class="admin-hint admin-hint--error">Kein Termin zugeordnet — Gast kann nicht bearbeitet werden.</p>';
-
-    return;
-
-  }
-
   const { data: member, error } =
     await window.supabaseClient
       .from(
         window.siteConfig.tables.members
       )
       .select(
-        'id,vorname,nachname,email,telefonnummer,rolle'
+        'id,vorname,nachname,email,telefonnummer,rolle,walkin_module_id'
       )
       .eq('id', memberId)
       .single();
@@ -1136,6 +1140,19 @@ async function openGuestWalkInEditModal(
 
     body.innerHTML =
       '<p class="admin-hint admin-hint--error">Gast konnte nicht geladen werden.</p>';
+
+    return;
+
+  }
+
+  if (!moduleId) {
+    moduleId = member.walkin_module_id || null;
+  }
+
+  if (!moduleId) {
+
+    body.innerHTML =
+      '<p class="admin-hint admin-hint--error">Kein Termin zugeordnet — Gast kann nicht bearbeitet werden.</p>';
 
     return;
 
@@ -1206,6 +1223,15 @@ async function openGuestWalkInEditModal(
   data-close-event-vorstand-modal="true">
 
   Abbrechen
+
+</button>
+
+<button
+  type="button"
+  class="member-edit-btn member-edit-btn--secondary"
+  id="guest-walkin-complete">
+
+  Fertig
 
 </button>
 
@@ -1295,6 +1321,49 @@ async function openGuestWalkInEditModal(
           alert(
             result.error.message
               || 'Speichern fehlgeschlagen.'
+          );
+
+          return;
+
+        }
+
+        closeEventVorstandModal(modalId);
+
+        if (
+          typeof options.onSaved === 'function'
+        ) {
+          await options.onSaved();
+        }
+
+        if (
+          typeof refreshMemberDraftsTabIndicator
+            === 'function'
+        ) {
+          void refreshMemberDraftsTabIndicator();
+        }
+
+      })();
+
+    });
+
+  body
+    .querySelector('#guest-walkin-complete')
+    ?.addEventListener('click', () => {
+
+      void (async () => {
+
+        const result =
+          await adminManageEventParticipant({
+            moduleId,
+            action: 'complete_walkin',
+            memberId
+          });
+
+        if (result?.error) {
+
+          alert(
+            result.error.message
+              || 'Entwurf konnte nicht abgeschlossen werden.'
           );
 
           return;
