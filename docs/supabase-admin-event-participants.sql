@@ -1030,7 +1030,10 @@ begin
   from (
     select
       m.id as member_id,
-      m.walkin_module_id as module_id,
+      coalesce(
+        m.walkin_module_id,
+        fa.module_id
+      ) as module_id,
       fm.entity_id as termin_id,
       t.title as termin_title,
       m.vorname,
@@ -1039,15 +1042,20 @@ begin
       m.email,
       coalesce(fa.updated_at, m.updated_at) as sort_at
     from public.members m
+    left join lateral (
+      select
+        fa_inner.module_id,
+        fa_inner.updated_at
+      from public.feedback_answers fa_inner
+      where fa_inner.member_id = m.id
+      order by fa_inner.updated_at desc nulls last
+      limit 1
+    ) fa on true
     left join public.feedback_modules fm
-      on fm.id = m.walkin_module_id
-    left join public.feedback_answers fa
-      on fa.member_id = m.id
-      and fa.module_id = m.walkin_module_id
+      on fm.id = coalesce(m.walkin_module_id, fa.module_id)
     left join public."Termine" t
       on t.id = fm.entity_id
-    where m.walkin_open = true
-      and lower(trim(coalesce(m.rolle, ''))) = 'guest'
+    where lower(trim(coalesce(m.rolle, ''))) = 'guest'
       and m.anonymized_at is null
     order by coalesce(fa.updated_at, m.updated_at) desc nulls last
   ) x;
@@ -1061,25 +1069,4 @@ revoke all on function public.list_guest_walkin_drafts() from public;
 grant execute on function public.list_guest_walkin_drafts() to authenticated;
 
 comment on function public.list_guest_walkin_drafts is
-  'Vorstand: offene Walk-in-Gäste (members.walkin_open) für Profil-Entwürfe.';
-
--- Bestehende Walk-ins nachziehen (einmalig / idempotent)
-update public.members m
-set
-  walkin_open = true,
-  walkin_module_id = x.module_id
-from (
-  select distinct on (fa.member_id)
-    fa.member_id,
-    fa.module_id
-  from public.feedback_answers fa
-  inner join public.feedback_modules fm
-    on fm.id = fa.module_id
-  where fm.entity_type = 'event'
-  order by fa.member_id, fa.updated_at desc nulls last
-) x
-where m.id = x.member_id
-  and lower(trim(coalesce(m.rolle, ''))) = 'guest'
-  and public.is_guest_internal_email(m.email)
-  and m.anonymized_at is null
-  and m.walkin_open = false;
+  'Vorstand: alle Walk-in-Gäste (rolle guest) für Profil-Entwürfe.';

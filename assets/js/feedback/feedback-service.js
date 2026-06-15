@@ -1126,34 +1126,271 @@ async function fetchGuestWalkInDrafts() {
     return [];
   }
 
+  const rpcRows =
+    await fetchGuestWalkInDraftsViaRpc();
+
+  const directRows =
+    await fetchGuestWalkInDraftsDirect();
+
+  const merged =
+    new Map();
+
+  [
+    ...rpcRows,
+    ...directRows
+  ].forEach((draft) => {
+
+    if (draft?.id) {
+      merged.set(draft.id, draft);
+    }
+
+  });
+
+  return [...merged.values()]
+    .sort((left, right) => {
+
+      const leftTime =
+        left.sortAt
+          ? new Date(left.sortAt).getTime()
+          : 0;
+
+      const rightTime =
+        right.sortAt
+          ? new Date(right.sortAt).getTime()
+          : 0;
+
+      if (rightTime !== leftTime) {
+        return rightTime - leftTime;
+      }
+
+      return (right.id || 0) - (left.id || 0);
+
+    });
+
+}
+
+async function fetchGuestWalkInDraftsViaRpc() {
+
   const { data, error } =
     await window.supabaseClient.rpc(
       'list_guest_walkin_drafts'
     );
 
-  if (!error) {
+  if (error) {
 
-    return normalizeRpcJsonArray(data)
-      .map(mapGuestWalkInDraftRow)
-      .filter(Boolean);
+    if (
+      error.code !== 'PGRST202'
+      && !String(error.message || '')
+        .includes('list_guest_walkin_drafts')
+    ) {
+      console.error(
+        'list_guest_walkin_drafts:',
+        error
+      );
+    }
+
+    return [];
 
   }
 
-  if (
-    error.code !== 'PGRST202'
-    && !String(error.message || '')
-      .includes('list_guest_walkin_drafts')
-  ) {
-    console.error(error);
+  return normalizeRpcJsonArray(data)
+    .map(mapGuestWalkInDraftRow)
+    .filter(Boolean);
+
+}
+
+async function fetchGuestWalkInDraftsDirect() {
+
+  const { data: guests, error } =
+    await window.supabaseClient
+      .from(
+        window.siteConfig.tables.members
+      )
+      .select(
+        'id,vorname,nachname,email,telefonnummer,updated_at,walkin_module_id,rolle'
+      )
+      .is('anonymized_at', null)
+      .filter('rolle', 'ilike', 'guest')
+      .order('updated_at', {
+        ascending: false,
+        nullsFirst: false
+      });
+
+  if (error) {
+
+    console.error(
+      'fetchGuestWalkInDraftsDirect:',
+      error
+    );
+
+    return [];
+
   }
 
-  return [];
+  const guestRows =
+    (guests || [])
+      .filter((row) =>
+        String(row.rolle || '')
+          .trim()
+          .toLowerCase() === 'guest'
+      );
+
+  if (!guestRows.length) {
+    return [];
+  }
+
+  const guestIds =
+    guestRows.map((row) => row.id);
+
+  const { data: answers, error: answersError } =
+    await window.supabaseClient
+      .from(
+        window.siteConfig.tables.feedbackAnswers
+      )
+      .select(
+        'member_id,module_id,updated_at'
+      )
+      .in('member_id', guestIds)
+      .order('updated_at', {
+        ascending: false
+      });
+
+  if (answersError) {
+
+    console.error(answersError);
+
+  }
+
+  const latestAnswerByMember =
+    new Map();
+
+  (answers || []).forEach((row) => {
+
+    if (
+      !latestAnswerByMember.has(row.member_id)
+    ) {
+      latestAnswerByMember.set(
+        row.member_id,
+        row
+      );
+    }
+
+  });
+
+  const moduleIds =
+    [
+      ...new Set(
+        guestRows
+          .map((row) =>
+            row.walkin_module_id
+            || latestAnswerByMember
+              .get(row.id)
+              ?.module_id
+          )
+          .filter(Boolean)
+      )
+    ];
+
+  let terminMap =
+    new Map();
+
+  if (moduleIds.length) {
+
+    const { data: modules } =
+      await window.supabaseClient
+        .from(
+          window.siteConfig.tables.feedbackModules
+        )
+        .select('id,entity_id')
+        .in('id', moduleIds);
+
+    const terminIds =
+      (modules || [])
+        .map((row) => row.entity_id)
+        .filter(Boolean);
+
+    let terminTitleMap =
+      new Map();
+
+    if (terminIds.length) {
+
+      const { data: termine } =
+        await window.supabaseClient
+          .from(
+            window.siteConfig.tables.termine
+          )
+          .select('id,title')
+          .in('id', terminIds);
+
+      (termine || []).forEach((termin) => {
+        terminTitleMap.set(
+          termin.id,
+          termin.title
+        );
+      });
+
+    }
+
+    (modules || []).forEach((moduleRow) => {
+
+      terminMap.set(
+        moduleRow.id,
+        {
+          terminId: moduleRow.entity_id,
+          terminTitle:
+            terminTitleMap.get(
+              moduleRow.entity_id
+            ) || null
+        }
+      );
+
+    });
+
+  }
+
+  return guestRows
+    .map((row) => {
+
+      const answerRow =
+        latestAnswerByMember.get(row.id);
+
+      const moduleId =
+        row.walkin_module_id
+        || answerRow?.module_id
+        || null;
+
+      const terminMeta =
+        moduleId
+          ? terminMap.get(moduleId)
+          : null;
+
+      return mapGuestWalkInDraftRow({
+        member_id: row.id,
+        module_id: moduleId,
+        termin_id:
+          terminMeta?.terminId || null,
+        termin_title:
+          terminMeta?.terminTitle || null,
+        vorname: row.vorname,
+        nachname: row.nachname,
+        sort_at:
+          answerRow?.updated_at
+          || row.updated_at
+          || null
+      });
+
+    })
+    .filter(Boolean);
 
 }
 
 function mapGuestWalkInDraftRow(row) {
 
-  if (!row?.member_id) {
+  const memberId =
+    row?.member_id
+    || row?.id;
+
+  if (!memberId) {
     return null;
   }
 
@@ -1172,8 +1409,8 @@ function mapGuestWalkInDraftRow(row) {
 
   return {
     type: 'walkin',
-    id: row.member_id,
-    memberId: row.member_id,
+    id: memberId,
+    memberId,
     moduleId: row.module_id || null,
     terminId: row.termin_id || null,
     title:
