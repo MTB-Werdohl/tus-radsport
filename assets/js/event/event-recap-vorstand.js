@@ -329,7 +329,14 @@ async function saveEventRecapFromModal(
     'event-recap-edit-modal'
   );
 
-  window.location.reload();
+  if (
+    typeof reloadAfterVorstandContentSave
+      === 'function'
+  ) {
+    reloadAfterVorstandContentSave();
+  } else {
+    window.location.reload();
+  }
 
 }
 
@@ -340,7 +347,7 @@ async function openEventRecapEditModal(
 
   openEventVorstandModal(
     'event-recap-edit-modal',
-    'Rückblick bearbeiten'
+    'Erlebtes bearbeiten'
   );
 
   const body =

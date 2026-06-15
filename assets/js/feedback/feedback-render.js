@@ -1117,6 +1117,119 @@ async function refreshFeedbackPollResults(
 
 }
 
+function renderFeedbackYesMaybeCountsSummary(
+  summary
+) {
+
+  if (!summary?.counts) {
+    return '';
+  }
+
+  const yesKey =
+    window.siteConfig.feedback.answers.yes;
+
+  const maybeKey =
+    window.siteConfig.feedback.answers.maybe;
+
+  const yesCount =
+    Number(summary.counts[yesKey]) || 0;
+
+  const maybeCount =
+    Number(summary.counts[maybeKey]) || 0;
+
+  return `
+<div
+  class="feedback-yes-maybe-counts"
+  data-feedback-yes-maybe-counts>
+
+<p class="feedback-yes-maybe-counts__line">
+  Ja: ${yesCount}
+</p>
+
+<p class="feedback-yes-maybe-counts__line">
+  Interesse: ${maybeCount}
+</p>
+
+</div>
+`;
+
+}
+
+async function refreshFeedbackYesMaybeCounts(
+  container,
+  module,
+  entityRecurring
+) {
+
+  if (
+    !container
+    || !module
+  ) {
+    return;
+  }
+
+  if (
+    resolveFeedbackModuleType(module)
+    !== window.siteConfig.feedback.types.yesMaybe
+  ) {
+    return;
+  }
+
+  if (
+    isFeedbackEventSubscriptionMode(
+      module,
+      entityRecurring
+    )
+  ) {
+    return;
+  }
+
+  const summary =
+    await fetchFeedbackModuleSummary(
+      module.id
+    );
+
+  const html =
+    renderFeedbackYesMaybeCountsSummary(
+      summary
+    );
+
+  const existing =
+    container.querySelector(
+      '[data-feedback-yes-maybe-counts]'
+    );
+
+  if (!html) {
+
+    if (existing) {
+      existing.remove();
+    }
+
+    return;
+
+  }
+
+  const questionEl =
+    container.querySelector(
+      '.feedback-question'
+    );
+
+  if (!questionEl) {
+    return;
+  }
+
+  if (existing) {
+    existing.outerHTML = html;
+    return;
+  }
+
+  questionEl.insertAdjacentHTML(
+    'afterend',
+    html
+  );
+
+}
+
 async function renderFeedbackPollResultsOnly(
   container,
   module,
@@ -1332,6 +1445,12 @@ ${
     module,
     member,
     entityVisibility
+  );
+
+  void refreshFeedbackYesMaybeCounts(
+    container,
+    module,
+    entityRecurring
   );
 
 }

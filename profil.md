@@ -3,9 +3,12 @@ layout: default
 title: Mein Profil
 permalink: /profil/
 hide_title: true
-member_profile: true
+.member_profile: true
 load_aktivitaeten_css: true
 load_calendar_css: true
+load_events_css: true
+load_feedback_css: true
+load_member_content_edit_css: true
 ---
 
 <section class="member-profile-section">
@@ -35,6 +38,14 @@ load_calendar_css: true
 <script src="/assets/js/core/content-creator.js"></script>
 <script src="/assets/js/recap/recap-service.js"></script>
 <script src="/assets/js/core/content-drafts.js"></script>
+<script src="/assets/js/core/media-url.js"></script>
+<script src="/admin/js/media-storage-lib.js"></script>
+<script src="/admin/js/media-picker.js"></script>
+<script src="/assets/js/member/member-edit-utils.js"></script>
+<script src="/admin/js/feedback-module-form.js"></script>
+<script src="/assets/js/news/news-detail-vorstand.js"></script>
+<script src="/assets/js/event/event-detail-vorstand.js"></script>
+<script src="/assets/js/event/event-recap-vorstand.js"></script>
 <script src="/assets/js/member/member-vorstand-drafts.js"></script>
 <script src="/assets/js/member/member-content.js"></script>
 <script src="/assets/js/member/member-render.js"></script>

@@ -82,9 +82,13 @@ ${backLabelTop}
 
 </a>
 
-<div id="event-vorstand-actions"></div>
-
 <div id="share"></div>
+
+<div
+  id="event-vorstand-actions"
+  class="news-vorstand-actions">
+
+</div>
 
 </div>
 
@@ -507,5 +511,16 @@ class="event-button"
 </div>
 
 `;
+
+  wrapper.dataset.eventId =
+    String(event.id);
+
+  wrapper.dataset.eventTitle =
+    event.title || '';
+
+  wrapper.dataset.fromErlebtes =
+    fromErlebtes
+      ? 'true'
+      : 'false';
 
 }

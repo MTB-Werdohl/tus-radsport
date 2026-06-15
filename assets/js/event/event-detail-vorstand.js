@@ -195,7 +195,9 @@ function closeEventVorstandModal(id) {
 }
 
 function renderEventVorstandToolbar(
-  eventData
+  eventData,
+  feedbackModule,
+  showResults
 ) {
 
   const actions =
@@ -206,6 +208,22 @@ function renderEventVorstandToolbar(
   if (!actions) {
     return;
   }
+
+  const resultsButton =
+    showResults
+    && feedbackModule?.id
+      ? `
+<button
+  type="button"
+  class="news-vorstand-btn"
+  data-event-vorstand-results
+  data-module-id="${feedbackModule.id}">
+
+  Auswertung
+
+</button>
+`
+      : '';
 
   actions.innerHTML = `
 <div class="news-vorstand-actions__inner">
@@ -220,6 +238,8 @@ function renderEventVorstandToolbar(
 
 </button>
 
+${resultsButton}
+
 </div>
   `;
 
@@ -229,6 +249,29 @@ function renderEventVorstandToolbar(
 
       void openEventEditModal(
         eventData.id
+      );
+
+    });
+
+  actions
+    .querySelector('[data-event-vorstand-results]')
+    ?.addEventListener('click', (event) => {
+
+      const moduleId =
+        parseInt(
+          event.currentTarget
+            ?.dataset
+            ?.moduleId,
+          10
+        );
+
+      if (!moduleId) {
+        return;
+      }
+
+      void openEventFeedbackResultsModal(
+        moduleId,
+        eventData.title
       );
 
     });
@@ -739,7 +782,14 @@ async function saveEventFromVorstandModal() {
     'event-vorstand-edit-modal'
   );
 
-  window.location.reload();
+  if (
+    typeof reloadAfterVorstandContentSave
+      === 'function'
+  ) {
+    reloadAfterVorstandContentSave();
+  } else {
+    window.location.reload();
+  }
 
 }
 
@@ -772,6 +822,65 @@ async function openEventEditModal(eventId) {
 
 }
 
+async function openEventFeedbackResultsModal(
+  moduleId,
+  title
+) {
+
+  const modalId =
+    'event-vorstand-results-modal';
+
+  ensureEventVorstandModal(
+    modalId,
+    title || 'Rückmeldungen',
+    'member-feedback-modal__dialog--results'
+  );
+
+  const modal =
+    document.getElementById(modalId);
+
+  const body =
+    modal?.querySelector(
+      '[data-event-vorstand-modal-body]'
+    );
+
+  if (!body) {
+    return;
+  }
+
+  body.innerHTML = `
+<p class="admin-hint">
+  Auswertung wird geladen …
+</p>
+  `;
+
+  openEventVorstandModal(
+    modalId,
+    title || 'Rückmeldungen'
+  );
+
+  if (
+    typeof loadFeedbackResultsForModule
+      !== 'function'
+  ) {
+
+    body.innerHTML = `
+<p class="admin-hint admin-hint--error">
+  Auswertung konnte nicht geladen werden.
+</p>
+    `;
+
+    return;
+
+  }
+
+  await loadFeedbackResultsForModule(
+    moduleId,
+    body
+  );
+
+}
+
 function initEventDetailVorstand(
   eventData,
   member,
@@ -786,8 +895,96 @@ function initEventDetailVorstand(
     return;
   }
 
-  renderEventVorstandToolbar(
-    eventData
+  void initEventDetailVorstandAsync(
+    eventData,
+    member
   );
 
 }
+
+async function initEventDetailVorstandAsync(
+  eventData,
+  member
+) {
+
+  const feedbackModule =
+    await fetchFeedbackModule(
+      window.siteConfig.feedback.entityTypes.event,
+      eventData.id
+    );
+
+  let showResults = false;
+
+  if (feedbackModule?.id) {
+
+    if (feedbackModule.enabled !== false) {
+      showResults = true;
+    } else if (
+      typeof countFeedbackAnswers
+        === 'function'
+    ) {
+
+      const answerCount =
+        await countFeedbackAnswers(
+          feedbackModule.id
+        );
+
+      showResults = answerCount > 0;
+
+    }
+
+  }
+
+  renderEventVorstandToolbar(
+    eventData,
+    feedbackModule,
+    showResults
+  );
+
+}
+
+window.addEventListener(
+  'member-session-ready',
+  () => {
+
+    const eventRoot =
+      document.getElementById('event');
+
+    if (
+      !eventRoot
+      || !eventRoot.dataset.eventId
+    ) {
+      return;
+    }
+
+    const member =
+      typeof getCurrentMember === 'function'
+        ? getCurrentMember()
+        : null;
+
+    if (!canShowEventVorstandTools(member)) {
+      return;
+    }
+
+    if (
+      eventRoot.dataset.fromErlebtes === 'true'
+    ) {
+      return;
+    }
+
+    void initEventDetailVorstandAsync(
+      {
+        id:
+          parseInt(
+            eventRoot.dataset.eventId,
+            10
+          ),
+        title:
+          eventRoot.dataset.eventTitle
+          || ''
+      },
+      member
+    );
+
+  }
+);

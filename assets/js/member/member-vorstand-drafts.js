@@ -12,6 +12,25 @@ function escapeMemberDraftHtml(value) {
 
 }
 
+function reloadAfterVorstandContentSave() {
+
+  const path =
+    window.location.pathname
+      .replace(/\/$/, '');
+
+  if (path === '/profil') {
+
+    window.location.href =
+      '/profil/?tab=entwuerfe';
+
+    return;
+
+  }
+
+  window.location.reload();
+
+}
+
 async function refreshMemberDraftsTabIndicator() {
 
   const tab =
@@ -63,21 +82,8 @@ function renderMemberDraftCard(draft) {
 
   const creatorMeta =
     draft.creatorLabel
-      ? `
-                  ·
-                  ${escapeMemberDraftHtml(draft.creatorLabel)}
-      `
+      ? ` · ${escapeMemberDraftHtml(draft.creatorLabel)}`
       : '';
-
-  const previewUrl =
-    typeof getContentDraftPreviewUrl === 'function'
-      ? getContentDraftPreviewUrl(draft)
-      : '#';
-
-  const editUrl =
-    typeof getContentDraftEditUrl === 'function'
-      ? getContentDraftEditUrl(draft)
-      : '#';
 
   const typeLabel =
     typeof getContentDraftTypeLabel === 'function'
@@ -89,55 +95,113 @@ function renderMemberDraftCard(draft) {
       ? formatContentDraftDate(draft.sortAt)
       : '';
 
+  const terminIdAttr =
+    draft.type === 'recap'
+      ? ` data-draft-termin-id="${draft.terminId}"`
+      : '';
+
   return `
-<article class="member-draft-card">
+<button
+  type="button"
+  class="member-draft-card"
+  data-member-draft-open="true"
+  data-draft-type="${escapeMemberDraftHtml(draft.type)}"
+  data-draft-id="${draft.id}"${terminIdAttr}>
 
-  <div class="member-draft-card__main">
+  <span class="member-draft-card__title">
+    ${escapeMemberDraftHtml(draft.title)}
+  </span>
 
-    <a
-      class="member-draft-card__title"
-      href="${escapeMemberDraftHtml(previewUrl)}">
+  <span class="member-draft-card__meta">
+    ${escapeMemberDraftHtml(typeLabel)}
+    ·
+    ${escapeMemberDraftHtml(dateLabel)}${creatorMeta}
+  </span>
 
-      ${escapeMemberDraftHtml(draft.title)}
-
-    </a>
-
-    <p class="member-draft-card__meta">
-
-      ${escapeMemberDraftHtml(typeLabel)}
-
-      ·
-
-      ${escapeMemberDraftHtml(dateLabel)}
-
-      ${creatorMeta}
-
-    </p>
-
-  </div>
-
-  <div class="member-draft-card__actions">
-
-    <a
-      class="member-edit-btn member-edit-btn--secondary"
-      href="${escapeMemberDraftHtml(editUrl)}">
-
-      Bearbeiten
-
-    </a>
-
-    <a
-      class="member-edit-btn"
-      href="${escapeMemberDraftHtml(previewUrl)}">
-
-      Vorschau
-
-    </a>
-
-  </div>
-
-</article>
+</button>
   `.trim();
+
+}
+
+async function openMemberDraftEdit(draft) {
+
+  if (!draft?.type) {
+    return;
+  }
+
+  if (
+    draft.type === 'news'
+    && typeof openNewsEditModal === 'function'
+  ) {
+
+    await openNewsEditModal(draft.id);
+    return;
+
+  }
+
+  if (
+    draft.type === 'event'
+    && typeof openEventEditModal === 'function'
+  ) {
+
+    await openEventEditModal(draft.id);
+    return;
+
+  }
+
+  if (
+    draft.type === 'recap'
+    && typeof openEventRecapEditModal === 'function'
+  ) {
+
+    await openEventRecapEditModal(
+      draft.terminId,
+      null
+    );
+
+  }
+
+}
+
+function bindMemberDraftCardEvents(
+  container
+) {
+
+  if (!container) {
+    return;
+  }
+
+  container
+    .querySelectorAll(
+      '[data-member-draft-open]'
+    )
+    .forEach((button) => {
+
+      button.addEventListener(
+        'click',
+        () => {
+
+          const draft = {
+            type:
+              button.dataset.draftType,
+            id:
+              parseInt(
+                button.dataset.draftId,
+                10
+              ),
+            terminId:
+              parseInt(
+                button.dataset.draftTerminId,
+                10
+              ) || null
+          };
+
+          void openMemberDraftEdit(draft);
+
+        }
+      );
+
+    });
 
 }
 
@@ -195,6 +259,10 @@ async function loadMemberVorstandDraftsList() {
   ${drafts.map(renderMemberDraftCard).join('')}
 </div>
     `.trim();
+
+    bindMemberDraftCardEvents(
+      container
+    );
 
   } catch (error) {
 

@@ -565,37 +565,43 @@ a:hover {
 }
 
 .member-draft-card {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  display: block;
+  width: 100%;
+  margin: 0;
   padding: 14px 16px;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.member-draft-card:hover {
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.member-draft-card:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.45);
+  outline-offset: 2px;
 }
 
 .member-draft-card__title {
+  display: block;
   color: #fff;
   font-weight: 700;
-  text-decoration: none;
-}
-
-.member-draft-card__title:hover {
-  text-decoration: underline;
 }
 
 .member-draft-card__meta {
-  margin: 6px 0 0;
+  display: block;
+  margin-top: 6px;
   font-size: 0.88rem;
   color: rgba(255, 255, 255, 0.72);
-}
-
-.member-draft-card__actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
 }
 
 .member-profile-tab-panel[hidden] {

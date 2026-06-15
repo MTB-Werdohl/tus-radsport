@@ -29,19 +29,6 @@
   width: 100%;
 }
 
-#event-vorstand-actions:not(:empty) {
-  width: 100%;
-}
-
-@media (min-width: 768px) {
-
-  #event-vorstand-actions:not(:empty) {
-    width: auto;
-    margin-left: auto;
-  }
-
-}
-
 .event-recap-header {
   display: flex;
   flex-wrap: wrap;

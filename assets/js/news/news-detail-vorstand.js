@@ -737,7 +737,14 @@ async function saveNewsFromVorstandModal() {
     'news-vorstand-edit-modal'
   );
 
-  window.location.reload();
+  if (
+    typeof reloadAfterVorstandContentSave
+      === 'function'
+  ) {
+    reloadAfterVorstandContentSave();
+  } else {
+    window.location.reload();
+  }
 
 }
 

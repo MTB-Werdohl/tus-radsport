@@ -1606,6 +1606,24 @@ width: 1%;
 
 }
 
+.feedback-yes-maybe-counts {
+
+margin: 0.35rem 0 0.85rem;
+
+color: rgba(255, 255, 255, 0.92);
+
+font-size: 0.95rem;
+
+line-height: 1.45;
+
+}
+
+.feedback-yes-maybe-counts__line {
+
+margin: 0.15rem 0;
+
+}
+
 .feedback-poll-results {
 
 margin-top: 16px;
