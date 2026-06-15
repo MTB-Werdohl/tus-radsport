@@ -68,11 +68,6 @@ function buildEditableEventParticipantRows(
           typeof isGuestMember === 'function'
             ? isGuestMember(member)
             : false,
-        isIncognito:
-          typeof isIncognitoGuestMember
-            === 'function'
-            ? isIncognitoGuestMember(member)
-            : false,
         vorname: member.vorname || '',
         nachname: member.nachname || '',
         telefon:
@@ -190,20 +185,11 @@ function renderParticipantAdminAddPanel(
   </select>
 </label>
 
-<label class="admin-field">
-  Antwort
-  <select data-feedback-participant-member-answer>
-
-    <option value="yes">
-      Ja
-    </option>
-
-    <option value="maybe">
-      Interesse
-    </option>
-
-  </select>
-</label>
+<p class="admin-hint">
+  Wird immer als
+  <strong>Ja</strong>
+  auf die Teilnehmerliste gesetzt.
+</p>
 
 </div>
 
@@ -216,37 +202,22 @@ function renderParticipantAdminAddPanel(
   Vorname
   <input
     type="text"
-    data-feedback-participant-guest-vorname
-    placeholder="Optional bei Inkognito">
+    data-feedback-participant-guest-vorname>
 </label>
 
 <label class="admin-field">
-  Nachname / Bezeichnung
+  Nachname
   <input
     type="text"
-    data-feedback-participant-guest-nachname
-    placeholder="z. B. Unbekannter Fahrer">
-</label>
-
-<label class="admin-field feedback-participant-admin__checkbox">
-
-  <input
-    type="checkbox"
-    data-feedback-participant-guest-incognito>
-
-  Inkognito
-
+    data-feedback-participant-guest-nachname>
 </label>
 
 <p class="admin-hint">
-  <strong>Inkognito:</strong>
-  Der Gast zählt als
-  <strong>Ja</strong>,
-  erscheint aber ohne Klarnamen in der
-  Liste — nur für euch als Vorstand
-  sichtbar (z.&nbsp;B. „Unbekannter Fahrer“).
-  Später können Name, Telefon und E-Mail
-  ergänzt werden, ohne neuen Datensatz.
+  Mindestens Vorname oder Nachname.
+  Der Gast zählt immer als
+  <strong>Ja</strong>.
+  Name, Telefon und E-Mail können später
+  im Profil unter Entwürfe ergänzt werden.
 </p>
 
 </div>
@@ -286,11 +257,7 @@ function renderEditableParticipantTable(
 
         const sourceLabel =
           row.isGuest
-            ? (
-              row.isIncognito
-                ? 'Gast (inkognito)'
-                : 'Gast'
-            )
+            ? 'Gast'
             : 'Mitglied';
 
         const answerControl =
@@ -842,50 +809,7 @@ function bindEditableEventParticipants(
 
           });
 
-        const guestIncognito =
-          adminRoot.querySelector(
-            '[data-feedback-participant-guest-incognito]'
-          );
-
-        const guestFields =
-          adminRoot.querySelectorAll(
-            '[data-feedback-participant-guest-vorname],'
-            + '[data-feedback-participant-guest-nachname]'
-          );
-
-        if (
-          guestIncognito
-          && mode === 'guest'
-        ) {
-
-          guestFields.forEach((field) => {
-            field.disabled =
-              guestIncognito.checked;
-          });
-
-        }
-
       });
-
-    });
-
-  adminRoot
-    ?.querySelector(
-      '[data-feedback-participant-guest-incognito]'
-    )
-    ?.addEventListener('change', (event) => {
-
-      const disabled =
-        event.target.checked === true;
-
-      adminRoot
-        .querySelectorAll(
-          '[data-feedback-participant-guest-vorname],'
-          + '[data-feedback-participant-guest-nachname]'
-        )
-        .forEach((field) => {
-          field.disabled = disabled;
-        });
 
     });
 
@@ -915,14 +839,6 @@ function bindEditableEventParticipants(
               10
             );
 
-          const answer =
-            adminRoot
-              .querySelector(
-                '[data-feedback-participant-member-answer]'
-              )
-              ?.value
-            || 'yes';
-
           if (!memberId) {
 
             alert(
@@ -938,7 +854,7 @@ function bindEditableEventParticipants(
             {
               action: 'add_member',
               memberId,
-              answer
+              answer: 'yes'
             },
             container,
             callbacks
@@ -947,13 +863,6 @@ function bindEditableEventParticipants(
           return;
 
         }
-
-        const incognito =
-          adminRoot
-            .querySelector(
-              '[data-feedback-participant-guest-incognito]'
-            )
-            ?.checked === true;
 
         const vorname =
           adminRoot
@@ -974,13 +883,12 @@ function bindEditableEventParticipants(
           || '';
 
         if (
-          !incognito
-          && !vorname
+          !vorname
           && !nachname
         ) {
 
           alert(
-            'Bitte Name angeben oder Inkognito wählen.'
+            'Bitte mindestens Vorname oder Nachname angeben.'
           );
 
           return;
@@ -992,8 +900,7 @@ function bindEditableEventParticipants(
           {
             action: 'add_guest',
             vorname,
-            nachname,
-            incognito
+            nachname
           },
           container,
           callbacks
@@ -1137,13 +1044,10 @@ async function openGuestWalkInEditModal(
   const memberId =
     options.memberId;
 
-  const moduleId =
+  let moduleId =
     options.moduleId;
 
-  if (
-    !memberId
-    || !moduleId
-  ) {
+  if (!memberId) {
     return;
   }
 
@@ -1186,6 +1090,34 @@ async function openGuestWalkInEditModal(
     options.title || 'Walk-in Gast bearbeiten'
   );
 
+  if (!moduleId) {
+
+    const { data: answerRows } =
+      await window.supabaseClient
+        .from(
+          window.siteConfig.tables.feedbackAnswers
+        )
+        .select('module_id,updated_at')
+        .eq('member_id', memberId)
+        .order('updated_at', {
+          ascending: false
+        })
+        .limit(1);
+
+    moduleId =
+      answerRows?.[0]?.module_id || null;
+
+  }
+
+  if (!moduleId) {
+
+    body.innerHTML =
+      '<p class="admin-hint admin-hint--error">Kein Termin zugeordnet — Gast kann nicht bearbeitet werden.</p>';
+
+    return;
+
+  }
+
   const { data: member, error } =
     await window.supabaseClient
       .from(
@@ -1209,15 +1141,18 @@ async function openGuestWalkInEditModal(
 
   }
 
-  const isIncognito =
-    typeof isIncognitoGuestMember === 'function'
-    && isIncognitoGuestMember(member);
-
   const emailValue =
     typeof isGuestInternalEmail === 'function'
     && isGuestInternalEmail(member.email)
       ? ''
       : (member.email || '');
+
+  const displayVorname =
+    String(member.vorname || '')
+      .trim()
+      .toLowerCase() === 'inkognito'
+      ? ''
+      : (member.vorname || '');
 
   body.innerHTML = `
 <form class="feedback-guest-edit-form">
@@ -1227,32 +1162,15 @@ async function openGuestWalkInEditModal(
   <input
     id="guest-walkin-vorname"
     type="text"
-    value="${escapeAdminHtml(
-      isIncognito
-        ? ''
-        : (member.vorname || '')
-    )}"
-    ${isIncognito ? 'disabled' : ''}>
+    value="${escapeAdminHtml(displayVorname)}">
 </label>
 
 <label class="admin-field">
-  Nachname / Bezeichnung
+  Nachname
   <input
     id="guest-walkin-nachname"
     type="text"
-    value="${escapeAdminHtml(
-      isIncognito
-        ? (member.nachname || '')
-        : (member.nachname || '')
-    )}">
-</label>
-
-<label class="admin-field feedback-participant-admin__checkbox">
-  <input
-    id="guest-walkin-incognito"
-    type="checkbox"
-    ${isIncognito ? 'checked' : ''}>
-  Inkognito (nur für Vorstand sichtbar)
+    value="${escapeAdminHtml(member.nachname || '')}">
 </label>
 
 <label class="admin-field">
@@ -1293,6 +1211,15 @@ async function openGuestWalkInEditModal(
 
 <button
   type="button"
+  class="member-delete-account-btn"
+  id="guest-walkin-remove">
+
+  Entfernen
+
+</button>
+
+<button
+  type="button"
   class="member-edit-btn"
   id="guest-walkin-save">
 
@@ -1305,52 +1232,25 @@ async function openGuestWalkInEditModal(
 </form>
   `;
 
-  const incognitoInput =
-    body.querySelector(
-      '#guest-walkin-incognito'
-    );
-
-  const vornameInput =
-    body.querySelector(
-      '#guest-walkin-vorname'
-    );
-
-  const nachnameInput =
-    body.querySelector(
-      '#guest-walkin-nachname'
-    );
-
-  incognitoInput
-    ?.addEventListener('change', () => {
-
-      const checked =
-        incognitoInput.checked === true;
-
-      if (vornameInput) {
-        vornameInput.disabled = checked;
-
-        if (checked) {
-          vornameInput.value = '';
-        }
-
-      }
-
-    });
-
   body
     .querySelector('#guest-walkin-save')
     ?.addEventListener('click', () => {
 
       void (async () => {
 
-        const incognito =
-          incognitoInput?.checked === true;
-
         const vorname =
-          vornameInput?.value?.trim() || '';
+          body
+            .querySelector('#guest-walkin-vorname')
+            ?.value
+            ?.trim()
+          || '';
 
         const nachname =
-          nachnameInput?.value?.trim() || '';
+          body
+            .querySelector('#guest-walkin-nachname')
+            ?.value
+            ?.trim()
+          || '';
 
         const telefon =
           body
@@ -1367,13 +1267,12 @@ async function openGuestWalkInEditModal(
           || '';
 
         if (
-          !incognito
-          && !vorname
+          !vorname
           && !nachname
         ) {
 
           alert(
-            'Bitte Name angeben oder Inkognito wählen.'
+            'Bitte mindestens Vorname oder Nachname angeben.'
           );
 
           return;
@@ -1388,8 +1287,7 @@ async function openGuestWalkInEditModal(
             vorname,
             nachname,
             telefon,
-            email,
-            incognito
+            email
           });
 
         if (result?.error) {
@@ -1397,6 +1295,67 @@ async function openGuestWalkInEditModal(
           alert(
             result.error.message
               || 'Speichern fehlgeschlagen.'
+          );
+
+          return;
+
+        }
+
+        closeEventVorstandModal(modalId);
+
+        if (
+          typeof options.onSaved === 'function'
+        ) {
+          await options.onSaved();
+        }
+
+        if (
+          typeof refreshMemberDraftsTabIndicator
+            === 'function'
+        ) {
+          void refreshMemberDraftsTabIndicator();
+        }
+
+      })();
+
+    });
+
+  body
+    .querySelector('#guest-walkin-remove')
+    ?.addEventListener('click', () => {
+
+      void (async () => {
+
+        const guestName =
+          [
+            member.vorname,
+            member.nachname
+          ]
+            .filter(Boolean)
+            .join(' ')
+            .trim()
+          || 'Walk-in Gast';
+
+        if (
+          !confirm(
+            `${guestName} von der Teilnehmerliste entfernen?`
+          )
+        ) {
+          return;
+        }
+
+        const result =
+          await adminManageEventParticipant({
+            moduleId,
+            action: 'remove',
+            memberId
+          });
+
+        if (result?.error) {
+
+          alert(
+            result.error.message
+              || 'Entfernen fehlgeschlagen.'
           );
 
           return;

@@ -233,7 +233,6 @@ create or replace function public.admin_manage_event_participant(
   p_answer text default null,
   p_vorname text default null,
   p_nachname text default null,
-  p_incognito boolean default false,
   p_telefon text default null,
   p_email text default null,
   p_admin_note text default null
@@ -315,16 +314,8 @@ begin
     v_nachname :=
       trim(coalesce(p_nachname, ''));
 
-    if coalesce(p_incognito, false) is true then
-
-      v_vorname := 'Inkognito';
-
-      if v_nachname = '' then
-        v_nachname := null;
-      end if;
-
-    elsif v_vorname = '' and v_nachname = '' then
-      raise exception 'Bitte Name angeben oder Inkognito wählen.';
+    if v_vorname = '' and v_nachname = '' then
+      raise exception 'Bitte mindestens Vorname oder Nachname angeben.';
     end if;
 
     v_placeholder_email :=
@@ -396,16 +387,6 @@ begin
       raise exception 'Nur Vereinsmitglieder können so hinzugefügt werden.';
     end if;
 
-    v_answer :=
-      nullif(
-        lower(trim(coalesce(p_answer, 'yes'))),
-        ''
-      );
-
-    if v_answer not in ('yes', 'maybe') then
-      raise exception 'Antwort muss Ja oder Interesse sein.';
-    end if;
-
     if exists (
       select 1
       from public.feedback_answers fa
@@ -419,7 +400,7 @@ begin
       public.admin_write_event_participant_answer(
         p_module_id,
         p_member_id,
-        v_answer,
+        'yes',
         'admin_add',
         coalesce(
           p_admin_note,
@@ -450,25 +431,17 @@ begin
     v_nachname :=
       trim(coalesce(p_nachname, ''));
 
-    if coalesce(p_incognito, false) is true then
-
-      v_vorname := 'Inkognito';
-
-      if v_nachname = '' then
-        v_nachname :=
-          nullif(
-            trim(coalesce(v_member.nachname, '')),
-            ''
-          );
-      end if;
-
-    elsif v_vorname = '' and v_nachname = '' then
+    if v_vorname = '' and v_nachname = '' then
 
       v_vorname :=
         coalesce(v_member.vorname, '');
 
       v_nachname :=
         coalesce(v_member.nachname, '');
+
+      if v_vorname = '' and v_nachname = '' then
+        raise exception 'Bitte mindestens Vorname oder Nachname angeben.';
+      end if;
 
     end if;
 
@@ -634,11 +607,11 @@ end;
 $$;
 
 revoke all on function public.admin_manage_event_participant(
-  bigint, text, bigint, text, text, text, boolean, text, text, text
+  bigint, text, bigint, text, text, text, text, text, text
 ) from public;
 
 grant execute on function public.admin_manage_event_participant(
-  bigint, text, bigint, text, text, text, boolean, text, text, text
+  bigint, text, bigint, text, text, text, text, text, text
 ) to authenticated;
 
 comment on function public.admin_manage_event_participant is
@@ -964,3 +937,70 @@ revoke all on function public.submit_public_feedback(
 grant execute on function public.submit_public_feedback(
   bigint, text, text, text, text, text, text, text
 ) to authenticated;
+
+-- ---------------------------------------------------------------------------
+-- Migration: Inkognito entfernt (alte Signatur droppen)
+-- ---------------------------------------------------------------------------
+
+drop function if exists public.admin_manage_event_participant(
+  bigint, text, bigint, text, text, text, boolean, text, text, text
+);
+
+-- ---------------------------------------------------------------------------
+-- Walk-in-Entwürfe für Profil → Entwürfe (Vorstand)
+-- ---------------------------------------------------------------------------
+
+create or replace function public.list_guest_walkin_drafts()
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_rows jsonb;
+begin
+  if not public.is_vorstand() then
+    raise exception 'Keine Berechtigung.';
+  end if;
+
+  select coalesce(
+    jsonb_agg(row_to_json(x)::jsonb),
+    '[]'::jsonb
+  )
+  into v_rows
+  from (
+    select
+      m.id as member_id,
+      fa.module_id,
+      fm.entity_id as termin_id,
+      t.title as termin_title,
+      m.vorname,
+      m.nachname,
+      m.telefonnummer,
+      m.email,
+      coalesce(fa.updated_at, m.updated_at) as sort_at
+    from public.members m
+    inner join public.feedback_answers fa
+      on fa.member_id = m.id
+    inner join public.feedback_modules fm
+      on fm.id = fa.module_id
+    left join public."Termine" t
+      on t.id = fm.entity_id
+    where lower(trim(coalesce(m.rolle, ''))) = 'guest'
+      and m.anonymized_at is null
+      and public.is_guest_internal_email(m.email)
+      and fm.entity_type = 'event'
+      and fm.type = 'yes_maybe'
+    order by coalesce(fa.updated_at, m.updated_at) desc nulls last
+  ) x;
+
+  return coalesce(v_rows, '[]'::jsonb);
+end;
+$$;
+
+revoke all on function public.list_guest_walkin_drafts() from public;
+
+grant execute on function public.list_guest_walkin_drafts() to authenticated;
+
+comment on function public.list_guest_walkin_drafts is
+  'Vorstand: offene Walk-in-Gäste (Platzhalter-E-Mail) mit Terminbezug für Profil-Entwürfe.';

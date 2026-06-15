@@ -1002,18 +1002,6 @@ function isGuestMember(member) {
 
 }
 
-function isIncognitoGuestMember(member) {
-
-  return (
-    isGuestMember(member)
-    && String(member?.vorname || '')
-      .trim()
-      .toLowerCase()
-    === 'inkognito'
-  );
-
-}
-
 async function fetchClubMembersForParticipantPicker() {
 
   const { data, error } =
@@ -1069,8 +1057,6 @@ async function adminManageEventParticipant(
       params.vorname ?? null,
     p_nachname:
       params.nachname ?? null,
-    p_incognito:
-      params.incognito === true,
     p_telefon:
       params.telefon ?? null,
     p_email:
@@ -1110,6 +1096,66 @@ async function fetchGuestWalkInDrafts() {
   ) {
     return [];
   }
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'list_guest_walkin_drafts'
+    );
+
+  if (!error) {
+
+    return (Array.isArray(data) ? data : [])
+      .map(mapGuestWalkInDraftRow)
+      .filter(Boolean);
+
+  }
+
+  if (
+    error.code !== 'PGRST202'
+    && !String(error.message || '')
+      .includes('list_guest_walkin_drafts')
+  ) {
+    console.error(error);
+  }
+
+  return fetchGuestWalkInDraftsFallback();
+
+}
+
+function mapGuestWalkInDraftRow(row) {
+
+  if (!row?.member_id) {
+    return null;
+  }
+
+  const guestLabel =
+    [
+      row.vorname,
+      row.nachname
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .trim()
+    || 'Walk-in Gast';
+
+  const terminTitle =
+    row.termin_title || 'Termin';
+
+  return {
+    type: 'walkin',
+    id: row.member_id,
+    memberId: row.member_id,
+    moduleId: row.module_id || null,
+    terminId: row.termin_id || null,
+    title:
+      `${guestLabel} · ${terminTitle}`,
+    sortAt:
+      row.sort_at || null
+  };
+
+}
+
+async function fetchGuestWalkInDraftsFallback() {
 
   const { data: members, error } =
     await window.supabaseClient
@@ -1236,45 +1282,24 @@ async function fetchGuestWalkInDrafts() {
           ? terminMap.get(module.entity_id)
           : null;
 
-      const guestLabel =
-        typeof isIncognitoGuestMember === 'function'
-        && isIncognitoGuestMember(row)
-          ? (
-            row.nachname
-            || 'Gast (inkognito)'
-          )
-          : (
-            [
-              row.vorname,
-              row.nachname
-            ]
-              .filter(Boolean)
-              .join(' ')
-              .trim()
-            || 'Walk-in Gast'
-          );
-
-      const terminTitle =
-        termin?.title || 'Termin';
-
-      return {
-        type: 'walkin',
-        id: row.id,
-        memberId: row.id,
-        moduleId:
+      return mapGuestWalkInDraftRow({
+        member_id: row.id,
+        module_id:
           answerRow?.module_id || null,
-        terminId:
+        termin_id:
           module?.entity_id || null,
-        title:
-          `${guestLabel} · ${terminTitle}`,
-        sortAt:
+        termin_title:
+          termin?.title || null,
+        vorname: row.vorname,
+        nachname: row.nachname,
+        sort_at:
           answerRow?.updated_at
           || row.updated_at
           || termin?.date
           || null
-      };
+      });
 
     })
-    .filter((draft) => draft.moduleId);
+    .filter((draft) => draft?.moduleId);
 
 }

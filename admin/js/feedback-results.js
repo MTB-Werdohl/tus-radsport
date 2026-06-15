@@ -52,21 +52,7 @@ function formatFeedbackMemberName(memberRow) {
     member.rolle
     && member.rolle.trim().toLowerCase() === 'guest'
   ) {
-
-    if (
-      member.vorname
-      && member.vorname.trim().toLowerCase()
-        === 'inkognito'
-    ) {
-
-      return member.nachname
-        ? `${member.nachname} (Gast, inkognito)`
-        : 'Gast (inkognito)';
-
-    }
-
     return `${baseName} (Gast)`;
-
   }
 
   return baseName;

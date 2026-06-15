@@ -33,7 +33,7 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Phase 4a Review:** [`supabase-phase4a-public-feedback-rpc-fix.sql`](../supabase-phase4a-public-feedback-rpc-fix.sql) — `submit_public_feedback` an 4a-Logik (`set_event_feedback_answer_for_member`); nach Phase-4a-Basis.
 
-**Vorstand Teilnehmerliste (Einzeltermine):** [`supabase-admin-event-participants.sql`](../supabase-admin-event-participants.sql) — RPC `admin_manage_event_participant`, Rolle `guest`, Gast-Merge in Public-Registrierung; nach Phase-4a-Basis.
+**Vorstand Teilnehmerliste (Einzeltermine):** [`supabase-admin-event-participants.sql`](../supabase-admin-event-participants.sql) — RPC `admin_manage_event_participant`, `list_guest_walkin_drafts`, Rolle `guest`, Gast-Merge in Public-Registrierung; nach Phase-4a-Basis.
 
 **Phase 4a Hotfix (Absage FK):** [`supabase-phase4a-withdraw-answer-id-fix.sql`](../supabase-phase4a-withdraw-answer-id-fix.sql) — behebt `23503 feedback_answer_events_answer_id_fkey` bei Absage nach Ja; nur `set_event_feedback_answer_for_member` neu deployen.
 
