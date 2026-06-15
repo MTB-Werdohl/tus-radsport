@@ -1036,31 +1036,40 @@ begin
   return query
   select
     m.id,
-    fa.module_id,
+    coalesce(fa.module_id, m.walkin_module_id),
     fm.entity_id,
     t.title,
     m.vorname,
     m.nachname,
     m.telefonnummer,
     m.email,
-    coalesce(fa.updated_at, m.updated_at)
+    coalesce(
+      fa.updated_at,
+      fa.created_at,
+      m.last_login_at
+    )
   from public.members m
   left join lateral (
     select
       fa_inner.module_id,
-      fa_inner.updated_at
+      fa_inner.updated_at,
+      fa_inner.created_at
     from public.feedback_answers fa_inner
     where fa_inner.member_id = m.id
     order by fa_inner.updated_at desc nulls last
     limit 1
   ) fa on true
   left join public.feedback_modules fm
-    on fm.id = fa.module_id
+    on fm.id = coalesce(fa.module_id, m.walkin_module_id)
   left join public."Termine" t
     on t.id = fm.entity_id
   where lower(trim(coalesce(m.rolle, ''))) = 'guest'
     and m.anonymized_at is null
-  order by coalesce(fa.updated_at, m.updated_at) desc nulls last;
+  order by coalesce(
+    fa.updated_at,
+    fa.created_at,
+    m.last_login_at
+  ) desc nulls last;
 
 end;
 $$;

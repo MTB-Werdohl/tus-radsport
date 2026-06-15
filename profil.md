@@ -37,7 +37,7 @@ load_member_content_edit_css: true
 <script src="/assets/js/member/member-recaps.js"></script>
 <script src="/assets/js/core/content-creator.js"></script>
 <script src="/assets/js/recap/recap-service.js"></script>
-<script src="/assets/js/core/content-drafts.js"></script>
+<script src="/assets/js/core/content-drafts.js?v={{ site.admin_js_version }}"></script>
 <script src="/assets/js/core/media-url.js"></script>
 <script src="/admin/js/media-storage-lib.js"></script>
 <script src="/admin/js/media-picker.js"></script>
@@ -49,7 +49,7 @@ load_member_content_edit_css: true
 <script src="/assets/js/news/news-detail-vorstand.js"></script>
 <script src="/assets/js/event/event-detail-vorstand.js"></script>
 <script src="/assets/js/event/event-recap-vorstand.js"></script>
-<script src="/assets/js/member/member-vorstand-drafts.js"></script>
+<script src="/assets/js/member/member-vorstand-drafts.js?v={{ site.admin_js_version }}"></script>
 <script src="/assets/js/member/member-content.js"></script>
 <script src="/assets/js/member/member-render.js"></script>
 <script src="/assets/js/member/member-account.js"></script>
