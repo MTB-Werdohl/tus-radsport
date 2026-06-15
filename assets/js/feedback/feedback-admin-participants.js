@@ -234,16 +234,19 @@ function renderParticipantAdminAddPanel(
     type="checkbox"
     data-feedback-participant-guest-incognito>
 
-  Inkognito (nur für Vorstand sichtbar)
+  Inkognito
 
 </label>
 
 <p class="admin-hint">
-  Walk-in-Gäste werden immer als
-  <strong>Ja</strong>
-  gezählt. Der Datensatz kann später
-  mit Name, Telefon und E-Mail ergänzt
-  werden — ohne Duplikat bei Anmeldung.
+  <strong>Inkognito:</strong>
+  Der Gast zählt als
+  <strong>Ja</strong>,
+  erscheint aber ohne Klarnamen in der
+  Liste — nur für euch als Vorstand
+  sichtbar (z.&nbsp;B. „Unbekannter Fahrer“).
+  Später können Name, Telefon und E-Mail
+  ergänzt werden, ohne neuen Datensatz.
 </p>
 
 </div>
@@ -328,10 +331,7 @@ function renderEditableParticipantTable(
   type="button"
   class="secondary-button feedback-participant-admin__edit-guest"
   data-member-id="${row.memberId}"
-  data-vorname="${escapeAdminHtml(row.vorname)}"
-  data-nachname="${escapeAdminHtml(row.nachname)}"
-  data-telefon="${escapeAdminHtml(row.telefon)}"
-  data-incognito="${row.isIncognito ? 'true' : 'false'}">
+  data-module-id="${module?.id || ''}">
 
   Bearbeiten
 
@@ -403,6 +403,195 @@ function renderEditableParticipantTable(
 
 }
 
+function renderWithdrawnParticipantsSection(
+  rows
+) {
+
+  if (!rows?.length) {
+    return '';
+  }
+
+  const body =
+    rows
+      .map((row) => `
+<tr>
+
+<td>
+  ${escapeAdminHtml(row.name)}
+</td>
+
+<td class="feedback-admin-answer-cell">
+  ${escapeAdminHtml(row.answerLabel)}
+</td>
+
+<td>
+  ${escapeAdminHtml(row.reasonLabel || '—')}
+</td>
+
+</tr>
+`)
+      .join('');
+
+  return `
+<section class="feedback-participant-admin-withdrawn">
+
+<h3>
+  Absagen / keine Teilnahme
+</h3>
+
+<p class="admin-hint">
+  Personen, die abgesagt haben oder nicht
+  mehr auf der Teilnehmerliste stehen —
+  nur zur Information, nicht editierbar.
+</p>
+
+<div class="feedback-admin-table-wrap">
+
+<table class="feedback-admin-table feedback-admin-table--results feedback-participant-admin__table feedback-participant-admin__table--withdrawn">
+
+<thead>
+
+<tr>
+  <th>Name</th>
+  <th>Status</th>
+  <th>Grund</th>
+</tr>
+
+</thead>
+
+<tbody>
+  ${body}
+</tbody>
+
+</table>
+
+</div>
+
+</section>
+`;
+
+}
+
+function buildWithdrawnParticipantDisplayRows(
+  module,
+  answers,
+  displayRows,
+  participationEvents
+) {
+
+  let withdrawnRows =
+    [];
+
+  if (
+    typeof buildFeedbackResultsDisplayRows
+      === 'function'
+  ) {
+
+    const historyRows =
+      buildFeedbackResultsDisplayRows(
+        module,
+        answers,
+        participationEvents || [],
+        false
+      );
+
+    withdrawnRows =
+      historyRows.filter(
+        (row) =>
+          row.answerLabel === 'Nein'
+      );
+
+  }
+
+  const yes =
+    window.siteConfig.feedback.answers.yes;
+
+  const maybe =
+    window.siteConfig.feedback.answers.maybe;
+
+  const activeMemberIds =
+    new Set(
+      displayRows.map(
+        (row) => row.memberId
+      )
+    );
+
+  const withdrawnNames =
+    new Set(
+      withdrawnRows.map(
+        (row) => row.name
+      )
+    );
+
+  (answers || []).forEach((row) => {
+
+    const memberId =
+      row.member_id;
+
+    if (
+      !memberId
+      || activeMemberIds.has(memberId)
+    ) {
+      return;
+    }
+
+    const answerCode =
+      String(row.answer || '')
+        .trim()
+        .toLowerCase();
+
+    if (
+      !answerCode
+      || answerCode === yes
+      || answerCode === maybe
+    ) {
+      return;
+    }
+
+    const name =
+      typeof formatFeedbackMemberName
+        === 'function'
+        ? formatFeedbackMemberName(row)
+        : 'Mitglied';
+
+    if (withdrawnNames.has(name)) {
+      return;
+    }
+
+    withdrawnNames.add(name);
+
+    withdrawnRows.push({
+      name,
+      answerLabel:
+        typeof formatFeedbackAnswerLabel
+          === 'function'
+          ? formatFeedbackAnswerLabel(
+            module,
+            answerCode,
+            false
+          )
+          : 'Nein',
+      reasonLabel:
+        String(row.comment || '')
+          .trim()
+        || '—'
+    });
+
+  });
+
+  if (
+    typeof compareFeedbackResultsRows
+      === 'function'
+  ) {
+    withdrawnRows.sort(
+      compareFeedbackResultsRows
+    );
+  }
+
+  return withdrawnRows;
+
+}
+
 async function renderEditableEventParticipants(
   module,
   answers,
@@ -425,6 +614,45 @@ async function renderEditableEventParticipants(
       module,
       answers
     );
+
+  let withdrawnRows =
+    [];
+
+  if (
+    typeof listFeedbackParticipationChanges
+      === 'function'
+  ) {
+
+    const changeResult =
+      await listFeedbackParticipationChanges({
+        moduleId,
+        limit: 500,
+        offset: 0
+      });
+
+    if (!changeResult?.error) {
+
+      withdrawnRows =
+        buildWithdrawnParticipantDisplayRows(
+          module,
+          answers,
+          displayRows,
+          changeResult.rows || []
+        );
+
+    }
+
+  } else {
+
+    withdrawnRows =
+      buildWithdrawnParticipantDisplayRows(
+        module,
+        answers,
+        displayRows,
+        []
+      );
+
+  }
 
   const clubMembers =
     typeof fetchClubMembersForParticipantPicker
@@ -482,6 +710,10 @@ ${renderParticipantAdminAddPanel(
 ${renderEditableParticipantTable(
   module,
   displayRows
+)}
+
+${renderWithdrawnParticipantsSection(
+  withdrawnRows
 )}
   `;
 
@@ -857,127 +1089,340 @@ function bindEditableEventParticipants(
 
       button.addEventListener('click', () => {
 
-        void (async () => {
-
-          const memberId =
-            parseInt(
-              button.dataset.memberId,
-              10
-            );
-
-          if (!memberId) {
-            return;
-          }
-
-          const currentIncognito =
-            button.dataset.incognito === 'true';
-
-          let vorname =
-            button.dataset.vorname || '';
-
-          let nachname =
-            button.dataset.nachname || '';
-
-          let telefon =
-            button.dataset.telefon || '';
-
-          const incognitoToggle =
-            confirm(
-              currentIncognito
-                ? 'Als benannter Gast speichern? (Inkognito aus)'
-                : 'Als Inkognito markieren?'
-            );
-
-          const incognito =
-            incognitoToggle
-              ? !currentIncognito
-              : currentIncognito;
-
-          if (!incognito) {
-
-            const nextVorname =
-              prompt('Vorname', vorname);
-
-            if (nextVorname === null) {
-              return;
-            }
-
-            vorname = nextVorname.trim();
-
-            const nextNachname =
-              prompt(
-                'Nachname / Bezeichnung',
-                nachname
-              );
-
-            if (nextNachname === null) {
-              return;
-            }
-
-            nachname = nextNachname.trim();
-
-          } else {
-
-            vorname = '';
-            nachname = nachname || 'Gast';
-
-            const nextLabel =
-              prompt(
-                'Bezeichnung (optional)',
-                nachname === 'Gast'
-                  ? ''
-                  : nachname
-              );
-
-            if (nextLabel === null) {
-              return;
-            }
-
-            nachname = nextLabel.trim();
-
-          }
-
-          const nextTelefon =
-            prompt(
-              'Telefon (optional)',
-              telefon
-            );
-
-          if (nextTelefon === null) {
-            return;
-          }
-
-          telefon = nextTelefon.trim();
-
-          const nextEmail =
-            prompt(
-              'E-Mail (optional — für späteren Zugang)',
-              ''
-            );
-
-          if (nextEmail === null) {
-            return;
-          }
-
-          await runParticipantAdminAction(
-            moduleId,
-            {
-              action: 'update_guest',
-              memberId,
-              vorname,
-              nachname,
-              telefon,
-              email: nextEmail.trim(),
-              incognito
-            },
-            container,
-            callbacks
+        const memberId =
+          parseInt(
+            button.dataset.memberId,
+            10
           );
 
-        })();
+        const guestModuleId =
+          parseInt(
+            button.dataset.moduleId,
+            10
+          );
+
+        if (
+          !memberId
+          || !guestModuleId
+        ) {
+          return;
+        }
+
+        void openGuestWalkInEditModal({
+          memberId,
+          moduleId: guestModuleId,
+          onSaved: async () => {
+
+            if (callbacks?.onParticipantsChanged) {
+              callbacks.onParticipantsChanged();
+            }
+
+            if (callbacks?.reload) {
+              await callbacks.reload();
+            }
+
+          }
+        });
 
       });
 
     });
 
 }
+
+async function openGuestWalkInEditModal(
+  options = {}
+) {
+
+  const memberId =
+    options.memberId;
+
+  const moduleId =
+    options.moduleId;
+
+  if (
+    !memberId
+    || !moduleId
+  ) {
+    return;
+  }
+
+  if (
+    typeof ensureEventVorstandModal
+      !== 'function'
+  ) {
+    alert(
+      'Walk-in-Bearbeitung ist nicht verfügbar.'
+    );
+    return;
+  }
+
+  const modalId =
+    'guest-walkin-edit-modal';
+
+  ensureEventVorstandModal(
+    modalId,
+    options.title || 'Walk-in Gast bearbeiten',
+    'member-feedback-modal__dialog--wide'
+  );
+
+  const modal =
+    document.getElementById(modalId);
+
+  const body =
+    modal?.querySelector(
+      '[data-event-vorstand-modal-body]'
+    );
+
+  if (!body) {
+    return;
+  }
+
+  body.innerHTML =
+    '<p class="admin-hint">Daten werden geladen …</p>';
+
+  openEventVorstandModal(
+    modalId,
+    options.title || 'Walk-in Gast bearbeiten'
+  );
+
+  const { data: member, error } =
+    await window.supabaseClient
+      .from(
+        window.siteConfig.tables.members
+      )
+      .select(
+        'id,vorname,nachname,email,telefonnummer,rolle'
+      )
+      .eq('id', memberId)
+      .single();
+
+  if (
+    error
+    || !member
+  ) {
+
+    body.innerHTML =
+      '<p class="admin-hint admin-hint--error">Gast konnte nicht geladen werden.</p>';
+
+    return;
+
+  }
+
+  const isIncognito =
+    typeof isIncognitoGuestMember === 'function'
+    && isIncognitoGuestMember(member);
+
+  const emailValue =
+    typeof isGuestInternalEmail === 'function'
+    && isGuestInternalEmail(member.email)
+      ? ''
+      : (member.email || '');
+
+  body.innerHTML = `
+<form class="feedback-guest-edit-form">
+
+<label class="admin-field">
+  Vorname
+  <input
+    id="guest-walkin-vorname"
+    type="text"
+    value="${escapeAdminHtml(
+      isIncognito
+        ? ''
+        : (member.vorname || '')
+    )}"
+    ${isIncognito ? 'disabled' : ''}>
+</label>
+
+<label class="admin-field">
+  Nachname / Bezeichnung
+  <input
+    id="guest-walkin-nachname"
+    type="text"
+    value="${escapeAdminHtml(
+      isIncognito
+        ? (member.nachname || '')
+        : (member.nachname || '')
+    )}">
+</label>
+
+<label class="admin-field feedback-participant-admin__checkbox">
+  <input
+    id="guest-walkin-incognito"
+    type="checkbox"
+    ${isIncognito ? 'checked' : ''}>
+  Inkognito (nur für Vorstand sichtbar)
+</label>
+
+<label class="admin-field">
+  Telefon
+  <input
+    id="guest-walkin-telefon"
+    type="tel"
+    value="${escapeAdminHtml(
+      member.telefonnummer || ''
+    )}">
+</label>
+
+<label class="admin-field">
+  E-Mail (für späteren Zugang)
+  <input
+    id="guest-walkin-email"
+    type="email"
+    value="${escapeAdminHtml(emailValue)}"
+    placeholder="optional">
+</label>
+
+<p class="admin-hint">
+  Derselbe Datensatz wird später bei
+  Anmeldung per E-Mail weiterverwendet —
+  kein Duplikat.
+</p>
+
+<div class="member-feedback-modal__actions">
+
+<button
+  type="button"
+  class="member-edit-btn member-edit-btn--secondary"
+  data-close-event-vorstand-modal="true">
+
+  Abbrechen
+
+</button>
+
+<button
+  type="button"
+  class="member-edit-btn"
+  id="guest-walkin-save">
+
+  Speichern
+
+</button>
+
+</div>
+
+</form>
+  `;
+
+  const incognitoInput =
+    body.querySelector(
+      '#guest-walkin-incognito'
+    );
+
+  const vornameInput =
+    body.querySelector(
+      '#guest-walkin-vorname'
+    );
+
+  const nachnameInput =
+    body.querySelector(
+      '#guest-walkin-nachname'
+    );
+
+  incognitoInput
+    ?.addEventListener('change', () => {
+
+      const checked =
+        incognitoInput.checked === true;
+
+      if (vornameInput) {
+        vornameInput.disabled = checked;
+
+        if (checked) {
+          vornameInput.value = '';
+        }
+
+      }
+
+    });
+
+  body
+    .querySelector('#guest-walkin-save')
+    ?.addEventListener('click', () => {
+
+      void (async () => {
+
+        const incognito =
+          incognitoInput?.checked === true;
+
+        const vorname =
+          vornameInput?.value?.trim() || '';
+
+        const nachname =
+          nachnameInput?.value?.trim() || '';
+
+        const telefon =
+          body
+            .querySelector('#guest-walkin-telefon')
+            ?.value
+            ?.trim()
+          || '';
+
+        const email =
+          body
+            .querySelector('#guest-walkin-email')
+            ?.value
+            ?.trim()
+          || '';
+
+        if (
+          !incognito
+          && !vorname
+          && !nachname
+        ) {
+
+          alert(
+            'Bitte Name angeben oder Inkognito wählen.'
+          );
+
+          return;
+
+        }
+
+        const result =
+          await adminManageEventParticipant({
+            moduleId,
+            action: 'update_guest',
+            memberId,
+            vorname,
+            nachname,
+            telefon,
+            email,
+            incognito
+          });
+
+        if (result?.error) {
+
+          alert(
+            result.error.message
+              || 'Speichern fehlgeschlagen.'
+          );
+
+          return;
+
+        }
+
+        closeEventVorstandModal(modalId);
+
+        if (
+          typeof options.onSaved === 'function'
+        ) {
+          await options.onSaved();
+        }
+
+        if (
+          typeof refreshMemberDraftsTabIndicator
+            === 'function'
+        ) {
+          void refreshMemberDraftsTabIndicator();
+        }
+
+      })();
+
+    });
+
+}
+
+window.openGuestWalkInEditModal =
+  openGuestWalkInEditModal;

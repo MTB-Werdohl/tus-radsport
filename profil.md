@@ -42,7 +42,10 @@ load_member_content_edit_css: true
 <script src="/admin/js/media-storage-lib.js"></script>
 <script src="/admin/js/media-picker.js"></script>
 <script src="/assets/js/member/member-edit-utils.js"></script>
-<script src="/admin/js/feedback-module-form.js"></script>
+<script src="/admin/js/admin-utils.js?v={{ site.admin_js_version }}"></script>
+<script src="/admin/js/feedback-module-form.js?v={{ site.admin_js_version }}"></script>
+<script src="/admin/js/feedback-results.js?v={{ site.admin_js_version }}"></script>
+<script src="/assets/js/feedback/feedback-admin-participants.js?v={{ site.admin_js_version }}"></script>
 <script src="/assets/js/news/news-detail-vorstand.js"></script>
 <script src="/assets/js/event/event-detail-vorstand.js"></script>
 <script src="/assets/js/event/event-recap-vorstand.js"></script>

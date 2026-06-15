@@ -1096,3 +1096,185 @@ async function adminManageEventParticipant(
   return { data };
 
 }
+
+async function fetchGuestWalkInDrafts() {
+
+  const member =
+    typeof getCurrentMember === 'function'
+      ? getCurrentMember()
+      : null;
+
+  if (
+    typeof isVorstand !== 'function'
+    || !isVorstand(member)
+  ) {
+    return [];
+  }
+
+  const { data: members, error } =
+    await window.supabaseClient
+      .from(
+        window.siteConfig.tables.members
+      )
+      .select(
+        'id,vorname,nachname,email,telefonnummer,updated_at'
+      )
+      .eq('rolle', 'guest')
+      .is('anonymized_at', null)
+      .order('updated_at', {
+        ascending: false,
+        nullsFirst: false
+      });
+
+  if (error) {
+
+    console.error(error);
+
+    return [];
+
+  }
+
+  const guests =
+    (members || [])
+      .filter((row) =>
+        typeof isGuestInternalEmail === 'function'
+        && isGuestInternalEmail(row.email)
+      );
+
+  if (!guests.length) {
+    return [];
+  }
+
+  const guestIds =
+    guests.map((row) => row.id);
+
+  const { data: answers, error: answersError } =
+    await window.supabaseClient
+      .from(
+        window.siteConfig.tables.feedbackAnswers
+      )
+      .select(
+        'member_id,module_id,updated_at,feedback_modules(id,entity_id,entity_type)'
+      )
+      .in('member_id', guestIds);
+
+  if (answersError) {
+
+    console.error(answersError);
+
+    return [];
+
+  }
+
+  const answersByMember =
+    new Map();
+
+  (answers || []).forEach((row) => {
+
+    const existing =
+      answersByMember.get(row.member_id);
+
+    const rowTime =
+      row.updated_at
+        ? new Date(row.updated_at).getTime()
+        : 0;
+
+    const existingTime =
+      existing?.updated_at
+        ? new Date(existing.updated_at).getTime()
+        : 0;
+
+    if (
+      !existing
+      || rowTime >= existingTime
+    ) {
+      answersByMember.set(
+        row.member_id,
+        row
+      );
+    }
+
+  });
+
+  const terminIds =
+    [...answersByMember.values()]
+      .map((row) =>
+        row.feedback_modules?.entity_id
+      )
+      .filter(Boolean);
+
+  let terminMap =
+    new Map();
+
+  if (terminIds.length) {
+
+    const { data: termine } =
+      await window.supabaseClient
+        .from(
+          window.siteConfig.tables.termine
+        )
+        .select('id,title,date')
+        .in('id', terminIds);
+
+    (termine || []).forEach((termin) => {
+      terminMap.set(termin.id, termin);
+    });
+
+  }
+
+  return guests
+    .map((row) => {
+
+      const answerRow =
+        answersByMember.get(row.id);
+
+      const module =
+        answerRow?.feedback_modules;
+
+      const termin =
+        module?.entity_id
+          ? terminMap.get(module.entity_id)
+          : null;
+
+      const guestLabel =
+        typeof isIncognitoGuestMember === 'function'
+        && isIncognitoGuestMember(row)
+          ? (
+            row.nachname
+            || 'Gast (inkognito)'
+          )
+          : (
+            [
+              row.vorname,
+              row.nachname
+            ]
+              .filter(Boolean)
+              .join(' ')
+              .trim()
+            || 'Walk-in Gast'
+          );
+
+      const terminTitle =
+        termin?.title || 'Termin';
+
+      return {
+        type: 'walkin',
+        id: row.id,
+        memberId: row.id,
+        moduleId:
+          answerRow?.module_id || null,
+        terminId:
+          module?.entity_id || null,
+        title:
+          `${guestLabel} · ${terminTitle}`,
+        sortAt:
+          answerRow?.updated_at
+          || row.updated_at
+          || termin?.date
+          || null
+      };
+
+    })
+    .filter((draft) => draft.moduleId);
+
+}

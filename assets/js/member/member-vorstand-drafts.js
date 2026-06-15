@@ -31,6 +31,44 @@ function reloadAfterVorstandContentSave() {
 
 }
 
+async function fetchAllMemberVorstandDrafts() {
+
+  const contentDrafts =
+    typeof fetchContentDrafts === 'function'
+      ? await fetchContentDrafts()
+      : [];
+
+  const walkinDrafts =
+    typeof fetchGuestWalkInDrafts === 'function'
+      ? await fetchGuestWalkInDrafts()
+      : [];
+
+  return [
+    ...contentDrafts,
+    ...walkinDrafts
+  ]
+    .sort((left, right) => {
+
+      const leftTime =
+        left.sortAt
+          ? new Date(left.sortAt).getTime()
+          : 0;
+
+      const rightTime =
+        right.sortAt
+          ? new Date(right.sortAt).getTime()
+          : 0;
+
+      if (rightTime !== leftTime) {
+        return rightTime - leftTime;
+      }
+
+      return (right.id || 0) - (left.id || 0);
+
+    });
+
+}
+
 async function refreshMemberDraftsTabIndicator() {
 
   const tab =
@@ -40,8 +78,12 @@ async function refreshMemberDraftsTabIndicator() {
 
   if (
     !tab
-    || typeof fetchContentDrafts
-      !== 'function'
+    || (
+      typeof fetchContentDrafts
+        !== 'function'
+      && typeof fetchGuestWalkInDrafts
+        !== 'function'
+    )
   ) {
     return 0;
   }
@@ -49,7 +91,7 @@ async function refreshMemberDraftsTabIndicator() {
   try {
 
     const drafts =
-      await fetchContentDrafts();
+      await fetchAllMemberVorstandDrafts();
 
     const count =
       drafts.length;
@@ -100,13 +142,18 @@ function renderMemberDraftCard(draft) {
       ? ` data-draft-termin-id="${draft.terminId}"`
       : '';
 
+  const walkinModuleAttr =
+    draft.type === 'walkin'
+      ? ` data-draft-module-id="${draft.moduleId || ''}"`
+      : '';
+
   return `
 <button
   type="button"
   class="member-draft-card"
   data-member-draft-open="true"
   data-draft-type="${escapeMemberDraftHtml(draft.type)}"
-  data-draft-id="${draft.id}"${terminIdAttr}>
+  data-draft-id="${draft.id}"${terminIdAttr}${walkinModuleAttr}>
 
   <span class="member-draft-card__title">
     ${escapeMemberDraftHtml(draft.title)}
@@ -159,6 +206,26 @@ async function openMemberDraftEdit(draft) {
       null
     );
 
+    return;
+
+  }
+
+  if (
+    draft.type === 'walkin'
+    && typeof openGuestWalkInEditModal === 'function'
+  ) {
+
+    await openGuestWalkInEditModal({
+      memberId:
+        draft.memberId || draft.id,
+      moduleId: draft.moduleId,
+      onSaved: async () => {
+
+        await loadMemberVorstandDraftsList();
+
+      }
+    });
+
   }
 
 }
@@ -193,6 +260,16 @@ function bindMemberDraftCardEvents(
               parseInt(
                 button.dataset.draftTerminId,
                 10
+              ) || null,
+            moduleId:
+              parseInt(
+                button.dataset.draftModuleId,
+                10
+              ) || null,
+            memberId:
+              parseInt(
+                button.dataset.draftId,
+                10
               ) || null
           };
 
@@ -222,6 +299,8 @@ async function loadMemberVorstandDraftsList() {
   if (
     typeof fetchContentDrafts
       !== 'function'
+    && typeof fetchGuestWalkInDrafts
+      !== 'function'
   ) {
 
     container.innerHTML =
@@ -234,7 +313,7 @@ async function loadMemberVorstandDraftsList() {
   try {
 
     const drafts =
-      await fetchContentDrafts();
+      await fetchAllMemberVorstandDrafts();
 
     void refreshMemberDraftsTabIndicator();
 
@@ -252,7 +331,7 @@ async function loadMemberVorstandDraftsList() {
 
     container.innerHTML = `
 <p class="member-content-lead">
-  ${drafts.length} offene Entwürfe — Internes, Termine und Rückblicke warten auf Freigabe.
+  ${drafts.length} offene Entwürfe — Internes, Termine, Rückblicke und Walk-in-Gäste warten auf Ergänzung oder Freigabe.
 </p>
 
 <div class="member-drafts-list">

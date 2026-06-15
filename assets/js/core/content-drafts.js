@@ -50,6 +50,10 @@ function getContentDraftTypeLabel(type) {
     return 'Rückblick';
   }
 
+  if (type === 'walkin') {
+    return 'Walk-in Gast';
+  }
+
   return 'Internes';
 
 }
