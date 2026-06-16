@@ -1089,6 +1089,145 @@ body.member-feedback-modal-open {
   margin-top: 0;
 }
 
+.member-profile-tab-panel .member-verwaltung-list .member-list-card .member-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .member-card-name {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .member-list-card .member-card-name {
+  font-size: 0.9375rem;
+  line-height: 1.15;
+  display: flex;
+  align-items: center;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .member-card-contact,
+.member-profile-tab-panel .member-verwaltung-list .member-card-consents {
+  font-size: 0.88rem;
+  opacity: 0.82;
+  line-height: 1.3;
+  margin-top: 4px;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .member-list-card .member-card-contact,
+.member-profile-tab-panel .member-verwaltung-list .member-list-card .member-card-consents {
+  font-size: 0.8125rem;
+  line-height: 1.15;
+  margin-top: 1px;
+  opacity: 0.85;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .member-login-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .member-login-dot--active {
+  background: #3ddc84;
+  box-shadow: 0 0 0 1px rgba(61, 220, 132, 0.35);
+}
+
+.member-profile-tab-panel .member-verwaltung-list .member-login-dot--inactive {
+  background: #ff6b6b;
+  box-shadow: 0 0 0 1px rgba(255, 107, 107, 0.35);
+}
+
+.member-profile-tab-panel .member-verwaltung-list .member-consent-yes {
+  color: #3ddc84;
+  font-weight: 700;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .member-consent-no {
+  color: #ff6b6b;
+  font-weight: 700;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .member-role-public {
+  color: #ffd54f;
+  font-weight: 600;
+  margin-left: 0.35em;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .member-role-anonymized {
+  color: #9e9e9e;
+  font-weight: 600;
+  margin-left: 0.35em;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .member-list-card--anonymized {
+  opacity: 0.78;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .member-card-contact--anonymized {
+  font-style: italic;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .actions button {
+  width: auto;
+  margin: 0;
+  padding: 6px 10px;
+  font-size: 14px;
+  border-radius: 8px;
+  background: #2e8b57;
+  color: #fff;
+  cursor: pointer;
+  border: none;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .member-list-card .actions button {
+  padding: 5px 8px;
+  font-size: 13px;
+}
+
+.member-profile-tab-panel .admin-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.member-profile-tab-panel .admin-pagination-info {
+  font-size: 0.9375rem;
+  opacity: 0.85;
+}
+
+.member-profile-tab-panel .secondary-button {
+  width: auto;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0.55rem 0.85rem;
+  border: none;
+  border-radius: 8px;
+  background: #444;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+}
+
+.member-profile-tab-panel .admin-pagination .secondary-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .member-verwaltung-meeting-link {
   display: inline-block;
   padding: 0.75rem 1.25rem;
