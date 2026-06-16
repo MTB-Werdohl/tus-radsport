@@ -41,6 +41,8 @@ load_member_content_edit_css: true
 <script src="/assets/js/feedback/feedback-admin-participants.js?v={{ site.admin_js_version }}"></script>
 <script src="/assets/js/event/event-detail-vorstand.js"></script>
 <script src="/assets/js/member/member-vorstand-drafts.js?v={{ site.admin_js_version }}"></script>
+<script src="/assets/js/member/member-email-log.js?v={{ site.admin_js_version }}"></script>
+<script src="/assets/js/member/member-email.js?v={{ site.admin_js_version }}"></script>
 <script src="/assets/js/member/member-content.js"></script>
 <script src="/assets/js/member/member-termin-edit.js?v={{ site.admin_js_version }}"></script>
 <script src="/assets/js/member/member-render.js"></script>

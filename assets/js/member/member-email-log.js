@@ -1,4 +1,4 @@
-function escapeEmailLogText(value) {
+function escapeMemberEmailLogText(value) {
 
   return String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -8,7 +8,7 @@ function escapeEmailLogText(value) {
 
 }
 
-function formatEmailLogTimestamp(value) {
+function formatMemberEmailLogTimestamp(value) {
 
   const date =
     new Date(value);
@@ -27,7 +27,7 @@ function formatEmailLogTimestamp(value) {
 
 }
 
-function renderEmailLogRecipients(recipients) {
+function renderMemberEmailLogRecipients(recipients) {
 
   const rows =
     Array.isArray(recipients)
@@ -46,12 +46,12 @@ function renderEmailLogRecipients(recipients) {
 
       const className =
         failed
-          ? ' class="admin-email-log-recipient-failed"'
+          ? ' class="member-email-log-recipient-failed"'
           : '';
 
       const suffix =
         failed && recipient.error
-          ? ` — ${escapeEmailLogText(recipient.error)}`
+          ? ` — ${escapeMemberEmailLogText(recipient.error)}`
           : '';
 
       const label =
@@ -62,7 +62,7 @@ function renderEmailLogRecipients(recipients) {
           .filter(Boolean)
           .join(' · ');
 
-      return `<li${className}>${escapeEmailLogText(label)}${suffix}</li>`;
+      return `<li${className}>${escapeMemberEmailLogText(label)}${suffix}</li>`;
 
     })
       .join('');
@@ -71,10 +71,10 @@ function renderEmailLogRecipients(recipients) {
 
 }
 
-function renderEmailLogEntry(entry) {
+function renderMemberEmailLogEntry(entry) {
 
   const sentLabel =
-    formatEmailLogTimestamp(entry.sent_at);
+    formatMemberEmailLogTimestamp(entry.sent_at);
 
   const countLabel =
     `${entry.sent_count || 0} von ${entry.recipient_count || 0} gesendet`;
@@ -82,37 +82,34 @@ function renderEmailLogEntry(entry) {
   const summary =
     [
       sentLabel,
-      escapeEmailLogText(entry.sent_by_label || 'Vorstand'),
-      escapeEmailLogText(entry.audience_label || ''),
+      escapeMemberEmailLogText(entry.sent_by_label || 'Vorstand'),
+      escapeMemberEmailLogText(entry.audience_label || ''),
       countLabel
     ]
       .filter(Boolean)
       .join(' · ');
 
   return `
-    <details class="admin-email-log-entry">
-      <summary class="admin-email-log-summary">
-        <p class="admin-email-log-meta">${summary}</p>
-        <p class="admin-email-log-subject">${escapeEmailLogText(entry.subject)}</p>
+    <details class="member-email-log-entry">
+      <summary class="member-email-log-summary">
+        <p class="member-email-log-meta">${summary}</p>
+        <p class="member-email-log-subject">${escapeMemberEmailLogText(entry.subject)}</p>
       </summary>
-      <div class="admin-email-log-recipients">
+      <div class="member-email-log-recipients">
         <strong>Empfänger</strong>
-        ${renderEmailLogRecipients(entry.recipients)}
+        ${renderMemberEmailLogRecipients(entry.recipients)}
       </div>
-      <pre class="admin-email-log-body">${escapeEmailLogText(entry.body)}</pre>
+      <pre class="member-email-log-body">${escapeMemberEmailLogText(entry.body)}</pre>
     </details>
   `;
 
 }
 
-async function loadAdminEmailLog(
-  containerId
-) {
+async function loadMemberEmailLog() {
 
   const container =
     document.getElementById(
-      containerId
-      || 'email-log-list'
+      'member-email-log-list'
     );
 
   if (!container) {
@@ -145,7 +142,7 @@ async function loadAdminEmailLog(
     if (!data?.length) {
 
       container.innerHTML =
-        '<p class="admin-email-hint">Noch keine Einträge.</p>';
+        '<p class="member-email-hint">Noch keine Einträge.</p>';
 
       return;
 
@@ -153,7 +150,7 @@ async function loadAdminEmailLog(
 
     container.innerHTML =
       data
-        .map(renderEmailLogEntry)
+        .map(renderMemberEmailLogEntry)
         .join('');
 
   } catch (error) {
@@ -161,14 +158,8 @@ async function loadAdminEmailLog(
     console.error(error);
 
     container.innerHTML =
-      '<p class="admin-email-hint">Protokoll konnte nicht geladen werden.</p>';
+      '<p class="member-email-hint">Protokoll konnte nicht geladen werden.</p>';
 
   }
-
-}
-
-async function initAdminEmailLogPage() {
-
-  await loadAdminEmailLog();
 
 }

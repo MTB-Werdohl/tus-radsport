@@ -1,10 +1,70 @@
-let emailMembers = [];
-let emailEvents = [];
-let emailModulesByEventId = new Map();
+let memberEmailMembers = [];
+let memberEmailEvents = [];
+let memberEmailModulesByEventId = new Map();
 
-function isEmailEligibleMember(
-  member
-) {
+const MEMBER_EMAIL_AUDIENCE_NAME =
+  'member-email-audience';
+
+function getMemberEmailPanel() {
+
+  return document.getElementById(
+    'member-profile-tab-email'
+  );
+
+}
+
+function memberEmailEl(baseId) {
+
+  const panel =
+    getMemberEmailPanel();
+
+  if (!panel) {
+    return null;
+  }
+
+  return panel.querySelector(
+    `#member-email-${baseId}`
+  );
+
+}
+
+function memberEmailQuery(selector) {
+
+  const panel =
+    getMemberEmailPanel();
+
+  if (!panel) {
+    return null;
+  }
+
+  return panel.querySelector(selector);
+
+}
+
+function memberEmailQueryAll(selector) {
+
+  const panel =
+    getMemberEmailPanel();
+
+  if (!panel) {
+    return [];
+  }
+
+  return panel.querySelectorAll(selector);
+
+}
+
+function escapeMemberEmailHtml(value) {
+
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
+}
+
+function isMemberEmailEligible(member) {
 
   if (!member || member.anonymized_at) {
     return false;
@@ -22,9 +82,7 @@ function isEmailEligibleMember(
 
 }
 
-function formatEmailMemberLabel(
-  member
-) {
+function formatMemberEmailMemberLabel(member) {
 
   const name =
     [
@@ -42,9 +100,7 @@ function formatEmailMemberLabel(
 
 }
 
-function formatEmailEventLabel(
-  event
-) {
+function formatMemberEmailEventLabel(event) {
 
   const title =
     event.title || `Termin #${event.id}`;
@@ -71,7 +127,7 @@ function formatEmailEventLabel(
 
 }
 
-function isRegisteredEventAnswer(
+function isMemberEmailRegisteredAnswer(
   moduleType,
   answer
 ) {
@@ -98,33 +154,25 @@ function isRegisteredEventAnswer(
 
 }
 
-function getSelectedAudienceMode() {
+function getMemberEmailAudienceMode() {
 
-  return document.querySelector(
-    'input[name="email-audience"]:checked'
+  return memberEmailQuery(
+    `input[name="${MEMBER_EMAIL_AUDIENCE_NAME}"]:checked`
   )?.value
     || 'single';
 
 }
 
-function setAudiencePanels(
-  mode
-) {
+function setMemberEmailAudiencePanels(mode) {
 
   const single =
-    document.getElementById(
-      'email-audience-single'
-    );
+    memberEmailEl('audience-single');
 
   const eventPanel =
-    document.getElementById(
-      'email-audience-event'
-    );
+    memberEmailEl('audience-event');
 
   const allPanel =
-    document.getElementById(
-      'email-audience-all'
-    );
+    memberEmailEl('audience-all');
 
   if (single) {
     single.hidden = mode !== 'single';
@@ -140,12 +188,10 @@ function setAudiencePanels(
 
 }
 
-async function loadEmailMembers() {
+async function loadMemberEmailMembers() {
 
   const select =
-    document.getElementById(
-      'email-member-id'
-    );
+    memberEmailEl('member-id');
 
   if (!select) {
     return;
@@ -171,10 +217,10 @@ async function loadEmailMembers() {
 
   }
 
-  emailMembers = data || [];
+  memberEmailMembers = data || [];
 
   const eligible =
-    emailMembers.filter(isEmailEligibleMember);
+    memberEmailMembers.filter(isMemberEmailEligible);
 
   if (eligible.length === 0) {
 
@@ -191,7 +237,7 @@ async function loadEmailMembers() {
     eligible
       .map((member) => `
         <option value="${member.id}">
-          ${escapeAdminHtml(formatEmailMemberLabel(member))}
+          ${escapeMemberEmailHtml(formatMemberEmailMemberLabel(member))}
         </option>
       `)
       .join('');
@@ -200,18 +246,16 @@ async function loadEmailMembers() {
 
 }
 
-async function loadEmailEvents() {
+async function loadMemberEmailEvents() {
 
   const select =
-    document.getElementById(
-      'email-event-id'
-    );
+    memberEmailEl('event-id');
 
   if (!select) {
     return;
   }
 
-  emailModulesByEventId =
+  memberEmailModulesByEventId =
     new Map();
 
   const { data: modules, error: modulesError } =
@@ -234,7 +278,7 @@ async function loadEmailEvents() {
 
     select.disabled = true;
 
-    emailEvents = [];
+    memberEmailEvents = [];
 
     return;
 
@@ -252,7 +296,7 @@ async function loadEmailEvents() {
       return;
     }
 
-    emailModulesByEventId.set(
+    memberEmailModulesByEventId.set(
       eventId,
       module
     );
@@ -260,7 +304,7 @@ async function loadEmailEvents() {
   });
 
   const eventIds =
-    [...emailModulesByEventId.keys()];
+    [...memberEmailModulesByEventId.keys()];
 
   if (eventIds.length === 0) {
 
@@ -269,7 +313,7 @@ async function loadEmailEvents() {
 
     select.disabled = true;
 
-    emailEvents = [];
+    memberEmailEvents = [];
 
     return;
 
@@ -291,15 +335,15 @@ async function loadEmailEvents() {
 
     select.disabled = true;
 
-    emailEvents = [];
+    memberEmailEvents = [];
 
     return;
 
   }
 
-  emailEvents = data || [];
+  memberEmailEvents = data || [];
 
-  if (emailEvents.length === 0) {
+  if (memberEmailEvents.length === 0) {
 
     select.innerHTML =
       '<option value="">Keine Termine mit Anmeldung/Abstimmung</option>';
@@ -311,10 +355,10 @@ async function loadEmailEvents() {
   }
 
   select.innerHTML =
-    emailEvents
+    memberEmailEvents
       .map((event) => `
         <option value="${event.id}">
-          ${escapeAdminHtml(formatEmailEventLabel(event))}
+          ${escapeMemberEmailHtml(formatMemberEmailEventLabel(event))}
         </option>
       `)
       .join('');
@@ -323,17 +367,15 @@ async function loadEmailEvents() {
 
 }
 
-async function resolveEmailPreviewRecipients() {
+async function resolveMemberEmailPreviewRecipients() {
 
   const mode =
-    getSelectedAudienceMode();
+    getMemberEmailAudienceMode();
 
   if (mode === 'single') {
 
     const memberSelect =
-      document.getElementById(
-        'email-member-id'
-      );
+      memberEmailEl('member-id');
 
     if (!memberSelect) {
       return [];
@@ -343,12 +385,12 @@ async function resolveEmailPreviewRecipients() {
       Number(memberSelect.value);
 
     const member =
-      emailMembers.find(
+      memberEmailMembers.find(
         (item) =>
           item.id === memberId
       );
 
-    if (!isEmailEligibleMember(member)) {
+    if (!isMemberEmailEligible(member)) {
       return [];
     }
 
@@ -358,8 +400,8 @@ async function resolveEmailPreviewRecipients() {
 
   if (mode === 'all') {
 
-    return emailMembers.filter(
-      isEmailEligibleMember
+    return memberEmailMembers.filter(
+      isMemberEmailEligible
     );
 
   }
@@ -367,9 +409,7 @@ async function resolveEmailPreviewRecipients() {
   if (mode === 'event') {
 
     const eventSelect =
-      document.getElementById(
-        'email-event-id'
-      );
+      memberEmailEl('event-id');
 
     if (!eventSelect) {
       return [];
@@ -383,7 +423,7 @@ async function resolveEmailPreviewRecipients() {
     }
 
     let module =
-      emailModulesByEventId.get(eventId);
+      memberEmailModulesByEventId.get(eventId);
 
     if (module === undefined) {
 
@@ -393,7 +433,7 @@ async function resolveEmailPreviewRecipients() {
           eventId
         );
 
-      emailModulesByEventId.set(
+      memberEmailModulesByEventId.set(
         eventId,
         module || null
       );
@@ -401,9 +441,7 @@ async function resolveEmailPreviewRecipients() {
     }
 
     const hint =
-      document.getElementById(
-        'email-event-hint'
-      );
+      memberEmailEl('event-hint');
 
     if (!module) {
 
@@ -432,13 +470,13 @@ async function resolveEmailPreviewRecipients() {
     const recipients =
       answers
         .filter((row) =>
-          isRegisteredEventAnswer(
+          isMemberEmailRegisteredAnswer(
             module.type,
             row.answer
           )
         )
         .map((row) => row.members)
-        .filter(isEmailEligibleMember);
+        .filter(isMemberEmailEligible);
 
     const seen =
       new Set();
@@ -464,12 +502,10 @@ async function resolveEmailPreviewRecipients() {
 
 }
 
-async function updateEmailRecipientPreview() {
+async function updateMemberEmailRecipientPreview() {
 
   const preview =
-    document.getElementById(
-      'email-recipient-preview'
-    );
+    memberEmailEl('recipient-preview');
 
   if (!preview) {
     return;
@@ -479,7 +515,7 @@ async function updateEmailRecipientPreview() {
     'Empfänger werden berechnet …';
 
   const recipients =
-    await resolveEmailPreviewRecipients();
+    await resolveMemberEmailPreviewRecipients();
 
   if (recipients.length === 0) {
 
@@ -493,7 +529,7 @@ async function updateEmailRecipientPreview() {
   if (recipients.length === 1) {
 
     preview.textContent =
-      `Empfänger: 1 — ${formatEmailMemberLabel(recipients[0])}`;
+      `Empfänger: 1 — ${formatMemberEmailMemberLabel(recipients[0])}`;
 
     return;
 
@@ -504,39 +540,35 @@ async function updateEmailRecipientPreview() {
 
 }
 
-function bindEmailAudienceControls() {
+function bindMemberEmailAudienceControls() {
 
-  document
-    .querySelectorAll(
-      'input[name="email-audience"]'
-    )
-    .forEach((input) => {
+  memberEmailQueryAll(
+    `input[name="${MEMBER_EMAIL_AUDIENCE_NAME}"]`
+  ).forEach((input) => {
 
-      if (input.dataset.bound === 'true') {
-        return;
+    if (input.dataset.bound === 'true') {
+      return;
+    }
+
+    input.dataset.bound = 'true';
+
+    input.addEventListener(
+      'change',
+      async () => {
+
+        setMemberEmailAudiencePanels(
+          getMemberEmailAudienceMode()
+        );
+
+        await updateMemberEmailRecipientPreview();
+
       }
+    );
 
-      input.dataset.bound = 'true';
-
-      input.addEventListener(
-        'change',
-        async () => {
-
-          setAudiencePanels(
-            getSelectedAudienceMode()
-          );
-
-          await updateEmailRecipientPreview();
-
-        }
-      );
-
-    });
+  });
 
   const memberSelect =
-    document.getElementById(
-      'email-member-id'
-    );
+    memberEmailEl('member-id');
 
   if (
     memberSelect
@@ -547,15 +579,13 @@ function bindEmailAudienceControls() {
 
     memberSelect.addEventListener(
       'change',
-      updateEmailRecipientPreview
+      updateMemberEmailRecipientPreview
     );
 
   }
 
   const eventSelect =
-    document.getElementById(
-      'email-event-id'
-    );
+    memberEmailEl('event-id');
 
   if (
     eventSelect
@@ -571,9 +601,9 @@ function bindEmailAudienceControls() {
         const eventId =
           Number(eventSelect.value);
 
-        emailModulesByEventId.delete(eventId);
+        memberEmailModulesByEventId.delete(eventId);
 
-        await updateEmailRecipientPreview();
+        await updateMemberEmailRecipientPreview();
 
       }
     );
@@ -582,24 +612,20 @@ function bindEmailAudienceControls() {
 
 }
 
-function buildEmailSendPayload() {
+function buildMemberEmailSendPayload() {
 
   const mode =
-    getSelectedAudienceMode();
+    getMemberEmailAudienceMode();
 
   const payload = {
     mode,
     subject:
-      document.getElementById(
-        'email-subject'
-      )
+      memberEmailEl('subject')
       ?.value
       ?.trim()
       || '',
     body:
-      document.getElementById(
-        'email-body'
-      )
+      memberEmailEl('body')
       ?.value
       ?.trim()
       || ''
@@ -609,9 +635,7 @@ function buildEmailSendPayload() {
 
     payload.member_id =
       Number(
-        document.getElementById(
-          'email-member-id'
-        )
+        memberEmailEl('member-id')
           ?.value
       );
 
@@ -621,9 +645,7 @@ function buildEmailSendPayload() {
 
     payload.event_id =
       Number(
-        document.getElementById(
-          'email-event-id'
-        )
+        memberEmailEl('event-id')
           ?.value
       );
 
@@ -633,12 +655,10 @@ function buildEmailSendPayload() {
 
 }
 
-function bindEmailForm() {
+function bindMemberEmailForm() {
 
   const form =
-    document.getElementById(
-      'email-form'
-    );
+    memberEmailEl('form');
 
   if (
     !form
@@ -656,20 +676,16 @@ function bindEmailForm() {
       event.preventDefault();
 
       const status =
-        document.getElementById(
-          'email-status'
-        );
+        memberEmailEl('status');
 
       const submitBtn =
-        document.getElementById(
-          'email-submit'
-        );
+        memberEmailEl('submit');
 
       const payload =
-        buildEmailSendPayload();
+        buildMemberEmailSendPayload();
 
       const previewRecipients =
-        await resolveEmailPreviewRecipients();
+        await resolveMemberEmailPreviewRecipients();
 
       if (previewRecipients.length === 0) {
 
@@ -775,17 +791,24 @@ function bindEmailForm() {
         form.reset();
 
         const singleRadio =
-          document.querySelector(
-            'input[name="email-audience"][value="single"]'
+          memberEmailQuery(
+            `input[name="${MEMBER_EMAIL_AUDIENCE_NAME}"][value="single"]`
           );
 
         if (singleRadio) {
           singleRadio.checked = true;
         }
 
-        setAudiencePanels('single');
+        setMemberEmailAudiencePanels('single');
 
-        await updateEmailRecipientPreview();
+        await updateMemberEmailRecipientPreview();
+
+        if (
+          typeof loadMemberEmailLog
+            === 'function'
+        ) {
+          await loadMemberEmailLog();
+        }
 
       } catch (error) {
 
@@ -807,18 +830,219 @@ function bindEmailForm() {
 
 }
 
-async function initAdminEmailPage() {
+function renderMemberEmailPanelShell() {
 
-  setAudiencePanels('single');
+  return `
+<section class="member-profile-section-block member-email-panel">
 
-  bindEmailAudienceControls();
-  bindEmailForm();
+  <h2>E-Mail senden</h2>
+
+  <p class="member-content-lead">
+    Von info@mtb-werdohl.de —
+    nur an Mitglieder mit Kontakt-Einwilligung
+  </p>
+
+  <div class="member-email-compose">
+
+    <form id="member-email-form">
+
+      <p class="member-email-from">
+        Absender:
+        <strong>info@mtb-werdohl.de</strong>
+      </p>
+
+      <fieldset class="member-email-audience">
+
+        <legend>
+          Empfänger
+        </legend>
+
+        <label class="member-email-radio">
+          <input
+            type="radio"
+            name="member-email-audience"
+            value="single"
+            checked>
+          Einzelmitglied
+        </label>
+
+        <label class="member-email-radio">
+          <input
+            type="radio"
+            name="member-email-audience"
+            value="event">
+          Abgestimmte Tour
+        </label>
+
+        <label class="member-email-radio">
+          <input
+            type="radio"
+            name="member-email-audience"
+            value="all">
+          Alle Mitglieder
+        </label>
+
+      </fieldset>
+
+      <div
+        id="member-email-audience-single"
+        class="member-email-panel">
+
+        <label for="member-email-member-id">
+          Mitglied
+        </label>
+
+        <select
+          id="member-email-member-id"
+          disabled>
+
+          <option value="">
+            Mitglieder werden geladen …
+          </option>
+
+        </select>
+
+      </div>
+
+      <div
+        id="member-email-audience-event"
+        class="member-email-panel"
+        hidden>
+
+        <label for="member-email-event-id">
+          Termin (nur mit Anmeldung/Abstimmung)
+        </label>
+
+        <p class="member-email-hint">
+          Es werden Mitglieder mit Antwort
+          <strong>Ja</strong> oder <strong>Vielleicht</strong>,
+          Einwilligung Kontakt und hinterlegter E-Mail-Adresse berücksichtigt.
+        </p>
+
+        <select
+          id="member-email-event-id"
+          disabled>
+
+          <option value="">
+            Termine werden geladen …
+          </option>
+
+        </select>
+
+        <p
+          id="member-email-event-hint"
+          class="member-email-hint"
+          hidden></p>
+
+      </div>
+
+      <div
+        id="member-email-audience-all"
+        class="member-email-panel"
+        hidden>
+
+        <p class="member-email-hint">
+          Es erhalten alle Mitglieder mit
+          <strong>Einwilligung Kontakt = Ja</strong>
+          und hinterlegter E-Mail-Adresse.
+        </p>
+
+      </div>
+
+      <p
+        id="member-email-recipient-preview"
+        class="member-email-preview"
+        aria-live="polite">
+
+        Empfänger: …
+
+      </p>
+
+      <label for="member-email-subject">
+        Betreff
+      </label>
+
+      <input
+        type="text"
+        id="member-email-subject"
+        maxlength="200"
+        required>
+
+      <label for="member-email-body">
+        Nachricht
+      </label>
+
+      <textarea
+        id="member-email-body"
+        rows="10"
+        required></textarea>
+
+      <button
+        type="submit"
+        id="member-email-submit">
+
+        E-Mail senden
+
+      </button>
+
+    </form>
+
+    <div id="member-email-status"></div>
+
+  </div>
+
+</section>
+
+<section class="member-profile-section-block member-email-log-panel">
+
+  <h2>Versandprotokoll</h2>
+
+  <div
+    id="member-email-log-list"
+    class="member-email-log-list">
+
+    <p class="member-email-hint">
+      Protokoll wird geladen …
+    </p>
+
+  </div>
+
+</section>
+  `.trim();
+
+}
+
+async function initMemberEmailTab() {
+
+  const panel =
+    getMemberEmailPanel();
+
+  if (!panel) {
+    return;
+  }
+
+  if (panel.dataset.emailBound !== 'true') {
+
+    setMemberEmailAudiencePanels('single');
+
+    bindMemberEmailAudienceControls();
+    bindMemberEmailForm();
+
+    panel.dataset.emailBound = 'true';
+
+  } else {
+
+    setMemberEmailAudiencePanels('single');
+
+  }
 
   await Promise.all([
-    loadEmailMembers(),
-    loadEmailEvents()
+    loadMemberEmailMembers(),
+    loadMemberEmailEvents()
   ]);
 
-  await updateEmailRecipientPreview();
+  await updateMemberEmailRecipientPreview();
+
+  await loadMemberEmailLog();
 
 }

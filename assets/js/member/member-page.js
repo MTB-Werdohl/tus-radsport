@@ -346,6 +346,16 @@ function switchMemberProfileTab(
     void loadMemberVorstandDraftsList();
   }
 
+  if (tabId === 'email') {
+
+    if (
+      typeof initMemberEmailTab === 'function'
+    ) {
+      void initMemberEmailTab();
+    }
+
+  }
+
 }
 
 async function refreshMemberProfileView(
@@ -406,6 +416,13 @@ async function refreshMemberProfileView(
         === 'function'
     ) {
       void loadMemberVorstandDraftsList();
+    }
+
+    if (
+      profileActiveTab === 'email'
+      && typeof initMemberEmailTab === 'function'
+    ) {
+      void initMemberEmailTab();
     }
 
   }

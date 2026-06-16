@@ -338,6 +338,7 @@ function resolveMemberProfileActiveTab(
       'profil',
       'termin',
       'entwuerfe',
+      'email',
       'abstimmungen'
     ]);
 
@@ -380,6 +381,11 @@ function renderMemberProfileTabsNav(
     tabs.splice(2, 0, {
       id: 'entwuerfe',
       label: 'Entwürfe'
+    });
+
+    tabs.splice(3, 0, {
+      id: 'email',
+      label: 'E-Mail'
     });
 
   }
@@ -737,6 +743,24 @@ ${
   ${activeTab !== 'entwuerfe' ? 'hidden' : ''}>
 
   ${renderMemberDraftsPanelShell()}
+
+</div>
+`
+    : ''
+}
+
+${
+  showDraftsTab
+    ? `
+<div
+  id="member-profile-tab-email"
+  class="member-profile-tab-panel"
+  role="tabpanel"
+  aria-labelledby="member-profile-tab-btn-email"
+  data-profile-panel="email"
+  ${activeTab !== 'email' ? 'hidden' : ''}>
+
+  ${renderMemberEmailPanelShell()}
 
 </div>
 `
