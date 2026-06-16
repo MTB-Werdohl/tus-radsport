@@ -50,7 +50,8 @@
 </head>
 
 
-<body>
+<body{% if page.body_class %} class="{{ page.body_class }}"{% endif %}>
+  {% unless page.hide_site_chrome %}
   <div id="site-global-banner" hidden></div>
   <div id="site-saison-banner" hidden></div>
 
@@ -136,8 +137,9 @@
       </button>
     </div>
   </header>
+  {% endunless %}
 
-  <main class="site-main">
+  <main class="site-main{% if page.hide_site_chrome %} site-main--focus{% endif %}">
     <div class="wrap layout-single">
       <section class="content{% if page.mitfahren_layout %} content--mitfahren{% elsif page.url == '/' or page.url == '/index.html' %} content--home{% else %} content--standard{% endif %}">
         {% unless page.url == '/' or page.url == '/index.html' or page.mitfahren_layout %}
@@ -155,6 +157,7 @@
     </div>
   </main>
 
+{% unless page.hide_site_chrome %}
 <footer class="site-footer">
   <div class="wrap footer-inner">
 
@@ -210,8 +213,12 @@ class="push-widget-content"
 
 </div>
 
+{% endunless %}
+
 <script src="/assets/js/site/site-content-render.js"></script>
+{% unless page.hide_site_chrome %}
 <script src="/assets/js/push/widget.js"></script>
+{% endunless %}
 <script src="/assets/js/member/member-nav.js"></script>
   <script src="{{ '/assets/js/nav.js' | relative_url }}"></script>
 

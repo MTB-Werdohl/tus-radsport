@@ -1,33 +1,25 @@
 ---
-layout: null
+layout: default
 title: Termin bearbeiten
 permalink: /termin-bearbeiten/
+hide_title: true
+hide_site_chrome: true
+body_class: member-termin-editor-page site-chrome-hidden
+load_events_css: true
+load_feedback_css: true
+load_member_content_edit_css: true
+member_termin_editor: true
 ---
 
-<!doctype html>
+<div id="member-termin-editor">
 
-<html lang="de">
+  <p class="member-termin-editor-loading">
+    Termin wird geladen …
+  </p>
 
-<head>
+</div>
 
-{% include member-termin-head.html %}
-
-</head>
-
-<body class="member-termin-editor-page">
-
-<main class="member-termin-editor-main">
-
-  <div id="member-termin-editor">
-
-    <p class="member-termin-editor-loading">
-      Termin wird geladen …
-    </p>
-
-  </div>
-
-</main>
-
+{% if page.member_termin_editor %}
 <script src="/assets/js/core/dates.js"></script>
 <script src="/assets/js/core/termin-dates.js"></script>
 <script src="/assets/js/core/visibility.js"></script>
@@ -51,7 +43,4 @@ document.addEventListener(
   }
 );
 </script>
-
-</body>
-
-</html>
+{% endif %}
