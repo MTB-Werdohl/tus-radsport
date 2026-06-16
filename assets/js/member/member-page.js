@@ -342,8 +342,15 @@ function switchMemberProfileTab(
 
   }
 
-  if (tabId === 'entwuerfe') {
-    void loadMemberVorstandDraftsList();
+  if (tabId === 'verwaltung') {
+
+    if (
+      typeof initMemberVerwaltungTab
+        === 'function'
+    ) {
+      void initMemberVerwaltungTab();
+    }
+
   }
 
   if (tabId === 'email') {
@@ -411,11 +418,11 @@ async function refreshMemberProfileView(
     }
 
     if (
-      profileActiveTab === 'entwuerfe'
-      && typeof loadMemberVorstandDraftsList
+      profileActiveTab === 'verwaltung'
+      && typeof initMemberVerwaltungTab
         === 'function'
     ) {
-      void loadMemberVorstandDraftsList();
+      void initMemberVerwaltungTab();
     }
 
     if (
@@ -768,8 +775,6 @@ async function loadMemberProfilePage() {
         || urlTab === 'content'
       ) {
         profileActiveTab = 'termin';
-      } else if (urlTab === 'entwuerfe') {
-        profileActiveTab = urlTab;
       } else if (urlTab) {
         profileActiveTab = urlTab;
       }
@@ -822,20 +827,19 @@ async function loadMemberProfilePage() {
       }
 
       if (
-        profileActiveTab === 'entwuerfe'
-        && typeof loadMemberVorstandDraftsList
+        profileActiveTab === 'verwaltung'
+        && typeof initMemberVerwaltungTab
           === 'function'
       ) {
-        void loadMemberVorstandDraftsList();
+        void initMemberVerwaltungTab();
       }
 
       if (
-        typeof initMemberVorstandDraftsTab
+        profileActiveTab === 'email'
+        && typeof initMemberEmailTab
           === 'function'
       ) {
-        void initMemberVorstandDraftsTab(
-          member
-        );
+        void initMemberEmailTab();
       }
 
     }
@@ -863,6 +867,25 @@ async function loadMemberProfilePage() {
     `;
 
   }
+
+}
+
+function reloadAfterVorstandContentSave() {
+
+  const path =
+    window.location.pathname
+      .replace(/\/$/, '');
+
+  if (path === '/profil') {
+
+    window.location.href =
+      '/profil/?tab=termin';
+
+    return;
+
+  }
+
+  window.location.reload();
 
 }
 

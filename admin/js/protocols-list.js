@@ -1,5 +1,33 @@
 let protocolListPage = 1;
 
+let protocolsListConfig = {
+  searchId: 'search',
+  containerId: 'protocols',
+  paginationId: 'protocols-pagination',
+  newProtocolId: 'new-protocol'
+};
+
+function setProtocolsListConfig(
+  config = {}
+) {
+
+  protocolsListConfig = {
+    ...protocolsListConfig,
+    ...config
+  };
+
+}
+
+function getProtocolsListElement(
+  key
+) {
+
+  return document.getElementById(
+    protocolsListConfig[key]
+  );
+
+}
+
 function compareProtocolsByDateDesc(a, b) {
 
   const dateA =
@@ -35,7 +63,13 @@ function bindProtocolListActions(container) {
 
 }
 
-async function loadProtocols() {
+async function loadProtocols(
+  config
+) {
+
+  if (config) {
+    setProtocolsListConfig(config);
+  }
 
   const { data, error } =
     await window.supabaseClient
@@ -59,8 +93,7 @@ async function loadProtocols() {
   }
 
   const search =
-    document
-      .getElementById('search')
+    getProtocolsListElement('searchId')
       ?.value
       .toLowerCase()
       .trim()
@@ -97,7 +130,7 @@ async function loadProtocols() {
   protocolListPage = paged.page;
 
   const container =
-    document.getElementById('protocols');
+    getProtocolsListElement('containerId');
 
   if (!container) {
     return;
@@ -113,7 +146,8 @@ async function loadProtocols() {
         : '<p class="admin-hint">Noch keine Protokolle angelegt.</p>';
 
     renderAdminPagination({
-      containerId: 'protocols-pagination',
+      containerId:
+        protocolsListConfig.paginationId,
       totalItems: paged.totalItems,
       currentPage: paged.page,
       onPageChange(page) {
@@ -185,7 +219,8 @@ async function loadProtocols() {
   bindProtocolListActions(container);
 
   renderAdminPagination({
-    containerId: 'protocols-pagination',
+    containerId:
+      protocolsListConfig.paginationId,
     totalItems: paged.totalItems,
     currentPage: paged.page,
     onPageChange(page) {
@@ -266,15 +301,45 @@ function newProtocol() {
 
 }
 
-document
-  .getElementById('search')
-  ?.addEventListener('input', () => {
+function bindProtocolsListControls() {
 
-    protocolListPage = 1;
-    loadProtocols();
+  const search =
+    getProtocolsListElement('searchId');
 
-  });
+  if (
+    search
+    && search.dataset.bound !== 'true'
+  ) {
 
-document
-  .getElementById('new-protocol')
-  ?.addEventListener('click', newProtocol);
+    search.dataset.bound = 'true';
+
+    search.addEventListener(
+      'input',
+      () => {
+
+        protocolListPage = 1;
+        loadProtocols();
+
+      }
+    );
+
+  }
+
+  const newBtn =
+    getProtocolsListElement('newProtocolId');
+
+  if (
+    newBtn
+    && newBtn.dataset.bound !== 'true'
+  ) {
+
+    newBtn.dataset.bound = 'true';
+
+    newBtn.addEventListener(
+      'click',
+      newProtocol
+    );
+
+  }
+
+}

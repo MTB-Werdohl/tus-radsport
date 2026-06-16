@@ -532,7 +532,7 @@ async function initMemberEdit() {
       );
 
       window.location.href =
-        '/admin/mitglieder.html';
+        '/profil/?tab=verwaltung';
 
       return;
 
@@ -868,7 +868,7 @@ async function saveMember() {
   );
 
   window.location.href =
-    '/admin/mitglieder.html';
+    '/profil/?tab=verwaltung';
 
 }
 

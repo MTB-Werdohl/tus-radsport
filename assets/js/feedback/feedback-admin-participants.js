@@ -769,18 +769,6 @@ async function runParticipantAdminAction(
     await callbacks.reload();
   }
 
-  if (
-    typeof refreshMemberDraftsTabIndicator
-      === 'function'
-    && (
-      payload.action === 'add_guest'
-      || payload.action === 'complete_walkin'
-      || payload.action === 'remove'
-      || payload.action === 'update_guest'
-    )
-  ) {
-    void refreshMemberDraftsTabIndicator();
-  }
 
 }
 
@@ -1324,13 +1312,6 @@ async function openGuestWalkInEditModal(
           await options.onSaved();
         }
 
-        if (
-          typeof refreshMemberDraftsTabIndicator
-            === 'function'
-        ) {
-          void refreshMemberDraftsTabIndicator();
-        }
-
       })();
 
     });
@@ -1365,13 +1346,6 @@ async function openGuestWalkInEditModal(
           typeof options.onSaved === 'function'
         ) {
           await options.onSaved();
-        }
-
-        if (
-          typeof refreshMemberDraftsTabIndicator
-            === 'function'
-        ) {
-          void refreshMemberDraftsTabIndicator();
         }
 
       })();
@@ -1478,13 +1452,6 @@ async function openGuestWalkInEditModal(
           typeof options.onSaved === 'function'
         ) {
           await options.onSaved();
-        }
-
-        if (
-          typeof refreshMemberDraftsTabIndicator
-            === 'function'
-        ) {
-          void refreshMemberDraftsTabIndicator();
         }
 
       })();

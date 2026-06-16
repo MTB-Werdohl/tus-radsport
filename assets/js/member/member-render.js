@@ -337,7 +337,7 @@ function resolveMemberProfileActiveTab(
     new Set([
       'profil',
       'termin',
-      'entwuerfe',
+      'verwaltung',
       'email',
       'abstimmungen'
     ]);
@@ -379,8 +379,8 @@ function renderMemberProfileTabsNav(
   ) {
 
     tabs.splice(2, 0, {
-      id: 'entwuerfe',
-      label: 'Entwürfe'
+      id: 'verwaltung',
+      label: 'Verwaltung'
     });
 
     tabs.splice(3, 0, {
@@ -422,28 +422,6 @@ function renderMemberProfileTabsNav(
   ${buttons}
 
 </nav>
-  `;
-
-}
-
-function renderMemberDraftsPanelShell() {
-
-  return `
-<section class="member-profile-section-block">
-
-  <h2>Entwürfe</h2>
-
-  <div
-    id="member-drafts-list"
-    class="member-drafts-list-wrap">
-
-    <p class="member-content-lead">
-      Entwürfe werden geladen …
-    </p>
-
-  </div>
-
-</section>
   `;
 
 }
@@ -613,7 +591,7 @@ function renderMemberProfile(
       options?.activeTab || 'profil'
     );
 
-  const showDraftsTab =
+  const showVorstandTabs =
     typeof isVorstand === 'function'
     && isVorstand(member);
 
@@ -732,17 +710,17 @@ ${renderMemberProfileTabsNav(
 </div>
 
 ${
-  showDraftsTab
+  showVorstandTabs
     ? `
 <div
-  id="member-profile-tab-entwuerfe"
+  id="member-profile-tab-verwaltung"
   class="member-profile-tab-panel"
   role="tabpanel"
-  aria-labelledby="member-profile-tab-btn-entwuerfe"
-  data-profile-panel="entwuerfe"
-  ${activeTab !== 'entwuerfe' ? 'hidden' : ''}>
+  aria-labelledby="member-profile-tab-btn-verwaltung"
+  data-profile-panel="verwaltung"
+  ${activeTab !== 'verwaltung' ? 'hidden' : ''}>
 
-  ${renderMemberDraftsPanelShell()}
+  ${renderMemberVerwaltungPanelShell()}
 
 </div>
 `
@@ -750,7 +728,7 @@ ${
 }
 
 ${
-  showDraftsTab
+  showVorstandTabs
     ? `
 <div
   id="member-profile-tab-email"

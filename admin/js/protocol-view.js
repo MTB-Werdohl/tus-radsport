@@ -34,7 +34,7 @@ async function initProtocolView() {
   if (!viewId) {
 
     window.location.href =
-      '/admin/protokolle.html';
+      '/profil/?tab=verwaltung';
 
     return;
 

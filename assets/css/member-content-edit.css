@@ -880,3 +880,225 @@ body.member-feedback-modal-open {
   font-size: 0.9375rem;
   line-height: 1.45;
 }
+
+.member-verwaltung-section {
+  margin-bottom: 1.5rem;
+}
+
+.member-verwaltung-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.member-verwaltung-section-head h2 {
+  margin: 0;
+}
+
+.member-verwaltung-link-btn,
+.member-verwaltung-primary-btn,
+.member-verwaltung-secondary-btn {
+  width: fit-content;
+  padding: 0.65rem 1.1rem;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.member-verwaltung-link-btn {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.member-verwaltung-primary-btn {
+  background: #ed1c24;
+  color: #fff;
+}
+
+.member-verwaltung-secondary-btn {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.member-verwaltung-hinweise-panel {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.member-profile-tab-panel .site-content-admin-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.member-profile-tab-panel .site-content-admin-tab {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+}
+
+.member-profile-tab-panel .site-content-admin-tab.is-active {
+  background: rgba(46, 139, 87, 0.85);
+  border-color: transparent;
+}
+
+.member-profile-tab-panel .site-content-admin-panel form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.member-profile-tab-panel .site-content-admin-panel input,
+.member-profile-tab-panel .site-content-admin-panel textarea,
+.member-profile-tab-panel .site-content-admin-panel select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  font: inherit;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.member-profile-tab-panel .site-content-admin-panel select {
+  background: #fff;
+  color: #111;
+}
+
+.member-profile-tab-panel .site-content-admin-panel select option {
+  color: #111;
+  background: #fff;
+}
+
+.member-profile-tab-panel .site-content-admin-panel button[type="submit"] {
+  width: fit-content;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  background: #ed1c24;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.member-profile-tab-panel .site-landing-item {
+  display: grid;
+  gap: 0.5rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+}
+
+.member-verwaltung-hint,
+.member-profile-tab-panel .admin-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.member-verwaltung-hint.admin-hint--error,
+.member-profile-tab-panel .admin-hint--error {
+  color: #ffb4b4;
+}
+
+.member-verwaltung-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.member-verwaltung-toolbar input[type="search"] {
+  flex: 1 1 220px;
+  min-width: 0;
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  font: inherit;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.member-verwaltung-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .event-card {
+  background: rgba(34, 81, 180, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: #fff;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .event-meta {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  opacity: 0.82;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .admin-protocol-card-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.member-profile-tab-panel .member-verwaltung-list .admin-protocol-card--abteilung {
+  background: rgba(34, 81, 180, 0.82);
+}
+
+.member-profile-tab-panel .member-verwaltung-list .admin-protocol-card--hauptverein {
+  background: rgba(120, 72, 28, 0.88);
+}
+
+.member-profile-tab-panel .member-verwaltung-list .delete-button {
+  width: auto;
+  margin: 0;
+  padding: 0.35rem 0.55rem;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.member-verwaltung-pagination {
+  margin-top: 1rem;
+}
+
+.member-verwaltung-pagination .admin-pagination {
+  margin-top: 0;
+}
+
+.member-verwaltung-meeting-link {
+  display: inline-block;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  background: rgba(34, 81, 180, 0.8);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.member-verwaltung-meeting-link:hover {
+  background: rgba(46, 139, 87, 0.95);
+}

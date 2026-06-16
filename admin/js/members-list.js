@@ -183,12 +183,39 @@ function showMembersLoadError(error) {
 
 }
 
+let membersListConfig = {
+  searchId: 'search',
+  containerId: 'members',
+  newMemberId: 'new-member',
+  exportPdfId: 'export-members-pdf'
+};
+
+function setMembersListConfig(
+  config = {}
+) {
+
+  membersListConfig = {
+    ...membersListConfig,
+    ...config
+  };
+
+}
+
+function getMembersListElement(
+  key
+) {
+
+  return document.getElementById(
+    membersListConfig[key]
+  );
+
+}
+
 let allMembers = [];
 
 function getMemberSearchTerm() {
 
-  return document
-    .getElementById('search')
+  return getMembersListElement('searchId')
     ?.value
     .toLowerCase()
     .trim() || '';
@@ -262,7 +289,13 @@ function filterMembersBySearch(members) {
 
 }
 
-async function loadMembers() {
+async function loadMembers(
+  config
+) {
+
+  if (config) {
+    setMembersListConfig(config);
+  }
 
   const { data, error } =
     await window.supabaseClient
@@ -294,7 +327,11 @@ function renderMembersList(members) {
     getVisibleMembers(members);
 
   const container =
-    document.getElementById('members');
+    getMembersListElement('containerId');
+
+  if (!container) {
+    return;
+  }
 
   container.innerHTML = '';
 
@@ -450,16 +487,59 @@ function exportMembersPdf() {
 
 }
 
-document
-  .getElementById('search')
-  ?.addEventListener('input', () => {
-    renderMembersList(allMembers);
-  });
+function bindMembersListControls() {
 
-document
-  .getElementById('new-member')
-  ?.addEventListener('click', newMember);
+  const search =
+    getMembersListElement('searchId');
 
-document
-  .getElementById('export-members-pdf')
-  ?.addEventListener('click', exportMembersPdf);
+  if (
+    search
+    && search.dataset.bound !== 'true'
+  ) {
+
+    search.dataset.bound = 'true';
+
+    search.addEventListener(
+      'input',
+      () => {
+        renderMembersList(allMembers);
+      }
+    );
+
+  }
+
+  const newMemberBtn =
+    getMembersListElement('newMemberId');
+
+  if (
+    newMemberBtn
+    && newMemberBtn.dataset.bound !== 'true'
+  ) {
+
+    newMemberBtn.dataset.bound = 'true';
+
+    newMemberBtn.addEventListener(
+      'click',
+      newMember
+    );
+
+  }
+
+  const exportBtn =
+    getMembersListElement('exportPdfId');
+
+  if (
+    exportBtn
+    && exportBtn.dataset.bound !== 'true'
+  ) {
+
+    exportBtn.dataset.bound = 'true';
+
+    exportBtn.addEventListener(
+      'click',
+      exportMembersPdf
+    );
+
+  }
+
+}
