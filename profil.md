@@ -18,6 +18,7 @@ load_feedback_css: true
 </section>
 
 {% if page.member_profile %}
+<script src="/assets/js/core/dates.js"></script>
 <script src="/assets/js/core/visibility.js"></script>
 <script src="/assets/js/feedback/feedback-types.js"></script>
 <script src="/assets/js/feedback/feedback-service.js"></script>
