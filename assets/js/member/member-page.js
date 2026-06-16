@@ -329,11 +329,18 @@ function switchMemberProfileTab(
     void loadMemberVotesIfNeeded();
   }
 
-  if (tabId === 'content') {
-    void loadMemberContentListIfNeeded(
+  if (tabId === 'termin') {
+
+    const terminId =
+      new URLSearchParams(
+        window.location.search
+      ).get('id');
+
+    void initMemberTerminEditTab(
       getCurrentMember(),
-      true
+      { terminId }
     );
+
   }
 
   if (tabId === 'entwuerfe') {
@@ -380,11 +387,18 @@ async function refreshMemberProfileView(
       void loadMemberVotesIfNeeded(true);
     }
 
-    if (profileActiveTab === 'content') {
-      void loadMemberContentListIfNeeded(
+    if (profileActiveTab === 'termin') {
+
+      const terminId =
+        new URLSearchParams(
+          window.location.search
+        ).get('id');
+
+      void initMemberTerminEditTab(
         member,
-        true
+        { terminId }
       );
+
     }
 
     if (
@@ -733,9 +747,14 @@ async function loadMemberProfilePage() {
           window.location.search
         ).get('tab');
 
-      if (urlTab === 'content') {
-        profileActiveTab = urlTab;
+      if (
+        urlTab === 'termin'
+        || urlTab === 'content'
+      ) {
+        profileActiveTab = 'termin';
       } else if (urlTab === 'entwuerfe') {
+        profileActiveTab = urlTab;
+      } else if (urlTab) {
         profileActiveTab = urlTab;
       }
 
@@ -772,11 +791,18 @@ async function loadMemberProfilePage() {
         void loadMemberVotesIfNeeded(true);
       }
 
-      if (profileActiveTab === 'content') {
-        void loadMemberContentListIfNeeded(
+      if (profileActiveTab === 'termin') {
+
+        const terminId =
+          new URLSearchParams(
+            window.location.search
+          ).get('id');
+
+        void initMemberTerminEditTab(
           member,
-          true
+          { terminId }
         );
+
       }
 
       if (

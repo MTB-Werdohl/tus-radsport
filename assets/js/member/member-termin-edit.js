@@ -3,11 +3,63 @@ const memberTerminEditParams =
     window.location.search
   );
 
-const memberTerminEditId =
-  memberTerminEditParams.get('id');
-
 const memberTerminDefaultImagePath =
   'shared/images/1781467844219-gruppentour_1.webp';
+
+let memberTerminEditIdOverride = null;
+let memberTerminTabInitialized = false;
+
+function getMemberTerminEditId() {
+
+  if (memberTerminEditIdOverride) {
+    return memberTerminEditIdOverride;
+  }
+
+  return memberTerminEditParams.get('id');
+
+}
+
+function setMemberTerminEditId(
+  id
+) {
+
+  memberTerminEditIdOverride =
+    id
+      ? String(id)
+      : null;
+
+}
+
+function getMemberTerminProfileUrl(
+  id
+) {
+
+  const params =
+    new URLSearchParams({
+      tab: 'termin'
+    });
+
+  if (id) {
+    params.set(
+      'id',
+      String(id)
+    );
+  }
+
+  return `/profil/?${params.toString()}`;
+
+}
+
+function memberTerminIsVorstandUser(
+  member
+) {
+
+  return (
+    typeof isVorstand === 'function'
+    && isVorstand(member)
+  );
+
+}
 
 function memberTerminExtractTimeFromDate(
   value
@@ -55,11 +107,75 @@ function memberTerminCombineDateTime(
 
 }
 
+function memberTerminResetForm() {
+
+  document.getElementById('title').value = '';
+  document.getElementById('date').value = '';
+  document.getElementById('endDate').value = '';
+  document.getElementById('startTime').value = '';
+  document.getElementById('location').value = '';
+  document.getElementById('komoot').value = '';
+  document.getElementById('content').value = '';
+
+  const imagePick =
+    document.getElementById(
+      'imageStoragePathPick'
+    );
+
+  if (imagePick) {
+    imagePick.value = '';
+  }
+
+  const gpxPick =
+    document.getElementById(
+      'gpxStoragePathPick'
+    );
+
+  if (gpxPick) {
+    gpxPick.value = '';
+  }
+
+  const currentImage =
+    document.getElementById('currentImage');
+
+  if (currentImage) {
+    currentImage.innerHTML = '';
+  }
+
+  const currentGpx =
+    document.getElementById('currentGpx');
+
+  if (currentGpx) {
+    currentGpx.innerHTML = '';
+  }
+
+  const sichtbarkeitSelect =
+    document.getElementById(
+      'member-termin-sichtbarkeit'
+    );
+
+  if (sichtbarkeitSelect) {
+    sichtbarkeitSelect.value =
+      window.siteConfig.visibility.draft;
+  }
+
+  const formTitle =
+    document.getElementById('form-title');
+
+  if (formTitle) {
+    formTitle.innerText = 'Termin';
+  }
+
+}
+
 async function memberTerminAssertEditable(
   member
 ) {
 
-  if (!memberTerminEditId) {
+  const editId =
+    getMemberTerminEditId();
+
+  if (!editId) {
     return true;
   }
 
@@ -69,7 +185,7 @@ async function memberTerminAssertEditable(
       .select(
         'id, created_by, sichtbarkeit'
       )
-      .eq('id', memberTerminEditId)
+      .eq('id', editId)
       .single();
 
   if (error || !data) {
@@ -79,7 +195,20 @@ async function memberTerminAssertEditable(
     );
 
     window.location.href =
-      '/profil/?tab=content';
+      getMemberTerminProfileUrl();
+
+    return false;
+
+  }
+
+  if (data.created_by !== member.id) {
+
+    alert(
+      'Dieser Termin kann nicht bearbeitet werden.'
+    );
+
+    window.location.href =
+      getMemberTerminProfileUrl();
 
     return false;
 
@@ -89,8 +218,8 @@ async function memberTerminAssertEditable(
     window.siteConfig.visibility.draft;
 
   if (
-    data.created_by !== member.id
-    || data.sichtbarkeit !== draft
+    !memberTerminIsVorstandUser(member)
+    && data.sichtbarkeit !== draft
   ) {
 
     alert(
@@ -98,7 +227,7 @@ async function memberTerminAssertEditable(
     );
 
     window.location.href =
-      '/profil/?tab=content';
+      getMemberTerminProfileUrl();
 
     return false;
 
@@ -108,22 +237,26 @@ async function memberTerminAssertEditable(
 
 }
 
-async function loadMemberTerminEdit() {
+async function loadMemberTerminEdit(
+  member
+) {
 
-  if (!memberTerminEditId) {
+  const editId =
+    getMemberTerminEditId();
+
+  if (!editId) {
+
+    memberTerminResetForm();
+
     return;
-  }
 
-  document
-    .getElementById('form-title')
-    .innerText =
-      'Termin bearbeiten';
+  }
 
   const { data, error } =
     await window.supabaseClient
       .from(window.siteConfig.tables.termine)
       .select('*')
-      .eq('id', memberTerminEditId)
+      .eq('id', editId)
       .single();
 
   if (error) {
@@ -137,6 +270,11 @@ async function loadMemberTerminEdit() {
     return;
 
   }
+
+  document
+    .getElementById('form-title')
+    .innerText =
+      'Termin bearbeiten';
 
   document.getElementById('title').value =
     data.title || '';
@@ -164,6 +302,25 @@ async function loadMemberTerminEdit() {
   document.getElementById('content').value =
     data.content || '';
 
+  if (
+    memberTerminIsVorstandUser(member)
+  ) {
+
+    const sichtbarkeitSelect =
+      document.getElementById(
+        'member-termin-sichtbarkeit'
+      );
+
+    if (sichtbarkeitSelect) {
+
+      sichtbarkeitSelect.value =
+        data.sichtbarkeit
+        || window.siteConfig.visibility.draft;
+
+    }
+
+  }
+
   if (data.image_storage_path) {
 
     applyMemberEditMediaSelection(
@@ -172,6 +329,12 @@ async function loadMemberTerminEdit() {
       data.image_storage_path,
       'imageStoragePathPick'
     );
+
+  } else {
+
+    document
+      .getElementById('currentImage')
+      .innerHTML = '';
 
   }
 
@@ -183,6 +346,12 @@ async function loadMemberTerminEdit() {
       data.gpx_storage_path,
       'gpxStoragePathPick'
     );
+
+  } else {
+
+    document
+      .getElementById('currentGpx')
+      .innerHTML = '';
 
   }
 
@@ -324,6 +493,38 @@ function validateMemberTerminEndDate(
 
 }
 
+function resolveMemberTerminSichtbarkeit(
+  member
+) {
+
+  const draft =
+    window.siteConfig.visibility.draft;
+
+  if (
+    !memberTerminIsVorstandUser(member)
+  ) {
+    return draft;
+  }
+
+  const raw =
+    document
+      .getElementById(
+        'member-termin-sichtbarkeit'
+      )
+      ?.value
+    || draft;
+
+  if (
+    raw === window.siteConfig.visibility.public
+    || raw === window.siteConfig.visibility.members
+  ) {
+    return raw;
+  }
+
+  return draft;
+
+}
+
 async function saveMemberTerminEdit(
   member
 ) {
@@ -418,6 +619,11 @@ async function saveMemberTerminEdit(
       memberTerminDefaultImagePath;
   }
 
+  const sichtbarkeit =
+    resolveMemberTerminSichtbarkeit(
+      member
+    );
+
   const payload = {
 
     title,
@@ -444,8 +650,7 @@ async function saveMemberTerminEdit(
 
     category: 'vereinsleben',
 
-    sichtbarkeit:
-      window.siteConfig.visibility.draft,
+    sichtbarkeit,
 
     created_by: member.id
 
@@ -461,22 +666,34 @@ async function saveMemberTerminEdit(
       gpxStoragePath;
   }
 
-  let error;
+  const editId =
+    getMemberTerminEditId();
 
-  if (memberTerminEditId) {
+  let error;
+  let savedId =
+    editId
+      ? parseInt(editId, 10)
+      : null;
+
+  if (editId) {
 
     ({ error } =
       await window.supabaseClient
         .from(window.siteConfig.tables.termine)
         .update(payload)
-        .eq('id', memberTerminEditId));
+        .eq('id', editId));
 
   } else {
 
-    ({ error } =
+    const { data: inserted, error: insertError } =
       await window.supabaseClient
         .from(window.siteConfig.tables.termine)
-        .insert([payload]));
+        .insert([payload])
+        .select('id')
+        .single();
+
+    error = insertError;
+    savedId = inserted?.id;
 
   }
 
@@ -495,38 +712,13 @@ async function saveMemberTerminEdit(
   }
 
   window.location.href =
-    '/profil/?tab=content';
+    getMemberTerminProfileUrl(savedId);
 
 }
 
-async function initMemberTerminEditPage() {
-
-  const member =
-    await ensureMemberSession({
-      strict: true
-    });
-
-  if (
-    !member
-    || typeof isClubMember !== 'function'
-    || !isClubMember(member)
-  ) {
-
-    window.location.href =
-      '/profil/';
-
-    return;
-
-  }
-
-  const editable =
-    await memberTerminAssertEditable(
-      member
-    );
-
-  if (!editable) {
-    return;
-  }
+function bindMemberTerminEditControls(
+  member
+) {
 
   if (
     typeof renderMemberEditMediaPreview
@@ -555,15 +747,91 @@ async function initMemberTerminEditPage() {
   window.memberEditUnsavedGuard =
     initMemberEditUnsavedGuard();
 
-  await loadMemberTerminEdit();
+  const saveButton =
+    document.getElementById('save-event');
 
-  document
-    .getElementById('save-event')
-    ?.addEventListener(
+  if (
+    saveButton
+    && saveButton.dataset.bound
+      !== 'true'
+  ) {
+
+    saveButton.dataset.bound = 'true';
+
+    saveButton.addEventListener(
       'click',
       () => {
         void saveMemberTerminEdit(member);
       }
     );
+
+  }
+
+}
+
+async function initMemberTerminEditTab(
+  member,
+  options
+) {
+
+  if (
+    !member
+    || typeof isClubMember !== 'function'
+    || !isClubMember(member)
+  ) {
+    return;
+  }
+
+  const terminId =
+    options?.terminId
+    || memberTerminEditParams.get('id')
+    || null;
+
+  setMemberTerminEditId(terminId);
+
+  const editable =
+    await memberTerminAssertEditable(
+      member
+    );
+
+  if (!editable) {
+    return;
+  }
+
+  bindMemberTerminEditControls(member);
+
+  await loadMemberTerminEdit(member);
+
+  memberTerminTabInitialized = true;
+
+}
+
+async function initMemberTerminEditPage() {
+
+  const member =
+    await ensureMemberSession({
+      strict: true
+    });
+
+  if (
+    !member
+    || typeof isClubMember !== 'function'
+    || !isClubMember(member)
+  ) {
+
+    window.location.href =
+      '/profil/';
+
+    return;
+
+  }
+
+  await initMemberTerminEditTab(
+    member,
+    {
+      terminId:
+        memberTerminEditParams.get('id')
+    }
+  );
 
 }

@@ -329,10 +329,14 @@ function resolveMemberProfileActiveTab(
   activeTab
 ) {
 
+  if (activeTab === 'content') {
+    return 'termin';
+  }
+
   const allowed =
     new Set([
       'profil',
-      'content',
+      'termin',
       'entwuerfe',
       'abstimmungen'
     ]);
@@ -359,8 +363,8 @@ function renderMemberProfileTabsNav(
       label: 'Profil'
     },
     {
-      id: 'content',
-      label: 'Content'
+      id: 'termin',
+      label: 'Termin'
     },
     {
       id: 'abstimmungen',
@@ -708,14 +712,18 @@ ${renderMemberProfileTabsNav(
 </div>
 
 <div
-  id="member-profile-tab-content"
+  id="member-profile-tab-termin"
   class="member-profile-tab-panel"
   role="tabpanel"
-  aria-labelledby="member-profile-tab-btn-content"
-  data-profile-panel="content"
-  ${activeTab !== 'content' ? 'hidden' : ''}>
+  aria-labelledby="member-profile-tab-btn-termin"
+  data-profile-panel="termin"
+  ${activeTab !== 'termin' ? 'hidden' : ''}>
 
-  ${renderMemberContentPanelShell()}
+  ${renderMemberTerminEditPanelShell({
+    isVorstand:
+      typeof isVorstand === 'function'
+      && isVorstand(member)
+  })}
 
 </div>
 

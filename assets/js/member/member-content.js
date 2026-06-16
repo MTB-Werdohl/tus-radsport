@@ -1,503 +1,153 @@
-function memberContentStatusLabel(
-  sichtbarkeit
+function renderMemberTerminEditPanelShell(
+  options
 ) {
 
-  const draft =
-    window.siteConfig?.visibility?.draft
-    || window.CONTENT_VISIBILITY?.draft
-    || 'draft';
+  const isVorstandUser =
+    options?.isVorstand === true;
 
-  if (sichtbarkeit === draft) {
-    return 'Noch nicht freigegeben';
-  }
+  const lead =
+    isVorstandUser
+      ? 'Termin anlegen oder bearbeiten.'
+      : 'Entwurf (nur Vorstand) — wird nach Prüfung veröffentlicht.';
 
-  return 'Freigegeben';
+  const sichtbarkeitField =
+    isVorstandUser
+      ? `
+    <label class="member-edit-field">
+      Sichtbarkeit
+      <select id="member-termin-sichtbarkeit">
 
-}
+        <option value="draft">
+          Entwurf (nur Vorstand)
+        </option>
 
-const MEMBER_CONTENT_PAGE_SIZE = 5;
+        <option value="public">
+          Öffentlich
+        </option>
 
-let memberContentSubmissionsCache = null;
-let memberContentTerminePage = 1;
+        <option value="members">
+          Nur Mitglieder
+        </option>
 
-function normalizeMemberContentPage(
-  page,
-  totalItems,
-  pageSize
-) {
-
-  const size =
-    Math.max(
-      1,
-      Number(pageSize) || 1
-    );
-
-  const totalPages =
-    Math.max(
-      1,
-      Math.ceil(totalItems / size)
-    );
-
-  const safePage =
-    Math.min(
-      Math.max(
-        1,
-        Number(page) || 1
-      ),
-      totalPages
-    );
-
-  return {
-    page: safePage,
-    totalPages,
-    pageSize: size
-  };
-
-}
-
-function paginateMemberContentItems(
-  items,
-  page,
-  pageSize
-) {
-
-  const totalItems =
-    items.length;
-
-  const normalized =
-    normalizeMemberContentPage(
-      page,
-      totalItems,
-      pageSize
-    );
-
-  const startIndex =
-    (normalized.page - 1)
-    * normalized.pageSize;
-
-  return {
-    items:
-      items.slice(
-        startIndex,
-        startIndex + normalized.pageSize
-      ),
-    ...normalized
-  };
-
-}
-
-function renderMemberContentPagination(
-  container,
-  totalItems,
-  currentPage,
-  onPageChange
-) {
-
-  if (!container) {
-    return;
-  }
-
-  const normalized =
-    normalizeMemberContentPage(
-      currentPage,
-      totalItems,
-      MEMBER_CONTENT_PAGE_SIZE
-    );
-
-  if (
-    totalItems
-    <= MEMBER_CONTENT_PAGE_SIZE
-  ) {
-
-    container.innerHTML = '';
-    container.hidden = true;
-
-    return;
-
-  }
-
-  container.hidden = false;
-
-  container.innerHTML = `
-
-<div class="member-votes-pagination">
-
-  <button
-    type="button"
-    class="member-votes-pagination__btn member-votes-pagination__prev"
-    ${normalized.page <= 1 ? 'disabled' : ''}>
-
-    ← Zurück
-
-  </button>
-
-  <span class="member-votes-pagination__info">
-    Seite ${normalized.page} von ${normalized.totalPages}
-  </span>
-
-  <button
-    type="button"
-    class="member-votes-pagination__btn member-votes-pagination__next"
-    ${normalized.page >= normalized.totalPages ? 'disabled' : ''}>
-
-    Weiter →
-
-  </button>
-
-</div>
-
-  `;
-
-  container
-    .querySelector('.member-votes-pagination__prev')
-    ?.addEventListener('click', () => {
-
-      onPageChange(normalized.page - 1);
-
-    });
-
-  container
-    .querySelector('.member-votes-pagination__next')
-    ?.addEventListener('click', () => {
-
-      onPageChange(normalized.page + 1);
-
-    });
-
-}
-
-function memberContentStatusClass(
-  sichtbarkeit
-) {
-
-  const draft =
-    window.siteConfig?.visibility?.draft
-    || window.CONTENT_VISIBILITY?.draft
-    || 'draft';
-
-  return sichtbarkeit === draft
-    ? 'member-content-status--pending'
-    : 'member-content-status--approved';
-
-}
-
-function memberContentSortTimestamp(
-  row
-) {
-
-  const raw =
-    row.updated_at
-    || row.created_at
-    || row.date
-    || '';
-
-  const parsed =
-    Date.parse(raw);
-
-  return Number.isFinite(parsed)
-    ? parsed
-    : 0;
-
-}
-
-async function fetchMemberContentSubmissions(
-  memberId
-) {
-
-  if (!memberId) {
-    return { termine: [] };
-  }
-
-  const termineTable =
-    window.siteConfig.tables.termine;
-
-  const termineResult =
-    await window.supabaseClient
-      .from(termineTable)
-      .select(
-        'id, title, slug, sichtbarkeit, date, endDate, created_at, updated_at'
-      )
-      .eq('created_by', memberId)
-      .order('created_at', { ascending: false });
-
-  if (termineResult.error) {
-    console.error(termineResult.error);
-  }
-
-  return {
-    termine: termineResult.data || []
-  };
-
-}
-
-function renderMemberContentPanelShell() {
+      </select>
+    </label>
+      `.trim()
+      : '';
 
   return `
 <section class="member-profile-section-block member-content-panel">
 
-  <h2>Content</h2>
+  <h2 id="form-title">
+    Termin
+  </h2>
 
-  <div class="member-content-cards">
+  <p class="member-content-lead">
+    ${lead}
+  </p>
 
-    <a
-      class="member-content-card"
-      href="/profil/termin_edit/">
+  <div class="member-content-edit-form member-content-edit-form--tab">
 
-      <span class="member-content-card-icon">📅</span>
+    <label class="member-edit-field member-edit-field--required">
+      Titel
+      <input id="title"
+             type="text"
+             required
+             placeholder="Titel">
+    </label>
 
-      <span class="member-content-card-title">
-        Termin
-      </span>
+    <div class="member-edit-row">
 
-      <span class="member-content-card-text">
-        Ausfahrt oder Veranstaltung vorschlagen
-      </span>
+      <label class="member-edit-field member-edit-field--required">
+        Datum
+        <input id="date"
+               type="date"
+               required>
+      </label>
 
-    </a>
+      <label class="member-edit-field">
+        Ende (optional)
+        <input id="endDate"
+               type="date">
+      </label>
 
-  </div>
+      <label class="member-edit-field member-edit-field--required">
+        Uhrzeit
+        <input id="startTime"
+               type="time"
+               required>
+      </label>
 
-  <div
-    id="member-content-list"
-    class="member-content-list">
+    </div>
 
-    <p>Einträge werden geladen …</p>
+    <p class="member-edit-hint">
+      Enddatum leer lassen für eintägige Termine.
+      Für Mehrtages-Termine z.&nbsp;B. Fr–So Enddatum setzen.
+    </p>
+
+    <label class="member-edit-field member-edit-field--required">
+      Ort
+      <input id="location"
+             type="text"
+             required
+             placeholder="Ort">
+    </label>
+
+    <label class="member-edit-field">
+      Bild
+      <input id="imageStoragePathPick"
+             type="hidden">
+      <div class="member-edit-media-actions">
+        <button id="pick-image-btn"
+                type="button"
+                class="member-edit-btn member-edit-btn--secondary">
+          Aus Mediathek
+        </button>
+      </div>
+      <div id="currentImage"></div>
+    </label>
+
+    <label class="member-edit-field">
+      GPX
+      <input id="gpxStoragePathPick"
+             type="hidden">
+      <div class="member-edit-media-actions">
+        <button id="pick-gpx-btn"
+                type="button"
+                class="member-edit-btn member-edit-btn--secondary">
+          Aus Mediathek
+        </button>
+      </div>
+      <div id="currentGpx"></div>
+    </label>
+
+    <label class="member-edit-field">
+      Komoot Link
+      <input id="komoot"
+             type="text"
+             placeholder="Komoot Link">
+    </label>
+
+    <label class="member-edit-field">
+      Inhalt
+      <textarea id="content"
+                rows="8"
+                placeholder="Inhalt"></textarea>
+    </label>
+
+    ${sichtbarkeitField}
+
+    <button id="save-event"
+            type="button"
+            class="member-edit-save">
+
+      Speichern
+
+    </button>
 
   </div>
 
 </section>
-  `;
-
-}
-
-function renderMemberTerminContentListItem(
-  item
-) {
-
-  const editUrl =
-    `/profil/termin_edit/?id=${item.id}`;
-
-  const canEditTermin =
-    memberTerminIsDraft(item);
-
-  const dateHint =
-    item.date
-      ? `<span class="member-content-item-date">${escapeMemberHtml(formatMemberContentDate(item.date))}</span>`
-      : '';
-
-  const terminEditLink =
-    canEditTermin
-      ? `
-<a
-  class="member-content-item-edit"
-  href="${editUrl}">
-
-  Bearbeiten
-
-</a>
-      `.trim()
-      : '';
-
-  const terminStatusHtml =
-    canEditTermin
-      ? `
-<span class="member-content-status ${memberContentStatusClass(item.sichtbarkeit)}">
-  ${escapeMemberHtml(memberContentStatusLabel(item.sichtbarkeit))}
-</span>
-      `.trim()
-      : `
-<span class="member-content-status member-content-status--approved">
-  Freigegeben
-</span>
-      `.trim();
-
-  return `
-<li class="member-content-item member-content-item--termin">
-
-  <div class="member-content-item-main">
-
-    <strong class="member-content-item-title">
-      ${escapeMemberHtml(item.title || 'Ohne Titel')}
-    </strong>
-
-    ${dateHint}
-
-  </div>
-
-  <div class="member-content-item-meta member-content-item-meta--stacked">
-
-    ${terminStatusHtml}
-
-    ${terminEditLink}
-
-  </div>
-
-</li>
-  `;
-
-}
-
-function formatMemberContentDate(
-  value
-) {
-
-  if (
-    typeof formatTerminDateLabel === 'function'
-  ) {
-    return formatTerminDateLabel(value);
-  }
-
-  if (!value) {
-    return '';
-  }
-
-  const date =
-    new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return String(value).slice(0, 10);
-  }
-
-  return date.toLocaleDateString('de-DE', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  });
-
-}
-
-function renderMemberContentList(
-  container,
-  submissions
-) {
-
-  if (!container) {
-    return;
-  }
-
-  const termine =
-    [...(submissions?.termine || [])]
-      .sort(
-        (left, right) =>
-          memberContentSortTimestamp(right)
-          - memberContentSortTimestamp(left)
-      );
-
-  memberContentTerminePage =
-    normalizeMemberContentPage(
-      memberContentTerminePage,
-      termine.length,
-      MEMBER_CONTENT_PAGE_SIZE
-    ).page;
-
-  if (!termine.length) {
-
-    container.innerHTML = `
-<p class="member-content-empty">
-  Noch keine Termine eingereicht.
-</p>
-    `;
-
-    return;
-
-  }
-
-  const paginatedTermine =
-    paginateMemberContentItems(
-      termine,
-      memberContentTerminePage,
-      MEMBER_CONTENT_PAGE_SIZE
-    );
-
-  const terminItems =
-    paginatedTermine.items
-      .map((item) =>
-        renderMemberTerminContentListItem(item)
-      )
-      .join('');
-
-  container.innerHTML = `
-
-<h3 class="member-content-list-heading">
-  Termine
-</h3>
-
-<ul class="member-content-items">
-  ${terminItems}
-</ul>
-
-<div
-  id="member-content-termine-pagination"
-  class="member-votes-pagination-wrap">
-</div>
-
   `.trim();
-
-  renderMemberContentPagination(
-    document.getElementById(
-      'member-content-termine-pagination'
-    ),
-    termine.length,
-    memberContentTerminePage,
-    (page) => {
-
-      memberContentTerminePage = page;
-
-      renderMemberContentList(
-        container,
-        memberContentSubmissionsCache
-      );
-
-    }
-  );
-
-}
-
-async function loadMemberContentListIfNeeded(
-  member,
-  force
-) {
-
-  const container =
-    document.getElementById(
-      'member-content-list'
-    );
-
-  if (
-    !container
-    || !member?.id
-  ) {
-    return;
-  }
-
-  if (
-    container.dataset.loaded === 'true'
-    && !force
-  ) {
-    return;
-  }
-
-  if (force) {
-    memberContentTerminePage = 1;
-  }
-
-  container.innerHTML =
-    '<p>Einträge werden geladen …</p>';
-
-  const submissions =
-    await fetchMemberContentSubmissions(
-      member.id
-    );
-
-  memberContentSubmissionsCache =
-    submissions;
-
-  renderMemberContentList(
-    container,
-    submissions
-  );
-
-  container.dataset.loaded = 'true';
 
 }
 
@@ -531,28 +181,6 @@ function initMemberEditUnsavedGuard() {
     event.returnValue = '';
 
   });
-
-  root
-    .querySelectorAll('a.back-link')
-    .forEach((link) => {
-
-      link.addEventListener('click', (event) => {
-
-        if (!dirty) {
-          return;
-        }
-
-        if (
-          !window.confirm(
-            'Ohne Speichern verlassen?'
-          )
-        ) {
-          event.preventDefault();
-        }
-
-      });
-
-    });
 
   return {
     markClean() {

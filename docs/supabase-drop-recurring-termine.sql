@@ -2,33 +2,48 @@
 -- Idempotent wo möglich — RPCs werden ohne recurring neu erstellt.
 
 -- ---------------------------------------------------------------------------
--- Serientermine und zugehöriges Feedback löschen
+-- Serientermine und zugehöriges Feedback löschen (nur wenn Spalte noch existiert)
 -- ---------------------------------------------------------------------------
 
-delete from public.feedback_answer_events e
-using public.feedback_modules fm
-join public."Termine" t
-  on t.id = fm.entity_id
-where e.module_id = fm.id
-  and fm.entity_type = 'event'
-  and coalesce(t.recurring, false) is true;
+do $$
+begin
 
-delete from public.feedback_answers fa
-using public.feedback_modules fm
-join public."Termine" t
-  on t.id = fm.entity_id
-where fa.module_id = fm.id
-  and fm.entity_type = 'event'
-  and coalesce(t.recurring, false) is true;
+  if not exists (
+    select 1
+    from information_schema.columns
+    where table_schema = 'public'
+      and table_name = 'Termine'
+      and column_name = 'recurring'
+  ) then
+    return;
+  end if;
 
-delete from public.feedback_modules fm
-using public."Termine" t
-where fm.entity_type = 'event'
-  and fm.entity_id = t.id
-  and coalesce(t.recurring, false) is true;
+  delete from public.feedback_answer_events e
+  using public.feedback_modules fm
+  join public."Termine" t
+    on t.id = fm.entity_id
+  where e.module_id = fm.id
+    and fm.entity_type = 'event'
+    and coalesce(t.recurring, false) is true;
 
-delete from public."Termine"
-where coalesce(recurring, false) is true;
+  delete from public.feedback_answers fa
+  using public.feedback_modules fm
+  join public."Termine" t
+    on t.id = fm.entity_id
+  where fa.module_id = fm.id
+    and fm.entity_type = 'event'
+    and coalesce(t.recurring, false) is true;
+
+  delete from public.feedback_modules fm
+  using public."Termine" t
+  where fm.entity_type = 'event'
+    and fm.entity_id = t.id
+    and coalesce(t.recurring, false) is true;
+
+  delete from public."Termine"
+  where coalesce(recurring, false) is true;
+
+end $$;
 
 -- ---------------------------------------------------------------------------
 -- is_termin_still_upcoming — nur Einzeltermine (date + endDate)
