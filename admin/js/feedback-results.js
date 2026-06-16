@@ -1304,13 +1304,6 @@ function getFeedbackEntityTypeLabel(entityType) {
     return 'Termin';
   }
 
-  if (
-    entityType
-    === window.siteConfig.feedback.entityTypes.news
-  ) {
-    return 'Internes';
-  }
-
   return entityType;
 
 }

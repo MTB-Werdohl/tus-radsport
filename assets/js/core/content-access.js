@@ -73,14 +73,7 @@ function getContentAccessTexts(
       visibility
     );
 
-  const kindLabel =
-    kind === 'news'
-      ? (
-        typeof getNewsSectionLabel === 'function'
-          ? getNewsSectionLabel()
-          : 'Internes'
-      )
-      : 'Termin';
+  const kindLabel = 'Termin';
 
   if (
     options.fallback
@@ -233,9 +226,7 @@ function renderContentNotFound(
   }
 
   const message =
-    kind === 'news'
-      ? 'Dieser Beitrag wurde nicht gefunden.'
-      : 'Dieser Termin wurde nicht gefunden.';
+    'Dieser Termin wurde nicht gefunden.';
 
   document.title =
     `Nicht gefunden · MTB Werdohl`;

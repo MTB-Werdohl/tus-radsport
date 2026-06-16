@@ -325,59 +325,16 @@ function renderConsentBlock(
 
 }
 
-function shouldShowMemberActivitiesTab(
-  stravaState
-) {
-
-  if (
-    typeof isAktivitaetenPublicEnabled === 'function'
-    && !isAktivitaetenPublicEnabled()
-  ) {
-    return false;
-  }
-
-  return !!(
-    stravaState?.available
-    && stravaState?.status?.connected
-  );
-
-}
-
-function shouldShowMemberStravaTab() {
-
-  return (
-    typeof isAktivitaetenPublicEnabled === 'function'
-    && isAktivitaetenPublicEnabled()
-  );
-
-}
-
 function resolveMemberProfileActiveTab(
-  activeTab,
-  stravaState
+  activeTab
 ) {
-
-  if (
-    (
-      activeTab === 'aktivitaeten'
-      && !shouldShowMemberActivitiesTab(stravaState)
-    )
-    || (
-      activeTab === 'strava'
-      && !shouldShowMemberStravaTab()
-    )
-  ) {
-    return 'profil';
-  }
 
   const allowed =
     new Set([
       'profil',
       'content',
       'entwuerfe',
-      'abstimmungen',
-      'aktivitaeten',
-      'strava'
+      'abstimmungen'
     ]);
 
   if (
@@ -393,7 +350,6 @@ function resolveMemberProfileActiveTab(
 
 function renderMemberProfileTabsNav(
   activeTab,
-  stravaState,
   member
 ) {
 
@@ -409,14 +365,6 @@ function renderMemberProfileTabsNav(
     {
       id: 'abstimmungen',
       label: 'Teilnahmen'
-    },
-    {
-      id: 'aktivitaeten',
-      label: 'Meine Aktivitäten'
-    },
-    {
-      id: 'strava',
-      label: 'Strava'
     }
   ];
 
@@ -432,23 +380,8 @@ function renderMemberProfileTabsNav(
 
   }
 
-  const visibleTabs =
-    tabs.filter((tab) => {
-
-      if (tab.id === 'aktivitaeten') {
-        return shouldShowMemberActivitiesTab(stravaState);
-      }
-
-      if (tab.id === 'strava') {
-        return shouldShowMemberStravaTab();
-      }
-
-      return true;
-
-    });
-
   const buttons =
-    visibleTabs.map((tab) => {
+    tabs.map((tab) => {
 
       const isActive =
         activeTab === tab.id;
@@ -525,174 +458,6 @@ function renderMemberVotesPanelShell() {
 
 }
 
-function renderMemberActivitiesPanelShell() {
-
-  return `
-<section class="member-profile-section-block">
-
-  <h2>Meine Aktivitäten</h2>
-
-  <div id="member-activities-list">
-    <p>Aktivitäten werden geladen …</p>
-  </div>
-
-</section>
-  `;
-
-}
-
-function renderMemberActivitiesList(
-  container,
-  payload,
-  member
-) {
-
-  if (!container) {
-    return;
-  }
-
-  const activities =
-    payload?.activities || [];
-
-  if (!activities.length) {
-
-    container.innerHTML = `
-<p class="member-strava-hint">
-  Noch keine Aktivitäten importiert. Neue Touren erscheinen nach dem
-  nächsten Strava-Sync automatisch hier.
-</p>
-    `;
-
-    return;
-
-  }
-
-  const memberName =
-    [
-      member?.vorname,
-      member?.nachname
-    ].filter(Boolean).join(' ')
-    || member?.member_name
-    || 'Mitglied';
-
-  const avatarHtml =
-    typeof renderMemberAvatarHtml === 'function'
-      ? renderMemberAvatarHtml(
-        member,
-        'member-avatar--md'
-      )
-      : '';
-
-  const cards =
-    activities.map((activity) => {
-
-      const inPublicFeed =
-        activity.in_public_feed === true;
-
-      const badge =
-        inPublicFeed
-          ? `<span class="member-activity-badge member-activity-badge--public">
-              Im Feed sichtbar
-            </span>`
-          : `<span class="member-activity-badge member-activity-badge--private">
-              Privat
-            </span>`;
-
-      const url =
-        inPublicFeed
-        && typeof getActivityUrl === 'function'
-          ? getActivityUrl(activity.id)
-          : null;
-
-      return renderActivityCardHtml(
-        activity,
-        {
-          memberName,
-          avatarHtml,
-          avatarEntry: member,
-          badgeHtml: ` ${badge}`,
-          extraClass: 'member-activity-card',
-          url,
-          escapeHtml: escapeMemberHtml
-        }
-      );
-
-    }).join('');
-
-  const feedHint =
-    payload?.publishFeed
-      ? ''
-      : `<p class="member-strava-hint member-activity-feed-hint">
-          Feed-Freigabe ist aus — alle Touren bleiben privat, auch wenn
-          Strava verbunden ist.
-        </p>`;
-
-  container.innerHTML = `
-${feedHint}
-<div class="member-activities-list">
-  ${cards}
-</div>
-  `;
-
-  refreshActivityMaps(container);
-
-}
-
-function renderMemberAvatarProfileBlock(
-  member
-) {
-
-  const preview =
-    renderMemberAvatarHtml(
-      member,
-      'member-avatar--lg'
-    );
-
-  const hasAvatar =
-    !!member?.avatar_storage_path;
-
-  return `
-<section class="member-profile-section-block member-profile-avatar-block">
-
-  <h2>Profilbild</h2>
-
-  <div class="member-profile-avatar-row">
-
-    ${preview}
-
-    <div class="member-profile-avatar-actions">
-
-      <button
-        type="button"
-        id="member-avatar-toggle-btn"
-        class="member-avatar-toggle-btn${hasAvatar ? ' is-active' : ''}"
-        aria-pressed="${hasAvatar ? 'true' : 'false'}">
-
-        ${hasAvatar ? 'Profilbild entfernen' : 'Profilbild hochladen'}
-
-      </button>
-
-      <input
-        type="file"
-        id="member-avatar-file"
-        class="member-avatar-file-input"
-        accept="image/jpeg,image/png,image/webp"
-        hidden>
-
-      <p
-        id="member-avatar-status"
-        class="member-save-status"
-        hidden></p>
-
-    </div>
-
-  </div>
-
-</section>
-  `;
-
-}
-
 function renderMemberConsentSection(
   member
 ) {
@@ -734,8 +499,6 @@ function renderClubMemberProfilContent(
 ) {
 
   return `
-
-${renderMemberAvatarProfileBlock(member)}
 
 <section class="member-profile-section-block">
 
@@ -832,251 +595,15 @@ ${renderMemberConsentSection(member)}
 
 }
 
-function renderStravaProfilePanel(
-  stravaState
-) {
-
-  if (
-    !stravaState?.available
-  ) {
-
-    const message =
-      stravaState?.error?.message
-      || 'Strava ist derzeit nicht verfügbar.';
-
-    return `
-<section class="member-profile-section-block">
-
-  <h2>Strava</h2>
-
-  <p class="member-strava-hint member-strava-hint--error">
-    ${escapeMemberHtml(message)}
-  </p>
-
-</section>
-    `;
-
-  }
-
-  const status =
-    stravaState.status || {};
-
-  if (!status.connected) {
-
-    return `
-<section class="member-profile-section-block">
-
-  <h2>Strava verbinden</h2>
-
-  <p class="member-strava-hint">
-    Strava verbinden — Touren werden automatisch importiert. Sichtbarkeit
-    (Feed, Rankings, Vereinsziele) stellst du unten ein.
-  </p>
-
-  <button
-    type="button"
-    id="strava-connect-btn"
-    class="member-save-btn member-strava-connect-btn">
-
-    Mit Strava verbinden
-
-  </button>
-
-</section>
-    `;
-
-  }
-
-  const needsRetry =
-    stravaNeedsRetry(status);
-
-  const statusLabel =
-    formatStravaStatusLabel(status);
-
-  const statusClass =
-    status.syncStatus === 'active'
-      ? 'member-strava-status--active'
-      : (
-        status.syncStatus === 'error'
-          ? 'member-strava-status--error'
-          : 'member-strava-status--pending'
-      );
-
-  const activityCount =
-    Number(status.importedActivityCount) || 0;
-
-  return `
-<section class="member-profile-section-block">
-
-  <h2>Strava verbunden</h2>
-
-  <dl class="member-profile-list">
-
-    <div class="member-profile-row">
-      <dt>Verbunden seit</dt>
-      <dd>${escapeMemberHtml(formatStravaDateTime(status.connectedAt))}</dd>
-    </div>
-
-    <div class="member-profile-row">
-      <dt>Letzte Synchronisierung</dt>
-      <dd>${escapeMemberHtml(formatStravaDateTime(status.lastSyncAt))}</dd>
-    </div>
-
-    <div class="member-profile-row">
-      <dt>Importierte Aktivitäten</dt>
-      <dd>${escapeMemberHtml(String(activityCount))}</dd>
-    </div>
-
-    <div class="member-profile-row">
-      <dt>Status</dt>
-      <dd class="member-strava-status ${statusClass}">
-        ${escapeMemberHtml(statusLabel)}
-      </dd>
-    </div>
-
-  </dl>
-
-  ${
-    status.syncErrorMessage
-    && status.syncStatus === 'error'
-      ? `<p class="member-strava-hint member-strava-hint--error">
-          ${escapeMemberHtml(status.syncErrorMessage)}
-        </p>`
-      : ''
-  }
-
-  ${
-    needsRetry
-      ? `<button
-          type="button"
-          id="strava-retry-sync-btn"
-          class="member-save-btn member-strava-retry-btn">
-          Synchronisierung erneut versuchen
-        </button>`
-      : ''
-  }
-
-  ${
-    status.syncStatus === 'syncing'
-      ? `<p class="member-strava-hint">
-          Deine Strava-Aktivitäten werden importiert. Das kann einige Minuten dauern.
-        </p>`
-      : ''
-  }
-
-</section>
-
-<section class="member-profile-section-block">
-
-  <h2>Sichtbarkeit</h2>
-
-  <div id="strava-visibility-form" class="member-strava-visibility-form">
-
-    <label class="member-strava-checkbox">
-      <input
-        type="checkbox"
-        name="publish_feed"
-        ${status.publishFeed ? 'checked' : ''}>
-      Im Aktivitätsfeed erscheinen
-      <span class="member-strava-checkbox-note">
-        Öffentlich, letzte 90 Tage — Vorname und Nachname
-      </span>
-    </label>
-
-    <label class="member-strava-checkbox">
-      <input
-        type="checkbox"
-        name="publish_rankings"
-        ${status.publishRankings ? 'checked' : ''}>
-      In Rankings erscheinen
-    </label>
-
-    <label class="member-strava-checkbox">
-      <input
-        type="checkbox"
-        name="contribute_to_club_goals"
-        ${status.contributeToClubGoals ? 'checked' : ''}>
-      Zu Vereinszielen beitragen
-    </label>
-
-    <p id="strava-visibility-status" class="member-save-status" hidden></p>
-
-  </div>
-
-</section>
-
-<section class="member-profile-section-block member-strava-disconnect">
-
-  <h2>Verbindung trennen</h2>
-
-  <button
-    type="button"
-    id="strava-disconnect-btn"
-    class="member-strava-disconnect-btn">
-
-    Verbindung trennen
-
-  </button>
-
-  <div
-    id="strava-disconnect-warning"
-    class="member-strava-disconnect-warning"
-    hidden>
-
-    <p class="member-strava-warning-text">
-      <strong>Achtung:</strong> Alle importierten Strava-Aktivitäten werden
-      aus dem Vereinsportal entfernt. Feed, Rankings und Vereinsziele
-      werden zurückgesetzt. In Strava selbst ändert sich nichts.
-    </p>
-
-    <div class="member-strava-disconnect-actions">
-
-      <button
-        type="button"
-        id="strava-disconnect-cancel-btn"
-        class="member-logout-btn">
-
-        Abbrechen
-
-      </button>
-
-      <button
-        type="button"
-        id="strava-disconnect-confirm-btn"
-        class="member-strava-disconnect-btn">
-
-        Ja, Verbindung trennen
-
-      </button>
-
-    </div>
-
-  </div>
-
-</section>
-  `;
-
-}
-
 function renderMemberProfile(
   member,
   options
 ) {
 
-  const stravaState =
-    options?.stravaState || null;
-
   const activeTab =
     resolveMemberProfileActiveTab(
-      options?.activeTab || 'profil',
-      stravaState
+      options?.activeTab || 'profil'
     );
-
-  const showActivitiesTab =
-    shouldShowMemberActivitiesTab(stravaState);
-
-  const showStravaTab =
-    shouldShowMemberStravaTab();
 
   const showDraftsTab =
     typeof isVorstand === 'function'
@@ -1165,7 +692,6 @@ ${renderMemberConsentSection(member)}
 
 ${renderMemberProfileTabsNav(
   activeTab,
-  stravaState,
   member
 )}
 
@@ -1189,11 +715,7 @@ ${renderMemberProfileTabsNav(
   data-profile-panel="content"
   ${activeTab !== 'content' ? 'hidden' : ''}>
 
-  ${renderMemberContentPanelShell({
-    isVorstand:
-      typeof isVorstand === 'function'
-      && isVorstand(member)
-  })}
+  ${renderMemberContentPanelShell()}
 
 </div>
 
@@ -1226,42 +748,6 @@ ${
   ${renderMemberVotesPanelShell()}
 
 </div>
-
-${
-  showActivitiesTab
-    ? `
-<div
-  id="member-profile-tab-aktivitaeten"
-  class="member-profile-tab-panel"
-  role="tabpanel"
-  aria-labelledby="member-profile-tab-btn-aktivitaeten"
-  data-profile-panel="aktivitaeten"
-  ${activeTab !== 'aktivitaeten' ? 'hidden' : ''}>
-
-  ${renderMemberActivitiesPanelShell()}
-
-</div>
-`
-    : ''
-}
-
-${
-  showStravaTab
-    ? `
-<div
-  id="member-profile-tab-strava"
-  class="member-profile-tab-panel"
-  role="tabpanel"
-  aria-labelledby="member-profile-tab-btn-strava"
-  data-profile-panel="strava"
-  ${activeTab !== 'strava' ? 'hidden' : ''}>
-
-  ${renderStravaProfilePanel(stravaState)}
-
-</div>
-`
-    : ''
-}
 
   `;
 

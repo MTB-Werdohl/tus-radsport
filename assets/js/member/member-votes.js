@@ -15,13 +15,6 @@ function getFeedbackEntityPageUrl(
     return getEventUrl(slug);
   }
 
-  if (
-    entityType
-    === window.siteConfig.feedback.entityTypes.news
-  ) {
-    return getNewsUrl(slug);
-  }
-
   return '/';
 
 }
@@ -185,13 +178,6 @@ async function fetchMemberVotesGrouped(
 
       return;
 
-    }
-
-    if (
-      module.entity_type
-      === window.siteConfig.feedback.entityTypes.news
-    ) {
-      abstimmungen.push(item);
     }
 
   });

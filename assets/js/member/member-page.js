@@ -1,12 +1,3 @@
-function isMemberAktivitaetenEnabled() {
-
-  return (
-    typeof isAktivitaetenPublicEnabled === 'function'
-    && isAktivitaetenPublicEnabled()
-  );
-
-}
-
 function openMemberConsentModal(key) {
 
   const modal =
@@ -45,123 +36,6 @@ function closeMemberConsentModal(modal) {
 
   document.body.classList.remove(
     'member-consent-modal-open'
-  );
-
-}
-
-function showStravaReturnNotice() {
-
-  if (!isMemberAktivitaetenEnabled()) {
-    return;
-  }
-
-  const params =
-    new URLSearchParams(
-      window.location.search
-    );
-
-  const result =
-    params.get('strava');
-
-  if (!result) {
-    return;
-  }
-
-  profileActiveTab = 'strava';
-
-  const reason =
-    params.get('reason');
-
-  if (result === 'connected') {
-
-    showMemberToast(
-      'Strava verbunden — Touren werden importiert. Feed-Freigabe im Tab Strava aktivieren.',
-      'success',
-      8000
-    );
-
-  }
-
-  if (result === 'error') {
-
-    const messages = {
-      access_denied:
-        'Strava-Verbindung abgebrochen.',
-      athlete_linked:
-        'Dieses Strava-Konto ist bereits mit einem anderen Mitglied verbunden.',
-      invalid_state:
-        'Die Anmeldung ist abgelaufen. Bitte erneut versuchen.',
-      missing_code:
-        'Strava hat keine Bestätigung gesendet.',
-      token_payload:
-        'Strava-Antwort unvollständig.',
-      server:
-        'Verbindung fehlgeschlagen. Bitte später erneut versuchen.'
-    };
-
-    showMemberToast(
-      messages[reason]
-      || 'Strava-Verbindung fehlgeschlagen.',
-      'error',
-      6000
-    );
-
-  }
-
-  window.history.replaceState(
-    {},
-    '',
-    `${window.location.pathname}`
-  );
-
-}
-
-async function maybePollInitialStravaSync(member) {
-
-  if (!isMemberAktivitaetenEnabled()) {
-    return;
-  }
-
-  const status =
-    profileStravaState?.status;
-
-  if (
-    !status?.connected
-    || status.initialSyncCompleted
-  ) {
-    return;
-  }
-
-  if (
-    status.syncStatus !== 'syncing'
-    && status.syncStatus !== 'pending'
-  ) {
-    return;
-  }
-
-  const completion =
-    await waitForStravaSyncCompletion(status);
-
-  if (completion.completed) {
-
-    showMemberToast(
-      'Strava-Import abgeschlossen.',
-      'success',
-      5000
-    );
-
-  } else if (completion.error) {
-
-    showMemberToast(
-      completion.error,
-      'error',
-      6000
-    );
-
-  }
-
-  await reloadStravaProfileView(
-    getCurrentMember() || member
   );
 
 }
@@ -351,9 +225,7 @@ function setupConsentInfoDialogs() {
 
 }
 
-let profileStravaState = null;
 let profileActiveTab = 'profil';
-let memberActivitiesLoaded = false;
 let memberVotesLoaded = false;
 
 async function loadMemberVotesIfNeeded(
@@ -419,64 +291,6 @@ async function loadMemberVotesIfNeeded(
 
 }
 
-async function loadMemberActivitiesIfNeeded(
-  force = false
-) {
-
-  if (!isMemberAktivitaetenEnabled()) {
-    return;
-  }
-
-  const container =
-    document.getElementById(
-      'member-activities-list'
-    );
-
-  if (!container) {
-    return;
-  }
-
-  if (
-    memberActivitiesLoaded
-    && !force
-  ) {
-    return;
-  }
-
-  container.innerHTML = `
-<p>Aktivitäten werden geladen …</p>
-  `;
-
-  try {
-
-    const payload =
-      await fetchMemberActivities();
-
-    memberActivitiesLoaded = true;
-
-    renderMemberActivitiesList(
-      container,
-      payload,
-      getCurrentMember()
-    );
-
-  } catch (error) {
-
-    console.error(error);
-
-    container.innerHTML = `
-<p class="member-strava-hint member-strava-hint--error">
-  ${escapeMemberHtml(
-    error?.message
-    || 'Aktivitäten konnten nicht geladen werden.'
-  )}
-</p>
-    `;
-
-  }
-
-}
-
 function switchMemberProfileTab(
   tabId
 ) {
@@ -515,10 +329,6 @@ function switchMemberProfileTab(
     void loadMemberVotesIfNeeded();
   }
 
-  if (tabId === 'aktivitaeten') {
-    void loadMemberActivitiesIfNeeded();
-  }
-
   if (tabId === 'content') {
     void loadMemberContentListIfNeeded(
       getCurrentMember(),
@@ -532,7 +342,7 @@ function switchMemberProfileTab(
 
 }
 
-async function reloadStravaProfileView(
+async function refreshMemberProfileView(
   member
 ) {
 
@@ -543,26 +353,16 @@ async function reloadStravaProfileView(
     return;
   }
 
-  if (!isMemberAktivitaetenEnabled()) {
-    return;
-  }
-
-  profileStravaState =
-    await fetchStravaProfileStatus();
-
-  memberActivitiesLoaded = false;
   memberVotesLoaded = false;
 
   profileActiveTab =
     resolveMemberProfileActiveTab(
-      profileActiveTab,
-      profileStravaState
+      profileActiveTab
     );
 
   renderMemberProfile(
     member,
     {
-      stravaState: profileStravaState,
       activeTab: profileActiveTab
     }
   );
@@ -575,14 +375,6 @@ async function reloadStravaProfileView(
     typeof isClubMember === 'function'
     && isClubMember(member)
   ) {
-    void maybePollInitialStravaSync(member);
-
-    if (
-      isMemberAktivitaetenEnabled()
-      && profileActiveTab === 'aktivitaeten'
-    ) {
-      void loadMemberActivitiesIfNeeded(true);
-    }
 
     if (profileActiveTab === 'abstimmungen') {
       void loadMemberVotesIfNeeded(true);
@@ -628,548 +420,6 @@ function bindMemberProfileTabEvents() {
 
 }
 
-function syncStravaVisibilityCheckboxes(
-  status
-) {
-
-  const container =
-    document.getElementById(
-      'strava-visibility-form'
-    );
-
-  if (!container || !status) {
-    return;
-  }
-
-  const publishFeedInput =
-    container.querySelector(
-      '[name="publish_feed"]'
-    );
-
-  const publishRankingsInput =
-    container.querySelector(
-      '[name="publish_rankings"]'
-    );
-
-  const contributeInput =
-    container.querySelector(
-      '[name="contribute_to_club_goals"]'
-    );
-
-  if (publishFeedInput) {
-    publishFeedInput.checked =
-      status.publishFeed === true;
-  }
-
-  if (publishRankingsInput) {
-    publishRankingsInput.checked =
-      status.publishRankings === true;
-  }
-
-  if (contributeInput) {
-    contributeInput.checked =
-      status.contributeToClubGoals === true;
-  }
-
-}
-
-async function saveStravaVisibilityFromForm() {
-
-  const container =
-    document.getElementById(
-      'strava-visibility-form'
-    );
-
-  if (!container) {
-    return;
-  }
-
-  const publishFeed =
-    container.querySelector(
-      '[name="publish_feed"]'
-    )?.checked === true;
-
-  const publishRankings =
-    container.querySelector(
-      '[name="publish_rankings"]'
-    )?.checked === true;
-
-  const contributeToClubGoals =
-    container.querySelector(
-      '[name="contribute_to_club_goals"]'
-    )?.checked === true;
-
-  profileStravaState = {
-    available: true,
-    status:
-      await updateStravaVisibility({
-        publishFeed,
-        publishRankings,
-        contributeToClubGoals
-      })
-  };
-
-  memberActivitiesLoaded = false;
-
-}
-
-function bindStravaProfileEvents(
-  member
-) {
-
-  const connectBtn =
-    document.getElementById(
-      'strava-connect-btn'
-    );
-
-  if (connectBtn) {
-
-    connectBtn.addEventListener(
-      'click',
-      async () => {
-
-        connectBtn.disabled = true;
-
-        try {
-
-          await beginStravaConnect();
-
-        } catch (error) {
-
-          console.error(error);
-
-          showMemberToast(
-            error.message
-              || 'Strava-Verbindung fehlgeschlagen.',
-            'error'
-          );
-
-          connectBtn.disabled = false;
-
-        }
-
-      }
-    );
-
-  }
-
-  const visibilityForm =
-    document.getElementById(
-      'strava-visibility-form'
-    );
-
-  if (visibilityForm) {
-
-    visibilityForm
-      .querySelectorAll(
-        'input[type="checkbox"]'
-      )
-      .forEach((checkbox) => {
-
-        checkbox.addEventListener(
-          'change',
-          async () => {
-
-            const previousStatus =
-              profileStravaState?.status
-              || {};
-
-            const inputs =
-              visibilityForm.querySelectorAll(
-                'input[type="checkbox"]'
-              );
-
-            inputs.forEach((input) => {
-              input.disabled = true;
-            });
-
-            try {
-
-              await saveStravaVisibilityFromForm();
-
-              showMemberToast(
-                'Sichtbarkeit gespeichert.',
-                'success',
-                3000
-              );
-
-            } catch (error) {
-
-              console.error(error);
-
-              syncStravaVisibilityCheckboxes(
-                previousStatus
-              );
-
-              showMemberToast(
-                'Speichern fehlgeschlagen.',
-                'error'
-              );
-
-            }
-
-            inputs.forEach((input) => {
-              input.disabled = false;
-            });
-
-          }
-        );
-
-      });
-
-  }
-
-  const retrySyncBtn =
-    document.getElementById(
-      'strava-retry-sync-btn'
-    );
-
-  if (retrySyncBtn) {
-
-    retrySyncBtn.addEventListener(
-      'click',
-      async () => {
-
-        retrySyncBtn.disabled = true;
-
-        try {
-
-          const previousState =
-            profileStravaState?.status || {};
-
-          const result =
-            await retryStravaSync();
-
-          showMemberToast(
-            result?.message
-              || 'Synchronisierung gestartet.',
-            result?.ok ? 'success' : 'error',
-            5000
-          );
-
-          if (result?.ok) {
-
-            const completion =
-              await waitForStravaSyncCompletion(
-                previousState
-              );
-
-            if (completion.completed) {
-              showMemberToast(
-                'Synchronisation abgeschlossen.',
-                'success',
-                5000
-              );
-            } else if (completion.error) {
-              showMemberToast(
-                completion.error,
-                'error',
-                6000
-              );
-            }
-
-            await reloadStravaProfileView(member);
-
-          }
-
-        } catch (error) {
-
-          console.error(error);
-
-          showMemberToast(
-            error.message
-              || 'Synchronisierung fehlgeschlagen.',
-            'error'
-          );
-
-        }
-
-        retrySyncBtn.disabled = false;
-
-      }
-    );
-
-  }
-
-  const disconnectBtn =
-    document.getElementById(
-      'strava-disconnect-btn'
-    );
-
-  const disconnectWarning =
-    document.getElementById(
-      'strava-disconnect-warning'
-    );
-
-  const disconnectCancelBtn =
-    document.getElementById(
-      'strava-disconnect-cancel-btn'
-    );
-
-  const disconnectConfirmBtn =
-    document.getElementById(
-      'strava-disconnect-confirm-btn'
-    );
-
-  if (
-    disconnectBtn
-    && disconnectWarning
-  ) {
-
-    disconnectBtn.addEventListener(
-      'click',
-      () => {
-
-        disconnectWarning.hidden = false;
-        disconnectBtn.hidden = true;
-
-      }
-    );
-
-  }
-
-  if (
-    disconnectCancelBtn
-    && disconnectWarning
-    && disconnectBtn
-  ) {
-
-    disconnectCancelBtn.addEventListener(
-      'click',
-      () => {
-
-        disconnectWarning.hidden = true;
-        disconnectBtn.hidden = false;
-
-      }
-    );
-
-  }
-
-  if (disconnectConfirmBtn) {
-
-    disconnectConfirmBtn.addEventListener(
-      'click',
-      async () => {
-
-        disconnectConfirmBtn.disabled = true;
-
-        try {
-
-          await disconnectStravaAccount();
-
-          showMemberToast(
-            'Strava-Verbindung getrennt.',
-            'success',
-            4000
-          );
-
-          profileActiveTab = 'strava';
-
-          await reloadStravaProfileView(
-            getCurrentMember() || member
-          );
-
-        } catch (error) {
-
-          console.error(error);
-
-          showMemberToast(
-            error.message
-              || 'Trennen fehlgeschlagen.',
-            'error'
-          );
-
-          disconnectConfirmBtn.disabled = false;
-
-        }
-
-      }
-    );
-
-  }
-
-}
-
-function setMemberAvatarStatus(
-  message,
-  type
-) {
-
-  const statusEl =
-    document.getElementById(
-      'member-avatar-status'
-    );
-
-  if (!statusEl) {
-    return;
-  }
-
-  statusEl.textContent = message || '';
-  statusEl.hidden = !message;
-
-  statusEl.classList.remove(
-    'member-save-status--error',
-    'member-save-status--success'
-  );
-
-  if (type === 'error') {
-    statusEl.classList.add('member-save-status--error');
-  }
-
-  if (type === 'success') {
-    statusEl.classList.add('member-save-status--success');
-  }
-
-}
-
-function bindMemberAvatarEvents(
-  member
-) {
-
-  const fileInput =
-    document.getElementById(
-      'member-avatar-file'
-    );
-
-  const toggleBtn =
-    document.getElementById(
-      'member-avatar-toggle-btn'
-    );
-
-  if (!fileInput || !toggleBtn) {
-    return;
-  }
-
-  toggleBtn.addEventListener(
-    'click',
-    async () => {
-
-      const currentMember =
-        getCurrentMember()
-        || member;
-
-      if (currentMember?.avatar_storage_path) {
-
-        if (
-          !window.confirm(
-            'Profilbild wirklich entfernen?'
-          )
-        ) {
-          return;
-        }
-
-        setMemberAvatarStatus(
-          'Profilbild wird entfernt …'
-        );
-
-        toggleBtn.disabled = true;
-
-        try {
-
-          const updated =
-            await removeMemberAvatar(
-              currentMember
-            );
-
-          applyMemberUpdate(updated);
-
-          await reloadStravaProfileView(updated);
-
-          setMemberAvatarStatus(
-            'Profilbild entfernt.',
-            'success'
-          );
-
-        } catch (error) {
-
-          console.error(error);
-
-          setMemberAvatarStatus(
-            error?.message
-              || 'Entfernen fehlgeschlagen.',
-            'error'
-          );
-
-        }
-
-        toggleBtn.disabled = false;
-
-        return;
-
-      }
-
-      fileInput.click();
-
-    }
-  );
-
-  fileInput.addEventListener(
-    'change',
-    async () => {
-
-      const file =
-        fileInput.files?.[0];
-
-      fileInput.value = '';
-
-      if (!file) {
-        return;
-      }
-
-      const confirmed =
-        window.confirm(
-          'Dein Profilbild wird öffentlich auf der Website angezeigt '
-          + '(Feed, Rankings, Teilnehmerlisten, Profil). '
-          + 'Möchtest du fortfahren?'
-        );
-
-      if (!confirmed) {
-        return;
-      }
-
-      setMemberAvatarStatus(
-        'Profilbild wird hochgeladen …'
-      );
-
-      toggleBtn.disabled = true;
-
-      try {
-
-        const updated =
-          await uploadMemberAvatar(
-            file,
-            member.id
-          );
-
-        applyMemberUpdate(updated);
-
-        await reloadStravaProfileView(updated);
-
-        setMemberAvatarStatus(
-          'Profilbild gespeichert.',
-          'success'
-        );
-
-      } catch (error) {
-
-        console.error(error);
-
-        setMemberAvatarStatus(
-          error?.message
-            || 'Upload fehlgeschlagen.',
-          'error'
-        );
-
-      }
-
-      toggleBtn.disabled = false;
-
-    }
-  );
-
-}
-
 function bindMemberProfileEvents(
   member
 ) {
@@ -1184,7 +434,7 @@ function bindMemberProfileEvents(
       && isClubMember(currentMember)
     ) {
 
-      await reloadStravaProfileView(
+      await refreshMemberProfileView(
         currentMember
       );
 
@@ -1199,10 +449,6 @@ function bindMemberProfileEvents(
   }
 
   bindMemberProfileTabEvents();
-
-  bindStravaProfileEvents(member);
-
-  bindMemberAvatarEvents(member);
 
   const form =
     document.getElementById(
@@ -1490,17 +736,10 @@ async function loadMemberProfilePage() {
     document.title =
       `Mein Profil · MTB Werdohl`;
 
-    showStravaReturnNotice();
-
     if (
       typeof isClubMember === 'function'
       && isClubMember(member)
     ) {
-
-      profileStravaState =
-        isMemberAktivitaetenEnabled()
-          ? await fetchStravaProfileStatus()
-          : null;
 
       const urlTab =
         new URLSearchParams(
@@ -1515,14 +754,12 @@ async function loadMemberProfilePage() {
 
       profileActiveTab =
         resolveMemberProfileActiveTab(
-          profileActiveTab,
-          profileStravaState
+          profileActiveTab
         );
 
       renderMemberProfile(
         member,
         {
-          stravaState: profileStravaState,
           activeTab: profileActiveTab
         }
       );
@@ -1543,14 +780,6 @@ async function loadMemberProfilePage() {
       typeof isClubMember === 'function'
       && isClubMember(member)
     ) {
-      void maybePollInitialStravaSync(member);
-
-      if (
-        isMemberAktivitaetenEnabled()
-        && profileActiveTab === 'aktivitaeten'
-      ) {
-        void loadMemberActivitiesIfNeeded(true);
-      }
 
       if (profileActiveTab === 'abstimmungen') {
         void loadMemberVotesIfNeeded(true);

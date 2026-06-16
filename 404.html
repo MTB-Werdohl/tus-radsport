@@ -36,49 +36,6 @@ layout: null
 
       }
 
-      const newsMatch =
-        path.match(
-          /^\/news\/([^/]+)$/
-        );
-
-      if (newsMatch) {
-
-        window.location.replace(
-          '/news-detail.html?slug='
-          + encodeURIComponent(
-            decodeURIComponent(
-              newsMatch[1]
-            )
-          )
-        );
-
-        return;
-
-      }
-
-      const aktivitaetenMatch =
-        path.match(
-          /^\/aktivitaeten\/([^/]+)$/
-        );
-
-      if (
-        aktivitaetenMatch
-        && {{ site.features.aktivitaeten_public | default: false | jsonify }}
-      ) {
-
-        window.location.replace(
-          '/aktivitaeten-detail.html?id='
-          + encodeURIComponent(
-            decodeURIComponent(
-              aktivitaetenMatch[1]
-            )
-          )
-        );
-
-        return;
-
-      }
-
       window.location.replace('/');
 
     })();

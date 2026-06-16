@@ -39,17 +39,6 @@ function getAdminDraftSortAt(row, type) {
 
 async function fetchAdminDrafts() {
 
-  const newsResult =
-    await window.supabaseClient
-      .from(window.siteConfig.tables.news)
-      .select(
-        'id, title, slug, sichtbarkeit, published, updated_at, created_at, created_by'
-      )
-      .order('updated_at', {
-        ascending: false,
-        nullsFirst: false
-      });
-
   const termineResult =
     await window.supabaseClient
       .from(window.siteConfig.tables.termine)
@@ -61,56 +50,18 @@ async function fetchAdminDrafts() {
         nullsFirst: false
       });
 
-  const errors = [];
-
-  if (newsResult.error) {
-    errors.push(newsResult.error);
-    console.error(newsResult.error);
-  }
-
   if (termineResult.error) {
-    errors.push(termineResult.error);
-    console.error(termineResult.error);
+    throw termineResult.error;
   }
-
-  if (
-    errors.length === 2
-  ) {
-    throw errors[0];
-  }
-
-  const newsItems =
-    (newsResult.data || [])
-      .filter(isAdminDraftRow);
 
   const eventItems =
     (termineResult.data || [])
       .filter(isAdminDraftRow);
 
   const creatorMap =
-    await fetchAdminMembersByIds([
-      ...newsItems.map((item) => item.created_by),
-      ...eventItems.map((item) => item.created_by)
-    ]);
-
-  const mappedNews =
-    newsItems.map((item) => ({
-      type: 'news',
-      id: item.id,
-      title: item.title || 'Ohne Titel',
-      slug: item.slug || '',
-      createdBy: item.created_by,
-      creatorLabel:
-        resolveAdminContentCreatorLabel(
-          item.created_by,
-          creatorMap
-        ),
-      sortAt:
-        getAdminDraftSortAt(
-          item,
-          'news'
-        )
-    }));
+    await fetchAdminMembersByIds(
+      eventItems.map((item) => item.created_by)
+    );
 
   const mappedEvents =
     eventItems.map((item) => ({
@@ -131,10 +82,7 @@ async function fetchAdminDrafts() {
         )
     }));
 
-  return [
-    ...mappedNews,
-    ...mappedEvents
-  ]
+  return mappedEvents
     .sort((a, b) => {
 
       const aTime =
@@ -236,17 +184,13 @@ function getDraftTypeLabel(type) {
     return 'Termin';
   }
 
-  return 'Internes';
+  return type;
 
 }
 
 function getDraftEditUrl(draft) {
 
-  if (draft.type === 'event') {
-    return `/admin/termine_edit.html?id=${draft.id}`;
-  }
-
-  return `/admin/news_edit.html?id=${draft.id}`;
+  return `/admin/termine_edit.html?id=${draft.id}`;
 
 }
 
@@ -442,10 +386,7 @@ async function deleteAdminDraft(draft) {
 
   if (
     !draft?.id
-    || (
-      draft.type !== 'news'
-      && draft.type !== 'event'
-    )
+    || draft.type !== 'event'
   ) {
     return;
   }
@@ -463,9 +404,7 @@ async function deleteAdminDraft(draft) {
   }
 
   const entityType =
-    draft.type === 'event'
-      ? window.siteConfig.feedback.entityTypes.event
-      : window.siteConfig.feedback.entityTypes.news;
+    window.siteConfig.feedback.entityTypes.event;
 
   if (
     typeof deleteFeedbackForEntity === 'function'
@@ -491,9 +430,7 @@ async function deleteAdminDraft(draft) {
   }
 
   const table =
-    draft.type === 'event'
-      ? window.siteConfig.tables.termine
-      : window.siteConfig.tables.news;
+    window.siteConfig.tables.termine;
 
   const { error } =
     await window.supabaseClient
@@ -530,10 +467,12 @@ async function fetchAdminDraftByParams(
   slug
 ) {
 
+  if (type !== 'event') {
+    return null;
+  }
+
   const table =
-    type === 'event'
-      ? window.siteConfig.tables.termine
-      : window.siteConfig.tables.news;
+    window.siteConfig.tables.termine;
 
   let query =
     window.supabaseClient
@@ -717,10 +656,7 @@ async function initDraftPreview() {
   const slug =
     params.get('slug') || '';
 
-  if (
-    type !== 'news'
-    && type !== 'event'
-  ) {
+  if (type !== 'event') {
 
     container.innerHTML =
       '<p class="admin-hint">Ungültiger Entwurf.</p>';
@@ -771,14 +707,9 @@ async function initDraftPreview() {
     );
 
   container.innerHTML =
-    type === 'event'
-      ? renderAdminDraftPreviewEvent(
-        data,
-        creatorLabel
-      )
-      : renderAdminDraftPreviewNews(
-        data,
-        creatorLabel
-      );
+    renderAdminDraftPreviewEvent(
+      data,
+      creatorLabel
+    );
 
 }

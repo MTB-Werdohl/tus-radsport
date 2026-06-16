@@ -4,7 +4,6 @@ title: Mein Profil
 permalink: /profil/
 hide_title: true
 member_profile: true
-load_aktivitaeten_css: true
 load_calendar_css: true
 load_events_css: true
 load_feedback_css: true
@@ -28,12 +27,6 @@ load_member_content_edit_css: true
 <script src="/assets/js/core/visibility.js"></script>
 <script src="/assets/js/feedback/feedback-types.js"></script>
 <script src="/assets/js/feedback/feedback-service.js"></script>
-{% if site.features.aktivitaeten_public %}
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-<script src="/assets/js/aktivitaeten/aktivitaeten-service.js"></script>
-<script src="/assets/js/aktivitaeten/aktivitaeten-card-render.js"></script>
-<script src="/assets/js/aktivitaeten/aktivitaeten-map.js"></script>
-{% endif %}
 <script src="/assets/js/member/member-votes.js"></script>
 <script src="/assets/js/core/content-creator.js"></script>
 <script src="/assets/js/core/content-drafts.js?v={{ site.admin_js_version }}"></script>
@@ -45,7 +38,6 @@ load_member_content_edit_css: true
 <script src="/admin/js/feedback-module-form.js?v={{ site.admin_js_version }}"></script>
 <script src="/admin/js/feedback-results.js?v={{ site.admin_js_version }}"></script>
 <script src="/assets/js/feedback/feedback-admin-participants.js?v={{ site.admin_js_version }}"></script>
-<script src="/assets/js/news/news-detail-vorstand.js"></script>
 <script src="/assets/js/event/event-detail-vorstand.js"></script>
 <script src="/assets/js/member/member-vorstand-drafts.js?v={{ site.admin_js_version }}"></script>
 <script src="/assets/js/member/member-content.js"></script>

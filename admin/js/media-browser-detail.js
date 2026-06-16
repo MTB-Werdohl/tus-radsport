@@ -37,22 +37,6 @@ function buildMediaBrowserReferenceLinksHtml(
 
   });
 
-  (references.news || []).forEach((ref) => {
-
-    items.push(`
-<li>
-
-  <a href="/admin/news_edit.html?id=${encodeURIComponent(ref.id)}">
-
-    News: ${escapeAdminHtml(ref.title || ref.id)}
-
-  </a>
-
-</li>
-    `.trim());
-
-  });
-
   (references.gallery || []).forEach((ref) => {
 
     const galleryId =

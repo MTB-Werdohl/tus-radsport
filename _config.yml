@@ -14,17 +14,12 @@ seo:
 
 future: true
 
-# CI erzeugt kalender/{slug}/ und news/{slug}/ via generate-pages.js.
+# CI erzeugt kalender/{slug}/ via generate-pages.js.
 # Ordner stehen in .gitignore (lokal), müssen im Build trotzdem in _site:
 include:
   - kalender
-  - news
 
-admin_js_version: "20260587"
-
-# Bereich vorübergehend deaktivieren (Code bleibt im Repo)
-features:
-  aktivitaeten_public: false
+admin_js_version: "20260588"
 
 contact:
   name: "Tobias Withalm"

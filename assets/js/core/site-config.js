@@ -14,25 +14,18 @@ window.siteConfig = {
 
   tables: {
     termine: 'Termine',
-    news: 'News',
     galleries: 'galleries',
     galleryImages: 'gallery_images',
     siteState: 'site_state',
     members: 'members',
     boardDocuments: 'board_documents',
     feedbackModules: 'feedback_modules',
-    feedbackAnswers: 'feedback_answers',
-    activities: 'activities',
-    memberStatsMonth: 'member_stats_month',
-    memberStatsYear: 'member_stats_year',
-    clubStatsMonth: 'club_stats_month',
-    clubStatsYear: 'club_stats_year'
+    feedbackAnswers: 'feedback_answers'
   },
 
   feedback: {
     entityTypes: {
-      event: 'event',
-      news: 'news'
+      event: 'event'
     },
     types: {
       yesMaybe: 'yes_maybe',
@@ -46,20 +39,12 @@ window.siteConfig = {
   },
 
   storage: {
-    media: 'media',
-    avatars: 'avatars'
+    media: 'media'
   },
 
   functions: {
     sendAdminEmail: 'send-admin-email',
-    anonymizeMemberAccount: 'anonymize-member-account',
-    stravaOAuthStart: 'strava-oauth-start',
-    stravaOAuthCallback: 'strava-oauth-callback',
-    stravaSync: 'strava-sync'
-  },
-
-  strava: {
-    feedDays: 90
+    anonymizeMemberAccount: 'anonymize-member-account'
   },
 
   siteStateKeys: {
@@ -74,14 +59,6 @@ window.siteConfig = {
     public: 'public',
     members: 'members',
     draft: 'draft'
-  },
-
-  labels: {
-    newsSection: 'Internes'
-  },
-
-  features: {
-    aktivitaetenPublic: false
   }
 
 };
@@ -96,16 +73,6 @@ window.getFunctionUrl = function (name) {
 
 };
 
-window.getActivityUrl = function (id) {
-
-  if (!id) {
-    return '/aktivitaeten/';
-  }
-
-  return `/aktivitaeten/${encodeURIComponent(id)}/`;
-
-};
-
 window.getEventUrl = function (slug) {
 
   if (!slug) {
@@ -113,33 +80,5 @@ window.getEventUrl = function (slug) {
   }
 
   return `/kalender/${encodeURIComponent(slug)}/`;
-
-};
-
-window.getNewsUrl = function (slug) {
-
-  if (!slug) {
-    return '/news/';
-  }
-
-  return `/news/${encodeURIComponent(slug)}/`;
-
-};
-
-window.getNewsSectionLabel = function () {
-
-  return (
-    window.siteConfig.labels?.newsSection
-    || 'Internes'
-  );
-
-};
-
-window.isAktivitaetenPublicEnabled = function () {
-
-  return (
-    window.siteConfig.features?.aktivitaetenPublic
-    === true
-  );
 
 };

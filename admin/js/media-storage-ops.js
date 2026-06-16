@@ -294,8 +294,6 @@ function summarizeMediaReferencesPayload(
   const localRefs = {
     termine:
       references.termine || [],
-    news:
-      references.news || [],
     gallery:
       references.gallery || []
   };

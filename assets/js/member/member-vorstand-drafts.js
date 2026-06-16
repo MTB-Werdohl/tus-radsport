@@ -125,16 +125,6 @@ async function openMemberDraftEdit(draft) {
   }
 
   if (
-    draft.type === 'news'
-    && typeof openNewsEditModal === 'function'
-  ) {
-
-    await openNewsEditModal(draft.id);
-    return;
-
-  }
-
-  if (
     draft.type === 'event'
     && typeof openEventEditModal === 'function'
   ) {

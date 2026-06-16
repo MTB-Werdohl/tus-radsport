@@ -2,13 +2,7 @@
     url: "/verein"
   - title: "Netzwerk"
     url: "/netzwerk"
-  - title: "Aktivitäten"
-    url: "/aktivitaeten"
-    enabled: false
   - title: "Kalender"
     url: "/kalender"
-  - title: "🔒Internes"
-    url: "/news"
-
 
 

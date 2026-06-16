@@ -10,13 +10,6 @@ function getFeedbackEntityEditUrl(
     return `/admin/termine_edit.html?id=${entityId}`;
   }
 
-  if (
-    entityType
-    === window.siteConfig.feedback.entityTypes.news
-  ) {
-    return `/admin/news_edit.html?id=${entityId}`;
-  }
-
   return '#';
 
 }
@@ -28,13 +21,6 @@ function getFeedbackEntityTypeLabel(entityType) {
     === window.siteConfig.feedback.entityTypes.event
   ) {
     return 'Termin';
-  }
-
-  if (
-    entityType
-    === window.siteConfig.feedback.entityTypes.news
-  ) {
-    return 'Internes';
   }
 
   return entityType;

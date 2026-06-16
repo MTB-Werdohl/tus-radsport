@@ -3,7 +3,6 @@ const path = require("path");
 
 // Tabellennamen — synchron halten mit assets/js/core/site-config.js
 const TABLES = {
-  news: "News",
   termine: "Termine"
 };
 
@@ -274,44 +273,10 @@ html
 
 async function build(){
 
-const news =
-await fetchTable(
-TABLES.news
-);
-
 const termine =
 await fetchTable(
 TABLES.termine
 );
-
-for(
-const article
-of news.filter(item =>
-  isPublicVisibility(item.sichtbarkeit)
-    || (
-      item.published === true
-      && !item.sichtbarkeit
-    )
-)
-){
-
-createPage(
-
-"news",
-
-article.slug,
-
-article.title,
-
-article.excerpt,
-
-resolveEntityImageUrl(article),
-
-`/news-detail.html?slug=${article.slug}`
-
-);
-
-}
 
 for(
 const termin
@@ -337,10 +302,6 @@ resolveEntityImageUrl(termin),
 );
 
 }
-
-console.log(
-`News: ${news.length}`
-);
 
 console.log(
 `Termine: ${termine.length}`

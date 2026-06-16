@@ -463,53 +463,14 @@ async function fetchFeedbackAnswersForModule(
         )
       `;
 
-  const avatarSelect = `
-        id,
-        answer,
-        comment,
-        created_at,
-        updated_at,
-        member_id,
-        members (
-          id,
-          vorname,
-          nachname,
-          email,
-          rolle,
-          anonymized_at,
-          einwilligung_kontakt,
-          avatar_storage_path,
-          avatar_updated_at,
-          telefonnummer
-        )
-      `;
-
-  let { data, error } =
+  const { data, error } =
     await window.supabaseClient
       .from(
         window.siteConfig.tables.feedbackAnswers
       )
-      .select(avatarSelect)
+      .select(baseSelect)
       .eq('module_id', moduleId)
       .order('updated_at', { ascending: false });
-
-  if (
-    error
-    && /avatar_/i.test(
-      String(error.message || '')
-    )
-  ) {
-
-    ({ data, error } =
-      await window.supabaseClient
-        .from(
-          window.siteConfig.tables.feedbackAnswers
-        )
-        .select(baseSelect)
-        .eq('module_id', moduleId)
-        .order('updated_at', { ascending: false }));
-
-  }
 
   if (error) {
 
@@ -594,23 +555,6 @@ async function fetchFeedbackEntityRecordsForModules(
       )
     ];
 
-  const newsIds =
-    [
-      ...new Set(
-        (modules || [])
-          .filter((module) =>
-            module.entity_type
-            === window.siteConfig.feedback.entityTypes.news
-          )
-          .map((module) =>
-            normalizeFeedbackEntityId(
-              module.entity_id
-            )
-          )
-          .filter(Boolean)
-      )
-    ];
-
   if (eventIds.length) {
 
     const { data, error } =
@@ -641,32 +585,6 @@ async function fetchFeedbackEntityRecordsForModules(
         map.set(
           getFeedbackEntityMapKey(
             window.siteConfig.feedback.entityTypes.event,
-            row.id
-          ),
-          row
-        );
-      });
-    }
-
-  }
-
-  if (newsIds.length) {
-
-    const { data, error } =
-      await window.supabaseClient
-        .from(window.siteConfig.tables.news)
-        .select(
-          'id, title, slug, sichtbarkeit'
-        )
-        .in('id', newsIds);
-
-    if (error) {
-      console.error(error);
-    } else {
-      (data || []).forEach((row) => {
-        map.set(
-          getFeedbackEntityMapKey(
-            window.siteConfig.feedback.entityTypes.news,
             row.id
           ),
           row
@@ -761,27 +679,6 @@ async function fetchFeedbackEntityTitle(
 
   }
 
-  if (
-    entityType
-    === window.siteConfig.feedback.entityTypes.news
-  ) {
-
-    const { data, error } =
-      await window.supabaseClient
-        .from(window.siteConfig.tables.news)
-        .select('title, slug')
-        .eq('id', id)
-        .maybeSingle();
-
-    if (error) {
-      console.error(error);
-      return null;
-    }
-
-    return data;
-
-  }
-
   return null;
 
 }
@@ -810,23 +707,6 @@ async function fetchFeedbackEntityTitlesForModules(
       )
     ];
 
-  const newsIds =
-    [
-      ...new Set(
-        (modules || [])
-          .filter((module) =>
-            module.entity_type
-            === window.siteConfig.feedback.entityTypes.news
-          )
-          .map((module) =>
-            normalizeFeedbackEntityId(
-              module.entity_id
-            )
-          )
-          .filter(Boolean)
-      )
-    ];
-
   if (eventIds.length) {
 
     const { data, error } =
@@ -842,30 +722,6 @@ async function fetchFeedbackEntityTitlesForModules(
         map.set(
           getFeedbackEntityMapKey(
             window.siteConfig.feedback.entityTypes.event,
-            row.id
-          ),
-          row
-        );
-      });
-    }
-
-  }
-
-  if (newsIds.length) {
-
-    const { data, error } =
-      await window.supabaseClient
-        .from(window.siteConfig.tables.news)
-        .select('id, title, slug')
-        .in('id', newsIds);
-
-    if (error) {
-      console.error(error);
-    } else {
-      (data || []).forEach((row) => {
-        map.set(
-          getFeedbackEntityMapKey(
-            window.siteConfig.feedback.entityTypes.news,
             row.id
           ),
           row

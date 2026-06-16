@@ -121,41 +121,15 @@ function viewerIncludesDrafts(member) {
 
 }
 
-function canAccessNewsSection(member) {
+function canAccessNewsSection() {
 
-  return (
-    (
-      typeof isClubMember === 'function'
-      && isClubMember(member)
-    )
-    || viewerIncludesDrafts(member)
-  );
+  return false;
 
 }
 
-function newsRowVisibleToViewer(
-  item,
-  member
-) {
+function newsRowVisibleToViewer() {
 
-  const visibility =
-    item?.sichtbarkeit;
-
-  if (
-    visibility
-    === CONTENT_VISIBILITY.draft
-  ) {
-    return viewerIncludesDrafts(member);
-  }
-
-  if (
-    visibility
-    === CONTENT_VISIBILITY.public
-  ) {
-    return canAccessNewsSection(member);
-  }
-
-  return canAccessNewsSection(member);
+  return false;
 
 }
 

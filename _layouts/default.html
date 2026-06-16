@@ -26,13 +26,6 @@
   {% if page.load_netzwerk_css %}
   <link rel="stylesheet" href="/assets/css/netzwerk.css">
   {% endif %}
-  {% if page.load_news_css %}
-  <link rel="stylesheet" href="/assets/css/news.css">
-  {% endif %}
-  {% if page.load_aktivitaeten_css and site.features.aktivitaeten_public %}
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-  <link rel="stylesheet" href="/assets/css/aktivitaeten.css">
-  {% endif %}
   {% if page.load_verein_css %}
   <link rel="stylesheet" href="/assets/css/verein.css">
   {% endif %}
@@ -47,12 +40,6 @@
   <meta name="theme-color" content="#ed1c24">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/assets/js/core/site-config.js"></script>
-  <script>
-    window.siteConfig.features =
-      window.siteConfig.features || {};
-    window.siteConfig.features.aktivitaetenPublic =
-      {{ site.features.aktivitaeten_public | default: false | jsonify }};
-  </script>
   <script src="/assets/js/core/supabase.js"></script>
   <script src="/assets/js/core/preview-role.js"></script>
   <script src="/assets/js/member/member-service.js"></script>

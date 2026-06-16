@@ -34,7 +34,6 @@ function getPublicFeedbackReturnUrl() {
 
   if (
     canonical.includes('event.html')
-    || canonical.includes('news-detail.html')
   ) {
     return canonical;
   }
@@ -102,37 +101,6 @@ function getPublicFeedbackRedirectUrl() {
 
     return (
       `${origin}/event.html?slug=${encodeURIComponent(slug)}`
-    );
-
-  }
-
-  if (
-    !slug
-    && path.includes('/news/')
-  ) {
-
-    const parts =
-      path.split('/').filter(Boolean);
-
-    if (
-      parts[0] === 'news'
-      && parts.length >= 2
-    ) {
-      slug = parts[parts.length - 1];
-    }
-
-  }
-
-  if (
-    slug
-    && (
-      path.includes('news-detail.html')
-      || path.includes('/news/')
-    )
-  ) {
-
-    return (
-      `${origin}/news-detail.html?slug=${encodeURIComponent(slug)}`
     );
 
   }

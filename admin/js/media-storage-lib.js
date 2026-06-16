@@ -555,12 +555,8 @@ async function loadMediaStorageReferenceIndex(
   const termineTable =
     window.siteConfig.tables.termine;
 
-  const newsTable =
-    window.siteConfig.tables.news;
-
   const [
     termineResult,
-    newsResult,
     galleryResult
   ] =
     await Promise.all([
@@ -569,12 +565,6 @@ async function loadMediaStorageReferenceIndex(
         .from(termineTable)
         .select(
           'id,title,slug,image,gpx,image_storage_path,gpx_storage_path,updated_at'
-        ),
-
-      window.supabaseClient
-        .from(newsTable)
-        .select(
-          'id,title,slug,image,image_storage_path,updated_at'
         ),
 
       window.supabaseClient
@@ -589,10 +579,6 @@ async function loadMediaStorageReferenceIndex(
     throw termineResult.error;
   }
 
-  if (newsResult.error) {
-    throw newsResult.error;
-  }
-
   if (galleryResult.error) {
     throw galleryResult.error;
   }
@@ -600,8 +586,6 @@ async function loadMediaStorageReferenceIndex(
   mediaStorageReferenceIndex = {
     termine:
       termineResult.data || [],
-    news:
-      newsResult.data || [],
     gallery:
       galleryResult.data || []
   };
@@ -643,7 +627,6 @@ function findMediaStorageReferences(
 
   const references = {
     termine: [],
-    news: [],
     gallery: []
   };
 
@@ -690,25 +673,6 @@ function findMediaStorageReferences(
 
   });
 
-  index.news.forEach((news) => {
-
-    if (
-      mediaPathMatchesReference(
-        storagePath,
-        news.image_storage_path,
-        news.image
-      )
-    ) {
-
-      references.news.push({
-        id: news.id,
-        title: news.title
-      });
-
-    }
-
-  });
-
   index.gallery.forEach((image) => {
 
     if (
@@ -749,14 +713,6 @@ function renderMediaStorageReferenceSummary(
           ? ''
           : 'e'
       }`
-    );
-
-  }
-
-  if (references.news.length) {
-
-    parts.push(
-      `${references.news.length} News`
     );
 
   }
@@ -883,35 +839,6 @@ function buildRecentlyUsedMediaPaths(
           map,
           extractMediaStoragePath(
             termin.gpx
-          ),
-          { kindFilter, score }
-        );
-
-      }
-
-    });
-
-  mediaStorageReferenceIndex
-    .news
-    .forEach((news) => {
-
-      const score =
-        Number(news.id) || 0;
-
-      if (news.image_storage_path) {
-
-        registerRecentlyUsedMediaPath(
-          map,
-          news.image_storage_path,
-          { kindFilter, score }
-        );
-
-      } else if (news.image) {
-
-        registerRecentlyUsedMediaPath(
-          map,
-          extractMediaStoragePath(
-            news.image
           ),
           { kindFilter, score }
         );

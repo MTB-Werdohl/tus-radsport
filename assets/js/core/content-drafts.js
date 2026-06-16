@@ -50,17 +50,13 @@ function getContentDraftTypeLabel(type) {
     return 'Walk-in Gast';
   }
 
-  return 'Internes';
+  return type;
 
 }
 
 function getContentDraftEditUrl(draft) {
 
-  if (draft.type === 'event') {
-    return `/admin/termine_edit.html?id=${draft.id}`;
-  }
-
-  return `/admin/news_edit.html?id=${draft.id}`;
+  return `/admin/termine_edit.html?id=${draft.id}`;
 
 }
 
@@ -163,17 +159,6 @@ async function fetchGuestWalkInContentDrafts() {
 
 async function fetchContentDrafts() {
 
-  const newsResult =
-    await window.supabaseClient
-      .from(window.siteConfig.tables.news)
-      .select(
-        'id, title, slug, sichtbarkeit, published, updated_at, created_at, created_by'
-      )
-      .order('updated_at', {
-        ascending: false,
-        nullsFirst: false
-      });
-
   const termineResult =
     await window.supabaseClient
       .from(window.siteConfig.tables.termine)
@@ -185,34 +170,16 @@ async function fetchContentDrafts() {
         nullsFirst: false
       });
 
-  const errors = [];
-
-  if (newsResult.error) {
-    errors.push(newsResult.error);
-    console.error(newsResult.error);
-  }
-
   if (termineResult.error) {
-    errors.push(termineResult.error);
-    console.error(termineResult.error);
+    throw termineResult.error;
   }
-
-  if (errors.length === 2) {
-    throw errors[0];
-  }
-
-  const newsItems =
-    (newsResult.data || [])
-      .filter(isContentDraftRow);
 
   const eventItems =
     (termineResult.data || [])
       .filter(isContentDraftRow);
 
-  const creatorIds = [
-    ...newsItems.map((item) => item.created_by),
-    ...eventItems.map((item) => item.created_by)
-  ];
+  const creatorIds =
+    eventItems.map((item) => item.created_by);
 
   const creatorMap =
     typeof fetchContentCreatorLabels === 'function'
@@ -234,22 +201,6 @@ async function fetchContentDrafts() {
       return label || null;
 
     };
-
-  const mappedNews =
-    newsItems.map((item) => ({
-      type: 'news',
-      id: item.id,
-      title: item.title || 'Ohne Titel',
-      slug: item.slug || '',
-      createdBy: item.created_by,
-      creatorLabel:
-        resolveCreator(item.created_by),
-      sortAt:
-        getContentDraftSortAt(
-          item,
-          'news'
-        )
-    }));
 
   const mappedEvents =
     eventItems.map((item) => ({
@@ -281,7 +232,6 @@ async function fetchContentDrafts() {
   }
 
   return [
-    ...mappedNews,
     ...mappedEvents,
     ...walkinItems
   ]

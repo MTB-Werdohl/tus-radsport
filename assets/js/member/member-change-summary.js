@@ -48,15 +48,6 @@ function formatChangeSummaryCountLine(
 
 }
 
-function shouldIncludeAktivitaetenInChangeSummary() {
-
-  return (
-    typeof isAktivitaetenPublicEnabled === 'function'
-    && isAktivitaetenPublicEnabled()
-  );
-
-}
-
 function hasMemberChangeSummaryItems(
   summary
 ) {
@@ -65,19 +56,8 @@ function hasMemberChangeSummaryItems(
     return false;
   }
 
-  const includeAktivitaeten =
-    shouldIncludeAktivitaetenInChangeSummary();
-
   return (
-    (
-      includeAktivitaeten
-      && (
-        (Number(summary.activities_own) || 0) > 0
-        || (Number(summary.activities_feed) || 0) > 0
-      )
-    )
-    || (Number(summary.termine) || 0) > 0
-    || (Number(summary.news) || 0) > 0
+    (Number(summary.termine) || 0) > 0
     || (Number(summary.abstimmungen) || 0) > 0
   );
 
@@ -89,32 +69,6 @@ function buildMemberChangeSummaryLines(
 
   const lines = [];
 
-  if (shouldIncludeAktivitaetenInChangeSummary()) {
-
-    const ownLine =
-      formatChangeSummaryCountLine(
-        summary.activities_own,
-        'neue Aktivität von dir',
-        'neue Aktivitäten von dir'
-      );
-
-    if (ownLine) {
-      lines.push(ownLine);
-    }
-
-    const feedLine =
-      formatChangeSummaryCountLine(
-        summary.activities_feed,
-        'neue Aktivität im Verein',
-        'neue Aktivitäten im Verein'
-      );
-
-    if (feedLine) {
-      lines.push(feedLine);
-    }
-
-  }
-
   const termineLine =
     formatChangeSummaryCountLine(
       summary.termine,
@@ -124,17 +78,6 @@ function buildMemberChangeSummaryLines(
 
   if (termineLine) {
     lines.push(termineLine);
-  }
-
-  const newsLine =
-    formatChangeSummaryCountLine(
-      summary.news,
-      'neues Internes',
-      'neues Internes'
-    );
-
-  if (newsLine) {
-    lines.push(newsLine);
   }
 
   const abstimmungenLine =
