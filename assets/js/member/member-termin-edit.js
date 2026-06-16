@@ -50,6 +50,54 @@ function getMemberTerminProfileUrl(
 
 }
 
+function isMemberTerminPopupMode() {
+
+  return (
+    new URLSearchParams(
+      window.location.search
+    ).get('popup') === '1'
+  );
+
+}
+
+function finishMemberTerminPopupSave() {
+
+  if (!isMemberTerminPopupMode()) {
+    return false;
+  }
+
+  try {
+
+    if (
+      window.opener
+      && !window.opener.closed
+    ) {
+
+      if (
+        typeof window.opener
+          .reloadAfterVorstandContentSave
+          === 'function'
+      ) {
+
+        void window.opener
+          .reloadAfterVorstandContentSave();
+
+      }
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+  window.close();
+
+  return true;
+
+}
+
 function clearMemberTerminEditUrlId() {
 
   setMemberTerminEditId(null);
@@ -901,6 +949,10 @@ async function saveMemberTerminEdit(
 
     void loadMemberVotesIfNeeded(true);
 
+  }
+
+  if (finishMemberTerminPopupSave()) {
+    return;
   }
 
 }

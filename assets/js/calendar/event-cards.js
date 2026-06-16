@@ -221,14 +221,96 @@ function renderEmptyTerminCards(
   wrapper
 ) {
 
-  wrapper.innerHTML = `
+  wrapper.insertAdjacentHTML(
+    'beforeend',
+    `
 <article class="calendar-card">
   <div>
     <h3>Keine Termine</h3>
     <p>Derzeit nichts Geplantes.</p>
   </div>
 </article>
-`;
+    `.trim()
+  );
+
+}
+
+function openMemberTerminEditorPopup(
+  options = {}
+) {
+
+  const params =
+    new URLSearchParams({
+      tab: 'termin',
+      popup: '1'
+    });
+
+  if (options.id) {
+    params.set(
+      'id',
+      String(options.id)
+    );
+  }
+
+  const url =
+    `/profil/?${params.toString()}`;
+
+  const features =
+    'popup=yes,width=960,height=920,'
+    + 'menubar=no,toolbar=no,location=yes,'
+    + 'status=no,scrollbars=yes,resizable=yes';
+
+  const popup =
+    window.open(
+      url,
+      'mtbTerminEditor',
+      features
+    );
+
+  if (popup) {
+    popup.focus();
+    return popup;
+  }
+
+  window.open(
+    url,
+    '_blank',
+    'noopener,noreferrer'
+  );
+
+  return null;
+
+}
+
+function renderKalenderNewTerminButton(
+  wrapper
+) {
+
+  const bar =
+    document.createElement('div');
+
+  bar.className =
+    'kalender-new-termin-bar';
+
+  const button =
+    document.createElement('button');
+
+  button.type = 'button';
+  button.className =
+    'kalender-new-termin-btn';
+
+  button.textContent =
+    'Neuer Termin';
+
+  button.addEventListener(
+    'click',
+    () => {
+      openMemberTerminEditorPopup();
+    }
+  );
+
+  bar.appendChild(button);
+  wrapper.appendChild(bar);
 
 }
 
@@ -341,6 +423,14 @@ function renderTerminListWithDividers(
   events,
   options = {}
 ) {
+
+  if (options.showNewTerminButton) {
+
+    renderKalenderNewTerminButton(
+      wrapper
+    );
+
+  }
 
   let lastYear = null;
   let lastMonthKey = null;
@@ -536,14 +626,6 @@ async function loadAllUpcomingTerminCards(
       ? visibleCards.slice(0, limit)
       : visibleCards;
 
-  if (!toRender.length) {
-
-    renderEmptyTerminCards(wrapper);
-
-    return;
-
-  }
-
   const vorstandActions =
     options.vorstandActions === true
     || (
@@ -555,8 +637,26 @@ async function loadAllUpcomingTerminCards(
       )
     );
 
+  if (!toRender.length) {
+
+    if (vorstandActions) {
+
+      renderKalenderNewTerminButton(
+        wrapper
+      );
+
+    }
+
+    renderEmptyTerminCards(wrapper);
+
+    return;
+
+  }
+
   const renderOptions = {
-    vorstandActions
+    vorstandActions,
+    showNewTerminButton:
+      vorstandActions
   };
 
   renderTerminListWithDividers(

@@ -1102,3 +1102,20 @@ body.member-feedback-modal-open {
 .member-verwaltung-meeting-link:hover {
   background: rgba(46, 139, 87, 0.95);
 }
+
+body.member-profile-popup-mode .member-profile-section > h1,
+body.member-profile-popup-mode .member-profile-tabs {
+  display: none;
+}
+
+body.member-profile-popup-mode .member-profile-section {
+  margin-top: 1rem;
+}
+
+body.member-profile-popup-mode .member-profile-tab-panel[hidden] {
+  display: none !important;
+}
+
+body.member-profile-popup-mode #member-profile-tab-termin {
+  display: block !important;
+}

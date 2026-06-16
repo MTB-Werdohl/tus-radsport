@@ -51,6 +51,46 @@
 
 }
 
+.kalender-new-termin-bar {
+
+  margin: 0 0 0.35rem;
+
+}
+
+.kalender-new-termin-btn {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  padding: 0.55rem 1rem;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: #ed1c24;
+
+  color: #fff;
+
+  font: inherit;
+
+  font-size: 0.9375rem;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+}
+
+.kalender-new-termin-btn:hover {
+
+  background: #c91820;
+
+}
+
 .kalender-month-divider {
 
   margin: 0;
