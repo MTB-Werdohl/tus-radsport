@@ -105,15 +105,7 @@ function resolveCalendarViewMonth() {
 
 }
 
-function getCalendarUrl(monthValue) {
-
-  const month =
-    monthValue
-    || resolveCalendarViewMonth();
-
-  if (month) {
-    return `/kalender/?month=${month}`;
-  }
+function getCalendarUrl() {
 
   return '/kalender/';
 

@@ -67,52 +67,9 @@ async function refreshTermineAfterMemberLogin() {
 
   }
 
-  const calendar =
-    window.__siteCalendar;
-
   if (
-    calendar
-    && typeof calendar.refetchEvents
-      === 'function'
-  ) {
-
-    calendar.refetchEvents();
-
-    const view =
-      calendar.view;
-
-    if (
-      view
-      && typeof loadCards === 'function'
-    ) {
-
-      const start =
-        new Date(
-          view.currentStart.getFullYear(),
-          view.currentStart.getMonth(),
-          1
-        );
-
-      const end =
-        new Date(
-          view.currentStart.getFullYear(),
-          view.currentStart.getMonth() + 1,
-          1
-        );
-
-      loadCards(
-        start,
-        end
-      );
-
-    }
-
-    return;
-
-  }
-
-  if (
-    typeof loadCards !== 'function'
+    typeof loadAllUpcomingTerminCards
+      !== 'function'
   ) {
     return;
   }
@@ -120,25 +77,44 @@ async function refreshTermineAfterMemberLogin() {
   const cardsWrapper =
     document.getElementById('event-cards');
 
-  if (!cardsWrapper) {
+  if (cardsWrapper) {
+    void loadAllUpcomingTerminCards();
     return;
   }
 
-  const now =
-    new Date();
+  const homeWrapper =
+    document.getElementById(
+      'home-termine-teaser'
+    );
 
-  loadCards(
-    new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      1
-    ),
-    new Date(
-      now.getFullYear(),
-      now.getMonth() + 1,
-      1
-    )
-  );
+  if (
+    homeWrapper
+    && typeof loadCards === 'function'
+  ) {
+
+    const start =
+      new Date();
+
+    start.setHours(0, 0, 0, 0);
+
+    const end =
+      new Date(start);
+
+    end.setFullYear(
+      end.getFullYear() + 1
+    );
+
+    void loadCards(
+      start,
+      end,
+      {
+        wrapperId:
+          'home-termine-teaser',
+        limit: 3
+      }
+    );
+
+  }
 
 }
 

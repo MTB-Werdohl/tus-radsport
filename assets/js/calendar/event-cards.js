@@ -292,6 +292,83 @@ ${
 
 }
 
+function getAllUpcomingTerminCards(
+  data
+) {
+
+  return filterUpcomingTerminCards(
+    [...data].sort(
+      (left, right) =>
+        getTerminSortDate(left)
+        - getTerminSortDate(right)
+    )
+  );
+
+}
+
+async function loadAllUpcomingTerminCards(
+  options = {}
+) {
+
+  const wrapperId =
+    options.wrapperId
+    || 'event-cards';
+
+  const limit =
+    options.limit;
+
+  const wrapper =
+    document.getElementById(
+      wrapperId
+    );
+
+  if (!wrapper) {
+    return;
+  }
+
+  let data;
+
+  try {
+
+    data = await fetchTermine();
+
+  } catch (error) {
+
+    console.error(error);
+
+    return;
+
+  }
+
+  wrapper.innerHTML = '';
+
+  const visibleCards =
+    getAllUpcomingTerminCards(data);
+
+  const toRender =
+    typeof limit === 'number'
+      ? visibleCards.slice(0, limit)
+      : visibleCards;
+
+  if (!toRender.length) {
+
+    renderEmptyTerminCards(wrapper);
+
+    return;
+
+  }
+
+  toRender.forEach((event) => {
+
+    renderTerminCard(
+      wrapper,
+      event
+    );
+
+  });
+
+}
+
 async function loadCards(
   start,
   end,

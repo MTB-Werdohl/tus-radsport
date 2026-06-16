@@ -1,124 +1,23 @@
-#calendar {
+.kalender-page {
 
-  margin:2rem 0 1rem;
+  margin: 2rem 0;
 
-  padding:0;
-
-}
-
-/* HEADER */
-
-.fc-toolbar {
-
-  margin-bottom:1.5rem;
+  padding: 0;
 
 }
 
-.fc-toolbar-title {
-
-  font-size:2rem;
-
-  font-weight:700;
-
-}
-
-/* WOCHENTAGE AUSBLENDEN */
-
-.fc-col-header {
-
-  display:none;
-
-}
-
-/* MONATSGRID AUSBLENDEN */
-
-.fc-daygrid-body,
-.fc-daygrid-day-events,
-.fc-daygrid-event-harness,
-.fc-daygrid-day-number,
-.fc-scrollgrid-sync-table {
-
-  display:none;
-
-}
-
-.fc-theme-standard td,
-.fc-theme-standard th,
-.fc-theme-standard .fc-scrollgrid {
-
-  border:none !important;
-
-}
-
-.fc-scrollgrid,
-.fc-scrollgrid table {
-
-  border:none !important;
-
-}
-
-/* BUTTONS */
-
-.fc-button {
-
-  background:
-
-    rgba(
-      22,
-      38,
-      56,
-      .88
-    ) !important;
-
-  border:none !important;
-
-  border-radius:14px !important;
-
-  padding:10px 16px !important;
-
-  transition:.2s ease;
-
-}
-
-.fc-button:hover {
-
-  background:
-
-    rgba(
-      35,
-      58,
-      82,
-      .95
-    ) !important;
-
-}
-
-.fc-button-active {
-
-  background:
-
-    rgba(
-      45,
-      75,
-      105,
-      1
-    ) !important;
-
-}
-
-/* EVENT CARDS */
-
+.kalender-list,
 #event-cards {
 
-  margin:2rem 0;
+  margin: 0;
 
-  padding:0;
+  padding: 0;
 
-  display:flex;
+  display: flex;
 
-  flex-direction:column;
+  flex-direction: column;
 
-  gap:12px;
+  gap: 12px;
 
 }
 
@@ -130,9 +29,9 @@
 
     blur(8px);
 
-  border-radius:14px;
+  border-radius: 14px;
 
-  padding:10px 14px;
+  padding: 10px 14px;
 
   box-shadow:
 
@@ -183,34 +82,50 @@
 
 .calendar-card a {
 
-  display:block;
+  display: block;
 
-  text-decoration:none;
+  text-decoration: none;
 
-  color:white;
+  color: white;
 
 }
 
 .calendar-card h3 {
 
-  margin:0;
+  margin: 0;
 
-  font-size:1rem;
+  font-size: 1rem;
 
-  font-weight:700;
+  font-weight: 700;
 
-  line-height:1.2;
+  line-height: 1.2;
 
 }
 
 .calendar-card p {
 
-  margin:4px 0 0;
+  margin: 4px 0 0;
 
-  font-size:.88rem;
+  font-size: .88rem;
 
-  opacity:.82;
+  opacity: .82;
 
-  line-height:1.3;
+  line-height: 1.3;
+
+}
+
+.calendar-card--members {
+
+  background:
+
+    rgba(34, 81, 180, 0.80);
+
+}
+
+.calendar-card--public {
+
+  background:
+
+    rgba(34, 81, 180, 0.80);
 
 }
