@@ -194,6 +194,242 @@ function closeEventVorstandModal(id) {
 
 }
 
+function renderKalenderTerminVorstandActionsHtml(
+  event
+) {
+
+  return `
+<div class="calendar-card__vorstand-actions">
+
+<button
+  type="button"
+  class="news-vorstand-btn"
+  data-kalender-vorstand-edit
+  data-event-id="${event.id}">
+
+  Bearbeiten
+
+</button>
+
+<button
+  type="button"
+  class="news-vorstand-btn"
+  data-kalender-vorstand-results
+  data-event-id="${event.id}"
+  data-event-title="${escapeEventVorstandHtml(event.title || '')}">
+
+  Auswertung
+
+</button>
+
+<button
+  type="button"
+  class="news-vorstand-btn news-vorstand-btn--danger"
+  data-kalender-vorstand-delete
+  data-event-id="${event.id}">
+
+  Löschen
+
+</button>
+
+</div>
+  `.trim();
+
+}
+
+async function openEventFeedbackResultsForTermin(
+  eventId,
+  title
+) {
+
+  const feedbackModule =
+    await fetchFeedbackModule(
+      window.siteConfig.feedback.entityTypes.event,
+      eventId
+    );
+
+  if (!feedbackModule?.id) {
+
+    alert(
+      'Für diesen Termin gibt es noch keine Rückmeldungen.'
+    );
+
+    return;
+
+  }
+
+  await openEventFeedbackResultsModal(
+    feedbackModule.id,
+    title
+  );
+
+}
+
+async function deleteEventFromVorstand(
+  eventId
+) {
+
+  if (
+    !eventId
+    || !confirm(
+      'Termin wirklich löschen?'
+    )
+  ) {
+    return;
+  }
+
+  const { error } =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.termine)
+      .delete()
+      .eq('id', eventId);
+
+  if (error) {
+
+    console.error(error);
+
+    alert(
+      'Termin konnte nicht gelöscht werden.'
+    );
+
+    return;
+
+  }
+
+  if (
+    typeof reloadAfterVorstandContentSave
+      === 'function'
+  ) {
+
+    reloadAfterVorstandContentSave();
+
+  } else if (
+    typeof invalidateTermineCache
+      === 'function'
+  ) {
+
+    invalidateTermineCache();
+
+    if (
+      typeof loadAllUpcomingTerminCards
+        === 'function'
+    ) {
+      void loadAllUpcomingTerminCards();
+    }
+
+  } else {
+
+    window.location.reload();
+
+  }
+
+}
+
+function bindKalenderVorstandActions(
+  container
+) {
+
+  if (
+    !container
+    || container.dataset.kalenderVorstandBound
+      === 'true'
+  ) {
+    return;
+  }
+
+  container.dataset.kalenderVorstandBound =
+    'true';
+
+  container.addEventListener(
+    'click',
+    (clickEvent) => {
+
+      const target =
+        clickEvent.target;
+
+      const editButton =
+        target.closest(
+          '[data-kalender-vorstand-edit]'
+        );
+
+      if (editButton) {
+
+        clickEvent.preventDefault();
+        clickEvent.stopPropagation();
+
+        const eventId =
+          parseInt(
+            editButton.dataset.eventId,
+            10
+          );
+
+        if (eventId) {
+          void openEventEditModal(eventId);
+        }
+
+        return;
+
+      }
+
+      const resultsButton =
+        target.closest(
+          '[data-kalender-vorstand-results]'
+        );
+
+      if (resultsButton) {
+
+        clickEvent.preventDefault();
+        clickEvent.stopPropagation();
+
+        const eventId =
+          parseInt(
+            resultsButton.dataset.eventId,
+            10
+          );
+
+        if (eventId) {
+
+          void openEventFeedbackResultsForTermin(
+            eventId,
+            resultsButton.dataset.eventTitle
+              || ''
+          );
+
+        }
+
+        return;
+
+      }
+
+      const deleteButton =
+        target.closest(
+          '[data-kalender-vorstand-delete]'
+        );
+
+      if (deleteButton) {
+
+        clickEvent.preventDefault();
+        clickEvent.stopPropagation();
+
+        const eventId =
+          parseInt(
+            deleteButton.dataset.eventId,
+            10
+          );
+
+        if (eventId) {
+          void deleteEventFromVorstand(
+            eventId
+          );
+        }
+
+      }
+
+    }
+  );
+
+}
+
 function renderEventVorstandToolbar(
   eventData,
   feedbackModule,
@@ -205,76 +441,9 @@ function renderEventVorstandToolbar(
       'event-vorstand-actions'
     );
 
-  if (!actions) {
-    return;
+  if (actions) {
+    actions.innerHTML = '';
   }
-
-  const resultsButton =
-    showResults
-    && feedbackModule?.id
-      ? `
-<button
-  type="button"
-  class="news-vorstand-btn"
-  data-event-vorstand-results
-  data-module-id="${feedbackModule.id}">
-
-  Auswertung
-
-</button>
-`
-      : '';
-
-  actions.innerHTML = `
-<div class="news-vorstand-actions__inner">
-
-<button
-  type="button"
-  class="news-vorstand-btn"
-  data-event-vorstand-edit
-  data-event-id="${eventData.id}">
-
-  Bearbeiten
-
-</button>
-
-${resultsButton}
-
-</div>
-  `;
-
-  actions
-    .querySelector('[data-event-vorstand-edit]')
-    ?.addEventListener('click', () => {
-
-      void openEventEditModal(
-        eventData.id
-      );
-
-    });
-
-  actions
-    .querySelector('[data-event-vorstand-results]')
-    ?.addEventListener('click', (event) => {
-
-      const moduleId =
-        parseInt(
-          event.currentTarget
-            ?.dataset
-            ?.moduleId,
-          10
-        );
-
-      if (!moduleId) {
-        return;
-      }
-
-      void openEventFeedbackResultsModal(
-        moduleId,
-        eventData.title
-      );
-
-    });
 
 }
 
@@ -318,6 +487,13 @@ function ensureEventEditModal() {
     id="event-vorstand-date"
     type="date"
     required>
+</label>
+
+<label class="admin-field">
+  Ende (optional)
+  <input
+    id="event-vorstand-end-date"
+    type="date">
 </label>
 
 <label class="admin-field admin-field--required">
@@ -409,15 +585,6 @@ function ensureEventEditModal() {
 </label>
 
 <div class="member-feedback-modal__actions">
-
-  <button
-    type="button"
-    class="member-edit-btn member-edit-btn--secondary"
-    data-close-event-vorstand-modal="true">
-
-    Abbrechen
-
-  </button>
 
   <button
     type="button"
@@ -514,6 +681,11 @@ async function loadEventIntoVorstandModal(
       data.date
         ? data.date.substring(0, 10)
         : '';
+
+  document
+    .getElementById('event-vorstand-end-date')
+    .value =
+      data.endDate || '';
 
   document
     .getElementById('event-vorstand-start-time')
@@ -633,6 +805,12 @@ async function saveEventFromVorstandModal() {
       .getElementById('event-vorstand-date')
       ?.value;
 
+  const endDate =
+    document
+      .getElementById('event-vorstand-end-date')
+      ?.value
+    || '';
+
   const startTime =
     document
       .getElementById('event-vorstand-start-time')
@@ -656,6 +834,34 @@ async function saveEventFromVorstandModal() {
     );
 
     return;
+
+  }
+
+  if (
+    date
+    && endDate
+    && typeof parseTerminDateOnly === 'function'
+  ) {
+
+    const startDay =
+      parseTerminDateOnly(date);
+
+    const endDay =
+      parseTerminDateOnly(endDate);
+
+    if (
+      startDay
+      && endDay
+      && endDay < startDay
+    ) {
+
+      alert(
+        'Das Enddatum muss am oder nach dem Start liegen.'
+      );
+
+      return;
+
+    }
 
   }
 
@@ -737,6 +943,8 @@ async function saveEventFromVorstandModal() {
         date,
         startTime
       ),
+    endDate:
+      endDate || null,
     startTime,
     location,
     komoot,
@@ -896,16 +1104,10 @@ function initEventDetailVorstand(
   options = {}
 ) {
 
-  if (
-    !eventData
-    || !canShowEventVorstandTools(member)
-  ) {
-    return;
-  }
-
-  void initEventDetailVorstandAsync(
+  renderEventVorstandToolbar(
     eventData,
-    member
+    null,
+    false
   );
 
 }
@@ -915,38 +1117,10 @@ async function initEventDetailVorstandAsync(
   member
 ) {
 
-  const feedbackModule =
-    await fetchFeedbackModule(
-      window.siteConfig.feedback.entityTypes.event,
-      eventData.id
-    );
-
-  let showResults = false;
-
-  if (feedbackModule?.id) {
-
-    if (feedbackModule.enabled !== false) {
-      showResults = true;
-    } else if (
-      typeof countFeedbackAnswers
-        === 'function'
-    ) {
-
-      const answerCount =
-        await countFeedbackAnswers(
-          feedbackModule.id
-        );
-
-      showResults = answerCount > 0;
-
-    }
-
-  }
-
   renderEventVorstandToolbar(
     eventData,
-    feedbackModule,
-    showResults
+    null,
+    false
   );
 
 }
@@ -954,6 +1128,45 @@ async function initEventDetailVorstandAsync(
 window.addEventListener(
   'member-session-ready',
   () => {
+
+    const list =
+      document.getElementById(
+        'event-cards'
+      );
+
+    const member =
+      typeof getCurrentMember === 'function'
+        ? getCurrentMember()
+        : null;
+
+    if (
+      list
+      && canShowEventVorstandTools(member)
+    ) {
+
+      bindKalenderVorstandActions(list);
+
+      if (
+        typeof invalidateTermineCache
+          === 'function'
+      ) {
+        invalidateTermineCache();
+      }
+
+      if (
+        typeof loadAllUpcomingTerminCards
+          === 'function'
+      ) {
+
+        void loadAllUpcomingTerminCards({
+          vorstandActions: true
+        });
+
+      }
+
+      return;
+
+    }
 
     const eventRoot =
       document.getElementById('event');
@@ -964,11 +1177,6 @@ window.addEventListener(
     ) {
       return;
     }
-
-    const member =
-      typeof getCurrentMember === 'function'
-        ? getCurrentMember()
-        : null;
 
     if (!canShowEventVorstandTools(member)) {
       return;

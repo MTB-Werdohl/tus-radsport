@@ -338,7 +338,8 @@ function renderTerminMonthDivider(
 
 function renderTerminListWithDividers(
   wrapper,
-  events
+  events,
+  options = {}
 ) {
 
   let lastYear = null;
@@ -391,7 +392,8 @@ function renderTerminListWithDividers(
 
     renderTerminCard(
       wrapper,
-      event
+      event,
+      options
     );
 
   });
@@ -400,7 +402,8 @@ function renderTerminListWithDividers(
 
 function renderTerminCard(
   wrapper,
-  event
+  event,
+  options = {}
 ) {
 
   const card =
@@ -414,9 +417,20 @@ function renderTerminCard(
   const category =
     getTerminCategory(event.category);
 
+  const vorstandActions =
+    options.vorstandActions
+    && typeof renderKalenderTerminVorstandActionsHtml
+      === 'function'
+      ? renderKalenderTerminVorstandActionsHtml(
+        event
+      )
+      : '';
+
   card.innerHTML = `
 
-<a href="${getEventUrl(event.slug)}">
+<a
+  href="${getEventUrl(event.slug)}"
+  class="calendar-card__link">
 
 <div>
 
@@ -453,6 +467,8 @@ ${
 </div>
 
 </a>
+
+${vorstandActions}
 
 `;
 
@@ -528,10 +544,38 @@ async function loadAllUpcomingTerminCards(
 
   }
 
+  const vorstandActions =
+    options.vorstandActions === true
+    || (
+      options.vorstandActions !== false
+      && typeof canShowEventVorstandTools
+        === 'function'
+      && canShowEventVorstandTools(
+        resolveContentListingViewer()
+      )
+    );
+
+  const renderOptions = {
+    vorstandActions
+  };
+
   renderTerminListWithDividers(
     wrapper,
-    toRender
+    toRender,
+    renderOptions
   );
+
+  if (
+    vorstandActions
+    && typeof bindKalenderVorstandActions
+      === 'function'
+  ) {
+
+    bindKalenderVorstandActions(
+      wrapper
+    );
+
+  }
 
 }
 

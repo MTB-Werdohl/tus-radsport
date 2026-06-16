@@ -146,13 +146,50 @@
 
 }
 
-.calendar-card a {
+.calendar-card a,
+.calendar-card__link {
 
   display: block;
 
   text-decoration: none;
 
   color: white;
+
+}
+
+.calendar-card__vorstand-actions {
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+
+  margin-top: 10px;
+
+  padding-top: 10px;
+
+  border-top: 1px solid
+
+    rgba(255, 255, 255, 0.18);
+
+}
+
+.calendar-card__vorstand-actions .news-vorstand-btn {
+
+  margin: 0;
+
+}
+
+.news-vorstand-btn--danger {
+
+  background: rgba(180, 34, 48, 0.92);
+
+}
+
+.news-vorstand-btn--danger:hover {
+
+  background: rgba(140, 24, 38, 0.96);
 
 }
 

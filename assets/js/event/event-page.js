@@ -89,18 +89,6 @@ async function loadEvent() {
     container: 'event-feedback'
   });
 
-  if (
-    typeof initEventDetailVorstand
-      === 'function'
-  ) {
-
-    initEventDetailVorstand(
-      event,
-      member
-    );
-
-  }
-
   const eventUrl =
     getEventUrl(event.slug);
 
