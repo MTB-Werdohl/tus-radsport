@@ -757,26 +757,8 @@ async function loadMemberProfilePage() {
       return;
     }
 
-    const popupMode =
-      new URLSearchParams(
-        window.location.search
-      ).get('popup') === '1';
-
-    if (popupMode) {
-
-      document.body.classList.add(
-        'member-profile-popup-mode'
-      );
-
-      document.title =
-        'Termin bearbeiten · MTB Werdohl';
-
-    } else {
-
-      document.title =
-        'Mein Profil · MTB Werdohl';
-
-    }
+    document.title =
+      'Mein Profil · MTB Werdohl';
 
     if (
       typeof isClubMember === 'function'
@@ -789,8 +771,7 @@ async function loadMemberProfilePage() {
         ).get('tab');
 
       if (
-        popupMode
-        || urlTab === 'termin'
+        urlTab === 'termin'
         || urlTab === 'content'
       ) {
         profileActiveTab = 'termin';

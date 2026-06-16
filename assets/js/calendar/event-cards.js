@@ -235,15 +235,12 @@ function renderEmptyTerminCards(
 
 }
 
-function openMemberTerminEditorPopup(
+function buildMemberTerminEditorUrl(
   options = {}
 ) {
 
   const params =
-    new URLSearchParams({
-      tab: 'termin',
-      popup: '1'
-    });
+    new URLSearchParams();
 
   if (options.id) {
     params.set(
@@ -252,12 +249,41 @@ function openMemberTerminEditorPopup(
     );
   }
 
+  const query =
+    params.toString();
+
+  return query
+    ? `/termin-bearbeiten/?${query}`
+    : '/termin-bearbeiten/';
+
+}
+
+function shouldUseMemberTerminEditorNavigation() {
+
+  return window.matchMedia(
+    '(max-width: 900px)'
+  ).matches;
+
+}
+
+function openMemberTerminEditorPopup(
+  options = {}
+) {
+
   const url =
-    `/profil/?${params.toString()}`;
+    buildMemberTerminEditorUrl(options);
+
+  if (shouldUseMemberTerminEditorNavigation()) {
+
+    window.location.href = url;
+
+    return null;
+
+  }
 
   const features =
     'popup=yes,width=960,height=920,'
-    + 'menubar=no,toolbar=no,location=yes,'
+    + 'menubar=no,toolbar=no,location=no,'
     + 'status=no,scrollbars=yes,resizable=yes';
 
   const popup =
@@ -272,11 +298,7 @@ function openMemberTerminEditorPopup(
     return popup;
   }
 
-  window.open(
-    url,
-    '_blank',
-    'noopener,noreferrer'
-  );
+  window.location.href = url;
 
   return null;
 

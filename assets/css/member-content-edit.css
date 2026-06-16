@@ -1103,19 +1103,35 @@ body.member-feedback-modal-open {
   background: rgba(46, 139, 87, 0.95);
 }
 
-body.member-profile-popup-mode .member-profile-section > h1,
-body.member-profile-popup-mode .member-profile-tabs {
-  display: none;
+body.member-termin-editor-page {
+  margin: 0;
+  min-height: 100vh;
+  background: #111;
+  color: #fff;
+  font-family: sans-serif;
 }
 
-body.member-profile-popup-mode .member-profile-section {
-  margin-top: 1rem;
+body.member-termin-editor-page .member-termin-editor-main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1rem 1rem 2rem;
+  box-sizing: border-box;
 }
 
-body.member-profile-popup-mode .member-profile-tab-panel[hidden] {
-  display: none !important;
+body.member-termin-editor-page .member-termin-editor-loading {
+  margin: 0;
+  opacity: 0.8;
 }
 
-body.member-profile-popup-mode #member-profile-tab-termin {
-  display: block !important;
+body.member-termin-editor-page
+  .member-profile-section-block {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+
+body.member-termin-editor-page
+  .member-content-edit-form--tab {
+  margin-top: 0;
 }

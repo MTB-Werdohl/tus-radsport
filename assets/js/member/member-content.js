@@ -5,10 +5,31 @@ function renderMemberTerminEditPanelShell(
   const isVorstandUser =
     options?.isVorstand === true;
 
+  const compact =
+    options?.compact === true;
+
   const lead =
     isVorstandUser
       ? 'Termin anlegen oder bearbeiten.'
       : 'Entwurf, Termin wird nach Prüfung veröffentlicht.';
+
+  const heading =
+    compact
+      ? ''
+      : `
+  <h2 id="form-title">
+    Termin
+  </h2>
+      `.trim();
+
+  const intro =
+    compact
+      ? ''
+      : `
+  <p class="member-content-lead">
+    ${lead}
+  </p>
+      `.trim();
 
   const sichtbarkeitField =
     isVorstandUser
@@ -37,13 +58,9 @@ function renderMemberTerminEditPanelShell(
   return `
 <section class="member-profile-section-block member-content-panel">
 
-  <h2 id="form-title">
-    Termin
-  </h2>
+  ${heading}
 
-  <p class="member-content-lead">
-    ${lead}
-  </p>
+  ${intro}
 
   <div class="member-content-edit-form member-content-edit-form--tab">
 

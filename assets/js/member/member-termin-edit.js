@@ -50,31 +50,52 @@ function getMemberTerminProfileUrl(
 
 }
 
-function isMemberTerminPopupMode() {
+function getMemberTerminEditorUrl(
+  options = {}
+) {
 
-  return (
-    new URLSearchParams(
-      window.location.search
-    ).get('popup') === '1'
-  );
+  const params =
+    new URLSearchParams();
+
+  if (options.id) {
+    params.set(
+      'id',
+      String(options.id)
+    );
+  }
+
+  const query =
+    params.toString();
+
+  return query
+    ? `/termin-bearbeiten/?${query}`
+    : '/termin-bearbeiten/';
 
 }
 
-function finishMemberTerminPopupSave() {
+function isMemberTerminEditorPage() {
 
-  if (!isMemberTerminPopupMode()) {
-    return false;
-  }
+  return document.body
+    ?.classList
+    .contains('member-termin-editor-page');
 
-  try {
+}
 
-    if (
-      window.opener
-      && !window.opener.closed
-    ) {
+function isMemberTerminPopupWindow() {
+
+  return !!window.opener;
+
+}
+
+function finishMemberTerminEditorSave() {
+
+  if (isMemberTerminPopupWindow()) {
+
+    try {
 
       if (
-        typeof window.opener
+        !window.opener.closed
+        && typeof window.opener
           .reloadAfterVorstandContentSave
           === 'function'
       ) {
@@ -84,17 +105,32 @@ function finishMemberTerminPopupSave() {
 
       }
 
+    } catch (error) {
+
+      console.error(error);
+
     }
 
-  } catch (error) {
+    window.close();
 
-    console.error(error);
+    return true;
 
   }
 
-  window.close();
+  if (isMemberTerminEditorPage()) {
 
-  return true;
+    window.setTimeout(() => {
+
+      window.location.href =
+        '/kalender/';
+
+    }, 700);
+
+    return true;
+
+  }
+
+  return false;
 
 }
 
@@ -108,6 +144,23 @@ function clearMemberTerminEditUrlId() {
     );
 
   params.delete('id');
+
+  if (isMemberTerminEditorPage()) {
+
+    const query =
+      params.toString();
+
+    window.history.replaceState(
+      null,
+      '',
+      query
+        ? `/termin-bearbeiten/?${query}`
+        : '/termin-bearbeiten/'
+    );
+
+    return;
+
+  }
 
   if (!params.has('tab')) {
     params.set('tab', 'termin');
@@ -381,7 +434,9 @@ async function memberTerminAssertEditable(
     );
 
     window.location.href =
-      getMemberTerminProfileUrl();
+      isMemberTerminEditorPage()
+        ? '/termin-bearbeiten/'
+        : getMemberTerminProfileUrl();
 
     return false;
 
@@ -394,7 +449,9 @@ async function memberTerminAssertEditable(
     );
 
     window.location.href =
-      getMemberTerminProfileUrl();
+      isMemberTerminEditorPage()
+        ? '/termin-bearbeiten/'
+        : getMemberTerminProfileUrl();
 
     return false;
 
@@ -413,7 +470,9 @@ async function memberTerminAssertEditable(
     );
 
     window.location.href =
-      getMemberTerminProfileUrl();
+      isMemberTerminEditorPage()
+        ? '/termin-bearbeiten/'
+        : getMemberTerminProfileUrl();
 
     return false;
 
@@ -951,7 +1010,7 @@ async function saveMemberTerminEdit(
 
   }
 
-  if (finishMemberTerminPopupSave()) {
+  if (finishMemberTerminEditorSave()) {
     return;
   }
 
@@ -1049,6 +1108,15 @@ async function initMemberTerminEditTab(
 
 async function initMemberTerminEditPage() {
 
+  const container =
+    document.getElementById(
+      'member-termin-editor'
+    );
+
+  if (!container) {
+    return;
+  }
+
   const member =
     await ensureMemberSession({
       strict: true
@@ -1060,10 +1128,35 @@ async function initMemberTerminEditPage() {
     || !isClubMember(member)
   ) {
 
+    const returnUrl =
+      encodeURIComponent(
+        window.location.pathname
+        + window.location.search
+      );
+
     window.location.href =
-      '/profil/';
+      `/profil/?next=${returnUrl}`;
 
     return;
+
+  }
+
+  if (
+    container.dataset.shellRendered
+      !== 'true'
+  ) {
+
+    container.innerHTML =
+      renderMemberTerminEditPanelShell({
+        isVorstand:
+          memberTerminIsVorstandUser(
+            member
+          ),
+        compact: true
+      });
+
+    container.dataset.shellRendered =
+      'true';
 
   }
 
