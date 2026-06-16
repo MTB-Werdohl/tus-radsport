@@ -671,6 +671,11 @@ async function saveMemberTerminEdit(
     return;
   }
 
+  const editId =
+    getMemberTerminEditId();
+
+  const wasNewSave = !editId;
+
   const title =
     document
       .getElementById('title')
@@ -808,11 +813,6 @@ async function saveMemberTerminEdit(
     payload.gpx_storage_path =
       gpxStoragePath;
   }
-
-  const editId =
-    getMemberTerminEditId();
-
-  const wasNewSave = !editId;
 
   let error;
   let savedId =
