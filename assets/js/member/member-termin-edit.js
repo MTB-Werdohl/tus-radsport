@@ -50,6 +50,144 @@ function getMemberTerminProfileUrl(
 
 }
 
+function clearMemberTerminEditUrlId() {
+
+  setMemberTerminEditId(null);
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  params.delete('id');
+
+  if (!params.has('tab')) {
+    params.set('tab', 'termin');
+  }
+
+  const query =
+    params.toString();
+
+  window.history.replaceState(
+    null,
+    '',
+    query
+      ? `/profil/?${query}`
+      : '/profil/?tab=termin'
+  );
+
+}
+
+async function saveMemberTerminFeedbackModule(
+  entityId,
+  sichtbarkeit
+) {
+
+  if (!entityId) {
+    return { ok: true };
+  }
+
+  const publicVoting =
+    sichtbarkeit
+    === window.siteConfig.visibility.public;
+
+  const existing =
+    await fetchFeedbackModule(
+      window.siteConfig.feedback.entityTypes.event,
+      entityId
+    );
+
+  const payload = {
+    type:
+      window.siteConfig.feedback.types.yesMaybe,
+    entity_type:
+      window.siteConfig.feedback.entityTypes.event,
+    entity_id: entityId,
+    question:
+      getDefaultFeedbackQuestion(
+        window.siteConfig.feedback.entityTypes.event
+      ),
+    config: existing?.config || {},
+    public_voting: publicVoting,
+    enabled: true
+  };
+
+  return saveFeedbackModule(payload);
+
+}
+
+async function attachMemberTerminCreatorParticipation(
+  savedId,
+  member,
+  sichtbarkeit
+) {
+
+  if (!savedId || !member?.id) {
+    return { ok: false };
+  }
+
+  let module =
+    await fetchFeedbackModule(
+      window.siteConfig.feedback.entityTypes.event,
+      savedId
+    );
+
+  if (!module?.id) {
+
+    const feedbackResult =
+      await saveMemberTerminFeedbackModule(
+        savedId,
+        sichtbarkeit
+      );
+
+    if (feedbackResult?.error) {
+      return {
+        ok: false,
+        error: feedbackResult.error
+      };
+    }
+
+    module =
+      feedbackResult?.data
+      || await fetchFeedbackModule(
+        window.siteConfig.feedback.entityTypes.event,
+        savedId
+      );
+
+  }
+
+  if (!module?.id) {
+    return {
+      ok: false,
+      error: new Error(
+        'Feedback-Modul fehlt.'
+      )
+    };
+  }
+
+  const yesAnswer =
+    window.siteConfig.feedback.answers.yes;
+
+  const result =
+    await saveFeedbackAnswer(
+      module.id,
+      { memberId: member.id },
+      yesAnswer,
+      null,
+      { eventCommitment: true }
+    );
+
+  if (result?.error) {
+    return {
+      ok: false,
+      error: result.error
+    };
+  }
+
+  return { ok: true };
+
+}
+
 function memberTerminIsVorstandUser(
   member
 ) {
@@ -669,6 +807,8 @@ async function saveMemberTerminEdit(
   const editId =
     getMemberTerminEditId();
 
+  const wasNewSave = !editId;
+
   let error;
   let savedId =
     editId
@@ -707,12 +847,56 @@ async function saveMemberTerminEdit(
 
   }
 
+  const participationResult =
+    await attachMemberTerminCreatorParticipation(
+      savedId,
+      member,
+      sichtbarkeit
+    );
+
+  if (
+    participationResult?.error
+  ) {
+
+    console.error(
+      participationResult.error
+    );
+
+  }
+
   if (window.memberEditUnsavedGuard) {
     window.memberEditUnsavedGuard.markClean();
   }
 
-  window.location.href =
-    getMemberTerminProfileUrl(savedId);
+  clearMemberTerminEditUrlId();
+  memberTerminResetForm();
+
+  const toastMessage =
+    wasNewSave
+    && !memberTerminIsVorstandUser(member)
+      ? 'Danke, dein Termin ist eingegangen und wird unmittelbar bearbeitet.'
+      : 'Termin gespeichert.';
+
+  if (
+    typeof showMemberToast === 'function'
+  ) {
+
+    showMemberToast(
+      toastMessage,
+      'success',
+      5000
+    );
+
+  }
+
+  if (
+    typeof loadMemberVotesIfNeeded
+      === 'function'
+  ) {
+
+    void loadMemberVotesIfNeeded(true);
+
+  }
 
 }
 
