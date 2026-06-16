@@ -115,9 +115,7 @@ as $$
 declare
   v_path text;
   v_termine jsonb := '[]'::jsonb;
-  v_gallery jsonb := '[]'::jsonb;
   v_termine_count integer := 0;
-  v_gallery_count integer := 0;
 begin
 
   perform public.assert_media_manage_authenticated();
@@ -174,35 +172,13 @@ begin
 
   ) src;
 
-  select
-    coalesce(
-      jsonb_agg(
-        jsonb_build_object(
-          'id', g.id,
-          'gallery_id', g.gallery_id
-        )
-      ),
-      '[]'::jsonb
-    ),
-    count(*)::integer
-  into
-    v_gallery,
-    v_gallery_count
-  from public.gallery_images g
-  where g.image_path is not null
-    and g.image_path like '%' || v_path || '%';
-
   return jsonb_build_object(
     'path', v_path,
     'counts', jsonb_build_object(
       'termine', v_termine_count,
-      'gallery', v_gallery_count,
-      'total',
-        v_termine_count
-        + v_gallery_count
+      'total', v_termine_count
     ),
-    'termine', v_termine,
-    'gallery', v_gallery
+    'termine', v_termine
   );
 
 end;

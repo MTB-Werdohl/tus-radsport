@@ -146,6 +146,9 @@ async function loadMemberTerminEdit() {
       ? data.date.substring(0, 10)
       : '';
 
+  document.getElementById('endDate').value =
+    data.endDate || '';
+
   document.getElementById('location').value =
     data.location || '';
 
@@ -282,6 +285,45 @@ function validateMemberTerminRequiredFields() {
 
 }
 
+function validateMemberTerminEndDate(
+  date,
+  endDate
+) {
+
+  const startDay =
+    parseTerminDateOnly(date);
+
+  const endDay =
+    parseTerminDateOnly(endDate);
+
+  if (
+    !startDay
+    || !endDay
+    || endDay < startDay
+  ) {
+
+    alert(
+      'Das Enddatum muss am oder nach dem Start liegen.'
+    );
+
+    document
+      .getElementById('endDate')
+      ?.classList.add(
+        'member-edit-field--invalid'
+      );
+
+    document
+      .getElementById('endDate')
+      ?.focus();
+
+    return false;
+
+  }
+
+  return true;
+
+}
+
 async function saveMemberTerminEdit(
   member
 ) {
@@ -323,6 +365,20 @@ async function saveMemberTerminEdit(
       .getElementById('content')
       .value
       .trim();
+
+  const endDate =
+    document
+      .getElementById('endDate')
+      ?.value
+    || '';
+
+  if (
+    date
+    && endDate
+    && !validateMemberTerminEndDate(date, endDate)
+  ) {
+    return;
+  }
 
   const slug =
     buildMemberContentSlug(title);
@@ -372,6 +428,9 @@ async function saveMemberTerminEdit(
         startTime
       ),
 
+    endDate:
+      endDate || null,
+
     location,
 
     komoot,
@@ -382,8 +441,6 @@ async function saveMemberTerminEdit(
       startTime || null,
 
     slug,
-
-    recurring: false,
 
     category: 'vereinsleben',
 

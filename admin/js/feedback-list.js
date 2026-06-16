@@ -464,7 +464,7 @@ function renderFeedbackList(
         ${renderFeedbackSummaryLines(
           module,
           row.summary,
-          row.entity?.recurring === true
+          false
         )}
         ${renderFeedbackFreeTextResponses(
           module,

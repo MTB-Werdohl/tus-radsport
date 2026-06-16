@@ -603,11 +603,6 @@ async function loadEventIntoVorstandModal(
   ensureEventEditModal().dataset.eventId =
     String(eventId);
 
-  ensureEventEditModal().dataset.recurring =
-    data.recurring === true
-      ? 'true'
-      : 'false';
-
   return data;
 
 }
@@ -731,9 +726,6 @@ async function saveEventFromVorstandModal() {
 
   }
 
-  const recurring =
-    modal.dataset.recurring === 'true';
-
   const payload = {
     title,
     slug,
@@ -747,7 +739,6 @@ async function saveEventFromVorstandModal() {
     komoot,
     content,
     sichtbarkeit,
-    recurring,
     category:
       existing?.category || 'vereinsleben',
     updated_at:

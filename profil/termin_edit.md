@@ -17,7 +17,7 @@ load_member_content_edit_css: true
       </h1>
 
       <p>
-        Wird als Entwurf an den Vorstand übermittelt.
+        Entwurf (nur Vorstand) — wird nach Prüfung veröffentlicht.
       </p>
 
     </div>
@@ -49,6 +49,12 @@ load_member_content_edit_css: true
                required>
       </label>
 
+      <label class="member-edit-field">
+        Ende (optional)
+        <input id="endDate"
+               type="date">
+      </label>
+
       <label class="member-edit-field member-edit-field--required">
         Uhrzeit
         <input id="startTime"
@@ -57,6 +63,11 @@ load_member_content_edit_css: true
       </label>
 
     </div>
+
+    <p class="member-edit-hint">
+      Enddatum leer lassen für eintägige Termine.
+      Für Mehrtages-Termine z.&nbsp;B. Fr–So Enddatum setzen.
+    </p>
 
     <label class="member-edit-field member-edit-field--required">
       Ort
@@ -118,6 +129,7 @@ load_member_content_edit_css: true
 
 </section>
 
+<script src="/assets/js/core/termin-dates.js"></script>
 <script src="/assets/js/core/visibility.js"></script>
 <script src="/assets/js/core/media-url.js"></script>
 <script src="/assets/js/core/image-compress.js"></script>

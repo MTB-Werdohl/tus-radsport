@@ -85,7 +85,7 @@ function buildMemberVoteItem(
       : formatFeedbackAnswerLabel(
         module,
         answerRow.answer,
-        entity?.recurring === true
+        false
       );
 
   return {
@@ -320,7 +320,7 @@ function renderMemberVoteCard(item) {
       escapeMemberHtml(
         item.answerLabel
       ),
-      item.entity?.recurring === true
+      false
     );
 
   const metaParts = [];

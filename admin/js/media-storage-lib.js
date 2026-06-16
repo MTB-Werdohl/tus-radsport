@@ -4,12 +4,6 @@ const MEDIA_STORAGE_ROOTS = [
     id: 'shared',
     label: 'Shared',
     path: 'shared'
-  },
-
-  {
-    id: 'galleries',
-    label: 'Galerien',
-    path: 'galleries'
   }
 
 ];
@@ -341,7 +335,6 @@ function isTopLevelManagedFolder(
 
   return [
     'shared',
-    'galleries',
     'protocols'
   ].includes(name);
 
@@ -399,10 +392,6 @@ function inferMediaStorageRootId(
     || !path.includes('/')
   ) {
     return 'legacy';
-  }
-
-  if (path.startsWith('galleries/')) {
-    return 'galleries';
   }
 
   if (path.startsWith('shared/')) {
@@ -490,7 +479,6 @@ async function listMediaStorageEntries(
           item.name
         )
         && item.name !== 'shared'
-        && item.name !== 'galleries'
       ) {
         return;
       }
@@ -555,39 +543,20 @@ async function loadMediaStorageReferenceIndex(
   const termineTable =
     window.siteConfig.tables.termine;
 
-  const [
-    termineResult,
-    galleryResult
-  ] =
-    await Promise.all([
-
-      window.supabaseClient
-        .from(termineTable)
-        .select(
-          'id,title,slug,image,gpx,image_storage_path,gpx_storage_path,updated_at'
-        ),
-
-      window.supabaseClient
-        .from('gallery_images')
-        .select(
-          'id,gallery_id,image_path'
-        )
-
-    ]);
+  const termineResult =
+    await window.supabaseClient
+      .from(termineTable)
+      .select(
+        'id,title,slug,image,gpx,image_storage_path,gpx_storage_path,updated_at'
+      );
 
   if (termineResult.error) {
     throw termineResult.error;
   }
 
-  if (galleryResult.error) {
-    throw galleryResult.error;
-  }
-
   mediaStorageReferenceIndex = {
     termine:
-      termineResult.data || [],
-    gallery:
-      galleryResult.data || []
+      termineResult.data || []
   };
 
   mediaStorageReferencePromise = null;
@@ -626,8 +595,7 @@ function findMediaStorageReferences(
 ) {
 
   const references = {
-    termine: [],
-    gallery: []
+    termine: []
   };
 
   if (
@@ -673,28 +641,6 @@ function findMediaStorageReferences(
 
   });
 
-  index.gallery.forEach((image) => {
-
-    if (
-      mediaPathMatchesReference(
-        storagePath,
-        extractMediaStoragePath(
-          image.image_path
-        ),
-        image.image_path
-      )
-    ) {
-
-      references.gallery.push({
-        id: image.id,
-        galleryId:
-          image.gallery_id
-      });
-
-    }
-
-  });
-
   return references;
 
 }
@@ -712,18 +658,6 @@ function renderMediaStorageReferenceSummary(
         references.termine.length === 1
           ? ''
           : 'e'
-      }`
-    );
-
-  }
-
-  if (references.gallery.length) {
-
-    parts.push(
-      `${references.gallery.length} Galerie${
-        references.gallery.length === 1
-          ? ''
-          : 'n'
       }`
     );
 

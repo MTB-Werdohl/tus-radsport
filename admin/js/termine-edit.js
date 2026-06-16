@@ -91,38 +91,6 @@ function combineTerminDateTime(
 
 }
 
-function toggleRecurring() {
-
-  const recurring =
-    document.getElementById('recurring')
-      .checked;
-
-  const recurringFields =
-    document.getElementById('recurringFields');
-
-  const singleFields =
-    document.getElementById('singleFields');
-
-  if (recurring) {
-
-    recurringFields
-      .classList.remove('hidden');
-
-    singleFields
-      .classList.add('hidden');
-
-  } else {
-
-    recurringFields
-      .classList.add('hidden');
-
-    singleFields
-      .classList.remove('hidden');
-
-  }
-
-}
-
 async function loadEvent() {
 
   if (!editId) {
@@ -260,71 +228,16 @@ async function loadEvent() {
 
   }
 
-  document.getElementById('recurring').checked =
-    data.recurring || false;
-
   document.getElementById('sichtbarkeit').value =
     data.sichtbarkeit
     || window.siteConfig.visibility.draft;
 
-  document.getElementById('startRecur').value =
-    data.startRecur || '';
-
-  document.getElementById('endRecur').value =
-    data.endRecur || '';
-
-  document.getElementById('durationDays').value =
-    data.durationDays
-      && data.durationDays > 1
-      ? data.durationDays
-      : '';
-
-  document.getElementById('daysOfWeek').value =
-    data.daysOfWeek
-      ? data.daysOfWeek[0]
-      : '';
-
-  document.getElementById('exclude').value =
-    data.exclude
-      ? JSON.stringify(data.exclude)
-      : '';
-
-  toggleRecurring();
-
 }
 
 function validateTerminDates(
-  recurring,
   date,
-  endDate,
-  durationDays
+  endDate
 ) {
-
-  if (recurring) {
-
-    const parsedDuration =
-      parseInt(durationDays, 10);
-
-    if (
-      durationDays
-      && (
-        !Number.isFinite(parsedDuration)
-        || parsedDuration < 1
-        || parsedDuration > 31
-      )
-    ) {
-
-      alert(
-        'Mehrtages-Dauer muss zwischen 1 und 31 liegen.'
-      );
-
-      return false;
-
-    }
-
-    return true;
-
-  }
 
   if (!date) {
     return true;
@@ -381,26 +294,8 @@ async function saveEvent() {
   const content =
     document.getElementById('content').value;
 
-  const recurring =
-    document.getElementById('recurring').checked;
-
   const startTime =
     document.getElementById('startTime').value;
-
-  const startRecur =
-    document.getElementById('startRecur').value;
-
-  const endRecur =
-    document.getElementById('endRecur').value;
-
-  const durationDays =
-    document.getElementById('durationDays').value;
-
-  const daysOfWeek =
-    document.getElementById('daysOfWeek').value;
-
-  const exclude =
-    document.getElementById('exclude').value;
 
   const imageFile =
     document.getElementById('imageFile')
@@ -413,29 +308,10 @@ async function saveEvent() {
   const slug =
     buildAdminSlug(title);
 
-  let parsedExclude = [];
-
-  try {
-
-    parsedExclude =
-      exclude && exclude.trim() !== ''
-        ? JSON.parse(exclude)
-        : [];
-
-  } catch {
-
-    alert('Exclude JSON ungültig');
-
-    return;
-
-  }
-
   if (
     !validateTerminDates(
-      recurring,
       date,
-      endDate,
-      durationDays
+      endDate
     )
   ) {
     return;
@@ -542,25 +418,18 @@ async function saveEvent() {
 
   }
 
-  const parsedDuration =
-    parseInt(durationDays, 10);
-
   const payload = {
 
     title,
 
     date:
-      recurring
-        ? null
-        : combineTerminDateTime(
-          date,
-          startTime
-        ),
+      combineTerminDateTime(
+        date,
+        startTime
+      ),
 
     endDate:
-      recurring
-        ? null
-        : endDate || null,
+      endDate || null,
 
     location,
 
@@ -570,34 +439,8 @@ async function saveEvent() {
 
     content,
 
-    recurring,
-
     startTime:
       startTime || null,
-
-    startRecur:
-      recurring
-        ? startRecur || null
-        : null,
-
-    endRecur:
-      recurring
-        ? endRecur || null
-        : null,
-
-    durationDays:
-      recurring
-        && Number.isFinite(parsedDuration)
-        && parsedDuration > 1
-        ? parsedDuration
-        : null,
-
-    daysOfWeek:
-      recurring && daysOfWeek
-        ? [parseInt(daysOfWeek)]
-        : null,
-
-    exclude: parsedExclude,
 
     slug,
 
@@ -692,16 +535,10 @@ async function saveEvent() {
 }
 
 document
-  .getElementById('recurring')
-  ?.addEventListener('change', toggleRecurring);
-
-document
   .getElementById('save-event')
   ?.addEventListener('click', saveEvent);
 
 function initTerminEdit() {
-
-  toggleRecurring();
 
   populateTerminCategorySelect(
     document.getElementById('category')

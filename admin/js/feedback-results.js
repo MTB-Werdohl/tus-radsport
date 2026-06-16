@@ -1054,8 +1054,7 @@ async function loadFeedbackResultsForModule(
   window.__feedbackResultsEntity =
     entity;
 
-  const entityRecurring =
-    entity?.recurring === true;
+  const entityRecurring = false;
 
   const historyMode =
     isFeedbackEventResultsHistoryMode(

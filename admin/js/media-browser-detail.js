@@ -37,27 +37,6 @@ function buildMediaBrowserReferenceLinksHtml(
 
   });
 
-  (references.gallery || []).forEach((ref) => {
-
-    const galleryId =
-      ref.gallery_id
-      || ref.galleryId
-      || ref.id;
-
-    items.push(`
-<li>
-
-  <a href="/admin/galerie_edit.html?id=${encodeURIComponent(galleryId)}">
-
-    Galerie #${escapeAdminHtml(String(galleryId))}
-
-  </a>
-
-</li>
-    `.trim());
-
-  });
-
   if (!items.length) {
 
     return `

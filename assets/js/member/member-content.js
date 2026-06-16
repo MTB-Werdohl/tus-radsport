@@ -215,7 +215,7 @@ async function fetchMemberContentSubmissions(
     await window.supabaseClient
       .from(termineTable)
       .select(
-        'id, title, slug, sichtbarkeit, date, endDate, recurring, created_at, updated_at'
+        'id, title, slug, sichtbarkeit, date, endDate, created_at, updated_at'
       )
       .eq('created_by', memberId)
       .order('created_at', { ascending: false });

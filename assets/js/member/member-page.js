@@ -706,19 +706,6 @@ async function loadMemberProfilePage() {
         strict: true
       });
 
-    if (
-      typeof isAdminPreviewActive === 'function'
-      && isAdminPreviewActive()
-      && typeof getAdminPreviewRole === 'function'
-      && getAdminPreviewRole() === 'public'
-    ) {
-
-      renderMemberProfileGuestLogin();
-
-      return;
-
-    }
-
     if (!member) {
 
       renderMemberProfileGuestLogin();

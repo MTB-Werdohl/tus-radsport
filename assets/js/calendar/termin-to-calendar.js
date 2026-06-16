@@ -43,44 +43,9 @@ function termineToCalendarEvents(
 
       backgroundColor,
 
-      borderColor,
-
-      extendedProps: {
-        exclude: item.exclude || []
-      }
+      borderColor
 
     };
-
-    if (item.recurring) {
-
-      const recurringEvent = {
-
-        ...baseEvent,
-
-        daysOfWeek: item.daysOfWeek,
-
-        startTime: item.startTime,
-
-        startRecur: item.startRecur,
-
-        endRecur: item.endRecur
-
-      };
-
-      const durationDays =
-        getRecurringDurationDays(item);
-
-      if (durationDays > 1) {
-
-        recurringEvent.duration = {
-          days: durationDays
-        };
-
-      }
-
-      return recurringEvent;
-
-    }
 
     const startDay =
       getSingleTerminStartDay(item);

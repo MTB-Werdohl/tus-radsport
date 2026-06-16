@@ -566,12 +566,6 @@ async function fetchFeedbackEntityRecordsForModules(
           slug,
           date,
           endDate,
-          durationDays,
-          recurring,
-          daysOfWeek,
-          startRecur,
-          endRecur,
-          exclude,
           location,
           startTime,
           sichtbarkeit
@@ -666,7 +660,7 @@ async function fetchFeedbackEntityTitle(
     const { data, error } =
       await window.supabaseClient
         .from(window.siteConfig.tables.termine)
-        .select('title, slug, recurring')
+        .select('title, slug')
         .eq('id', id)
         .maybeSingle();
 
@@ -712,7 +706,7 @@ async function fetchFeedbackEntityTitlesForModules(
     const { data, error } =
       await window.supabaseClient
         .from(window.siteConfig.tables.termine)
-        .select('id, title, slug, recurring')
+        .select('id, title, slug')
         .in('id', eventIds);
 
     if (error) {

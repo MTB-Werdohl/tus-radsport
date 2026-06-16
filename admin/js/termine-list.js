@@ -2,18 +2,6 @@ let eventsListPage = 1;
 
 function sortEventsForAdmin(a, b) {
 
-  if (a.recurring && !b.recurring) {
-    return -1;
-  }
-
-  if (!a.recurring && b.recurring) {
-    return 1;
-  }
-
-  if (a.recurring && b.recurring) {
-    return a.title.localeCompare(b.title);
-  }
-
   const now = new Date();
 
   now.setHours(0, 0, 0, 0);
@@ -113,7 +101,6 @@ function renderEventsListItems(
     if (
       isPast
       && !previousPast
-      && !event.recurring
     ) {
 
       container.innerHTML += `

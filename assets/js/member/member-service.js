@@ -24,13 +24,6 @@ function escapeMemberHtml(value) {
 function isVorstand(member) {
 
   if (
-    typeof isAdminPreviewActive === 'function'
-    && isAdminPreviewActive()
-  ) {
-    return false;
-  }
-
-  if (
     typeof isRealVorstand === 'function'
   ) {
     return isRealVorstand(member);
@@ -46,19 +39,6 @@ function isVorstand(member) {
 }
 
 function isClubMember(member) {
-
-  const preview =
-    typeof getAdminPreviewRole === 'function'
-      ? getAdminPreviewRole()
-      : null;
-
-  if (preview === 'public') {
-    return false;
-  }
-
-  if (preview === 'Mitglied') {
-    return true;
-  }
 
   if (!member?.id) {
     return false;

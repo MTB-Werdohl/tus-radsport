@@ -293,9 +293,7 @@ function summarizeMediaReferencesPayload(
 
   const localRefs = {
     termine:
-      references.termine || [],
-    gallery:
-      references.gallery || []
+      references.termine || []
   };
 
   return renderMediaStorageReferenceSummary(
@@ -605,7 +603,7 @@ async function promptMoveMediaStorageFile(
   if (
     isLegacyRootMediaPath(currentPath)
     && !window.confirm(
-      'Legacy-Datei verschieben: Alle Referenzen in Terminen, News und Galerien werden aktualisiert. Fortfahren?'
+        'Legacy-Datei verschieben: Alle Referenzen in Terminen werden aktualisiert. Fortfahren?'
     )
   ) {
     return;

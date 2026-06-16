@@ -18,27 +18,4 @@ function shouldHideEvent(info){
 
   }
 
-  const excludes =
-
-    info.event.extendedProps
-    ?.exclude || [];
-
-  const eventDate =
-
-    info.event.startStr
-    .split('T')[0];
-
-  if(
-
-    excludes.includes(
-      eventDate
-    )
-
-  ){
-
-    info.el.style.display =
-      'none';
-
-  }
-
 }

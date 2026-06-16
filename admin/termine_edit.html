@@ -48,16 +48,6 @@ title: Termin bearbeiten
          placeholder="Titel">
 </label>
 
-<label class="admin-field admin-field--inline">
-
-  <input id="recurring"
-         type="checkbox"
-         class="checkbox">
-
-  Wiederkehrender Termin
-
-</label>
-
 <div id="singleFields">
 
   <div class="row">
@@ -80,90 +70,6 @@ title: Termin bearbeiten
     Enddatum leer lassen für eintägige Termine.
     Für Mehrtages-Termine z.&nbsp;B. 23.05.–28.05. Enddatum setzen.
   </p>
-
-</div>
-
-<div id="recurringFields"
-     class="hidden">
-
-  <div class="row">
-
-    <label class="admin-field">
-      Wochentag
-      <select id="daysOfWeek">
-
-        <option value="">
-          Wochentag
-        </option>
-
-        <option value="1">
-          Montag
-        </option>
-
-        <option value="2">
-          Dienstag
-        </option>
-
-        <option value="3">
-          Mittwoch
-        </option>
-
-        <option value="4">
-          Donnerstag
-        </option>
-
-        <option value="5">
-          Freitag
-        </option>
-
-        <option value="6">
-          Samstag
-        </option>
-
-        <option value="0">
-          Sonntag
-        </option>
-
-      </select>
-    </label>
-
-  </div>
-
-  <div class="row">
-
-    <label class="admin-field">
-      Serie ab
-      <input id="startRecur"
-             type="date">
-    </label>
-
-    <label class="admin-field">
-      Serie bis
-      <input id="endRecur"
-             type="date">
-    </label>
-
-  </div>
-
-  <label class="admin-field">
-    Mehrtages-Dauer (Tage)
-    <input id="durationDays"
-           type="number"
-           min="1"
-           max="31"
-           placeholder="1">
-  </label>
-
-  <p class="admin-hint">
-    Optional: Anzahl aufeinanderfolgender Tage pro Termin
-    (z.&nbsp;B. 3 = Starttag plus 2 weitere Tage).
-  </p>
-
-  <label class="admin-field admin-field--spaced">
-    Ausnahmen (JSON)
-    <textarea id="exclude"
-              placeholder='["2026-05-26"]'></textarea>
-  </label>
 
 </div>
 

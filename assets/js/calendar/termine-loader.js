@@ -150,19 +150,3 @@ window.addEventListener(
 
   }
 );
-
-window.addEventListener(
-  'admin-preview-changed',
-  () => {
-
-    if (
-      typeof syncContentViewerMember
-        === 'function'
-    ) {
-      syncContentViewerMember();
-    }
-
-    void refreshTermineAfterMemberLogin();
-
-  }
-);

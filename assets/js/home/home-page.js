@@ -69,22 +69,6 @@ async function initHomePage() {
 
 }
 
-window.addEventListener(
-  'admin-preview-changed',
-  () => {
-
-    if (
-      typeof syncContentViewerMember
-        === 'function'
-    ) {
-      syncContentViewerMember();
-    }
-
-    void loadHomeTeasers();
-
-  }
-);
-
 document.addEventListener(
   'DOMContentLoaded',
   initHomePage

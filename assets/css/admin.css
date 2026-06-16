@@ -870,39 +870,6 @@ h3 {
   margin: 0;
 }
 
-.gallery-images-section {
-  margin-top: 30px;
-}
-
-.gallery-images-section h2 {
-  margin: 0 0 15px;
-  font-size: 20px;
-}
-
-.gallery-images {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 12px;
-}
-
-.gallery-image-item {
-  background: #222;
-  border-radius: 10px;
-  overflow: hidden;
-}
-
-.gallery-image-item img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 1;
-  object-fit: cover;
-}
-
-.gallery-image-item button {
-  width: 100%;
-  margin: 0;
-  border-radius: 0;
-}
 
 .admin-draft-card:hover {
   background: rgba(46, 139, 87, 0.35);

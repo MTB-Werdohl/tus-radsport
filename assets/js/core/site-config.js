@@ -14,8 +14,6 @@ window.siteConfig = {
 
   tables: {
     termine: 'Termine',
-    galleries: 'galleries',
-    galleryImages: 'gallery_images',
     siteState: 'site_state',
     members: 'members',
     boardDocuments: 'board_documents',

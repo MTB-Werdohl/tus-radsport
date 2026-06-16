@@ -125,27 +125,7 @@ function getSingleTerminEndDay(event) {
 
 }
 
-function getRecurringDurationDays(event) {
-
-  const value =
-    parseInt(event?.durationDays, 10);
-
-  if (
-    Number.isFinite(value)
-    && value > 1
-  ) {
-    return value;
-  }
-
-  return 1;
-
-}
-
 function isMultiDaySingleTermin(event) {
-
-  if (event?.recurring) {
-    return false;
-  }
 
   const start =
     getSingleTerminStartDay(event);
@@ -158,13 +138,6 @@ function isMultiDaySingleTermin(event) {
   }
 
   return end.getTime() > start.getTime();
-
-}
-
-function isMultiDayRecurringTermin(event) {
-
-  return !!event?.recurring
-    && getRecurringDurationDays(event) > 1;
 
 }
 
@@ -206,10 +179,6 @@ function getTerminTimeLabel(event, date) {
 
     return String(event.startTime).slice(0, 5);
 
-  }
-
-  if (event?.recurring) {
-    return '';
   }
 
   if (!event?.date) {
@@ -262,26 +231,6 @@ function formatTerminDateLabel(event) {
     return '';
   }
 
-  if (event.recurring) {
-
-    const weekday =
-      TERMIN_WEEKDAYS[
-        event.daysOfWeek?.[0]
-      ] || 'Termin';
-
-    const duration =
-      getRecurringDurationDays(event);
-
-    if (duration > 1) {
-      return (
-        `Jeden ${weekday} · ${duration} Tage`
-      );
-    }
-
-    return `Jeden ${weekday}`;
-
-  }
-
   const start =
     getSingleTerminStartDay(event);
 
@@ -302,10 +251,6 @@ function formatTerminDateLabel(event) {
 
 function getTerminDisplayTime(event) {
 
-  if (event?.recurring) {
-    return getTerminTimeLabel(event);
-  }
-
   const start =
     getSingleTerminStartDay(event);
 
@@ -322,62 +267,7 @@ function getTerminDisplayTime(event) {
 
 function formatCardTerminDate(event) {
 
-  if (event?.generatedDate) {
-
-    const start =
-      startOfTerminDay(event.generatedDate);
-
-    const duration =
-      getRecurringDurationDays(event);
-
-    if (duration > 1) {
-
-      const end =
-        addTerminDays(
-          start,
-          duration - 1
-        );
-
-      const time =
-        getTerminTimeLabel(event);
-
-      return (
-        `${formatTerminDayRange(start, end)}`
-        + (time ? ` · ${time} Uhr` : '')
-      );
-
-    }
-
-    const time =
-      getTerminTimeLabel(event, start);
-
-    return (
-      `${formatTerminWeekdayDate(start)}`
-      + (time ? ` · ${time} Uhr` : '')
-    );
-
-  }
-
   return formatTerminSchedule(event);
-
-}
-
-function getRecurringOccurrenceEndDay(
-  startDay,
-  event
-) {
-
-  const duration =
-    getRecurringDurationDays(event);
-
-  if (duration <= 1) {
-    return startDay;
-  }
-
-  return addTerminDays(
-    startDay,
-    duration - 1
-  );
 
 }
 
@@ -409,25 +299,12 @@ function singleTerminOverlapsRange(
 
 function getTerminSortDate(event) {
 
-  if (event?.generatedDate) {
-    return new Date(event.generatedDate);
-  }
-
   return getSingleTerminStartDay(event)
     || new Date(0);
 
 }
 
 function getTerminVisibilityEndDay(event) {
-
-  if (event?.generatedDate) {
-
-    return getRecurringOccurrenceEndDay(
-      startOfTerminDay(event.generatedDate),
-      event
-    );
-
-  }
 
   return getSingleTerminEndDay(event);
 
@@ -439,26 +316,6 @@ function isTerminStillUpcoming(termin) {
     new Date();
 
   today.setHours(0, 0, 0, 0);
-
-  if (termin?.recurring) {
-
-    const recurringEnd =
-      termin.endRecur
-        ? parseTerminDateOnly(
-          termin.endRecur
-        )
-        : null;
-
-    if (
-      recurringEnd
-      && recurringEnd < today
-    ) {
-      return false;
-    }
-
-    return true;
-
-  }
 
   const endDay =
     getTerminVisibilityEndDay(termin);
@@ -481,10 +338,6 @@ function toFullCalendarExclusiveEnd(endDay) {
 }
 
 function formatAdminTerminMeta(event) {
-
-  if (event?.recurring) {
-    return `🔁 ${formatTerminSchedule(event)}`;
-  }
 
   if (!event?.date) {
     return '📅 Ohne Datum';
