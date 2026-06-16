@@ -837,19 +837,9 @@ function renderMemberEmailPanelShell() {
 
   <h2>E-Mail senden</h2>
 
-  <p class="member-content-lead">
-    Von info@mtb-werdohl.de —
-    nur an Mitglieder mit Kontakt-Einwilligung
-  </p>
-
   <div class="member-email-compose">
 
     <form id="member-email-form">
-
-      <p class="member-email-from">
-        Absender:
-        <strong>info@mtb-werdohl.de</strong>
-      </p>
 
       <fieldset class="member-email-audience">
 
@@ -909,18 +899,9 @@ function renderMemberEmailPanelShell() {
         class="member-email-panel"
         hidden>
 
-        <label for="member-email-event-id">
-          Termin (nur mit Anmeldung/Abstimmung)
-        </label>
-
-        <p class="member-email-hint">
-          Es werden Mitglieder mit Antwort
-          <strong>Ja</strong> oder <strong>Vielleicht</strong>,
-          Einwilligung Kontakt und hinterlegter E-Mail-Adresse berücksichtigt.
-        </p>
-
         <select
           id="member-email-event-id"
+          aria-label="Termin"
           disabled>
 
           <option value="">
@@ -939,15 +920,7 @@ function renderMemberEmailPanelShell() {
       <div
         id="member-email-audience-all"
         class="member-email-panel"
-        hidden>
-
-        <p class="member-email-hint">
-          Es erhalten alle Mitglieder mit
-          <strong>Einwilligung Kontakt = Ja</strong>
-          und hinterlegter E-Mail-Adresse.
-        </p>
-
-      </div>
+        hidden></div>
 
       <p
         id="member-email-recipient-preview"

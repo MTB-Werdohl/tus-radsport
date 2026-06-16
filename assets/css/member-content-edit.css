@@ -741,8 +741,7 @@ body.member-feedback-modal-open {
 }
 
 .member-profile-tab-panel .member-email-compose input,
-.member-profile-tab-panel .member-email-compose textarea,
-.member-profile-tab-panel .member-email-compose select {
+.member-profile-tab-panel .member-email-compose textarea {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid rgba(255, 255, 255, 0.22);
@@ -750,6 +749,21 @@ body.member-feedback-modal-open {
   font: inherit;
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
+}
+
+.member-profile-tab-panel .member-email-compose select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  font: inherit;
+  background: #fff;
+  color: #111;
+}
+
+.member-profile-tab-panel .member-email-compose select option {
+  color: #111;
+  background: #fff;
 }
 
 .member-profile-tab-panel .member-email-compose button {
@@ -762,10 +776,6 @@ body.member-feedback-modal-open {
   font: inherit;
   font-weight: 600;
   cursor: pointer;
-}
-
-.member-profile-tab-panel .member-email-from {
-  margin: 0;
 }
 
 .member-profile-tab-panel .member-email-audience {
