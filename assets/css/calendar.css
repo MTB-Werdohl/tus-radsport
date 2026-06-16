@@ -21,6 +21,42 @@
 
 }
 
+.kalender-month-divider {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin: 4px 0 0;
+
+  color: rgba(255, 255, 255, 0.92);
+
+}
+
+.kalender-month-divider__label {
+
+  font-weight: 700;
+
+  font-size: 1.05rem;
+
+  white-space: nowrap;
+
+}
+
+.kalender-month-divider__line {
+
+  flex: 1;
+
+  border-bottom: 1px dashed
+
+    rgba(255, 255, 255, 0.45);
+
+  min-width: 2rem;
+
+}
+
 .calendar-card {
 
   color: white;

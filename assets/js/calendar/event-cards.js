@@ -230,6 +230,89 @@ function renderEmptyTerminCards(
 
 }
 
+function getTerminMonthGroupKey(
+  event
+) {
+
+  const sortDate =
+    getTerminSortDate(event);
+
+  if (
+    !sortDate
+    || Number.isNaN(
+      sortDate.getTime()
+    )
+  ) {
+    return '';
+  }
+
+  return `${sortDate.getFullYear()}-${sortDate.getMonth()}`;
+
+}
+
+function formatTerminMonthDividerLabel(
+  event
+) {
+
+  const sortDate =
+    getTerminSortDate(event);
+
+  if (
+    !sortDate
+    || Number.isNaN(
+      sortDate.getTime()
+    )
+  ) {
+    return '';
+  }
+
+  const label =
+    sortDate.toLocaleDateString(
+      'de-DE',
+      { month: 'long' }
+    );
+
+  return label.charAt(0).toUpperCase()
+    + label.slice(1);
+
+}
+
+function renderTerminMonthDivider(
+  wrapper,
+  label
+) {
+
+  const divider =
+    document.createElement('div');
+
+  divider.className =
+    'kalender-month-divider';
+
+  const labelEl =
+    document.createElement('span');
+
+  labelEl.className =
+    'kalender-month-divider__label';
+
+  labelEl.textContent = label;
+
+  const line =
+    document.createElement('span');
+
+  line.className =
+    'kalender-month-divider__line';
+
+  line.setAttribute(
+    'aria-hidden',
+    'true'
+  );
+
+  divider.appendChild(labelEl);
+  divider.appendChild(line);
+  wrapper.appendChild(divider);
+
+}
+
 function renderTerminCard(
   wrapper,
   event
@@ -358,7 +441,28 @@ async function loadAllUpcomingTerminCards(
 
   }
 
+  let lastMonthKey = null;
+
   toRender.forEach((event) => {
+
+    const monthKey =
+      getTerminMonthGroupKey(event);
+
+    if (
+      monthKey
+      && monthKey !== lastMonthKey
+    ) {
+
+      renderTerminMonthDivider(
+        wrapper,
+        formatTerminMonthDividerLabel(
+          event
+        )
+      );
+
+      lastMonthKey = monthKey;
+
+    }
 
     renderTerminCard(
       wrapper,
