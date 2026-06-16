@@ -329,14 +329,9 @@ function resolveMemberProfileActiveTab(
   activeTab
 ) {
 
-  if (activeTab === 'content') {
-    return 'termin';
-  }
-
   const allowed =
     new Set([
       'profil',
-      'termin',
       'verwaltung',
       'email',
       'abstimmungen'
@@ -364,10 +359,6 @@ function renderMemberProfileTabsNav(
       label: 'Profil'
     },
     {
-      id: 'termin',
-      label: 'Termin'
-    },
-    {
       id: 'abstimmungen',
       label: 'Teilnahmen'
     }
@@ -378,12 +369,12 @@ function renderMemberProfileTabsNav(
     && isVorstand(member)
   ) {
 
-    tabs.splice(2, 0, {
+    tabs.splice(1, 0, {
       id: 'verwaltung',
       label: 'Verwaltung'
     });
 
-    tabs.splice(3, 0, {
+    tabs.splice(2, 0, {
       id: 'email',
       label: 'E-Mail'
     });
@@ -690,22 +681,6 @@ ${renderMemberProfileTabsNav(
   ${activeTab !== 'profil' ? 'hidden' : ''}>
 
   ${renderClubMemberProfilContent(member)}
-
-</div>
-
-<div
-  id="member-profile-tab-termin"
-  class="member-profile-tab-panel"
-  role="tabpanel"
-  aria-labelledby="member-profile-tab-btn-termin"
-  data-profile-panel="termin"
-  ${activeTab !== 'termin' ? 'hidden' : ''}>
-
-  ${renderMemberTerminEditPanelShell({
-    isVorstand:
-      typeof isVorstand === 'function'
-      && isVorstand(member)
-  })}
 
 </div>
 

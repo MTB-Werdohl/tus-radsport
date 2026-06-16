@@ -258,6 +258,17 @@ function buildMemberTerminEditorUrl(
 
 }
 
+function canShowKalenderNewTerminButton(
+  viewer
+) {
+
+  return (
+    typeof isClubMember === 'function'
+    && isClubMember(viewer)
+  );
+
+}
+
 function shouldUseMemberTerminEditorNavigation() {
 
   return window.matchMedia(
@@ -648,20 +659,27 @@ async function loadAllUpcomingTerminCards(
       ? visibleCards.slice(0, limit)
       : visibleCards;
 
+  const viewer =
+    typeof resolveContentListingViewer
+      === 'function'
+      ? resolveContentListingViewer()
+      : null;
+
   const vorstandActions =
     options.vorstandActions === true
     || (
       options.vorstandActions !== false
       && typeof canShowEventVorstandTools
         === 'function'
-      && canShowEventVorstandTools(
-        resolveContentListingViewer()
-      )
+      && canShowEventVorstandTools(viewer)
     );
+
+  const showNewTerminButton =
+    canShowKalenderNewTerminButton(viewer);
 
   if (!toRender.length) {
 
-    if (vorstandActions) {
+    if (showNewTerminButton) {
 
       renderKalenderNewTerminButton(
         wrapper
@@ -677,8 +695,7 @@ async function loadAllUpcomingTerminCards(
 
   const renderOptions = {
     vorstandActions,
-    showNewTerminButton:
-      vorstandActions
+    showNewTerminButton
   };
 
   renderTerminListWithDividers(

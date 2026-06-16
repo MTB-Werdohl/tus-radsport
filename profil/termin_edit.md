@@ -17,10 +17,10 @@ hide_title: true
     params.get('id');
 
   let url =
-    '/profil/?tab=termin';
+    '/termin-bearbeiten/';
 
   if (id) {
-    url += `&id=${encodeURIComponent(id)}`;
+    url += `?id=${encodeURIComponent(id)}`;
   }
 
   window.location.replace(url);
@@ -29,6 +29,6 @@ hide_title: true
 </script>
 
 <p>
-  Weiterleitung zum Tab Termin …
-  <a href="/profil/?tab=termin">Klicken, falls nichts passiert</a>.
+  Weiterleitung zum Termin-Editor …
+  <a href="/termin-bearbeiten/">Klicken, falls nichts passiert</a>.
 </p>

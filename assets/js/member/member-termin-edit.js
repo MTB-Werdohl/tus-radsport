@@ -30,26 +30,6 @@ function setMemberTerminEditId(
 
 }
 
-function getMemberTerminProfileUrl(
-  id
-) {
-
-  const params =
-    new URLSearchParams({
-      tab: 'termin'
-    });
-
-  if (id) {
-    params.set(
-      'id',
-      String(id)
-    );
-  }
-
-  return `/profil/?${params.toString()}`;
-
-}
-
 function getMemberTerminEditorUrl(
   options = {}
 ) {
@@ -161,21 +141,6 @@ function clearMemberTerminEditUrlId() {
     return;
 
   }
-
-  if (!params.has('tab')) {
-    params.set('tab', 'termin');
-  }
-
-  const query =
-    params.toString();
-
-  window.history.replaceState(
-    null,
-    '',
-    query
-      ? `/profil/?${query}`
-      : '/profil/?tab=termin'
-  );
 
 }
 
@@ -436,7 +401,7 @@ async function memberTerminAssertEditable(
     window.location.href =
       isMemberTerminEditorPage()
         ? '/termin-bearbeiten/'
-        : getMemberTerminProfileUrl();
+        : getMemberTerminEditorUrl();
 
     return false;
 
@@ -451,7 +416,7 @@ async function memberTerminAssertEditable(
     window.location.href =
       isMemberTerminEditorPage()
         ? '/termin-bearbeiten/'
-        : getMemberTerminProfileUrl();
+        : getMemberTerminEditorUrl();
 
     return false;
 
@@ -472,7 +437,7 @@ async function memberTerminAssertEditable(
     window.location.href =
       isMemberTerminEditorPage()
         ? '/termin-bearbeiten/'
-        : getMemberTerminProfileUrl();
+        : getMemberTerminEditorUrl();
 
     return false;
 

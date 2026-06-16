@@ -328,20 +328,6 @@ function switchMemberProfileTab(
     void loadMemberVotesIfNeeded();
   }
 
-  if (tabId === 'termin') {
-
-    const terminId =
-      new URLSearchParams(
-        window.location.search
-      ).get('id');
-
-    void initMemberTerminEditTab(
-      getCurrentMember(),
-      { terminId }
-    );
-
-  }
-
   if (tabId === 'verwaltung') {
 
     if (
@@ -401,20 +387,6 @@ async function refreshMemberProfileView(
 
     if (profileActiveTab === 'abstimmungen') {
       void loadMemberVotesIfNeeded(true);
-    }
-
-    if (profileActiveTab === 'termin') {
-
-      const terminId =
-        new URLSearchParams(
-          window.location.search
-        ).get('id');
-
-      void initMemberTerminEditTab(
-        member,
-        { terminId }
-      );
-
     }
 
     if (
@@ -774,8 +746,41 @@ async function loadMemberProfilePage() {
         urlTab === 'termin'
         || urlTab === 'content'
       ) {
-        profileActiveTab = 'termin';
-      } else if (urlTab) {
+
+        const legacyParams =
+          new URLSearchParams(
+            window.location.search
+          );
+
+        legacyParams.delete('tab');
+
+        const legacyId =
+          legacyParams.get('id');
+
+        const editorParams =
+          new URLSearchParams();
+
+        if (legacyId) {
+          editorParams.set(
+            'id',
+            legacyId
+          );
+        }
+
+        const editorQuery =
+          editorParams.toString();
+
+        window.location.replace(
+          editorQuery
+            ? `/termin-bearbeiten/?${editorQuery}`
+            : '/termin-bearbeiten/'
+        );
+
+        return;
+
+      }
+
+      if (urlTab) {
         profileActiveTab = urlTab;
       }
 
@@ -810,20 +815,6 @@ async function loadMemberProfilePage() {
 
       if (profileActiveTab === 'abstimmungen') {
         void loadMemberVotesIfNeeded(true);
-      }
-
-      if (profileActiveTab === 'termin') {
-
-        const terminId =
-          new URLSearchParams(
-            window.location.search
-          ).get('id');
-
-        void initMemberTerminEditTab(
-          member,
-          { terminId }
-        );
-
       }
 
       if (
@@ -871,19 +862,6 @@ async function loadMemberProfilePage() {
 }
 
 function reloadAfterVorstandContentSave() {
-
-  const path =
-    window.location.pathname
-      .replace(/\/$/, '');
-
-  if (path === '/profil') {
-
-    window.location.href =
-      '/profil/?tab=termin';
-
-    return;
-
-  }
 
   window.location.reload();
 
