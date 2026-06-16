@@ -19,8 +19,11 @@ function canViewerAccessVisibility(
   ) {
 
     return (
-      typeof isClubMember === 'function'
-      && isClubMember(member)
+      viewerIncludesDrafts(member)
+      || (
+        typeof isClubMember === 'function'
+        && isClubMember(member)
+      )
     );
 
   }
@@ -32,6 +35,40 @@ function canViewerAccessVisibility(
   }
 
   return true;
+
+}
+
+function buildMembersOnlyAccessTexts(
+  member
+) {
+
+  const loggedIn =
+    !!member?.id;
+
+  const clubMember =
+    typeof isClubMember === 'function'
+    && isClubMember(member);
+
+  let hint =
+    'Bitte melde dich als Vereinsmitglied an — Login oben rechts unter „Mitglieder“.';
+
+  if (
+    loggedIn
+    && !clubMember
+  ) {
+
+    hint =
+      'Dein Konto hat keinen Zugriff auf interne Inhalte. Vereinsmitglieder melden sich mit der hinterlegten Vereins-E-Mail an.';
+
+  }
+
+  return {
+    title:
+      '🔒 Nur für Mitglieder',
+    message:
+      'Du bist hier richtig, aber aufgrund fehlender Berechtigung wird der Inhalt nicht angezeigt.',
+    hint
+  };
 
 }
 
@@ -75,53 +112,41 @@ function getContentAccessTexts(
 
   const kindLabel = 'Termin';
 
-  if (
-    options.fallback
-    || normalized === CONTENT_VISIBILITY.members
-  ) {
-
-    const loggedIn =
-      !!member?.id;
-
-    const clubMember =
-      typeof isClubMember === 'function'
-      && isClubMember(member);
-
-    let hint =
-      'Bitte melde dich als Vereinsmitglied an — Login oben rechts unter „Mitglieder“.';
-
-    if (
-      loggedIn
-      && !clubMember
-    ) {
-
-      hint =
-        'Dein Konto hat keinen Zugriff auf interne Inhalte. Vereinsmitglieder melden sich mit der hinterlegten Vereins-E-Mail an.';
-
-    }
-
-    return {
-      title:
-        '🔒 Nur für Mitglieder',
-      message:
-        'Du bist hier richtig, aber aufgrund fehlender Berechtigung wird der Inhalt nicht angezeigt.',
-      hint
-    };
-
-  }
+  const clubMember =
+    typeof isClubMember === 'function'
+    && isClubMember(member);
 
   if (
     normalized === CONTENT_VISIBILITY.draft
   ) {
 
-    return {
-      title:
-        '📝 Noch nicht veröffentlicht',
-      message:
-        `Dieser ${kindLabel} ist noch nicht veröffentlicht.`,
-      hint:
-        'Der Inhalt ist derzeit nur für den Vorstand sichtbar.'
-    };
+    if (clubMember) {
+
+      return {
+        title:
+          '📝 Noch nicht freigegeben',
+        message:
+          'Bitte habe Geduld auf die Freigabe.',
+        hint:
+          `Der ${kindLabel} wird vom Vorstand geprüft. Sobald er freigegeben ist, siehst du hier alle Details.`
+      };
+
+    }
+
+    return buildMembersOnlyAccessTexts(
+      member
+    );
+
+  }
+
+  if (
+    normalized === CONTENT_VISIBILITY.members
+    || options.fallback
+  ) {
+
+    return buildMembersOnlyAccessTexts(
+      member
+    );
 
   }
 
@@ -300,6 +325,15 @@ async function handleContentUnavailable(
       return;
 
     }
+
+    renderContentNotFound({
+      containerId,
+      kind,
+      backUrl,
+      backLabel
+    });
+
+    return;
 
   }
 
