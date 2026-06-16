@@ -6,7 +6,9 @@ const eventSources = [
     try {
 
       const termine =
-        await fetchTermine();
+        filterTermineForPublicListing(
+          await fetchTermine()
+        );
 
       successCallback(
         termineToCalendarEvents(

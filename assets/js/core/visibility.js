@@ -121,6 +121,58 @@ function viewerIncludesDrafts(member) {
 
 }
 
+function resolveContentListingViewer() {
+
+  if (
+    typeof getViewerMember === 'function'
+  ) {
+
+    const current =
+      typeof getCurrentMember === 'function'
+        ? getCurrentMember()
+        : null;
+
+    const viewer =
+      getViewerMember(current);
+
+    if (viewer) {
+      return viewer;
+    }
+
+  }
+
+  return (
+    window.contentViewerMember
+    || (
+      typeof getCurrentMember === 'function'
+        ? getCurrentMember()
+        : null
+    )
+  );
+
+}
+
+function filterTermineForPublicListing(
+  termine,
+  member
+) {
+
+  const viewer =
+    member
+    ?? resolveContentListingViewer();
+
+  if (viewerIncludesDrafts(viewer)) {
+    return termine;
+  }
+
+  return termine.filter((item) => (
+    normalizeContentVisibility(
+      item.sichtbarkeit
+    ) !== CONTENT_VISIBILITY.draft
+  ));
+
+}
+
 function canAccessNewsSection() {
 
   return false;

@@ -8,7 +8,7 @@ function renderMemberTerminEditPanelShell(
   const lead =
     isVorstandUser
       ? 'Termin anlegen oder bearbeiten.'
-      : 'Entwurf (nur Vorstand) — wird nach Prüfung veröffentlicht.';
+      : 'Entwurf, Termin wird nach Prüfung veröffentlicht.';
 
   const sichtbarkeitField =
     isVorstandUser
@@ -78,11 +78,6 @@ function renderMemberTerminEditPanelShell(
       </label>
 
     </div>
-
-    <p class="member-edit-hint">
-      Enddatum leer lassen für eintägige Termine.
-      Für Mehrtages-Termine z.&nbsp;B. Fr–So Enddatum setzen.
-    </p>
 
     <label class="member-edit-field member-edit-field--required">
       Ort

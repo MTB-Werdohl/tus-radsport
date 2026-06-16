@@ -6,7 +6,9 @@ function buildTerminCardsForRange(
 
   const cards = [];
 
-  data.forEach(item => {
+  filterTermineForPublicListing(
+    data
+  ).forEach(item => {
 
     if (
       singleTerminOverlapsRange(
@@ -269,14 +271,44 @@ function formatTerminMonthDividerLabel(
   const label =
     sortDate.toLocaleDateString(
       'de-DE',
-      {
-        month: 'long',
-        year: 'numeric'
-      }
+      { month: 'long' }
     );
 
   return label.charAt(0).toUpperCase()
     + label.slice(1);
+
+}
+
+function formatTerminYearDividerLabel(
+  year
+) {
+
+  return String(year);
+
+}
+
+function renderTerminYearDivider(
+  wrapper,
+  year
+) {
+
+  const divider =
+    document.createElement('div');
+
+  divider.className =
+    'kalender-year-divider';
+
+  const labelEl =
+    document.createElement('span');
+
+  labelEl.className =
+    'kalender-year-divider__label';
+
+  labelEl.textContent =
+    formatTerminYearDividerLabel(year);
+
+  divider.appendChild(labelEl);
+  wrapper.appendChild(divider);
 
 }
 
@@ -301,6 +333,68 @@ function renderTerminMonthDivider(
 
   divider.appendChild(labelEl);
   wrapper.appendChild(divider);
+
+}
+
+function renderTerminListWithDividers(
+  wrapper,
+  events
+) {
+
+  let lastYear = null;
+  let lastMonthKey = null;
+
+  events.forEach((event) => {
+
+    const sortDate =
+      getTerminSortDate(event);
+
+    const monthKey =
+      getTerminMonthGroupKey(event);
+
+    const year =
+      sortDate
+      && !Number.isNaN(sortDate.getTime())
+        ? sortDate.getFullYear()
+        : null;
+
+    if (
+      year != null
+      && year !== lastYear
+    ) {
+
+      renderTerminYearDivider(
+        wrapper,
+        year
+      );
+
+      lastYear = year;
+      lastMonthKey = null;
+
+    }
+
+    if (
+      monthKey
+      && monthKey !== lastMonthKey
+    ) {
+
+      renderTerminMonthDivider(
+        wrapper,
+        formatTerminMonthDividerLabel(
+          event
+        )
+      );
+
+      lastMonthKey = monthKey;
+
+    }
+
+    renderTerminCard(
+      wrapper,
+      event
+    );
+
+  });
 
 }
 
@@ -371,10 +465,12 @@ function getAllUpcomingTerminCards(
 ) {
 
   return filterUpcomingTerminCards(
-    [...data].sort(
-      (left, right) =>
-        getTerminSortDate(left)
-        - getTerminSortDate(right)
+    filterTermineForPublicListing(
+      [...data].sort(
+        (left, right) =>
+          getTerminSortDate(left)
+          - getTerminSortDate(right)
+      )
     )
   );
 
@@ -432,35 +528,10 @@ async function loadAllUpcomingTerminCards(
 
   }
 
-  let lastMonthKey = null;
-
-  toRender.forEach((event) => {
-
-    const monthKey =
-      getTerminMonthGroupKey(event);
-
-    if (
-      monthKey
-      && monthKey !== lastMonthKey
-    ) {
-
-      renderTerminMonthDivider(
-        wrapper,
-        formatTerminMonthDividerLabel(
-          event
-        )
-      );
-
-      lastMonthKey = monthKey;
-
-    }
-
-    renderTerminCard(
-      wrapper,
-      event
-    );
-
-  });
+  renderTerminListWithDividers(
+    wrapper,
+    toRender
+  );
 
 }
 
