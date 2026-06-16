@@ -28,7 +28,7 @@ title: MTB Werdohl Admin
         </h1>
 
         <p>
-          Content Management System
+          Administration
         </p>
 
       </div>
@@ -39,112 +39,11 @@ title: MTB Werdohl Admin
 
     <div class="dashboard-sections">
 
-      <details
-        class="dashboard-section"
-        data-section="content"
-        open>
+      <section class="dashboard-section">
 
-        <summary class="dashboard-section-title">
-          Content
-        </summary>
-
-        <div class="dashboard-grid">
-
-          <a href="/admin/termine.html"
-             class="dashboard-card">
-
-            <span
-              class="dashboard-icon"
-              aria-hidden="true">
-
-              📅
-
-            </span>
-
-            <span class="dashboard-card-copy">
-
-              <strong class="dashboard-card-title">
-                Termine
-              </strong>
-
-              <span class="dashboard-card-desc">
-                Touren, Ausfahrten, Events verwalten
-              </span>
-
-            </span>
-
-          </a>
-
-          <a href="/admin/medien.html"
-             class="dashboard-card">
-
-            <span
-              class="dashboard-icon"
-              aria-hidden="true">
-
-              🗂️
-
-            </span>
-
-            <span class="dashboard-card-copy">
-
-              <strong class="dashboard-card-title">
-                Medien
-              </strong>
-
-              <span class="dashboard-card-desc">
-                Explorer mit Ordnerbaum, Drag &amp; Drop
-              </span>
-
-            </span>
-
-          </a>
-
-          <a href="/admin/entwuerfe.html"
-             class="dashboard-card"
-             id="dashboard-drafts-card">
-
-            <span
-              class="dashboard-icon"
-              aria-hidden="true">
-
-              📝
-
-            </span>
-
-            <span class="dashboard-card-copy">
-
-              <strong class="dashboard-card-title">
-                Entwürfe
-              </strong>
-
-              <span class="dashboard-card-desc">
-                Offene Entwürfe (Termine)
-              </span>
-
-            </span>
-
-            <span
-              class="dashboard-card-meta"
-              id="dashboard-drafts-meta">
-
-              …
-
-            </span>
-
-          </a>
-
-        </div>
-
-      </details>
-
-      <details
-        class="dashboard-section"
-        data-section="kommunikation">
-
-        <summary class="dashboard-section-title">
+        <h2 class="dashboard-section-title">
           Kommunikation
-        </summary>
+        </h2>
 
         <div class="dashboard-grid">
 
@@ -165,127 +64,19 @@ title: MTB Werdohl Admin
                 Website-Hinweise
               </strong>
 
-              <span class="dashboard-card-desc">
-                Banner, Saisonmodus, Landing-Hinweise, Overlay
-              </span>
-
-            </span>
-
-          </a>
-
-          <a href="/admin/email.html"
-             class="dashboard-card">
-
-            <span
-              class="dashboard-icon"
-              aria-hidden="true">
-
-              ✉️
-
-            </span>
-
-            <span class="dashboard-card-copy">
-
-              <strong class="dashboard-card-title">
-                E-Mail senden
-              </strong>
-
-              <span class="dashboard-card-desc">
-                Mitglieder mit Kontakt-Einwilligung anschreiben
-              </span>
-
-            </span>
-
-          </a>
-
-          <a href="/admin/email-log.html"
-             class="dashboard-card">
-
-            <span
-              class="dashboard-icon"
-              aria-hidden="true">
-
-              🧾
-
-            </span>
-
-            <span class="dashboard-card-copy">
-
-              <strong class="dashboard-card-title">
-                Versandprotokoll
-              </strong>
-
-              <span class="dashboard-card-desc">
-                Gesendete Vorstand-E-Mails nachvollziehen (18 Monate)
-              </span>
-
-            </span>
-
-          </a>
-
-          <a href="{{ site.webmail.url }}"
-             class="dashboard-card"
-             target="_blank"
-             rel="noopener noreferrer">
-
-            <span
-              class="dashboard-icon"
-              aria-hidden="true">
-
-              📥
-
-            </span>
-
-            <span class="dashboard-card-copy">
-
-              <strong class="dashboard-card-title">
-                Posteingang
-              </strong>
-
-              <span class="dashboard-card-desc">
-                {{ site.webmail.account }} — Checkdomain Webmail
-              </span>
-
-            </span>
-
-          </a>
-
-          <a href="/admin/feedback.html"
-             class="dashboard-card">
-
-            <span
-              class="dashboard-icon"
-              aria-hidden="true">
-
-              📋
-
-            </span>
-
-            <span class="dashboard-card-copy">
-
-              <strong class="dashboard-card-title">
-                Feedback
-              </strong>
-
-              <span class="dashboard-card-desc">
-                Rückmeldungen auswerten und exportieren
-              </span>
-
             </span>
 
           </a>
 
         </div>
 
-      </details>
+      </section>
 
-      <details
-        class="dashboard-section"
-        data-section="verwaltung">
+      <section class="dashboard-section">
 
-        <summary class="dashboard-section-title">
+        <h2 class="dashboard-section-title">
           Verwaltung
-        </summary>
+        </h2>
 
         <div class="dashboard-grid">
 
@@ -305,10 +96,6 @@ title: MTB Werdohl Admin
               <strong class="dashboard-card-title">
                 Mitglieder
               </strong>
-
-              <span class="dashboard-card-desc">
-                Anlegen, bearbeiten, Rollen verwalten
-              </span>
 
             </span>
 
@@ -330,10 +117,6 @@ title: MTB Werdohl Admin
               <strong class="dashboard-card-title">
                 Protokolle, Beschlüsse, Informationen
               </strong>
-
-              <span class="dashboard-card-desc">
-                Vorstandsunterlagen mit PDF-Anhängen
-              </span>
 
             </span>
 
@@ -358,17 +141,13 @@ title: MTB Werdohl Admin
                 Vorstandssitzung
               </strong>
 
-              <span class="dashboard-card-desc">
-                Videokonferenz per Jitsi
-              </span>
-
             </span>
 
           </a>
 
         </div>
 
-      </details>
+      </section>
 
     </div>
 
@@ -376,94 +155,8 @@ title: MTB Werdohl Admin
 
 </div>
 
-
-<script src="/admin/js/drafts.js?v={{ site.admin_js_version }}"></script>
-
 <script>
-
-const DASHBOARD_SECTIONS_KEY =
-  'adminDashboardSections';
-
-const DASHBOARD_SECTION_DEFAULTS = {
-  content: true,
-  kommunikation: false,
-  verwaltung: false
-};
-
-function initDashboardSections() {
-
-  let saved = {};
-
-  try {
-
-    saved = JSON.parse(
-      localStorage.getItem(
-        DASHBOARD_SECTIONS_KEY
-      ) || '{}'
-    );
-
-  } catch (error) {
-
-    saved = {};
-
-  }
-
-  document
-    .querySelectorAll(
-      '.dashboard-section[data-section]'
-    )
-    .forEach((section) => {
-
-      const key =
-        section.dataset.section;
-
-      const isOpen =
-        key in saved
-          ? saved[key]
-          : DASHBOARD_SECTION_DEFAULTS[key];
-
-      section.open = isOpen === true;
-
-      section.addEventListener(
-        'toggle',
-        saveDashboardSections
-      );
-
-    });
-
-}
-
-function saveDashboardSections() {
-
-  const state = {};
-
-  document
-    .querySelectorAll(
-      '.dashboard-section[data-section]'
-    )
-    .forEach((section) => {
-
-      state[section.dataset.section] =
-        section.open;
-
-    });
-
-  localStorage.setItem(
-    DASHBOARD_SECTIONS_KEY,
-    JSON.stringify(state)
-  );
-
-}
-
-function showAdminDashboard() {
-
-  initDashboardSections();
-  loadDraftDashboardCard();
-
-}
-
-requireAdminSession(showAdminDashboard);
-
+requireAdminSession();
 </script>
 
 </body>

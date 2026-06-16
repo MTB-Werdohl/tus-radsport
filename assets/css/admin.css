@@ -67,15 +67,8 @@ h3 {
 }
 
 #admin .admin-topbar,
-#admin #events,
-#admin #news,
 #admin #protocols,
 #admin #members,
-#admin #galleries,
-#admin #feedback-list,
-#admin .feedback-admin-list,
-#admin #drafts-list,
-#admin .admin-draft-preview,
 #admin .admin-pagination,
 #admin [id$="-pagination"],
 #admin .event-separator {
@@ -86,14 +79,8 @@ h3 {
   box-sizing: border-box;
 }
 
-#admin #events,
-#admin #news,
 #admin #protocols,
-#admin #members,
-#admin #galleries,
-#admin #feedback-list,
-#admin #drafts-list,
-#admin .feedback-admin-list {
+#admin #members {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -367,32 +354,10 @@ h3 {
 }
 
 .dashboard-section-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 18px 22px;
+  margin: 0;
+  padding: 18px 22px 0;
   font-size: 20px;
   font-weight: 700;
-  cursor: pointer;
-  list-style: none;
-  user-select: none;
-}
-
-.dashboard-section-title::-webkit-details-marker {
-  display: none;
-}
-
-.dashboard-section-title::after {
-  content: '▾';
-  font-size: 18px;
-  opacity: 0.7;
-  transition: transform 0.2s ease;
-}
-
-.dashboard-section:not([open])
-  .dashboard-section-title::after {
-  transform: rotate(-90deg);
 }
 
 .dashboard-section .dashboard-grid {
@@ -401,7 +366,7 @@ h3 {
   gap: 10px;
   max-width: 560px;
   width: 100%;
-  padding: 0 22px 18px;
+  padding: 14px 22px 18px;
   margin: 0;
   box-sizing: border-box;
 }
@@ -428,15 +393,6 @@ h3 {
   background: rgba(46, 139, 87, 0.95);
 }
 
-.dashboard-section .dashboard-card--drafts-open {
-  background: rgba(180, 34, 34, 0.88);
-  border-color: rgba(255, 160, 160, 0.35);
-}
-
-.dashboard-section .dashboard-card--drafts-open:hover {
-  background: rgba(200, 45, 45, 0.95);
-}
-
 .dashboard-section .dashboard-icon {
   flex-shrink: 0;
   width: 1.5rem;
@@ -456,29 +412,11 @@ h3 {
 }
 
 .dashboard-section .dashboard-card-title {
-  flex-shrink: 0;
+  flex: 1;
+  min-width: 0;
   font-size: 0.9375rem;
   font-weight: 700;
   line-height: 1.2;
-}
-
-.dashboard-section .dashboard-card-desc {
-  flex: 1;
-  min-width: 0;
-  font-size: 0.8125rem;
-  line-height: 1.2;
-  opacity: 0.82;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.dashboard-section .dashboard-card-meta {
-  flex-shrink: 0;
-  font-size: 0.75rem;
-  line-height: 1.2;
-  opacity: 0.85;
-  white-space: nowrap;
 }
 
 .page-header {
@@ -545,178 +483,6 @@ h3 {
   font-size: 14px;
   text-transform: uppercase;
   letter-spacing: 1px;
-}
-
-.admin-push,
-.admin-email {
-
-  max-width: 700px;
-
-}
-
-.admin-push form,
-.admin-email form {
-
-  display: flex;
-
-  flex-direction: column;
-
-  gap: 1rem;
-
-}
-
-.admin-push input,
-.admin-push textarea,
-.admin-email input,
-.admin-email textarea,
-.admin-email select {
-
-  width: 100%;
-
-  padding: 0.75rem;
-
-  border: 1px solid #ccc;
-
-  border-radius: 8px;
-
-  font: inherit;
-
-}
-
-.admin-push button,
-.admin-email button {
-
-  width: fit-content;
-
-  padding: 0.75rem 1.5rem;
-
-  border: none;
-
-  border-radius: 8px;
-
-  background: #ed1c24;
-
-  color: white;
-
-  font-weight: 600;
-
-  cursor: pointer;
-
-}
-
-#push-status,
-#email-status {
-
-  margin-top: 1rem;
-
-  font-weight: 600;
-
-}
-
-.admin-email-from {
-  margin: 0;
-}
-
-.admin-email-audience {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin: 0;
-}
-
-.admin-email-audience legend {
-  padding: 0 6px;
-  font-weight: 600;
-}
-
-.admin-email-radio {
-  display: block;
-  margin: 8px 0;
-  cursor: pointer;
-}
-
-.admin-email-radio input {
-  width: auto;
-  margin-right: 8px;
-}
-
-.admin-email-hint {
-  margin: 0;
-  font-size: 0.9375rem;
-  color: #555;
-  line-height: 1.45;
-}
-
-.admin-email-preview {
-  margin: 0;
-  padding: 12px 14px;
-  border-radius: 8px;
-  background: #f4f6f8;
-  font-weight: 600;
-}
-
-.admin-email-log-page {
-  max-width: 960px;
-}
-
-.admin-email-log-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.admin-email-log-entry {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.15);
-}
-
-.admin-email-log-summary {
-  display: grid;
-  gap: 4px;
-  padding: 14px 16px;
-  cursor: pointer;
-  list-style: none;
-}
-
-.admin-email-log-summary::-webkit-details-marker {
-  display: none;
-}
-
-.admin-email-log-meta {
-  margin: 0;
-  font-size: 0.875rem;
-  color: #bbb;
-}
-
-.admin-email-log-subject {
-  margin: 0;
-  font-weight: 600;
-}
-
-.admin-email-log-body {
-  margin: 0;
-  padding: 0 16px 16px;
-  white-space: pre-wrap;
-  word-break: break-word;
-  font-size: 0.9375rem;
-  line-height: 1.5;
-}
-
-.admin-email-log-recipients {
-  margin: 0 0 12px;
-  padding: 0 16px;
-  font-size: 0.875rem;
-}
-
-.admin-email-log-recipients ul {
-  margin: 8px 0 0;
-  padding-left: 20px;
-}
-
-.admin-email-log-recipient-failed {
-  color: #ffb4b4;
 }
 
 #admin .admin-feedback-section {
@@ -870,24 +636,6 @@ h3 {
   margin: 0;
 }
 
-
-.admin-draft-card:hover {
-  background: rgba(46, 139, 87, 0.35);
-}
-
-.admin-draft-card-link {
-  display: block;
-  flex: 1;
-  min-width: 0;
-  text-decoration: none;
-  color: inherit;
-  cursor: pointer;
-  transition: color 0.2s ease;
-}
-
-.admin-draft-card:hover .admin-draft-card-link {
-  color: #fff;
-}
 
 .admin-draft-preview-actions {
   display: flex;

@@ -54,28 +54,6 @@ function getContentDraftTypeLabel(type) {
 
 }
 
-function getContentDraftEditUrl(draft) {
-
-  return `/admin/termine_edit.html?id=${draft.id}`;
-
-}
-
-function getContentDraftPreviewUrl(draft) {
-
-  const params =
-    new URLSearchParams({
-      type: draft.type,
-      id: String(draft.id)
-    });
-
-  if (draft.slug) {
-    params.set('slug', draft.slug);
-  }
-
-  return `/admin/entwurf_vorschau.html?${params.toString()}`;
-
-}
-
 function formatContentDraftDate(value) {
 
   if (!value) {
