@@ -326,15 +326,6 @@ async function handleContentUnavailable(
 
     }
 
-    renderContentNotFound({
-      containerId,
-      kind,
-      backUrl,
-      backLabel
-    });
-
-    return;
-
   }
 
   if (

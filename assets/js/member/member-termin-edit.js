@@ -720,7 +720,12 @@ async function saveMemberTerminEdit(
   }
 
   const slug =
-    buildMemberContentSlug(title);
+    await resolveUniqueTerminSlug(
+      buildMemberContentSlug(title),
+      editId
+        ? parseInt(editId, 10)
+        : null
+    );
 
   let imageStoragePath =
     readMediaPickerHiddenPath(

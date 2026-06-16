@@ -1,3 +1,72 @@
+function getTerminSlugVisibilityRank(
+  value
+) {
+
+  const normalized =
+    normalizeContentVisibility(value);
+
+  if (
+    normalized
+    === CONTENT_VISIBILITY.public
+  ) {
+    return 0;
+  }
+
+  if (
+    normalized
+    === CONTENT_VISIBILITY.members
+  ) {
+    return 1;
+  }
+
+  if (
+    normalized
+    === CONTENT_VISIBILITY.draft
+  ) {
+    return 2;
+  }
+
+  return 3;
+
+}
+
+function pickBestTerminForSlug(
+  rows
+) {
+
+  if (!rows?.length) {
+    return null;
+  }
+
+  if (rows.length === 1) {
+    return rows[0];
+  }
+
+  return [...rows].sort(
+    (left, right) => {
+
+      const rankDiff =
+        getTerminSlugVisibilityRank(
+          left.sichtbarkeit
+        )
+        - getTerminSlugVisibilityRank(
+          right.sichtbarkeit
+        );
+
+      if (rankDiff !== 0) {
+        return rankDiff;
+      }
+
+      return (
+        (right.id || 0)
+        - (left.id || 0)
+      );
+
+    }
+  )[0];
+
+}
+
 async function getEvent(
   slug,
   member
@@ -22,7 +91,7 @@ async function getEvent(
   }
 
   const { data, error } =
-    await query.maybeSingle();
+    await query;
 
   if (error) {
 
@@ -32,6 +101,17 @@ async function getEvent(
 
   }
 
-  return enrichContentRowWithCreator(data);
+  const picked =
+    pickBestTerminForSlug(
+      data || []
+    );
+
+  if (!picked) {
+    return null;
+  }
+
+  return enrichContentRowWithCreator(
+    picked
+  );
 
 }

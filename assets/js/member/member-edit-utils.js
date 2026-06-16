@@ -18,6 +18,92 @@ function buildMemberContentSlug(
 
 }
 
+async function isTerminSlugTaken(
+  slug,
+  excludeId
+) {
+
+  if (!slug) {
+    return false;
+  }
+
+  let query =
+    window.supabaseClient
+      .from(window.siteConfig.tables.termine)
+      .select('id')
+      .eq('slug', slug);
+
+  if (excludeId) {
+
+    query =
+      query.neq(
+        'id',
+        excludeId
+      );
+
+  }
+
+  const { data, error } =
+    await query.limit(1);
+
+  if (error) {
+
+    console.error(error);
+
+    return false;
+
+  }
+
+  return (data || []).length > 0;
+
+}
+
+async function resolveUniqueTerminSlug(
+  baseSlug,
+  excludeId
+) {
+
+  let candidate =
+    baseSlug
+    || 'termin';
+
+  if (
+    !await isTerminSlugTaken(
+      candidate,
+      excludeId
+    )
+  ) {
+    return candidate;
+  }
+
+  let suffix = 2;
+
+  while (suffix < 1000) {
+
+    candidate =
+      `${baseSlug}-${suffix}`;
+
+    if (
+      !await isTerminSlugTaken(
+        candidate,
+        excludeId
+      )
+    ) {
+      return candidate;
+    }
+
+    suffix += 1;
+
+  }
+
+  if (excludeId) {
+    return `${baseSlug}-${excludeId}`;
+  }
+
+  return `${baseSlug}-${Date.now()}`;
+
+}
+
 function buildMemberNewsExcerpt(
   content,
   title

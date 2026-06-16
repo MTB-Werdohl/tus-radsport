@@ -679,12 +679,15 @@ async function saveEventFromVorstandModal() {
     || window.siteConfig.visibility.draft;
 
   const slug =
-    typeof buildMemberContentSlug === 'function'
-      ? buildMemberContentSlug(title)
-      : title
-        .trim()
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-');
+    await resolveUniqueTerminSlug(
+      typeof buildMemberContentSlug === 'function'
+        ? buildMemberContentSlug(title)
+        : title
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-'),
+      parseInt(editId, 10)
+    );
 
   const { data: existing } =
     await window.supabaseClient
