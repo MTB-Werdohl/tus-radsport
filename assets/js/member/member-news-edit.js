@@ -10,6 +10,22 @@ async function memberNewsAssertEditable(
   member
 ) {
 
+  if (
+    typeof isVorstand !== 'function'
+    || !isVorstand(member)
+  ) {
+
+    alert(
+      'Internes können nur vom Vorstand bearbeitet werden.'
+    );
+
+    window.location.href =
+      '/profil/?tab=content';
+
+    return false;
+
+  }
+
   if (!memberNewsEditId) {
     return true;
   }
@@ -36,16 +52,10 @@ async function memberNewsAssertEditable(
 
   }
 
-  const draft =
-    window.siteConfig.visibility.draft;
-
-  if (
-    data.created_by !== member.id
-    || data.sichtbarkeit !== draft
-  ) {
+  if (data.created_by !== member.id) {
 
     alert(
-      'Dieser Beitrag kann nicht mehr bearbeitet werden.'
+      'Dieser Beitrag kann nicht bearbeitet werden.'
     );
 
     window.location.href =
@@ -94,6 +104,28 @@ async function loadMemberNewsEdit() {
 
   document.getElementById('content').value =
     data.content || '';
+
+  const sichtbarkeitSelect =
+    document.getElementById('sichtbarkeit');
+
+  if (sichtbarkeitSelect) {
+
+    sichtbarkeitSelect.value =
+      (
+        data.sichtbarkeit
+        === window.siteConfig.visibility.public
+      )
+        ? window.siteConfig.visibility.members
+        : (
+          data.sichtbarkeit
+          || (
+            data.published
+              ? window.siteConfig.visibility.members
+              : window.siteConfig.visibility.draft
+          )
+        );
+
+  }
 
   if (data.image_storage_path) {
 
@@ -156,15 +188,32 @@ async function saveMemberNewsEdit(
   imageStoragePath =
     pickedImage.storagePath;
 
+  const sichtbarkeitRaw =
+    document
+      .getElementById('sichtbarkeit')
+      ?.value
+    || window.siteConfig.visibility.draft;
+
+  const sichtbarkeit =
+    sichtbarkeitRaw
+    === window.siteConfig.visibility.public
+      ? window.siteConfig.visibility.members
+      : sichtbarkeitRaw;
+
+  const published =
+    typeof publishedFromVisibility === 'function'
+      ? publishedFromVisibility(sichtbarkeit)
+      : sichtbarkeit
+        !== window.siteConfig.visibility.draft;
+
   const payload = {
 
     title,
     slug,
     excerpt,
     content,
-    published: false,
-    sichtbarkeit:
-      window.siteConfig.visibility.draft,
+    published,
+    sichtbarkeit,
     created_by: member.id,
     updated_at:
       new Date().toISOString()
@@ -250,12 +299,16 @@ async function initMemberNewsEditPage() {
 
   if (
     !member
-    || typeof isClubMember !== 'function'
-    || !isClubMember(member)
+    || typeof isVorstand !== 'function'
+    || !isVorstand(member)
   ) {
 
+    alert(
+      'Internes können nur vom Vorstand bearbeitet werden.'
+    );
+
     window.location.href =
-      '/profil/';
+      '/profil/?tab=content';
 
     return;
 

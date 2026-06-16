@@ -7,12 +7,6 @@ const MEDIA_STORAGE_ROOTS = [
   },
 
   {
-    id: 'recaps',
-    label: 'Rückblicke',
-    path: 'recaps'
-  },
-
-  {
     id: 'galleries',
     label: 'Galerien',
     path: 'galleries'
@@ -348,8 +342,7 @@ function isTopLevelManagedFolder(
   return [
     'shared',
     'galleries',
-    'protocols',
-    'recaps'
+    'protocols'
   ].includes(name);
 
 }
@@ -410,10 +403,6 @@ function inferMediaStorageRootId(
 
   if (path.startsWith('galleries/')) {
     return 'galleries';
-  }
-
-  if (path.startsWith('recaps/')) {
-    return 'recaps';
   }
 
   if (path.startsWith('shared/')) {

@@ -1,6 +1,6 @@
 # Medien-Storage — Architektur, Roadmap & Implementierungsplan
 
-**Status:** Phase 0–3 live + Phase-4-Grundlage + Rückblick-Storage (Phase 0 Erlebtes) — SQL [`supabase-media-storage-paths.sql`](supabase-media-storage-paths.sql), [`supabase-media-move.sql`](supabase-media-move.sql), [`supabase-termin-recaps.sql`](supabase-termin-recaps.sql) in Supabase  
+**Status:** Phase 0–3 live + Phase-4-Grundlage — SQL [`supabase-media-storage-paths.sql`](supabase-media-storage-paths.sql), [`supabase-media-move.sql`](supabase-media-move.sql) in Supabase  
 **Zielgruppe:** Vorstand / Entwickler  
 **Letzte Aktualisierung:** 2026-06-14
 
@@ -31,8 +31,6 @@ Medien (Bilder, GPX) sollen im Admin **strukturiert**, **wiederverwendbar** und 
 | Protokolle `protocols/{id}/…` | Relativer Pfad + eigene UI | ✅ Move mit UI |
 
 **Upload heute (Termin/News):** Ordner `shared/images/` bzw. `shared/routes/` — Bilder werden clientseitig nach WebP komprimiert (`assets/js/core/image-compress.js`, max. 1920px). GPX unverändert.
-
-**Rückblick-Bilder (Phase 0 Erlebtes):** Namespace `recaps/{slug}/` (Termin-Slug, lesbar im Medien-Browser) — siehe [`FACHKONZEPT-TERMIN-RECAPS.md`](FACHKONZEPT-TERMIN-RECAPS.md). Legacy `recaps/{termin_id}/` bleibt für alte Uploads gültig.
 
 **Bereits umgesetzt (Bugfix, unabhängig von dieser Roadmap):**
 
@@ -69,7 +67,6 @@ Medien (Bilder, GPX) sollen im Admin **strukturiert**, **wiederverwendbar** und 
 |------|--------|------------------|-----------------|
 | `shared/routes/` | GPX für mehrere Ausfahrten | **Ja (Hauptfall)** | Vorstand |
 | `shared/images/` | Wiederkehrende Header/Motive | **Ja** | Vorstand |
-| `recaps/{slug}/` | Rückblick-Bilder (Erlebtes) | Nein — 1:1 am Termin | Vorstand; Mitglied (eigener Termin, Phase 2); **Admin Medien:** Ordner „Rückblicke“ (Ansehen/Löschen, kein Upload/Verschieben). Legacy: `recaps/{termin_id}/` |
 | `termine/{id}/` | Termin-spezifische Dateien | Selten | Vorstand |
 | `news/{id}/` | News-spezifische Dateien | Selten | Vorstand |
 | `galleries/{jahr}/{slug}/…` | Galerie (bestehend) | Unverändert | Vorstand |

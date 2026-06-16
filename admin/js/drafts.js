@@ -87,61 +87,10 @@ async function fetchAdminDrafts() {
     (termineResult.data || [])
       .filter(isAdminDraftRow);
 
-  let recapItems = [];
-
-  if (
-    typeof fetchRecapDraftsForAdmin
-      === 'function'
-  ) {
-
-    try {
-
-      const recapRows =
-        await fetchRecapDraftsForAdmin();
-
-      const termineTable =
-        window.siteConfig.tables.termine;
-
-      recapItems =
-        recapRows.map((row) => {
-
-          const termin =
-            row[termineTable]
-            || row.Termine
-            || {};
-
-          return {
-            type: 'recap',
-            id: row.id,
-            terminId: row.termin_id,
-            title:
-              row.headline
-              || termin.title
-              || 'Rückblick',
-            slug: termin.slug || '',
-            createdBy: row.created_by,
-            sortAt:
-              row.updated_at
-              || row.created_at
-              || termin.date
-              || null
-          };
-
-        });
-
-    } catch (recapError) {
-
-      console.error(recapError);
-
-    }
-
-  }
-
   const creatorMap =
     await fetchAdminMembersByIds([
       ...newsItems.map((item) => item.created_by),
-      ...eventItems.map((item) => item.created_by),
-      ...recapItems.map((item) => item.createdBy)
+      ...eventItems.map((item) => item.created_by)
     ]);
 
   const mappedNews =
@@ -182,20 +131,9 @@ async function fetchAdminDrafts() {
         )
     }));
 
-  const mappedRecaps =
-    recapItems.map((item) => ({
-      ...item,
-      creatorLabel:
-        resolveAdminContentCreatorLabel(
-          item.createdBy,
-          creatorMap
-        )
-    }));
-
   return [
     ...mappedNews,
-    ...mappedEvents,
-    ...mappedRecaps
+    ...mappedEvents
   ]
     .sort((a, b) => {
 
@@ -298,10 +236,6 @@ function getDraftTypeLabel(type) {
     return 'Termin';
   }
 
-  if (type === 'recap') {
-    return 'Rückblick';
-  }
-
   return 'Internes';
 
 }
@@ -312,19 +246,11 @@ function getDraftEditUrl(draft) {
     return `/admin/termine_edit.html?id=${draft.id}`;
   }
 
-  if (draft.type === 'recap') {
-    return `/admin/termine_edit.html?id=${draft.terminId}`;
-  }
-
   return `/admin/news_edit.html?id=${draft.id}`;
 
 }
 
 function getDraftPreviewUrl(draft) {
-
-  if (draft.type === 'recap') {
-    return getDraftEditUrl(draft);
-  }
 
   const params =
     new URLSearchParams({
@@ -519,7 +445,6 @@ async function deleteAdminDraft(draft) {
     || (
       draft.type !== 'news'
       && draft.type !== 'event'
-      && draft.type !== 'recap'
     )
   ) {
     return;
@@ -535,49 +460,6 @@ async function deleteAdminDraft(draft) {
 
   if (!confirmDelete) {
     return;
-  }
-
-  if (draft.type === 'recap') {
-
-    if (
-      typeof deleteRecapDraft
-        !== 'function'
-    ) {
-
-      alert(
-        'Rückblick-Entwurf konnte nicht gelöscht werden.'
-      );
-
-      return;
-
-    }
-
-    const { error } =
-      await deleteRecapDraft(draft.id);
-
-    if (error) {
-
-      console.error(error);
-
-      alert(
-        error.message
-        || 'Löschen fehlgeschlagen.'
-      );
-
-      return;
-
-    }
-
-    await loadDraftsList();
-
-    if (
-      typeof loadDraftDashboardCard === 'function'
-    ) {
-      void loadDraftDashboardCard();
-    }
-
-    return;
-
   }
 
   const entityType =

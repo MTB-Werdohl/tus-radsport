@@ -138,51 +138,13 @@ create policy termine_select_authenticated
   );
 
 -- ---------------------------------------------------------------------------
--- INSERT / UPDATE / DELETE: Vereinsmitglieder — nur Entwürfe, nur eigene
+-- INSERT / UPDATE / DELETE: Vereinsmitglieder — nur Termin-Entwürfe, nur eigene
+-- Internes (News): nur Vorstand — siehe supabase-vorstand-roles.sql
 -- ---------------------------------------------------------------------------
 
 drop policy if exists news_insert_member_draft on "News";
-
-create policy news_insert_member_draft
-  on "News"
-  for insert
-  to authenticated
-  with check (
-    public.is_club_member()
-    and sichtbarkeit = 'draft'
-    and (
-      created_by is null
-      or created_by = public.get_auth_member_id()
-    )
-  );
-
 drop policy if exists news_update_member_draft on "News";
-
-create policy news_update_member_draft
-  on "News"
-  for update
-  to authenticated
-  using (
-    public.is_club_member()
-    and created_by = public.get_auth_member_id()
-    and sichtbarkeit = 'draft'
-  )
-  with check (
-    created_by = public.get_auth_member_id()
-    and sichtbarkeit = 'draft'
-  );
-
 drop policy if exists news_delete_member_draft on "News";
-
-create policy news_delete_member_draft
-  on "News"
-  for delete
-  to authenticated
-  using (
-    public.is_club_member()
-    and created_by = public.get_auth_member_id()
-    and sichtbarkeit = 'draft'
-  );
 
 drop policy if exists termine_insert_member_draft on "Termine";
 

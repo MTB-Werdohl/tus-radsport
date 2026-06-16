@@ -2634,3 +2634,13 @@ body.site-saison-pause .mitfahren-hero__cta {
 .member-change-summary-dialog__primary {
   font-weight: 600;
 }
+
+.content-offline {
+  max-width: 40rem;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.content-offline p {
+  line-height: 1.6;
+}

@@ -196,7 +196,7 @@ Beim Aufruf von Seiten mit Mitgliederfunktionen oder beim Speichern von Inhalten
 
 **Gespeicherte Inhalte** (je nach Nutzung):
 
-- Vereins-News, Termine, Galerie-Bilder und **Termin-Rückblick-Bilder** (inkl. Metadaten und Mediendateien)
+- Vereins-News, Termine und Galerie-Bilder (inkl. Metadaten und Mediendateien)
 - Mitgliederstammdaten (siehe Abschnitt 12)
 - Feedback und Abstimmungen (siehe Abschnitt 12.6)
 - optional importierte Strava-Aktivitäten und Sichtbarkeits-Einstellungen (siehe Abschnitt 12.7)

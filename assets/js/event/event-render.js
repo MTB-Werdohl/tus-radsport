@@ -1,32 +1,12 @@
 function renderEvent(
   event,
-  recap,
   options
 ) {
 
-  const fromErlebtes =
-    options?.fromErlebtes === true;
-
-  const erlebtesUrl = '/erlebtes/';
-
   const backUrl =
-    fromErlebtes
-      ? erlebtesUrl
-      : (
-        typeof getCalendarUrl === 'function'
-          ? getCalendarUrl()
-          : '/kalender/'
-      );
-
-  const backLabelTop =
-    fromErlebtes
-      ? '← Erlebtes'
-      : '← Zurück';
-
-  const backLabelBottom =
-    fromErlebtes
-      ? '← Zurück zur Übersicht'
-      : '← Zurück zum Kalender';
+    typeof getCalendarUrl === 'function'
+      ? getCalendarUrl()
+      : '/kalender/';
 
   const wrapper =
     document
@@ -44,16 +24,9 @@ function renderEvent(
       ? resolveTerminImage(event)
       : event.image;
 
-  const eventGpx =
-    typeof resolveTerminGpx === 'function'
-      ? resolveTerminGpx(event)
-      : event.gpx;
-
   document.title =
     `${event.title}
     · MTB Werdohl`;
-
-  const calendarBackUrl = backUrl;
 
   wrapper.innerHTML = `
 
@@ -76,9 +49,9 @@ ${formatContentCardTitle(
 
 <a
   class="event-back-link"
-  href="${calendarBackUrl}">
+  href="${backUrl}">
 
-${backLabelTop}
+← Zurück
 
 </a>
 
@@ -200,20 +173,11 @@ event.content || ''
 
 </div>
 
-${renderEventRecap(
-  recap,
-  event,
-  {
-    vorstandView:
-      options?.isVorstand === true
-  }
-)}
-
 <div class="event-back">
 
-<a href="${calendarBackUrl}">
+<a href="${backUrl}">
 
-${backLabelBottom}
+← Zurück zum Kalender
 
 </a>
 
@@ -223,211 +187,16 @@ ${backLabelBottom}
 
 `;
 
-buildShareButton(
-  'share',
-  event.title
-);
+  wrapper.dataset.eventId =
+    String(event.id);
 
-initEventRecapLightbox();
+  wrapper.dataset.eventTitle =
+    event.title || '';
 
-}
-
-function scrollEventRecapIntoView() {
-
-  const target =
-    document.getElementById(
-      'event-recap'
-    );
-
-  if (!target) {
-    return;
-  }
-
-  requestAnimationFrame(() => {
-
-    target.scrollIntoView({
-      block: 'start'
-    });
-
-    target.focus({
-      preventScroll: true
-    });
-
-  });
-
-}
-
-function renderEventRecap(
-  recap,
-  event,
-  options = {}
-) {
-
-  const vorstandView =
-    options.vorstandView === true;
-
-  if (
-    !recap
-    || (
-      recap.status !== 'published'
-      && !vorstandView
-    )
-  ) {
-    return '';
-  }
-
-  const draftBanner =
-    recap.status === 'draft'
-    && vorstandView
-      ? `
-<p class="feedback-hint event-recap-draft-hint">
-  Entwurf — nur für Vorstand sichtbar.
-</p>
-      `
-      : '';
-
-  const headline =
-    recap.headline
-    || event.title
-    || 'Rückblick';
-
-  const images =
-    typeof sortRecapImages === 'function'
-      ? sortRecapImages(
-        recap.images
-        || recap.termin_recap_images
-        || []
-      )
-      : (
-        recap.images
-        || recap.termin_recap_images
-        || []
-      );
-
-  const imagesHtml =
-    images.length
-      ? `
-        <div class="event-recap-images">
-          ${
-            images
-              .map((image, index) => {
-
-                const url =
-                  typeof resolveRecapImageUrl
-                    === 'function'
-                    ? resolveRecapImageUrl(image)
-                    : image.storage_path;
-
-                if (!url) {
-                  return '';
-                }
-
-                return `
-                  <a
-                    href="${url}"
-                    class="event-recap-image-link glightbox"
-                    data-glightbox="type: image"
-                    data-gallery="event-recap">
-
-                    <img
-                      class="event-recap-image"
-                      src="${url}"
-                      alt="Rückblick ${index + 1}"
-                      loading="lazy">
-
-                  </a>
-                `;
-
-              })
-              .join('')
-          }
-        </div>
-      `
-      : '';
-
-  return `
-    <section
-      id="event-recap"
-      class="event-recap"
-      tabindex="-1"
-      aria-labelledby="event-recap-title">
-
-      <div class="event-recap-header">
-
-        <h2
-          id="event-recap-title"
-          class="event-recap-title">
-          Rückblick
-        </h2>
-
-        <div
-          id="event-recap-vorstand-actions"
-          class="event-recap-vorstand-actions">
-
-        </div>
-
-      </div>
-
-      ${draftBanner}
-
-      <h3 class="event-recap-headline">
-        ${escapeEventHtml(headline)}
-      </h3>
-
-      <div class="event-recap-body">
-        ${
-          typeof marked !== 'undefined'
-            ? marked.parse(recap.body || '')
-            : escapeEventHtml(recap.body || '')
-        }
-      </div>
-
-      ${imagesHtml}
-
-    </section>
-  `;
-
-}
-
-function escapeEventHtml(value) {
-
-  if (value === null || value === undefined) {
-    return '';
-  }
-
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-
-}
-
-function initEventRecapLightbox() {
-
-  if (typeof GLightbox !== 'function') {
-    return;
-  }
-
-  if (window._eventRecapLightbox) {
-
-    window._eventRecapLightbox.destroy();
-    window._eventRecapLightbox = null;
-
-  }
-
-  if (
-    !document.querySelector(
-      '.event-recap .glightbox'
-    )
-  ) {
-    return;
-  }
-
-  window._eventRecapLightbox =
-    GLightbox({
-      selector: '.event-recap .glightbox'
-    });
+  buildShareButton(
+    'share',
+    event.title
+  );
 
 }
 
@@ -511,16 +280,5 @@ class="event-button"
 </div>
 
 `;
-
-  wrapper.dataset.eventId =
-    String(event.id);
-
-  wrapper.dataset.eventTitle =
-    event.title || '';
-
-  wrapper.dataset.fromErlebtes =
-    fromErlebtes
-      ? 'true'
-      : 'false';
 
 }

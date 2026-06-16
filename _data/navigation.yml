@@ -4,10 +4,9 @@
     url: "/netzwerk"
   - title: "Aktivitäten"
     url: "/aktivitaeten"
+    enabled: false
   - title: "Kalender"
     url: "/kalender"
-  - title: "Erlebtes"
-    url: "/erlebtes"
   - title: "🔒Internes"
     url: "/news"
 

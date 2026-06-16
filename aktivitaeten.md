@@ -6,6 +6,8 @@ load_aktivitaeten_css: true
 description: "Aktivitätsfeed, Rankings und Vereinsstatistiken der MTB-Abteilung TuS Jahn Werdohl."
 ---
 
+{% if site.features.aktivitaeten_public %}
+
 <div id="aktivitaeten-portal">
 
   <div
@@ -98,3 +100,21 @@ description: "Aktivitätsfeed, Rankings und Vereinsstatistiken der MTB-Abteilung
 <script src="/assets/js/aktivitaeten/aktivitaeten-map.js"></script>
 <script src="/assets/js/aktivitaeten/aktivitaeten-render.js"></script>
 <script src="/assets/js/aktivitaeten/aktivitaeten-page.js"></script>
+
+{% else %}
+
+<section class="content-offline">
+
+  <h1>Aktivitäten</h1>
+
+  <p>
+    Der Bereich Aktivitäten ist vorübergehend nicht verfügbar.
+  </p>
+
+  <p>
+    <a href="{{ '/' | relative_url }}">Zur Startseite</a>
+  </p>
+
+</section>
+
+{% endif %}

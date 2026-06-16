@@ -20,7 +20,11 @@ include:
   - kalender
   - news
 
-admin_js_version: "20260584"
+admin_js_version: "20260587"
+
+# Bereich vorübergehend deaktivieren (Code bleibt im Repo)
+features:
+  aktivitaeten_public: false
 
 contact:
   name: "Tobias Withalm"

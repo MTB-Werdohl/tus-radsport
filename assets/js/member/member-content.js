@@ -18,6 +18,7 @@ function memberContentStatusLabel(
 const MEMBER_CONTENT_PAGE_SIZE = 5;
 
 let memberContentSubmissionsCache = null;
+let memberContentViewerIsVorstand = false;
 let memberContentNewsPage = 1;
 let memberContentTerminePage = 1;
 
@@ -185,7 +186,10 @@ function bindMemberContentListPagination(
 
       renderMemberContentList(
         listContainer,
-        memberContentSubmissionsCache
+        memberContentSubmissionsCache,
+        {
+          isVorstand: memberContentViewerIsVorstand
+        }
       );
 
     }
@@ -203,7 +207,10 @@ function bindMemberContentListPagination(
 
       renderMemberContentList(
         listContainer,
-        memberContentSubmissionsCache
+        memberContentSubmissionsCache,
+        {
+          isVorstand: memberContentViewerIsVorstand
+        }
       );
 
     }
@@ -246,12 +253,16 @@ function memberContentSortTimestamp(
 }
 
 async function fetchMemberContentSubmissions(
-  memberId
+  memberId,
+  options
 ) {
 
   if (!memberId) {
     return { news: [], termine: [] };
   }
+
+  const includeNews =
+    options?.includeNews === true;
 
   const newsTable =
     window.siteConfig.tables.news;
@@ -259,30 +270,34 @@ async function fetchMemberContentSubmissions(
   const termineTable =
     window.siteConfig.tables.termine;
 
-  const [newsResult, termineResult] =
-    await Promise.all([
+  const termineResult =
+    await window.supabaseClient
+      .from(termineTable)
+      .select(
+        'id, title, slug, sichtbarkeit, date, endDate, recurring, created_at, updated_at'
+      )
+      .eq('created_by', memberId)
+      .order('created_at', { ascending: false });
 
-      window.supabaseClient
+  let news = [];
+
+  if (includeNews) {
+
+    const newsResult =
+      await window.supabaseClient
         .from(newsTable)
         .select(
           'id, title, slug, sichtbarkeit, created_at, updated_at'
         )
         .eq('created_by', memberId)
-        .order('created_at', { ascending: false }),
+        .order('created_at', { ascending: false });
 
-      window.supabaseClient
-        .from(termineTable)
-        .select(
-          `id, title, slug, sichtbarkeit, date, endDate, recurring, created_at, updated_at,
-          termin_recaps ( id, status )`
-        )
-        .eq('created_by', memberId)
-        .order('created_at', { ascending: false })
+    if (newsResult.error) {
+      console.error(newsResult.error);
+    }
 
-    ]);
+    news = newsResult.data || [];
 
-  if (newsResult.error) {
-    console.error(newsResult.error);
   }
 
   if (termineResult.error) {
@@ -290,13 +305,39 @@ async function fetchMemberContentSubmissions(
   }
 
   return {
-    news: newsResult.data || [],
+    news,
     termine: termineResult.data || []
   };
 
 }
 
-function renderMemberContentPanelShell() {
+function renderMemberContentPanelShell(
+  options
+) {
+
+  const isVorstandUser =
+    options?.isVorstand === true;
+
+  const internesCard =
+    isVorstandUser
+      ? `
+    <a
+      class="member-content-card"
+      href="/profil/news_edit/">
+
+      <span class="member-content-card-icon">📰</span>
+
+      <span class="member-content-card-title">
+        Internes
+      </span>
+
+      <span class="member-content-card-text">
+        Beitrag fürs Interne verfassen
+      </span>
+
+    </a>
+      `.trim()
+      : '';
 
   return `
 <section class="member-profile-section-block member-content-panel">
@@ -321,21 +362,7 @@ function renderMemberContentPanelShell() {
 
     </a>
 
-    <a
-      class="member-content-card"
-      href="/profil/news_edit/">
-
-      <span class="member-content-card-icon">📰</span>
-
-      <span class="member-content-card-title">
-        Internes
-      </span>
-
-      <span class="member-content-card-text">
-        Beitrag fürs Interne einreichen
-      </span>
-
-    </a>
+    ${internesCard}
 
   </div>
 
@@ -352,9 +379,36 @@ function renderMemberContentPanelShell() {
 
 }
 
+function memberNewsStatusLabel(
+  sichtbarkeit
+) {
+
+  const draft =
+    window.siteConfig?.visibility?.draft
+    || window.CONTENT_VISIBILITY?.draft
+    || 'draft';
+
+  const members =
+    window.siteConfig?.visibility?.members
+    || window.CONTENT_VISIBILITY?.members
+    || 'members';
+
+  if (sichtbarkeit === draft) {
+    return 'Entwurf';
+  }
+
+  if (sichtbarkeit === members) {
+    return 'Nur Mitglieder';
+  }
+
+  return memberContentStatusLabel(sichtbarkeit);
+
+}
+
 function renderMemberContentListItem(
   item,
-  kind
+  kind,
+  options
 ) {
 
   if (kind === 'termin') {
@@ -364,12 +418,11 @@ function renderMemberContentListItem(
   const editUrl =
     `/profil/news_edit/?id=${item.id}`;
 
+  const isVorstandUser =
+    options?.isVorstand === true;
+
   const canEdit =
-    item.sichtbarkeit
-    === (
-      window.siteConfig?.visibility?.draft
-      || 'draft'
-    );
+    isVorstandUser;
 
   const editLink =
     canEdit
@@ -398,7 +451,7 @@ function renderMemberContentListItem(
   <div class="member-content-item-meta">
 
     <span class="member-content-status ${memberContentStatusClass(item.sichtbarkeit)}">
-      ${escapeMemberHtml(memberContentStatusLabel(item.sichtbarkeit))}
+      ${escapeMemberHtml(memberNewsStatusLabel(item.sichtbarkeit))}
     </span>
 
     ${editLink}
@@ -438,12 +491,6 @@ function renderMemberTerminContentListItem(
       `.trim()
       : '';
 
-  const recapMeta =
-    typeof renderMemberTerminRecapMeta
-      === 'function'
-      ? renderMemberTerminRecapMeta(item)
-      : { statusHtml: '', actionHtml: '' };
-
   const terminStatusHtml =
     canEditTermin
       ? `
@@ -474,11 +521,7 @@ function renderMemberTerminContentListItem(
 
     ${terminStatusHtml}
 
-    ${recapMeta.statusHtml}
-
     ${terminEditLink}
-
-    ${recapMeta.actionHtml}
 
   </div>
 
@@ -518,7 +561,8 @@ function formatMemberContentDate(
 
 function renderMemberContentList(
   container,
-  submissions
+  submissions,
+  options
 ) {
 
   if (!container) {
@@ -562,7 +606,11 @@ function renderMemberContentList(
 
     container.innerHTML = `
 <p class="member-content-empty">
-  Noch keine Einreichungen.
+  ${
+    options?.isVorstand
+      ? 'Noch keine Einreichungen.'
+      : 'Noch keine Termine eingereicht.'
+  }
 </p>
     `;
 
@@ -589,7 +637,8 @@ function renderMemberContentList(
       .map((item) =>
         renderMemberContentListItem(
           item,
-          'news'
+          'news',
+          options
         )
       )
       .join('');
@@ -686,9 +735,19 @@ async function loadMemberContentListIfNeeded(
   container.innerHTML =
     '<p>Einträge werden geladen …</p>';
 
+  const isVorstandUser =
+    typeof isVorstand === 'function'
+    && isVorstand(member);
+
+  memberContentViewerIsVorstand =
+    isVorstandUser;
+
   const submissions =
     await fetchMemberContentSubmissions(
-      member.id
+      member.id,
+      {
+        includeNews: isVorstandUser
+      }
     );
 
   memberContentSubmissionsCache =
@@ -696,7 +755,10 @@ async function loadMemberContentListIfNeeded(
 
   renderMemberContentList(
     container,
-    submissions
+    submissions,
+    {
+      isVorstand: isVorstandUser
+    }
   );
 
   container.dataset.loaded = 'true';

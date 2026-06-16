@@ -1,3 +1,12 @@
+function isMemberAktivitaetenEnabled() {
+
+  return (
+    typeof isAktivitaetenPublicEnabled === 'function'
+    && isAktivitaetenPublicEnabled()
+  );
+
+}
+
 function openMemberConsentModal(key) {
 
   const modal =
@@ -41,6 +50,10 @@ function closeMemberConsentModal(modal) {
 }
 
 function showStravaReturnNotice() {
+
+  if (!isMemberAktivitaetenEnabled()) {
+    return;
+  }
 
   const params =
     new URLSearchParams(
@@ -104,6 +117,10 @@ function showStravaReturnNotice() {
 }
 
 async function maybePollInitialStravaSync(member) {
+
+  if (!isMemberAktivitaetenEnabled()) {
+    return;
+  }
 
   const status =
     profileStravaState?.status;
@@ -406,6 +423,10 @@ async function loadMemberActivitiesIfNeeded(
   force = false
 ) {
 
+  if (!isMemberAktivitaetenEnabled()) {
+    return;
+  }
+
   const container =
     document.getElementById(
       'member-activities-list'
@@ -522,6 +543,10 @@ async function reloadStravaProfileView(
     return;
   }
 
+  if (!isMemberAktivitaetenEnabled()) {
+    return;
+  }
+
   profileStravaState =
     await fetchStravaProfileStatus();
 
@@ -552,7 +577,10 @@ async function reloadStravaProfileView(
   ) {
     void maybePollInitialStravaSync(member);
 
-    if (profileActiveTab === 'aktivitaeten') {
+    if (
+      isMemberAktivitaetenEnabled()
+      && profileActiveTab === 'aktivitaeten'
+    ) {
       void loadMemberActivitiesIfNeeded(true);
     }
 
@@ -1470,7 +1498,9 @@ async function loadMemberProfilePage() {
     ) {
 
       profileStravaState =
-        await fetchStravaProfileStatus();
+        isMemberAktivitaetenEnabled()
+          ? await fetchStravaProfileStatus()
+          : null;
 
       const urlTab =
         new URLSearchParams(
@@ -1479,8 +1509,6 @@ async function loadMemberProfilePage() {
 
       if (urlTab === 'content') {
         profileActiveTab = urlTab;
-      } else if (urlTab === 'rueckblicke') {
-        profileActiveTab = 'content';
       } else if (urlTab === 'entwuerfe') {
         profileActiveTab = urlTab;
       }
@@ -1517,7 +1545,10 @@ async function loadMemberProfilePage() {
     ) {
       void maybePollInitialStravaSync(member);
 
-      if (profileActiveTab === 'aktivitaeten') {
+      if (
+        isMemberAktivitaetenEnabled()
+        && profileActiveTab === 'aktivitaeten'
+      ) {
         void loadMemberActivitiesIfNeeded(true);
       }
 

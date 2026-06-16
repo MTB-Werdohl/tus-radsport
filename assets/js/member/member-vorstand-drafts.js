@@ -95,18 +95,13 @@ function renderMemberDraftCard(draft) {
       ? formatContentDraftDate(draft.sortAt)
       : '';
 
-  const terminIdAttr =
-    draft.type === 'recap'
-      ? ` data-draft-termin-id="${draft.terminId}"`
-      : '';
-
   return `
 <button
   type="button"
   class="member-draft-card"
   data-member-draft-open="true"
   data-draft-type="${escapeMemberDraftHtml(draft.type)}"
-  data-draft-id="${draft.id}"${terminIdAttr}>
+  data-draft-id="${draft.id}">
 
   <span class="member-draft-card__title">
     ${escapeMemberDraftHtml(draft.title)}
@@ -145,20 +140,6 @@ async function openMemberDraftEdit(draft) {
   ) {
 
     await openEventEditModal(draft.id);
-    return;
-
-  }
-
-  if (
-    draft.type === 'recap'
-    && typeof openEventRecapEditModal === 'function'
-  ) {
-
-    await openEventRecapEditModal(
-      draft.terminId,
-      null
-    );
-
     return;
 
   }

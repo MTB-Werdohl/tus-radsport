@@ -1442,14 +1442,6 @@ function canDropMediaFileOnFolderTarget(
 
 
 
-  if (path.startsWith('recaps/')) {
-
-    return false;
-
-  }
-
-
-
   return (
 
     path.startsWith('shared/')

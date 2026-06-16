@@ -16,8 +16,8 @@ load_member_content_edit_css: true
         Internes einreichen
       </h1>
 
-      <p>
-        Wird als Entwurf an den Vorstand übermittelt.
+      <p id="member-news-edit-lead">
+        Internen Beitrag anlegen oder bearbeiten.
       </p>
 
     </div>
@@ -60,6 +60,21 @@ load_member_content_edit_css: true
       <textarea id="content"
                 rows="8"
                 placeholder="Inhalt"></textarea>
+    </label>
+
+    <label class="member-edit-field">
+      Sichtbarkeit
+      <select id="sichtbarkeit">
+
+        <option value="draft">
+          Entwurf (nur Vorstand)
+        </option>
+
+        <option value="members">
+          Nur Mitglieder (Internes)
+        </option>
+
+      </select>
     </label>
 
     <div class="member-edit-poll-config">

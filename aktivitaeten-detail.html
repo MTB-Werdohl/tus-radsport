@@ -6,6 +6,8 @@ hide_title: true
 load_aktivitaeten_css: true
 ---
 
+{% if site.features.aktivitaeten_public %}
+
 <div id="aktivitaeten-detail"></div>
 
 <script src="/assets/js/core/dates.js"></script>
@@ -21,3 +23,21 @@ load_aktivitaeten_css: true
 <script src="/assets/js/aktivitaeten/aktivitaeten-detail-render.js"></script>
 <script src="/assets/js/aktivitaeten/aktivitaeten-render.js"></script>
 <script src="/assets/js/aktivitaeten/aktivitaeten-detail-page.js"></script>
+
+{% else %}
+
+<section class="content-offline">
+
+  <h1>Aktivität</h1>
+
+  <p>
+    Der Bereich Aktivitäten ist vorübergehend nicht verfügbar.
+  </p>
+
+  <p>
+    <a href="{{ '/' | relative_url }}">Zur Startseite</a>
+  </p>
+
+</section>
+
+{% endif %}

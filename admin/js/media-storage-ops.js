@@ -223,7 +223,6 @@ function canMoveMediaStoragePath(
   if (
     path.startsWith('protocols/')
     || path.startsWith('galleries/')
-    || path.startsWith('recaps/')
   ) {
     return false;
   }

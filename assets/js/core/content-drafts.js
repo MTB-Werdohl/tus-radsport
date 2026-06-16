@@ -46,10 +46,6 @@ function getContentDraftTypeLabel(type) {
     return 'Termin';
   }
 
-  if (type === 'recap') {
-    return 'Rückblick';
-  }
-
   if (type === 'walkin') {
     return 'Walk-in Gast';
   }
@@ -64,19 +60,11 @@ function getContentDraftEditUrl(draft) {
     return `/admin/termine_edit.html?id=${draft.id}`;
   }
 
-  if (draft.type === 'recap') {
-    return `/admin/termine_edit.html?id=${draft.terminId}`;
-  }
-
   return `/admin/news_edit.html?id=${draft.id}`;
 
 }
 
 function getContentDraftPreviewUrl(draft) {
-
-  if (draft.type === 'recap') {
-    return getContentDraftEditUrl(draft);
-  }
 
   const params =
     new URLSearchParams({
@@ -221,60 +209,9 @@ async function fetchContentDrafts() {
     (termineResult.data || [])
       .filter(isContentDraftRow);
 
-  let recapItems = [];
-
-  if (
-    typeof fetchRecapDraftsForAdmin
-      === 'function'
-  ) {
-
-    try {
-
-      const recapRows =
-        await fetchRecapDraftsForAdmin();
-
-      const termineTable =
-        window.siteConfig.tables.termine;
-
-      recapItems =
-        recapRows.map((row) => {
-
-          const termin =
-            row[termineTable]
-            || row.Termine
-            || {};
-
-          return {
-            type: 'recap',
-            id: row.id,
-            terminId: row.termin_id,
-            title:
-              row.headline
-              || termin.title
-              || 'Rückblick',
-            slug: termin.slug || '',
-            createdBy: row.created_by,
-            sortAt:
-              row.updated_at
-              || row.created_at
-              || termin.date
-              || null
-          };
-
-        });
-
-    } catch (recapError) {
-
-      console.error(recapError);
-
-    }
-
-  }
-
   const creatorIds = [
     ...newsItems.map((item) => item.created_by),
-    ...eventItems.map((item) => item.created_by),
-    ...recapItems.map((item) => item.createdBy)
+    ...eventItems.map((item) => item.created_by)
   ];
 
   const creatorMap =
@@ -330,13 +267,6 @@ async function fetchContentDrafts() {
         )
     }));
 
-  const mappedRecaps =
-    recapItems.map((item) => ({
-      ...item,
-      creatorLabel:
-        resolveCreator(item.createdBy)
-    }));
-
   let walkinItems = [];
 
   try {
@@ -353,7 +283,6 @@ async function fetchContentDrafts() {
   return [
     ...mappedNews,
     ...mappedEvents,
-    ...mappedRecaps,
     ...walkinItems
   ]
     .sort((a, b) => {

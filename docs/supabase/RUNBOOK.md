@@ -60,17 +60,9 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Medien-Storage Phase 3:** [`supabase-media-move.sql`](../supabase-media-move.sql) — RPCs `get_media_references`, `move_media_object`, `delete_media_object` (Vorstand). Verschieben/Umbenennen/Löschen im Admin unter `/admin/medien.html`.
 
-**Mitglieder-Inhalte (Entwürfe):** [`supabase-member-content.sql`](../supabase-member-content.sql) — Spalte `created_by` auf `News`/`Termine`, RLS: Vereinsmitglieder dürfen eigene Entwürfe einreichen/bearbeiten; erscheinen im Admin unter Entwürfe. Frontend: Profil-Tab **Content**, `/profil/termin_edit/`, `/profil/news_edit/`. **Nach** `supabase-member-change-summary.sql` (wegen `is_club_member()`).
+**Mitglieder-Inhalte (Entwürfe):** [`supabase-member-content.sql`](../supabase-member-content.sql) — Spalte `created_by` auf `News`/`Termine`, RLS: Vereinsmitglieder dürfen **Termin**-Entwürfe einreichen/bearbeiten; **Internes nur Vorstand** ([`supabase-member-news-vorstand-only.sql`](../supabase-member-news-vorstand-only.sql)). Frontend: Profil-Tab **Content** (`/profil/termin_edit/` Mitglieder; `/profil/news_edit/` Vorstand). **Nach** `supabase-member-change-summary.sql` (wegen `is_club_member()`).
 
 **Mitglieder-Mediathek-Upload:** [`supabase-member-media-upload.sql`](../supabase-member-media-upload.sql) — Storage-Policy: Vereinsmitglieder dürfen in `shared/images/` und `shared/routes/` hochladen (Picker „Hochladen“ im Profil). **Nach** `supabase-member-change-summary.sql` und `supabase-vorstand-roles.sql`.
-
-**Termin-Rückblicke (Historie) Phase 0:** [`supabase-termin-recaps.sql`](../supabase-termin-recaps.sql) — Tabellen `termin_recaps`, `termin_recap_images`, Hilfsfunktionen (`termin_allows_recap`, `can_select_termin_recap`), RLS (Vorstand CRUD; Mitglieder eigene Entwürfe wenn `Termine.created_by` passt). **Nach** `supabase-member-content.sql` und `supabase-anonymize-upcoming-feedback.sql` (`is_termin_still_upcoming`). Konzept: [`FACHKONZEPT-TERMIN-RECAPS.md`](../FACHKONZEPT-TERMIN-RECAPS.md).
-
-**Rückblick-Bilder Storage:** [`supabase-recap-media-upload.sql`](../supabase-recap-media-upload.sql) — Mitglieder dürfen in `recaps/{slug}/` hochladen (Slug = Termin-URL), wenn sie den Termin erstellt haben. Legacy `recaps/{termin_id}/` bleibt gültig. **Ordner-Auflösung:** [`supabase-recap-storage-slug-folders.sql`](../supabase-recap-storage-slug-folders.sql) **nach** `supabase-recap-media-upload.sql`. Öffentliches Lesen über bestehende `media`-Policy (ohne `protocols/`). Vorstand: bestehende `media_insert_vorstand`. **Nach** `supabase-termin-recaps.sql`.
-
-**Termin-Rückblicke Phase 1 Frontend:** Nach SQL Phase 0 — Admin `/admin/termine_edit.html` (Rückblick-Abschnitt), Entwürfe-Liste, Terminseite (`/kalender/{slug}/`), **Erlebtes** `/erlebtes/` (Alt: `/historie/` → Redirect). JS: `assets/js/recap/*`, `assets/js/erlebtes/*`. Checkliste: [`SMOKE-TEST-RECAPS.md`](../SMOKE-TEST-RECAPS.md).
-
-**Termin-Rückblicke Phase 2 Frontend (Mitglieder):** Content-Tab `/profil/?tab=content` (Rückblick-Aktionen an freigegebenen Terminen), Bearbeitung `/profil/recap_edit/?termin_id=…`. JS: `assets/js/member/member-content.js`, `member-recaps.js`, `member-recap-edit.js`. Alt-Tab `?tab=rueckblicke` → Content.
 
 **Einwilligung Widerruf:** [`supabase-member-consent-revoke.sql`](../supabase-member-consent-revoke.sql) — Spalten `kontakt_widerrufen_am`, `bilder_widerrufen_am` für dokumentierten Widerruf (Admin + Profil-Anzeige).
 
@@ -168,7 +160,6 @@ Falscher Slug (404): alte Test-Function im Dashboard löschen.
 | Tabelle | anon | authenticated (Mitglied) | authenticated (Vorstand) |
 |---------|------|----------------------------|---------------------------|
 | `News` / `Termine` | SELECT `sichtbarkeit=public` | + `members` + alle `public` | + alle Zeilen + CRUD |
-| `termin_recaps` / `termin_recap_images` | SELECT `published` + Termin `public` | + `published` + Termin `members`; eigene `draft` | ALL |
 | `members` | — | SELECT/UPDATE eigene Zeile | SELECT alle + CRUD alle |
 | `galleries` / `gallery_images` | SELECT | SELECT | CRUD |
 | `feedback_modules` | SELECT | SELECT | ALL |

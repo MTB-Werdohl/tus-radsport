@@ -26,9 +26,7 @@ window.siteConfig = {
     memberStatsMonth: 'member_stats_month',
     memberStatsYear: 'member_stats_year',
     clubStatsMonth: 'club_stats_month',
-    clubStatsYear: 'club_stats_year',
-    terminRecaps: 'termin_recaps',
-    terminRecapImages: 'termin_recap_images'
+    clubStatsYear: 'club_stats_year'
   },
 
   feedback: {
@@ -80,6 +78,10 @@ window.siteConfig = {
 
   labels: {
     newsSection: 'Internes'
+  },
+
+  features: {
+    aktivitaetenPublic: false
   }
 
 };
@@ -129,6 +131,15 @@ window.getNewsSectionLabel = function () {
   return (
     window.siteConfig.labels?.newsSection
     || 'Internes'
+  );
+
+};
+
+window.isAktivitaetenPublicEnabled = function () {
+
+  return (
+    window.siteConfig.features?.aktivitaetenPublic
+    === true
   );
 
 };

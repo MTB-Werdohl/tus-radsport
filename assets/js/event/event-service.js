@@ -35,20 +35,3 @@ async function getEvent(
   return enrichContentRowWithCreator(data);
 
 }
-
-async function getEventRecap(
-  terminId
-) {
-
-  if (
-    typeof loadPublishedRecapByTerminId
-      !== 'function'
-  ) {
-    return null;
-  }
-
-  return loadPublishedRecapByTerminId(
-    terminId
-  );
-
-}

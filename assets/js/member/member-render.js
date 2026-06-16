@@ -329,9 +329,25 @@ function shouldShowMemberActivitiesTab(
   stravaState
 ) {
 
+  if (
+    typeof isAktivitaetenPublicEnabled === 'function'
+    && !isAktivitaetenPublicEnabled()
+  ) {
+    return false;
+  }
+
   return !!(
     stravaState?.available
     && stravaState?.status?.connected
+  );
+
+}
+
+function shouldShowMemberStravaTab() {
+
+  return (
+    typeof isAktivitaetenPublicEnabled === 'function'
+    && isAktivitaetenPublicEnabled()
   );
 
 }
@@ -342,8 +358,14 @@ function resolveMemberProfileActiveTab(
 ) {
 
   if (
-    activeTab === 'aktivitaeten'
-    && !shouldShowMemberActivitiesTab(stravaState)
+    (
+      activeTab === 'aktivitaeten'
+      && !shouldShowMemberActivitiesTab(stravaState)
+    )
+    || (
+      activeTab === 'strava'
+      && !shouldShowMemberStravaTab()
+    )
   ) {
     return 'profil';
   }
@@ -411,10 +433,19 @@ function renderMemberProfileTabsNav(
   }
 
   const visibleTabs =
-    tabs.filter((tab) =>
-      tab.id !== 'aktivitaeten'
-      || shouldShowMemberActivitiesTab(stravaState)
-    );
+    tabs.filter((tab) => {
+
+      if (tab.id === 'aktivitaeten') {
+        return shouldShowMemberActivitiesTab(stravaState);
+      }
+
+      if (tab.id === 'strava') {
+        return shouldShowMemberStravaTab();
+      }
+
+      return true;
+
+    });
 
   const buttons =
     visibleTabs.map((tab) => {
@@ -1044,6 +1075,9 @@ function renderMemberProfile(
   const showActivitiesTab =
     shouldShowMemberActivitiesTab(stravaState);
 
+  const showStravaTab =
+    shouldShowMemberStravaTab();
+
   const showDraftsTab =
     typeof isVorstand === 'function'
     && isVorstand(member);
@@ -1155,7 +1189,11 @@ ${renderMemberProfileTabsNav(
   data-profile-panel="content"
   ${activeTab !== 'content' ? 'hidden' : ''}>
 
-  ${renderMemberContentPanelShell()}
+  ${renderMemberContentPanelShell({
+    isVorstand:
+      typeof isVorstand === 'function'
+      && isVorstand(member)
+  })}
 
 </div>
 
@@ -1207,6 +1245,9 @@ ${
     : ''
 }
 
+${
+  showStravaTab
+    ? `
 <div
   id="member-profile-tab-strava"
   class="member-profile-tab-panel"
@@ -1218,6 +1259,9 @@ ${
   ${renderStravaProfilePanel(stravaState)}
 
 </div>
+`
+    : ''
+}
 
   `;
 
