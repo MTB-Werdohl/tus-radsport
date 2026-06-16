@@ -447,13 +447,11 @@ function renderMemberVotesPanelShell() {
   return `
 <section class="member-profile-section-block">
 
-  <h2>Teilnahmen</h2>
-
   <div
     id="member-votes-list"
     class="member-votes-list">
 
-    <p>Teilnahmen werden geladen …</p>
+    <p>Wird geladen …</p>
 
   </div>
 

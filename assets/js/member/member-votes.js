@@ -1,8 +1,3 @@
-const MEMBER_VOTES_POLLS_PAGE_SIZE = 5;
-
-let memberVotesGroupedCache = null;
-let memberVotesPollsPage = 1;
-
 function getFeedbackEntityPageUrl(
   entityType,
   slug
@@ -133,7 +128,6 @@ async function fetchMemberVotesGrouped(
     );
 
   const termine = [];
-  const abstimmungen = [];
 
   (answers || []).forEach((answerRow) => {
 
@@ -141,6 +135,13 @@ async function fetchMemberVotesGrouped(
       answerRow.feedback_modules;
 
     if (!module) {
+      return;
+    }
+
+    if (
+      module.entity_type
+      !== window.siteConfig.feedback.entityTypes.event
+    ) {
       return;
     }
 
@@ -157,28 +158,19 @@ async function fetchMemberVotesGrouped(
       return;
     }
 
-    const item =
+    if (
+      !isTerminStillUpcoming(entity)
+    ) {
+      return;
+    }
+
+    termine.push(
       buildMemberVoteItem(
         answerRow,
         module,
         entity
-      );
-
-    const isEvent =
-      module.entity_type
-      === window.siteConfig.feedback.entityTypes.event;
-
-    if (isEvent) {
-
-      if (
-        isTerminStillUpcoming(entity)
-      ) {
-        termine.push(item);
-      }
-
-      return;
-
-    }
+      )
+    );
 
   });
 
@@ -206,15 +198,7 @@ async function fetchMemberVotesGrouped(
 
   });
 
-  abstimmungen.sort((left, right) => (
-    new Date(right.updatedAt)
-    - new Date(left.updatedAt)
-  ));
-
-  return {
-    termine,
-    abstimmungen
-  };
+  return { termine };
 
 }
 
@@ -227,79 +211,7 @@ async function fetchMemberUpcomingVotes(
       memberId
     );
 
-  return [
-    ...grouped.termine,
-    ...grouped.abstimmungen
-  ];
-
-}
-
-function normalizeMemberVotesPage(
-  page,
-  totalItems,
-  pageSize
-) {
-
-  const size =
-    Math.max(
-      1,
-      Number(pageSize) || 1
-    );
-
-  const totalPages =
-    Math.max(
-      1,
-      Math.ceil(totalItems / size)
-    );
-
-  const safePage =
-    Math.min(
-      Math.max(
-        1,
-        Number(page) || 1
-      ),
-      totalPages
-    );
-
-  return {
-    page: safePage,
-    totalPages,
-    pageSize: size
-  };
-
-}
-
-function paginateMemberVotesItems(
-  items,
-  page,
-  pageSize
-) {
-
-  const totalItems =
-    items.length;
-
-  const normalized =
-    normalizeMemberVotesPage(
-      page,
-      totalItems,
-      pageSize
-    );
-
-  const startIndex =
-    (normalized.page - 1)
-    * normalized.pageSize;
-
-  return {
-    items:
-      items.slice(
-        startIndex,
-        startIndex + normalized.pageSize
-      ),
-    page: normalized.page,
-    totalPages: normalized.totalPages,
-    totalItems,
-    pageSize: normalized.pageSize
-  };
+  return grouped.termine;
 
 }
 
@@ -363,128 +275,9 @@ function renderMemberVotesCards(items) {
 
 }
 
-function renderMemberVotesPagination(
-  container,
-  totalItems,
-  currentPage
-) {
-
-  if (!container) {
-    return;
-  }
-
-  const normalized =
-    normalizeMemberVotesPage(
-      currentPage,
-      totalItems,
-      MEMBER_VOTES_POLLS_PAGE_SIZE
-    );
-
-  if (
-    totalItems
-    <= MEMBER_VOTES_POLLS_PAGE_SIZE
-  ) {
-
-    container.innerHTML = '';
-    container.hidden = true;
-
-    return;
-
-  }
-
-  container.hidden = false;
-
-  container.innerHTML = `
-
-<div class="member-votes-pagination">
-
-  <button
-    type="button"
-    class="member-votes-pagination__btn member-votes-pagination__prev"
-    ${normalized.page <= 1 ? 'disabled' : ''}>
-
-    ← Zurück
-
-  </button>
-
-  <span class="member-votes-pagination__info">
-    Seite ${normalized.page} von ${normalized.totalPages}
-  </span>
-
-  <button
-    type="button"
-    class="member-votes-pagination__btn member-votes-pagination__next"
-    ${normalized.page >= normalized.totalPages ? 'disabled' : ''}>
-
-    Weiter →
-
-  </button>
-
-</div>
-
-  `;
-
-  container
-    .querySelector('.member-votes-pagination__prev')
-    ?.addEventListener('click', () => {
-
-      renderMemberVotesList(
-        document.getElementById(
-          'member-votes-list'
-        ),
-        memberVotesGroupedCache,
-        normalized.page - 1
-      );
-
-    });
-
-  container
-    .querySelector('.member-votes-pagination__next')
-    ?.addEventListener('click', () => {
-
-      renderMemberVotesList(
-        document.getElementById(
-          'member-votes-list'
-        ),
-        memberVotesGroupedCache,
-        normalized.page + 1
-      );
-
-    });
-
-}
-
-function renderMemberVotesSection(
-  heading,
-  itemsHtml,
-  emptyText
-) {
-
-  const body =
-    itemsHtml
-      ? `<div class="member-votes-section__cards">${itemsHtml}</div>`
-      : `<p class="member-votes-section__empty">${escapeMemberHtml(emptyText)}</p>`;
-
-  return `
-<section class="member-votes-section">
-
-  <h3 class="member-votes-section__heading">
-    ${escapeMemberHtml(heading)}
-  </h3>
-
-  <hr class="member-votes-divider" aria-hidden="true">
-
-  ${body}
-
-</section>
-  `;
-
-}
-
 function renderMemberVotesList(
   container,
-  grouped,
-  pollsPage = 1
+  grouped
 ) {
 
   if (!container) {
@@ -494,29 +287,12 @@ function renderMemberVotesList(
   const termine =
     grouped?.termine || [];
 
-  const abstimmungen =
-    grouped?.abstimmungen || [];
-
-  memberVotesGroupedCache = grouped;
-  memberVotesPollsPage =
-    normalizeMemberVotesPage(
-      pollsPage,
-      abstimmungen.length,
-      MEMBER_VOTES_POLLS_PAGE_SIZE
-    ).page;
-
-  if (
-    !termine.length
-    && !abstimmungen.length
-  ) {
+  if (!termine.length) {
 
     container.innerHTML = `
 <article class="calendar-card">
   <div>
-    <h3>Keine Teilnahmen</h3>
-    <p>
-      Zu kommenden Terminen und Internem hast du derzeit nichts abgestimmt.
-    </p>
+    <p>Keine anstehenden Termine mit deiner Zusage.</p>
   </div>
 </article>
     `;
@@ -525,40 +301,7 @@ function renderMemberVotesList(
 
   }
 
-  const pagedPolls =
-    paginateMemberVotesItems(
-      abstimmungen,
-      memberVotesPollsPage,
-      MEMBER_VOTES_POLLS_PAGE_SIZE
-    );
-
-  container.innerHTML = `
-
-${renderMemberVotesSection(
-  'Termine',
-  renderMemberVotesCards(termine),
-  'Keine anstehenden Termine mit deiner Antwort.'
-)}
-
-${renderMemberVotesSection(
-  'Abstimmungen',
-  renderMemberVotesCards(pagedPolls.items),
-  'Keine Abstimmungen im Internen.'
-)}
-
-<div
-  id="member-votes-polls-pagination"
-  class="member-votes-pagination-wrap"
-  hidden></div>
-
-  `;
-
-  renderMemberVotesPagination(
-    container.querySelector(
-      '#member-votes-polls-pagination'
-    ),
-    abstimmungen.length,
-    pagedPolls.page
-  );
+  container.innerHTML =
+    renderMemberVotesCards(termine);
 
 }

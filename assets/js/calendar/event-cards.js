@@ -269,7 +269,10 @@ function formatTerminMonthDividerLabel(
   const label =
     sortDate.toLocaleDateString(
       'de-DE',
-      { month: 'long' }
+      {
+        month: 'long',
+        year: 'numeric'
+      }
     );
 
   return label.charAt(0).toUpperCase()
@@ -296,19 +299,7 @@ function renderTerminMonthDivider(
 
   labelEl.textContent = label;
 
-  const line =
-    document.createElement('span');
-
-  line.className =
-    'kalender-month-divider__line';
-
-  line.setAttribute(
-    'aria-hidden',
-    'true'
-  );
-
   divider.appendChild(labelEl);
-  divider.appendChild(line);
   wrapper.appendChild(divider);
 
 }

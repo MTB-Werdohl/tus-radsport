@@ -23,37 +23,31 @@
 
 .kalender-month-divider {
 
-  display: flex;
+  margin: 0;
 
-  align-items: center;
+  padding: 0.15rem 0 0;
 
-  gap: 12px;
+  color: rgba(255, 255, 255, 0.95);
 
-  margin: 4px 0 0;
+}
 
-  color: rgba(255, 255, 255, 0.92);
+.kalender-month-divider:not(:first-child) {
+
+  margin-top: 1.25rem;
 
 }
 
 .kalender-month-divider__label {
 
+  display: block;
+
   font-weight: 700;
 
-  font-size: 1.05rem;
+  font-size: 1.125rem;
 
-  white-space: nowrap;
+  letter-spacing: 0.01em;
 
-}
-
-.kalender-month-divider__line {
-
-  flex: 1;
-
-  border-bottom: 1px dashed
-
-    rgba(255, 255, 255, 0.45);
-
-  min-width: 2rem;
+  line-height: 1.3;
 
 }
 

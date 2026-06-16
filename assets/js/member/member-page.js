@@ -270,8 +270,7 @@ async function loadMemberVotesIfNeeded(
 
     renderMemberVotesList(
       container,
-      grouped,
-      1
+      grouped
     );
 
   } catch (error) {
