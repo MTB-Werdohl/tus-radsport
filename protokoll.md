@@ -4,12 +4,13 @@ title: Protokoll
 permalink: /protokoll/
 hide_title: true
 load_member_content_edit_css: true
+load_vorstand_css: true
 member_verwaltung_page: true
 ---
 
 <section class="member-verwaltung-page">
 
-  <div id="admin">
+  <div id="vorstand-page">
 
     <div class="page-header">
 
@@ -70,13 +71,13 @@ member_verwaltung_page: true
 
 {% if page.member_verwaltung_page %}
 <script src="/assets/js/marked/marked.min.js"></script>
-<script src="/admin/js/admin-utils.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/admin-auth.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/auth-guard.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/protocol-utils.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/protocol-folder-ui.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/protocol-view.js?v={{ site.admin_js_version }}"></script>
+<script src="/assets/js/admin/admin-utils.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/admin/admin-auth.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/admin/auth-guard.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/admin/protocol-utils.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/admin/protocol-folder-ui.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/admin/protocol-view.js?v={{ site.vorstand_js_version }}"></script>
 <script>
-requireAdminSession(initProtocolView);
+requireVorstandSession(initProtocolView);
 </script>
 {% endif %}

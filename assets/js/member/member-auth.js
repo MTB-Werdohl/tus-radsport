@@ -819,16 +819,22 @@ function resolveMemberMagicLinkRedirectTo() {
   const base =
     `${window.siteConfig.siteUrl}/profil/`;
 
-  const adminReturn =
-    sessionStorage.getItem('adminReturnUrl');
+  const vorstandReturn =
+    sessionStorage.getItem('vorstandReturnUrl')
+    || sessionStorage.getItem('adminReturnUrl');
 
   if (
-    adminReturn
-    && adminReturn.startsWith('/admin')
+    vorstandReturn
+    && (
+      vorstandReturn.startsWith('/mitglied-bearbeiten')
+      || vorstandReturn.startsWith('/protokoll')
+      || vorstandReturn.startsWith('/termin-bearbeiten')
+      || vorstandReturn.startsWith('/profil')
+    )
   ) {
 
     return (
-      `${base}?next=${encodeURIComponent(adminReturn)}`
+      `${base}?next=${encodeURIComponent(vorstandReturn)}`
     );
 
   }
@@ -895,7 +901,10 @@ function handleMemberReturnRedirect(member) {
   }
 
   if (
-    nextUrl.startsWith('/admin')
+    nextUrl.startsWith('/mitglied-bearbeiten')
+    || nextUrl.startsWith('/protokoll')
+    || nextUrl.startsWith('/termin-bearbeiten')
+    || nextUrl.includes('tab=verwaltung')
   ) {
 
     if (
@@ -904,7 +913,7 @@ function handleMemberReturnRedirect(member) {
     ) {
 
       sessionStorage.removeItem(
-        'adminReturnUrl'
+        'vorstandReturnUrl'
       );
 
       sessionStorage.removeItem(

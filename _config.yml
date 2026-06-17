@@ -19,7 +19,7 @@ future: true
 include:
   - kalender
 
-admin_js_version: "20260601"
+vorstand_js_version: "20260601"
 
 contact:
   name: "Tobias Withalm"

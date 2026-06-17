@@ -1,6 +1,6 @@
-# Admin-E-Mail — Setup
+# Vorstand-E-Mail — Setup
 
-Versand aus dem Admin-Bereich (`/admin/email.html`) über die Edge Function **`send-admin-email`**.
+Versand aus **Profil → Tab E-Mail** (`/profil/?tab=email`) über die Edge Function **`send-admin-email`**.
 
 Absender standardmäßig: **info@mtb-werdohl.de**
 
@@ -66,12 +66,12 @@ SQL im **SQL Editor** ausführen: [`supabase-admin-email-log.sql`](supabase-admi
 - **18 Monate** Aufbewahrung, danach automatische Löschung bei jedem neuen Eintrag
 - Edge Function `send-admin-email` danach **neu deployen** (schreibt Protokoll per Service Role)
 
-In `/admin/email-log.html` erscheint das **Versandprotokoll** (Dashboard zwischen „E-Mail senden“ und „Posteingang“).
+In **Profil → Tab E-Mail** erscheint das **Versandprotokoll** (zwischen „E-Mail senden“ und „Posteingang“).
 
 ## 5. Test
 
 1. Frontend deployen (Cache-Version in `_config.yml`)
-2. Als Vorstand `/admin/email.html` öffnen
+2. Als Vorstand `/profil/?tab=email` öffnen
 3. Test an eigenes Mitglied mit Einwilligung
 4. Bei Fehler: Edge Function **Logs** im Supabase Dashboard prüfen
 

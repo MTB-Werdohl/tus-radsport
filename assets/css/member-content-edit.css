@@ -1,4 +1,4 @@
-/* Profil Content-Edit (/profil/termin_edit/, /profil/news_edit/) — ohne admin.css */
+/* Profil Content-Edit (/termin-bearbeiten/, /profil/news_edit/) — ohne vorstand.css */
 
 body:has(.member-content-edit-section) {
   max-width: none;
@@ -266,7 +266,7 @@ body:has(.member-content-edit-section) {
 
 }
 
-/* Mediathek-Dialog (JS: admin-media-picker — nur Struktur, kein admin.css) */
+/* Mediathek-Dialog (JS: media-picker — nur Struktur, kein vorstand.css) */
 
 .admin-media-picker {
   border: none;
@@ -1362,7 +1362,7 @@ body.member-feedback-modal-open {
   padding: 24px 16px 48px;
 }
 
-.member-verwaltung-page #admin .page-header {
+.member-verwaltung-page #vorstand-page .page-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -1370,17 +1370,17 @@ body.member-feedback-modal-open {
   margin-bottom: 25px;
 }
 
-.member-verwaltung-page #admin .page-header h1 {
+.member-verwaltung-page #vorstand-page .page-header h1 {
   margin: 0;
   color: #fff;
 }
 
-.member-verwaltung-page #admin .page-header p {
+.member-verwaltung-page #vorstand-page .page-header p {
   margin: 6px 0 0;
   opacity: 0.75;
 }
 
-.member-verwaltung-page #admin .back-button {
+.member-verwaltung-page #vorstand-page .back-button {
   display: inline-block;
   background: rgba(255, 255, 255, 0.12);
   color: #fff;
@@ -1391,25 +1391,25 @@ body.member-feedback-modal-open {
   font-weight: 600;
 }
 
-.member-verwaltung-page #admin .back-button:hover {
+.member-verwaltung-page #vorstand-page .back-button:hover {
   background: rgba(46, 139, 87, 0.95);
 }
 
-.member-verwaltung-page #admin .hidden {
+.member-verwaltung-page #vorstand-page .hidden {
   display: none;
 }
 
-.member-verwaltung-page #admin .member-admin-form label,
-.member-verwaltung-page #admin .member-admin-form textarea {
+.member-verwaltung-page #vorstand-page .member-admin-form label,
+.member-verwaltung-page #vorstand-page .member-admin-form textarea {
   display: block;
   margin-bottom: 15px;
   color: #fff;
   font-weight: 600;
 }
 
-.member-verwaltung-page #admin .member-admin-form input,
-.member-verwaltung-page #admin .member-admin-form select,
-.member-verwaltung-page #admin .member-admin-form textarea {
+.member-verwaltung-page #vorstand-page .member-admin-form input,
+.member-verwaltung-page #vorstand-page .member-admin-form select,
+.member-verwaltung-page #vorstand-page .member-admin-form textarea {
   width: 100%;
   margin-top: 6px;
   margin-bottom: 0;
@@ -1422,19 +1422,19 @@ body.member-feedback-modal-open {
   color: #111;
 }
 
-.member-verwaltung-page #admin .member-admin-form textarea {
+.member-verwaltung-page #vorstand-page .member-admin-form textarea {
   min-height: 180px;
 }
 
-.member-verwaltung-page #admin .member-admin-form > .row {
+.member-verwaltung-page #vorstand-page .member-admin-form > .row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
   margin-bottom: 15px;
 }
 
-.member-verwaltung-page #admin .member-admin-form button,
-.member-verwaltung-page #admin #save-protocol {
+.member-verwaltung-page #vorstand-page .member-admin-form button,
+.member-verwaltung-page #vorstand-page #save-protocol {
   width: 100%;
   margin-bottom: 15px;
   padding: 12px;
@@ -1447,67 +1447,67 @@ body.member-feedback-modal-open {
   font-weight: 600;
 }
 
-.member-verwaltung-page #admin .member-admin-actions {
+.member-verwaltung-page #vorstand-page .member-admin-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
 }
 
-.member-verwaltung-page #admin .member-admin-actions button {
+.member-verwaltung-page #vorstand-page .member-admin-actions button {
   width: auto;
   flex: 1 1 180px;
 }
 
-.member-verwaltung-page #admin .secondary-button {
+.member-verwaltung-page #vorstand-page .secondary-button {
   background: rgba(255, 255, 255, 0.12);
 }
 
-.member-verwaltung-page #admin .member-admin-hint,
-.member-verwaltung-page #admin .admin-hint {
+.member-verwaltung-page #vorstand-page .member-admin-hint,
+.member-verwaltung-page #vorstand-page .admin-hint {
   margin: -4px 0 15px;
   font-size: 14px;
   opacity: 0.75;
   color: rgba(255, 255, 255, 0.78);
 }
 
-.member-verwaltung-page #admin .member-edit-loading,
-.member-verwaltung-page #admin .member-edit-status {
+.member-verwaltung-page #vorstand-page .member-edit-loading,
+.member-verwaltung-page #vorstand-page .member-edit-status {
   margin: 0 0 16px;
   font-size: 15px;
   color: #fff;
 }
 
-.member-verwaltung-page #admin .member-edit-status--error {
+.member-verwaltung-page #vorstand-page .member-edit-status--error {
   color: #ffb4b4;
 }
 
-.member-verwaltung-page #admin .member-consent-readonly {
+.member-verwaltung-page #vorstand-page .member-consent-readonly {
   background: rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   padding: 16px;
   margin-bottom: 15px;
 }
 
-.member-verwaltung-page #admin .admin-draft-preview-actions {
+.member-verwaltung-page #vorstand-page .admin-draft-preview-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   justify-content: flex-end;
 }
 
-.member-verwaltung-page #admin .admin-draft-preview__body {
+.member-verwaltung-page #vorstand-page .admin-draft-preview__body {
   margin-top: 20px;
   line-height: 1.6;
   color: #fff;
 }
 
-.member-verwaltung-page #admin .admin-protocol-files {
+.member-verwaltung-page #vorstand-page .admin-protocol-files {
   margin-top: 24px;
   display: grid;
   gap: 16px;
 }
 
-.member-verwaltung-page #admin .admin-protocol-files h2 {
+.member-verwaltung-page #vorstand-page .admin-protocol-files h2 {
   margin: 0;
   font-size: 1.1rem;
   color: #fff;
@@ -1515,11 +1515,11 @@ body.member-feedback-modal-open {
 
 @media (max-width: 640px) {
 
-  .member-verwaltung-page #admin .member-admin-form > .row {
+  .member-verwaltung-page #vorstand-page .member-admin-form > .row {
     grid-template-columns: 1fr;
   }
 
-  .member-verwaltung-page #admin .page-header {
+  .member-verwaltung-page #vorstand-page .page-header {
     flex-direction: column;
   }
 

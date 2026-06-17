@@ -80,7 +80,7 @@ Optionale Frontmatter-Flags:
 | `member-auth.js` | Session, Magic Link, Logout, Validierung; Rückkehr-URL (`memberReturnUrl`, `?next=`) nach Login |
 | `member-change-summary.js` | Popup „Seit deinem letzten Besuch“ (nur Mitglied/Vorstand) |
 | `member-account.js` | Account-Löschung (Anonymisierung) via Edge Function |
-| `member-nav.js` | Header-UI (Login / Profil / Admin-Link) |
+| `member-nav.js` | Header-UI (Login / Profil / Verwaltung-Link) |
 | `member-render.js` | Profilseite rendern (Mitglied + public), Avatar-Block |
 | `member-page.js` | Profilseite initialisieren (Tabs Strava, Abstimmungen, Aktivitäten) |
 | `preview-role.js` | Rollen-Vorschau für Vorstand (`getViewerMember`, `isRealVorstand`) |
@@ -91,26 +91,32 @@ Ablauf extern (`public`): Registrierung im Feedback-Pop-up → Magic Link → DB
 
 **Rollen** (`members.rolle`):
 
-| Rolle | Profil | Admin `/admin/` | Interne Inhalte (`sichtbarkeit=members`) |
-|-------|--------|-----------------|------------------------------------------|
+| Rolle | Profil | Verwaltung | Interne Inhalte (`sichtbarkeit=members`) |
+|-------|--------|------------|------------------------------------------|
 | `Mitglied` | ja | nein | ja |
-| `Vorstand` | ja | ja (voller CMS-Zugriff) | ja |
-| `public` | ja (eingeschränkt, inkl. Account löschen) | nein | nein — nur öffentliche Abstimmungen (`public_voting`) |
+| `Vorstand` | ja | ja | ja |
+| `public` | ja (eingeschränkt) | nein | nein — nur öffentliche Abstimmungen |
 
 Ausführliche Einrichtung: [`docs/supabase-members-setup.md`](supabase-members-setup.md) · SQL: [`docs/supabase-members-auth.sql`](supabase-members-auth.sql) · Rollen/RLS: [`docs/supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql) · Public/Anonymisierung: [`docs/supabase/RUNBOOK.md`](supabase/RUNBOOK.md)
 
 ---
 
-## Admin
+## Vorstand / Verwaltung
 
-- Eigene HTML-Seiten unter `admin/` mit Jekyll-Frontmatter `layout: null`
-- Gemeinsamer Kopf: `_includes/admin-head.html` (Supabase, Member-Service, `admin-utils.js`, `auth-guard.js`)
-- Einheitliches Layout: `.page-header` + `.admin-topbar` (Listen) bzw. `.member-admin-form` (Formulare)
-- Kein separates Admin-Login: Vorstand meldet sich in der Website-Navigation per Magic Link an
-- `/admin/` und Unterseiten: ohne Vorstand-Session → Redirect nach `/` (Mitglied bleibt eingeloggt)
-- Session-Prüfung: `requireAdminSession(callback)` in `admin/js/auth-guard.js` — nutzt `isRealVorstand()` (unabhängig von Rollen-Vorschau)
-- Admin-Module: Termine, News, Galerien, Mitglieder, Tröte, Website-Hinweise, Rollen-Vorschau, Feedback (`admin/js/*`)
-- HTML-Escaping: `escapeAdminHtml()` in `admin/js/admin-utils.js`
+Kein separater `/admin/`-Bereich. Vorstand arbeitet im **Frontend**:
+
+| Bereich | URL / Dateien |
+|---------|----------------|
+| Mitglieder, Protokolle, Saisonmodus | `/profil/?tab=verwaltung` — `member/member-verwaltung.js`, `admin/members-list.js`, `admin/protocols-list.js`, `admin/site-content-admin.js` |
+| E-Mail | `/profil/?tab=email` — `member/member-email.js` |
+| Mitglied bearbeiten | `/mitglied-bearbeiten/` — `admin/members-edit.js` |
+| Protokolle | `/protokoll/`, `/protokoll-bearbeiten/` — `admin/protocol-*.js` |
+| Termine | `/termin-bearbeiten/` — `admin/feedback-module-form.js`, Medien-Picker |
+| Abstimmungen auswerten | Inline in Kalender, Event, Profil — `admin/feedback-results.js` |
+
+Auth: Magic Link in der Navigation. Geschützte Seiten: `requireVorstandSession()` in `assets/js/admin/auth-guard.js` (`isRealVorstand()`).
+
+Hilfsfunktionen: `escapeAdminHtml()` in `assets/js/admin/admin-utils.js` · Styles: `assets/css/vorstand.css` (Formulare, Protokoll-Ordner)
 
 SQL für Rollen und RLS: [`docs/supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql)
 
@@ -132,7 +138,7 @@ SQL: [`docs/supabase-content-visibility.sql`](supabase-content-visibility.sql) �
 | `News` | Vereinsnachrichten |
 | `galleries` | Galerie-Metadaten |
 | `gallery_images` | Bilder pro Galerie |
-| `site_state` | Website-Hinweise (Phase 5) |
+| `site_state` | Saisonmodus (`saison_mode`) |
 | `members` | Vereinsmitglieder (`rolle`, Profil, Einwilligungen, `avatar_*`) |
 | `strava_connections` / `activities` | Strava-OAuth, importierte Touren (`sport_category`) |
 | `member_stats_*` / `club_stats_*` | Rankings und Vereinsziele (nur Rad) |
@@ -141,7 +147,7 @@ SQL: [`docs/supabase-content-visibility.sql`](supabase-content-visibility.sql) �
 
 **Storage-Buckets:** `media` (Bilder, GPX), `avatars` (Profilbilder, öffentlich lesbar)
 
-Geplante Erweiterung Medien-Struktur, Mediathek & Pfad-basierte Referenzen: [MEDIA-STORAGE-ROADMAP.md](MEDIA-STORAGE-ROADMAP.md).
+Geplante Erweiterung Medien-Struktur: siehe RPCs in [`supabase-media-move.sql`](supabase-media-move.sql).
 
 SQL Feedback: [`supabase-feedback.sql`](supabase-feedback.sql)
 
@@ -151,14 +157,14 @@ SQL Feedback: [`supabase-feedback.sql`](supabase-feedback.sql)
 - `anonymize-member-account` — Account-Löschung; **Verify JWT OFF**
 - `strava-oauth-start`, `strava-oauth-callback`, `strava-sync` — Strava-Integration
 
-## Admin-E-Mail
+## Vorstand-E-Mail
 
 | Datei | Aufgabe |
 |-------|---------|
-| `admin/email.html` | Formular: Empfänger, Betreff, Nachricht |
-| `admin/js/email-admin.js` | Vorschau + Aufruf Edge Function |
+| `member/member-email.js` | Formular, Vorschau, Versand |
+| `member/member-email-log.js` | Versandprotokoll |
 
-Empfängerfilter serverseitig: `einwilligung_kontakt = true`, gültige E-Mail, nicht anonymisiert.
+Edge Function: `send-admin-email` — Setup: [`supabase-admin-email-setup.md`](supabase-admin-email-setup.md)
 
 ## Tröte (Mitglieder-Zusammenfassung)
 
@@ -173,16 +179,15 @@ SQL: RPCs in Phase-5-Migration (`get_member_change_summary`, `touch_member_chang
 
 ---
 
-## Website-Hinweise & Rollen-Vorschau (Phase 5)
+## Saisonmodus
 
-| Bereich | Dateien | Admin |
-|---------|---------|-------|
-| Banner, Saison, Landing, Overlay | `site/site-content-state.js`, `site/site-content-render.js` | `/admin/site-content.html` |
-| Rollen-Vorschau | `core/preview-role.js`, `core/preview-banner.js` | `/admin/preview.html` |
+| Datei | Aufgabe |
+|-------|---------|
+| `site/site-content-state.js` | Lesen/Schreiben `site_state.saison_mode` |
+| `site/site-content-render.js` | Banner + Overlay für Besucher |
+| `admin/site-content-admin.js` | Formular in Profil → Verwaltung |
 
-`site_state`-Keys: `site_banner`, `saison_mode`, `landing_hints`, `site_overlay` — SQL: [`supabase/supabase-site-content.sql`](supabase/supabase-site-content.sql)
-
-Vorschau simuliert **clientseitig** Public- oder Mitglied-Sicht; echte Session und Admin-Rechte bleiben unverändert.
+Bei aktivem Saisonmodus: Banner unter dem Header + schließbares Overlay. SQL: [`supabase/supabase-site-content.sql`](supabase/supabase-site-content.sql)
 
 ---
 
@@ -260,7 +265,7 @@ feedback-init.js                → initFeedbackModule({ entityType, entityId, e
 
 Detail-Seiten: Abstimmung im **Seiten-Header** (Termin neben Datum, News neben Titel), nicht am Ende des Artikels. Nach Login: Kalender-Cache wird geleert (`termine-loader.js` → `member-session-ready`).
 
-**Admin:** `admin/js/feedback-module-form.js` in Termin-/News-Bearbeitung (optional, zusammen mit Speichern). Neuer Termin default **Entwurf**. Schalter **Öffentliche Abstimmung** (`public_voting`) — Gäste-Registrierung nur wenn zusätzlich `sichtbarkeit=public`. Mitglieder-E-Mail im Admin **nicht änderbar** (Login-Bindung). Auswertung: `admin/feedback.html`, `admin/feedback_results.html?module_id=…` (CSV-Export). Termin-E-Mails: Ja **und** Vielleicht (`send-admin-email`). Mitglieder-Löschung = Anonymisierung (`anonymize_member` + Edge Function).
+**Vorstand:** `assets/js/admin/feedback-module-form.js` in `/termin-bearbeiten/`. Auswertung inline (`assets/js/admin/feedback-results.js`). Mitglieder-E-Mail im Formular **nicht änderbar** (Login-Bindung).
 
 Typen v1: `yes_maybe`, `yes_no_comment`, `poll` — Poll speichert `option_id` in `answer`, nicht Anzeige-Text.
 
@@ -269,6 +274,6 @@ SQL-Reihenfolge: [`docs/supabase/RUNBOOK.md`](supabase/RUNBOOK.md) (Feedback + p
 ## Wartung
 
 - Tabellennamen in `site-config.js` und `scripts/generate-pages.js` (`TABLES`) synchron halten
-- Admin-JS-Version nur in `_config.yml` → `admin_js_version` (Cache-Busting)
+- Vorstand-JS-Version in `_config.yml` → `vorstand_js_version` (Cache-Busting)
 - Kein Service-Role-Key im Frontend
 - Go-live: [`GO-LIVE-CHECKLIST.md`](GO-LIVE-CHECKLIST.md)

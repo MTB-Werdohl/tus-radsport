@@ -1,36 +1,54 @@
-const ADMIN_HOME_URL = '/?login=admin';
+const VORSTAND_LOGIN_URL =
+  '/?login=vorstand';
 
-window.requireAdminSession = async function (callback) {
+function isVorstandProtectedPath(
+  path
+) {
 
-  const member =
-    await ensureVorstandSession();
+  return (
+    path.startsWith('/mitglied-bearbeiten')
+    || path.startsWith('/protokoll')
+    || path.startsWith('/termin-bearbeiten')
+  );
 
-  if (!member) {
+}
 
-    sessionStorage.setItem(
-      'adminReturnUrl',
-      window.location.pathname
-      + window.location.search
-    );
+window.requireVorstandSession =
+  async function (callback) {
 
-    window.location.href =
-      ADMIN_HOME_URL;
+    const member =
+      await ensureVorstandSession();
 
-    return;
+    if (!member) {
 
-  }
+      sessionStorage.setItem(
+        'vorstandReturnUrl',
+        window.location.pathname
+        + window.location.search
+      );
 
-  if (typeof callback === 'function') {
+      window.location.href =
+        VORSTAND_LOGIN_URL;
 
-    const adminRoot =
-      document.getElementById('admin');
+      return;
 
-    if (adminRoot) {
-      adminRoot.dataset.sessionReady = 'true';
     }
 
-    return await callback();
+    if (typeof callback === 'function') {
 
-  }
+      const shell =
+        document.getElementById('vorstand-page')
+        || document.getElementById('admin');
 
-};
+      if (shell) {
+        shell.dataset.sessionReady = 'true';
+      }
+
+      return await callback();
+
+    }
+
+  };
+
+window.requireAdminSession =
+  window.requireVorstandSession;

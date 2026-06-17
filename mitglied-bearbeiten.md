@@ -4,12 +4,13 @@ title: Mitglied bearbeiten
 permalink: /mitglied-bearbeiten/
 hide_title: true
 load_member_content_edit_css: true
+load_vorstand_css: true
 member_verwaltung_page: true
 ---
 
 <section class="member-verwaltung-page">
 
-  <div id="admin">
+  <div id="vorstand-page">
 
     <div class="page-header">
 
@@ -215,13 +216,13 @@ member_verwaltung_page: true
 </section>
 
 {% if page.member_verwaltung_page %}
-<script src="/admin/js/admin-utils.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/admin-auth.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/auth-guard.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/member-pdf.js?v={{ site.admin_js_version }}"></script>
+<script src="/assets/js/admin/admin-utils.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/admin/admin-auth.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/admin/auth-guard.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/admin/member-pdf.js?v={{ site.vorstand_js_version }}"></script>
 <script src="/assets/js/member/member-account.js"></script>
-<script src="/admin/js/members-edit.js?v={{ site.admin_js_version }}"></script>
+<script src="/assets/js/admin/members-edit.js?v={{ site.vorstand_js_version }}"></script>
 <script>
-requireAdminSession(initMemberEdit);
+requireVorstandSession(initMemberEdit);
 </script>
 {% endif %}

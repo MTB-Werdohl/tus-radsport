@@ -81,14 +81,15 @@ function showLoginCallbackNotice(member) {
 
   const nextUrl =
     params.get('next')
-    || sessionStorage.getItem('adminReturnUrl');
+    || sessionStorage.getItem('vorstandReturnUrl');
 
   const adminLink =
     nextUrl
     && (
-      nextUrl.startsWith('/admin')
-      || nextUrl.startsWith('/mitglied-bearbeiten')
+      nextUrl.startsWith('/mitglied-bearbeiten')
       || nextUrl.startsWith('/protokoll')
+      || nextUrl.startsWith('/termin-bearbeiten')
+      || nextUrl.includes('tab=verwaltung')
     )
     && typeof isVorstand === 'function'
     && isVorstand(member)
@@ -144,9 +145,14 @@ ${adminLink}
 
   if (
     nextUrl
-    && nextUrl.startsWith('/admin')
+    && (
+      nextUrl.startsWith('/mitglied-bearbeiten')
+      || nextUrl.startsWith('/protokoll')
+      || nextUrl.startsWith('/termin-bearbeiten')
+      || nextUrl.includes('tab=verwaltung')
+    )
   ) {
-    sessionStorage.removeItem('adminReturnUrl');
+    sessionStorage.removeItem('vorstandReturnUrl');
   }
 
 }

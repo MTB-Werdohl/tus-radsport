@@ -145,7 +145,10 @@ function handleAdminLoginIntent() {
       window.location.search
     );
 
-  if (params.get('login') !== 'admin') {
+  if (
+    params.get('login') !== 'admin'
+    && params.get('login') !== 'vorstand'
+  ) {
     return;
   }
 
@@ -161,10 +164,10 @@ function handleAdminLoginIntent() {
   ) {
 
     const returnUrl =
-      sessionStorage.getItem('adminReturnUrl')
+      sessionStorage.getItem('vorstandReturnUrl')
       || '/profil/?tab=verwaltung';
 
-    sessionStorage.removeItem('adminReturnUrl');
+    sessionStorage.removeItem('vorstandReturnUrl');
 
     window.location.replace(returnUrl);
 

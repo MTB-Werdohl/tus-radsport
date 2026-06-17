@@ -80,7 +80,7 @@ select public.check_member_email('deine-echte@email.de');
 | | `https://www.mtb-werdohl.de/**` |
 | | `http://localhost:4000/profil/` *(lokal)* |
 
-`/admin/` muss **nicht** als Login-Ziel konfiguriert sein — Vorstand geht nach Magic Link auf `/profil/` und öffnet Admin über die Navbar. `/admin/` in der Allow-List ist optional (z. B. für alte Links).
+Vorstand öffnet nach Magic Link die **Verwaltung** über `/profil/?tab=verwaltung` (Navbar-Link „Verwaltung“). Kein separater Admin-Bereich.
 
 Vollständige SQL-Reihenfolge: [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md)
 
@@ -159,7 +159,7 @@ Magic Link muss auf localhost zeigen dürfen (Redirect URLs).
 
 Beide nutzen **denselben Magic-Link-Login** (Supabase Auth + Tabelle `members`).
 
-| Rolle (`members.rolle`) | Profil `/profil/` | Admin `/admin/` |
+| Rolle (`members.rolle`) | Profil `/profil/` | Verwaltung `/profil/?tab=verwaltung` |
 |-------------------------|-------------------|-----------------|
 | `Mitglied` (Standard) | ja | nein |
 | `Vorstand` | ja | ja (CMS) |
@@ -168,9 +168,9 @@ Beide nutzen **denselben Magic-Link-Login** (Supabase Auth + Tabelle `members`).
 
 1. In `members`: Spalte `rolle` auf `Vorstand` setzen (exakt so, Groß/Kleinschreibung egal in der DB-Prüfung)
 2. SQL-Skripte gemäß [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md) ausführen (Schritte 2–4)
-3. `/admin/` über Navbar-Link „Admin“ öffnen — ohne Vorstand-Rolle stiller Redirect nach `/`
+3. `/profil/?tab=verwaltung` über Navbar-Link „Verwaltung“ öffnen — ohne Vorstand-Rolle kein Tab sichtbar
 
-Mitglieder ohne Vorstand-Rolle erhalten auf `/admin/` die Meldung „Kein Vorstand-Zugang“.
+Mitglieder ohne Vorstand-Rolle sehen den Tab **Verwaltung** nicht.
 
 ---
 
@@ -210,12 +210,12 @@ Datenschutz: [`../datenschutz.md`](../datenschutz.md) §12.5 / §12.6
 - [ ] `members.email` für alle Mitglieder gesetzt
 - [ ] [`supabase-members-auth.sql`](supabase-members-auth.sql) ausgeführt (inkl. **UPDATE-Policy** für Profil speichern)
 - [ ] `check_member_email('test@…')` → `true` für bekannte E-Mail
-- [ ] Site URL + Redirect URLs gesetzt (`/profil/`, `/**`; `/admin/` optional, nicht nötig für Login)
+- [ ] Site URL + Redirect URLs gesetzt (`/profil/`, `/**`)
 - [ ] E-Mail-Provider / SMTP konfiguriert
 - [ ] [`supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql) ausgeführt (Vorstand-RLS)
 - [ ] Mindestens ein Test-Vorstand mit `rolle = 'Vorstand'`
 - [ ] Magic Link kommt an und `/profil/` funktioniert
-- [ ] Vorstand: `/admin/` über Navbar nach Magic Link erreichbar
+- [ ] Vorstand: `/profil/?tab=verwaltung` über Navbar nach Magic Link erreichbar
 - [ ] Mitglied ohne Vorstand-Rolle: kein Admin-Zugang
 - [ ] *(optional Feedback public)* RUNBOOK-Feedback-Skripte + `anonymize-member-account` deployt, Test Registrierung → Abstimmung → Account löschen
 

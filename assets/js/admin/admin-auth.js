@@ -24,37 +24,26 @@ async function ensureVorstandSession(
 
 }
 
-let adminAuthSyncStarted = false;
+let vorstandAuthSyncStarted = false;
 
-function startAdminAuthSync() {
+function startVorstandAuthSync() {
 
   if (
-    adminAuthSyncStarted
+    vorstandAuthSyncStarted
     || !window.supabaseClient
+    || !isVorstandProtectedPath(
+      window.location.pathname
+    )
   ) {
     return;
   }
 
-  const path =
-    window.location.pathname;
-
-  const usesAdminShell =
-    path.startsWith('/admin')
-    || path.startsWith('/mitglied-bearbeiten')
-    || path.startsWith('/protokoll');
-
-  if (!usesAdminShell) {
-    return;
-  }
-
-  adminAuthSyncStarted = true;
+  vorstandAuthSyncStarted = true;
 
   let signOutTimer = null;
 
   window.addEventListener(
-
     'storage',
-
     (event) => {
 
       if (
@@ -74,10 +63,13 @@ function startAdminAuthSync() {
 
       }
 
+      const shell =
+        document.getElementById('vorstand-page')
+        || document.getElementById('admin');
+
       if (
-        document.getElementById('admin')
-          ?.dataset.sessionReady
-          !== 'true'
+        shell?.dataset.sessionReady
+        !== 'true'
       ) {
         return;
       }
@@ -95,9 +87,8 @@ function startAdminAuthSync() {
         }, 500);
 
     }
-
   );
 
 }
 
-startAdminAuthSync();
+startVorstandAuthSync();

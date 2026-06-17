@@ -1,6 +1,6 @@
 -- Medien-Storage Phase 0 — Pfad-Spalten für Termine/News
 -- Nach supabase-content-visibility.sql / supabase-vorstand-roles.sql
--- Siehe docs/MEDIA-STORAGE-ROADMAP.md
+-- Siehe docs/supabase/RUNBOOK.md
 
 alter table public."Termine"
   add column if not exists image_storage_path text,

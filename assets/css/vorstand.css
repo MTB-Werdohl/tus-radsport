@@ -66,12 +66,12 @@ h3 {
   margin-bottom: 0;
 }
 
-#admin .admin-topbar,
-#admin #protocols,
-#admin #members,
-#admin .admin-pagination,
-#admin [id$="-pagination"],
-#admin .event-separator {
+#vorstand-page .admin-topbar,
+#vorstand-page #protocols,
+#vorstand-page #members,
+#vorstand-page .admin-pagination,
+#vorstand-page [id$="-pagination"],
+#vorstand-page .event-separator {
   max-width: 700px;
   margin-left: auto;
   margin-right: auto;
@@ -79,8 +79,8 @@ h3 {
   box-sizing: border-box;
 }
 
-#admin #protocols,
-#admin #members {
+#vorstand-page #protocols,
+#vorstand-page #members {
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -485,13 +485,13 @@ h3 {
   letter-spacing: 1px;
 }
 
-#admin .admin-feedback-section {
+#vorstand-page .admin-feedback-section {
   margin: 24px 0;
   padding-top: 8px;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-#admin .admin-feedback-section h2 {
+#vorstand-page .admin-feedback-section h2 {
   margin: 0 0 16px;
   font-size: 1.1rem;
 }

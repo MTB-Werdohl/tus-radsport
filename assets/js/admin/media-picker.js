@@ -198,7 +198,7 @@ function applyMediaPickerSelection(
   }
 
   const root =
-    document.querySelector('#admin');
+    document.querySelector('#vorstand-page');
 
   if (root) {
     root.dispatchEvent(

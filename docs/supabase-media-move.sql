@@ -1,6 +1,6 @@
 -- Medien-Storage Phase 3 — Referenzen, Move/Rename, sicheres Löschen
 -- Nach supabase-media-storage-paths.sql + supabase-vorstand-roles.sql
--- Siehe docs/MEDIA-STORAGE-ROADMAP.md
+-- Siehe docs/supabase/RUNBOOK.md
 
 create or replace function public.normalize_media_storage_path(
   p_path text

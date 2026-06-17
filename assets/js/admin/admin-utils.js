@@ -5,7 +5,7 @@ function initAdminUnsavedGuard(options = {}) {
   const root =
     document.querySelector(
       options.rootSelector
-      || '#admin'
+      || '#vorstand-page'
     );
 
   if (!root) {
@@ -393,7 +393,7 @@ function showAdminContentCreatorHint(
 
   const hint =
     document.querySelector(
-      '#admin .page-header p'
+      '#vorstand-page .page-header p'
     );
 
   if (!hint || !memberId) {

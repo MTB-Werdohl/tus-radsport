@@ -274,7 +274,7 @@ RPCs: `set_event_feedback_answer`, `list_feedback_participation_changes` (Vorsta
 
 ## Storage `media`
 
-Pfade z. B. `shared/images/…`, `shared/routes/…`, `galleries/{jahr}/{slug}/…`, Legacy-Root-Uploads. Siehe [MEDIA-STORAGE-ROADMAP.md](../MEDIA-STORAGE-ROADMAP.md).
+Pfade z. B. `shared/images/…`, `shared/routes/…`, `galleries/{jahr}/{slug}/…`, Legacy-Root-Uploads. Details: [`supabase-media-storage-paths.sql`](../supabase-media-storage-paths.sql), [`supabase-media-move.sql`](../supabase-media-move.sql).
 
 | RPC | Rolle | Zweck |
 |-----|-------|--------|

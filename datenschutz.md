@@ -66,7 +66,7 @@ Weitere Informationen: [GitHub Privacy Statement](https://docs.github.com/de/sit
 
 Zur Anbindung an unser Backend wird die JavaScript-Bibliothek **Supabase** über das Content Delivery Network **jsDelivr** geladen.
 
-Im **Admin-Bereich** (nur für den Vorstand) kann beim PDF-Export von Mitgliederlisten zusätzlich die Bibliothek **pdfmake** über jsDelivr nachgeladen werden. Das erfolgt erst, wenn du den Export auslöst — nicht beim normalen Seitenaufruf.
+In der **Verwaltung** auf der Profilseite (nur für den Vorstand) kann beim PDF-Export von Mitgliederlisten zusätzlich die Bibliothek **pdfmake** über jsDelivr nachgeladen werden. Das erfolgt erst, wenn du den Export auslöst — nicht beim normalen Seitenaufruf.
 
 Anbieter:
 
@@ -263,7 +263,7 @@ Rechtsgrundlagen:
 
 Auf der Profilseite (**Mein Profil**, [mtb-werdohl.de/profil/](https://www.mtb-werdohl.de/profil/)) können eingeloggte **Vereinsmitglieder** (Rollen „Mitglied“ oder „Vorstand“) gesonderte Einwilligungen **online** erteilen, insbesondere:
 
-- **Einwilligung Kontakt** — Nutzung der Daten für vereinsbezogene Kontaktaufnahme (insbesondere E-Mails aus dem Vorstand-Admin-Bereich, siehe Abschnitt 12.9)
+- **Einwilligung Kontakt** — Nutzung der Daten für vereinsbezogene Kontaktaufnahme (insbesondere E-Mails über **Profil → Tab E-Mail**, siehe Abschnitt 12.9)
 - **Einwilligung Bilder** — Verwendung von Bildern im Vereinskontext
 
 **Externe Teilnehmer** (Rolle „public“) erteilen die **Einwilligung Kontakt** bei der Registrierung im Anmeldeformular (Pflicht-Checkbox, siehe Abschnitt 12.5). Die **Einwilligung Bilder** können sie dort **freiwillig** erteilen.
@@ -306,7 +306,7 @@ Zweck:
 - Organisation von Vereinsveranstaltungen und Auswertung von Anmeldungen/Abstimmungen durch den Vorstand
 - optional späterer Login per Magic Link (siehe Abschnitt 12.1)
 
-Externe Teilnehmer sind **keine** Vereinsmitglieder: kein Zugang zu internen Inhalten, kein Admin-Bereich.
+Externe Teilnehmer sind **keine** Vereinsmitglieder: kein Zugang zu internen Inhalten, keine Verwaltungsfunktionen.
 
 **Account löschen:** Auf der Profilseite kannst du deinen externen Account löschen. Dabei werden Name, E-Mail, Telefon und dein Login-Konto entfernt. Bereits abgegebene **Abstimmungen bleiben anonym gezählt** (ohne Zuordnung zu deinem Namen), damit Auswertungen wie Teilnehmerzahlen korrekt bleiben. Freitext-Kommentare in Abstimmungen werden gelöscht.
 
@@ -423,7 +423,7 @@ Rechtsgrundlagen:
 
 ### 12.9 Vorstand-E-Mails und Versandprotokoll
 
-Im **Admin-Bereich** (nur Rolle **Vorstand**) können vereinsbezogene E-Mails über die Website versendet werden. Absender ist standardmäßig **info@mtb-werdohl.de**.
+Im **Profil → Tab E-Mail** (nur Rolle **Vorstand**) können vereinsbezogene E-Mails über die Website versendet werden. Absender ist standardmäßig **info@mtb-werdohl.de**.
 
 **Empfänger:** Es werden ausschließlich Personen angeschrieben, die eine **Einwilligung Kontakt** erteilt haben und eine gültige E-Mail-Adresse hinterlegt ist (siehe Abschnitt 12.3). Anonymisierte oder gelöschte Accounts werden nicht angeschrieben. Je nach Auswahl können einzelne Mitglieder, Teilnehmer eines Termins (z. B. mit Antwort Ja/Vielleicht) oder alle einwilligenden Mitglieder angeschrieben werden.
 
@@ -470,21 +470,19 @@ Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (Orientierung im Mitgliederbereich, 
 
 ---
 
-## 14. Website-Hinweise (Banner, Saisonmodus, Overlay)
+## 14. Saisonmodus (Banner und Overlay)
 
-Der Vorstand kann im Admin-Bereich unter **Website-Hinweise** kurze, zeitlich begrenzte Informationen für alle Besucher veröffentlichen. Gespeichert werden diese Einträge in der Datenbank (`site_state`) — **kein** vollständiges Content-Management-System.
+Der Vorstand kann unter **Profil → Tab Verwaltung → Saisonmodus** Hinweise für alle Besucher aktivieren. Gespeichert werden diese Einträge in der Datenbank (`site_state`, Key `saison_mode`) — **kein** vollständiges Content-Management-System.
 
-| Art | Zweck |
-|-----|--------|
-| **Banner** | Hinweisleiste auf allen Seiten (Text, optional Link, Stil Info/Warnung) |
-| **Saisonmodus** | Hinweis bei Saisonpause (z. B. abgeschwächte Mitfahr-Hinweise) |
-| **Overlay** | Wichtige Mitteilung als Dialog für alle Besucher (optional schließbar) |
-| **Landing-Hinweise** | Kurze Zusatzinfos auf der Startseite (z. B. Trainingstermine) |
+| Element | Zweck |
+|---------|--------|
+| **Banner** | Hinweisleiste oben auf allen Seiten |
+| **Overlay** | Wichtige Mitteilung als Dialog (schließbar) |
 
 Verarbeitete Daten:
 
-- vom Vorstand eingegebene Texte, optional Links und Zeiträume (von/bis)
-- technische Speichereinträge (`site_banner`, `saison_mode`, `site_overlay`, `landing_hints`)
+- vom Vorstand eingegebene Texte für Banner und Overlay
+- technischer Speichereintrag `saison_mode` (aktiv/inaktiv, Texte)
 - **siteOverlayDismissedAt** im Local Storage — ob du ein schließbares Overlay bereits geschlossen hast (siehe Abschnitt 15)
 
 Es werden **keine** personenbezogenen Daten der Besucher an den Verein übermittelt, solange du nur die Hinweise liest.

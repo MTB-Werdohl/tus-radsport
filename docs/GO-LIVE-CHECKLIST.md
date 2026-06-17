@@ -66,27 +66,26 @@ Referenz: [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md) · Setup: [`supabase-stra
 |-------|----------|
 | `main` → GitHub Actions → GitHub Pages | [ ] |
 | Secrets `SUPABASE_URL`, `SUPABASE_KEY` gesetzt | [ ] |
-| `_config.yml` → `admin_js_version` bei Admin-JS-Änderungen erhöht | [ ] |
+| `_config.yml` → `vorstand_js_version` bei Admin-JS-Änderungen erhöht | [ ] |
 
-**Hinweis:** Admin-Cache-Busting nur über `_config.yml` → `admin_js_version` (in `admin-head.html` als `window.__adminJsVersion`).
+**Hinweis:** Vorstand-JS Cache-Busting über `_config.yml` → `vorstand_js_version`.
 
 ---
 
-## 6. Smoke-Tests (manuell)
+## 6. Manuelle Tests
 
 | Checkliste | Inhalt |
 |------------|--------|
-| [`SMOKE-TEST-PUBLIC-REGISTRATION.md`](SMOKE-TEST-PUBLIC-REGISTRATION.md) | Externe Abstimmung |
-| [`SMOKE-TEST-PHASE-2-3.md`](SMOKE-TEST-PHASE-2-3.md) | Strava Radfokus, Profilbilder |
-| [`SMOKE-TEST-PHASE-5.md`](SMOKE-TEST-PHASE-5.md) | Rollen-Vorschau, Website-Hinweise |
+| [`supabase/SMOKE-TEST-PUBLIC-REGISTRATION.md`](supabase/SMOKE-TEST-PUBLIC-REGISTRATION.md) | Externe Abstimmung |
 
 **Kurz-Regression (immer):**
 
 - [ ] Mitglieder-Login Magic Link
-- [ ] Vorstand → `/admin/`
-- [ ] Termin + News öffentlich / nur Mitglieder / Entwurf
-- [ ] Tröte: eingeloggt als Mitglied → bei neuen Inhalten offen, nach Einklappen gelesen
-- [ ] Keine kritischen Console-Errors auf Startseite
+- [ ] Vorstand → `/profil/?tab=verwaltung` (Mitglieder, Protokolle, Saisonmodus)
+- [ ] `/mitglied-bearbeiten/`, `/protokoll-bearbeiten/`, `/termin-bearbeiten/` nur als Vorstand
+- [ ] Termin + News: öffentlich / nur Mitglieder / Entwurf
+- [ ] Saisonmodus: Banner + Overlay bei Aktivierung
+- [ ] Keine kritischen Console-Errors auf Startseite und `/profil/`
 
 ---
 
@@ -100,16 +99,8 @@ Referenz: [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md) · Setup: [`supabase-stra
 
 ---
 
-## 8. Noch offen (bewusst)
-
-| Thema | Status |
-|-------|--------|
-| **Phase 4** — Zusagen pro Serientermin-Instanz | ⏸ nicht freigegeben — siehe [`PHASE-4-ZUSAGEN-SERIENTERMINE-KONZEPT.md`](PHASE-4-ZUSAGEN-SERIENTERMINE-KONZEPT.md) |
-
----
-
 ## Siehe auch
 
-- Implementierungen: `PHASE-2-IMPLEMENTATION.md`, `PHASE-3-IMPLEMENTATION.md`, `PHASE-5-IMPLEMENTATION.md`
 - Architektur: [`ARCHITECTURE.md`](ARCHITECTURE.md)
 - Schema: [`supabase/SCHEMA.md`](supabase/SCHEMA.md)
+- SQL-Reihenfolge: [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md)

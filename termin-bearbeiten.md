@@ -28,13 +28,13 @@ member_termin_editor: true
 <script src="/assets/js/core/content-creator.js"></script>
 <script src="/assets/js/core/media-url.js"></script>
 <script src="/assets/js/core/image-compress.js"></script>
-<script src="/admin/js/media-storage-lib.js"></script>
-<script src="/admin/js/media-picker.js"></script>
+<script src="/assets/js/admin/media-storage-lib.js"></script>
+<script src="/assets/js/admin/media-picker.js"></script>
 <script src="/assets/js/member/member-edit-utils.js"></script>
-<script src="/admin/js/admin-utils.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/feedback-module-form.js?v={{ site.admin_js_version }}"></script>
+<script src="/assets/js/admin/admin-utils.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/admin/feedback-module-form.js?v={{ site.vorstand_js_version }}"></script>
 <script src="/assets/js/member/member-content.js"></script>
-<script src="/assets/js/member/member-termin-edit.js?v={{ site.admin_js_version }}"></script>
+<script src="/assets/js/member/member-termin-edit.js?v={{ site.vorstand_js_version }}"></script>
 <script>
 document.addEventListener(
   'DOMContentLoaded',

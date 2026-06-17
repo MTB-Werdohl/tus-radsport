@@ -27,13 +27,13 @@ description: "Termine, Touren und Veranstaltungen der Radsportabteilung TuS Jahn
 <script src="/assets/js/core/media-url.js"></script>
 <script src="/assets/js/feedback/feedback-types.js"></script>
 <script src="/assets/js/feedback/feedback-service.js"></script>
-<script src="/admin/js/admin-utils.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/media-storage-lib.js"></script>
-<script src="/admin/js/media-picker.js"></script>
+<script src="/assets/js/admin/admin-utils.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/admin/media-storage-lib.js"></script>
+<script src="/assets/js/admin/media-picker.js"></script>
 <script src="/assets/js/member/member-edit-utils.js"></script>
-<script src="/admin/js/feedback-results.js?v={{ site.admin_js_version }}"></script>
-<script src="/assets/js/feedback/feedback-admin-participants.js?v={{ site.admin_js_version }}"></script>
-<script src="/assets/js/event/event-detail-vorstand.js?v={{ site.admin_js_version }}"></script>
+<script src="/assets/js/admin/feedback-results.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/feedback/feedback-admin-participants.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/event/event-detail-vorstand.js?v={{ site.vorstand_js_version }}"></script>
 <script src="/assets/js/calendar/termine-loader.js"></script>
 <script src="/assets/js/calendar/event-cards.js"></script>
 <script src="/assets/js/calendar/kalender-page.js"></script>

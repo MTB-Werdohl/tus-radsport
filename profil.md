@@ -24,18 +24,18 @@ load_member_content_edit_css: true
 <script src="/assets/js/feedback/feedback-types.js"></script>
 <script src="/assets/js/feedback/feedback-service.js"></script>
 <script src="/assets/js/core/content-creator.js"></script>
-<script src="/admin/js/admin-utils.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/feedback-results.js?v={{ site.admin_js_version }}"></script>
-<script src="/assets/js/feedback/feedback-admin-participants.js?v={{ site.admin_js_version }}"></script>
-<script src="/assets/js/site/site-content-state.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/site-content-admin.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/member-pdf.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/members-list.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/protocol-utils.js?v={{ site.admin_js_version }}"></script>
-<script src="/admin/js/protocols-list.js?v={{ site.admin_js_version }}"></script>
-<script src="/assets/js/member/member-email-log.js?v={{ site.admin_js_version }}"></script>
-<script src="/assets/js/member/member-email.js?v={{ site.admin_js_version }}"></script>
-<script src="/assets/js/member/member-verwaltung.js?v={{ site.admin_js_version }}"></script>
+<script src="/assets/js/admin/admin-utils.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/admin/feedback-results.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/feedback/feedback-admin-participants.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/site/site-content-state.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/admin/site-content-admin.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/admin/member-pdf.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/admin/members-list.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/admin/protocol-utils.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/admin/protocols-list.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/member/member-email-log.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/member/member-email.js?v={{ site.vorstand_js_version }}"></script>
+<script src="/assets/js/member/member-verwaltung.js?v={{ site.vorstand_js_version }}"></script>
 <script src="/assets/js/member/member-render.js"></script>
 <script src="/assets/js/member/member-account.js"></script>
 <script src="/assets/js/member/member-page.js"></script>

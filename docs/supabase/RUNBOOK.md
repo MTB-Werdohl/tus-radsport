@@ -29,7 +29,7 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Feedback Umfrage-Auswertung (aggregiert):** [`supabase-feedback-module-summary.sql`](../supabase-feedback-module-summary.sql) — RPC `get_feedback_module_summary(module_id)` für Stimmenanzahl und Prozentverteilung auf News-/Termin-Detailseiten (Mitglieder/Vorstand, ohne Einzelantworten). **Nach** Feedback-Basis und `supabase-member-change-summary.sql` (`member_can_view_sichtbarkeit`).
 
-**Phase 4a — Einzeltermine (Verbindlichkeit):** [`supabase-phase4a-feedback-events.sql`](../supabase-phase4a-feedback-events.sql) — `feedback_answer_events`, RPCs `set_event_feedback_answer` / `list_feedback_participation_changes`, RLS: Einzeltermine nur noch über RPC schreibbar; `anonymize_member` bereinigt Event-Freitexte. **Nach** Feedback-Basis und `supabase-feedback-answers-delete-own.sql`. Frontend/Admin: `admin_js_version` **20260562**.
+**Phase 4a — Einzeltermine (Verbindlichkeit):** [`supabase-phase4a-feedback-events.sql`](../supabase-phase4a-feedback-events.sql) — `feedback_answer_events`, RPCs `set_event_feedback_answer` / `list_feedback_participation_changes`, RLS: Einzeltermine nur noch über RPC schreibbar; `anonymize_member` bereinigt Event-Freitexte. **Nach** Feedback-Basis und `supabase-feedback-answers-delete-own.sql`. Frontend/Admin: `vorstand_js_version` **20260562**.
 
 **Phase 4a Review:** [`supabase-phase4a-public-feedback-rpc-fix.sql`](../supabase-phase4a-public-feedback-rpc-fix.sql) — `submit_public_feedback` an 4a-Logik (`set_event_feedback_answer_for_member`); nach Phase-4a-Basis.
 
@@ -56,21 +56,21 @@ Alle SQL-Skripte liegen in `docs/` und werden **manuell** im Supabase SQL Editor
 
 **Veränderungs-Zusammenfassung:** [`supabase-member-change-summary.sql`](../supabase-member-change-summary.sql) — `members.last_change_summary_seen_at`, `Termine.created_at`/`updated_at`, RPCs `get_member_change_summary()`, `touch_member_change_summary_seen()`, Hilfsfunktion `is_club_member()`. **Entwürfe (News/Termine `sichtbarkeit=draft`) zählen nur für Vorstand** — bei Popup-Problemen die Datei erneut im SQL Editor ausführen.
 
-**Medien-Storage Phase 0:** [`supabase-media-storage-paths.sql`](../supabase-media-storage-paths.sql) — Spalten `image_storage_path`, `gpx_storage_path` (Termine), `image_storage_path` (News). Siehe [MEDIA-STORAGE-ROADMAP.md](../MEDIA-STORAGE-ROADMAP.md).
+**Medien-Storage:** [`supabase-media-storage-paths.sql`](../supabase-media-storage-paths.sql) — Spalten `image_storage_path`, `gpx_storage_path` (Termine), `image_storage_path` (News). Pfade z. B. `shared/images/…`, `shared/routes/…`, `galleries/{jahr}/{slug}/…`.
 
-**Medien-Storage Phase 3:** [`supabase-media-move.sql`](../supabase-media-move.sql) — RPCs `get_media_references`, `move_media_object`, `delete_media_object` (Vorstand). Verschieben/Umbenennen/Löschen im Admin unter `/admin/medien.html`.
+**Medien-Storage:** [`supabase-media-move.sql`](../supabase-media-move.sql) — RPCs `get_media_references`, `move_media_object`, `delete_media_object` (Vorstand). Medien-Picker in Termin-Editor und Event-Bearbeitung.
 
-**Mitglieder-Inhalte (Entwürfe):** [`supabase-member-content.sql`](../supabase-member-content.sql) — Spalte `created_by` auf `News`/`Termine`, RLS: Vereinsmitglieder dürfen **Termin**-Entwürfe einreichen/bearbeiten; **Internes nur Vorstand** ([`supabase-member-news-vorstand-only.sql`](../supabase-member-news-vorstand-only.sql)). Frontend: Profil-Tab **Content** (`/profil/termin_edit/` Mitglieder; `/profil/news_edit/` Vorstand). **Nach** `supabase-member-change-summary.sql` (wegen `is_club_member()`).
+**Mitglieder-Inhalte (Entwürfe):** [`supabase-member-content.sql`](../supabase-member-content.sql) — Spalte `created_by` auf `News`/`Termine`, RLS: Vereinsmitglieder dürfen **Termin**-Entwürfe einreichen/bearbeiten; **Internes nur Vorstand** ([`supabase-member-news-vorstand-only.sql`](../supabase-member-news-vorstand-only.sql)). Frontend: Profil-Tab **Content** (`/termin-bearbeiten/`; `/profil/news_edit/` Vorstand). Legacy-Redirect: `/profil/termin_edit/` → `/termin-bearbeiten/`. **Nach** `supabase-member-change-summary.sql` (wegen `is_club_member()`).
 
 **Mitglieder-Mediathek-Upload:** [`supabase-member-media-upload.sql`](../supabase-member-media-upload.sql) — Storage-Policy: Vereinsmitglieder dürfen in `shared/images/` und `shared/routes/` hochladen (Picker „Hochladen“ im Profil). **Nach** `supabase-member-change-summary.sql` und `supabase-vorstand-roles.sql`.
 
-**Einwilligung Widerruf:** [`supabase-member-consent-revoke.sql`](../supabase-member-consent-revoke.sql) — Spalten `kontakt_widerrufen_am`, `bilder_widerrufen_am` für dokumentierten Widerruf (Admin + Profil-Anzeige).
+**Einwilligung Widerruf:** [`supabase-member-consent-revoke.sql`](../supabase-member-consent-revoke.sql) — Spalten `kontakt_widerrufen_am`, `bilder_widerrufen_am` für dokumentierten Widerruf (Verwaltung + Profil-Anzeige).
 
 **Ersteller-Anzeige (Kalender/Details):** [`supabase-content-creator-display.sql`](../supabase-content-creator-display.sql) — RPC `get_content_creator_labels()` für öffentliche Anzeigenamen bei freigegebenen News/Terminen. **Nach** `supabase-member-content.sql`.
 
 **Medien-Storage Phase 4 (optional aufräumen):** [`supabase-media-backfill-drop.sql`](../supabase-media-backfill-drop.sql) — Backfill-RPCs in Supabase entfernen, nachdem die einmalige Migration gelaufen ist.
 
-**Protokolle (Vorstand):** [`supabase-board-documents.sql`](../supabase-board-documents.sql) — Tabelle `board_documents`, PDFs unter `protocols/` im Storage (nur Vorstand lesbar). **Kurzbeschreibung in Listen:** [`supabase-board-documents-subject.sql`](../supabase-board-documents-subject.sql) — Spalte `subject` (Feld „Inhalt“ im Admin). **Dateien verschieben:** [`supabase-board-documents-storage-update.sql`](../supabase-board-documents-storage-update.sql) — Storage-Policy `UPDATE` für `move`/Umbenennen.
+**Protokolle (Vorstand):** [`supabase-board-documents.sql`](../supabase-board-documents.sql) — Tabelle `board_documents`, PDFs unter `protocols/` im Storage (nur Vorstand lesbar). **Kurzbeschreibung in Listen:** [`supabase-board-documents-subject.sql`](../supabase-board-documents-subject.sql) — Spalte `subject` (Feld „Inhalt“). **Dateien verschieben:** [`supabase-board-documents-storage-update.sql`](../supabase-board-documents-storage-update.sql) — Storage-Policy `UPDATE` für `move`/Umbenennen.
 
 **Admin-E-Mail Versandprotokoll:** [`supabase-admin-email-log.sql`](../supabase-admin-email-log.sql) — Tabelle `admin_email_log`, 18 Monate Retention; danach Edge `send-admin-email` neu deployen. Setup: [`supabase-admin-email-setup.md`](../supabase-admin-email-setup.md).
 
@@ -115,9 +115,9 @@ Mitglieder steuern Sichtbarkeit im Profil → Tab Strava (Feed / Rankings / Vere
 
 **Profil — Meine Aktivitäten:** [`supabase-strava-member-activities.sql`](../supabase-strava-member-activities.sql) — RPC `get_member_activities(p_limit)` (nur `authenticated`, eigene importierte Touren inkl. Feed-Badge).
 
-**Phase 2 — Radfokus (sport_category):** [`supabase/supabase-sport-category-rad.sql`](supabase-sport-category-rad.sql) — Spalte `sport_category`, Mapping-Funktion, Stats-Rebuild, Public-RPCs und Profil-Aktivitäten filtern auf `rad`. **Danach** Edge Function `strava-sync` neu deployen (siehe [`PHASE-2-IMPLEMENTATION.md`](../PHASE-2-IMPLEMENTATION.md)).
+**Phase 2 — Radfokus (sport_category):** [`supabase/supabase-sport-category-rad.sql`](supabase-sport-category-rad.sql) — Spalte `sport_category`, Mapping-Funktion, Stats-Rebuild, Public-RPCs und Profil-Aktivitäten filtern auf `rad`. **Danach** Edge Function `strava-sync` neu deployen.
 
-**Phase 3 — Profilbilder:** [`supabase/supabase-member-avatars.sql`](supabase/supabase-member-avatars.sql) — `members.avatar_*`, Bucket `avatars`, Storage-RLS, Public-RPCs mit `avatar_url`, `get_member_profile_avatar()`, `anonymize_member` erweitert. Siehe [`PHASE-3-IMPLEMENTATION.md`](../PHASE-3-IMPLEMENTATION.md).
+**Phase 3 — Profilbilder:** [`supabase/supabase-member-avatars.sql`](supabase/supabase-member-avatars.sql) — `members.avatar_*`, Bucket `avatars`, Storage-RLS, Public-RPCs mit `avatar_url`, `get_member_profile_avatar()`, `anonymize_member` erweitert.
 
 **Phase A.1 — Aktivitätsdetail (DetailedActivity):** [`supabase-aktivitaeten-detail-phase-a1.sql`](../supabase-aktivitaeten-detail-phase-a1.sql) — 11 Detail-Spalten auf `activities`, erweiterte RPC `get_public_activity_detail`. **Danach** Edge Function `strava-sync` neu deployen (jede importierte Aktivität via `GET /activities/{id}`; öffentliche Sichtbarkeit weiter nur über RPC). Karten-Felder: [`supabase-aktivitaeten-card-display.sql`](../supabase-aktivitaeten-card-display.sql) muss vorher ausgeführt sein.
 
@@ -178,7 +178,7 @@ Schreibzugriffe auf `site_state` (`last_push`) für die Tröte: Vorstand direkt 
 
 ## Go-live Checkliste (Website + Supabase)
 
-**Gesamtübersicht:** [`GO-LIVE-CHECKLIST.md`](../GO-LIVE-CHECKLIST.md) — SQL, Edge Functions, Smoke-Tests Phase 2–3–5.
+**Gesamtübersicht:** [`GO-LIVE-CHECKLIST.md`](../GO-LIVE-CHECKLIST.md) — SQL, Edge Functions, Smoke-Tests.
 
 Kurz (Details im Dokument oben):
 
@@ -186,7 +186,7 @@ Kurz (Details im Dokument oben):
 |---------|--------|
 | **SQL Feedback** | [`supabase-feedback-cascade-delete.sql`](../supabase-feedback-cascade-delete.sql) + [`supabase-feedback-answers-delete-own.sql`](../supabase-feedback-answers-delete-own.sql) ausgeführt |
 | **SQL Change Summary** | [`supabase-member-change-summary.sql`](../supabase-member-change-summary.sql) ausgeführt |
-| **Edge `send-admin-email`** | Code deployt; Termin-Mails zählen **Ja + Vielleicht** (Preview in Admin = tatsächlicher Versand) |
+| **Edge `send-admin-email`** | Code deployt; Termin-Mails zählen **Ja + Vielleicht** (Preview = tatsächlicher Versand) |
 | **Edge `anonymize-member-account`** | Deployt, JWT Verify **OFF**; Test Account löschen |
 | **Redirect URLs** | `/profil/`, `/**`, ggf. `/event.html`, `/news-detail.html` für Rückkehr nach Magic Link |
 | **Smoke-Test** | Öffentlicher Termin + Abstimmung; siehe [`SMOKE-TEST-PUBLIC-REGISTRATION.md`](SMOKE-TEST-PUBLIC-REGISTRATION.md) |

@@ -724,9 +724,9 @@ function loadMemberPdfScripts() {
       document.createElement('script');
 
     script.src =
-      '/admin/js/member-pdf.js'
+      '/assets/js/admin/member-pdf.js'
       + '?v='
-      + (window.__adminJsVersion || '1');
+      + (window.__vorstandJsVersion || '1');
 
     script.onload = () => {
 
