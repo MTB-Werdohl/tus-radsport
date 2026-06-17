@@ -100,6 +100,245 @@ function formatTerminWeekdayDate(date) {
 
 }
 
+function formatTerminIsoDate(
+  date
+) {
+
+  return (
+    `${date.getFullYear()}-${
+      String(date.getMonth() + 1)
+        .padStart(2, '0')
+    }-${
+      String(date.getDate())
+        .padStart(2, '0')
+    }`
+  );
+
+}
+
+function isRecurringTermin(
+  event
+) {
+
+  return event?.recurring === true;
+
+}
+
+function getRecurringTerminExcludeDates(
+  event
+) {
+
+  const raw =
+    event?.exclude;
+
+  if (!raw) {
+    return new Set();
+  }
+
+  if (Array.isArray(raw)) {
+    return new Set(
+      raw.map(String)
+    );
+  }
+
+  return new Set();
+
+}
+
+function getRecurringTerminStartDay(
+  event
+) {
+
+  return (
+    parseTerminDateOnly(
+      event?.startRecur
+    )
+    || getSingleTerminStartDay(event)
+  );
+
+}
+
+function getRecurringTerminEndDay(
+  event
+) {
+
+  return (
+    parseTerminDateOnly(
+      event?.endRecur
+    )
+    || null
+  );
+
+}
+
+function isRecurringOccurrenceDay(
+  event,
+  day
+) {
+
+  const exclude =
+    getRecurringTerminExcludeDates(
+      event
+    );
+
+  const dateKey =
+    formatTerminIsoDate(day);
+
+  if (exclude.has(dateKey)) {
+    return false;
+  }
+
+  const daysOfWeek =
+    event?.daysOfWeek;
+
+  if (
+    Array.isArray(daysOfWeek)
+    && daysOfWeek.length
+  ) {
+    return daysOfWeek.includes(
+      day.getDay()
+    );
+  }
+
+  return true;
+
+}
+
+function recurringTerminHasOccurrenceInRange(
+  event,
+  rangeStart,
+  rangeEnd
+) {
+
+  const seriesStart =
+    getRecurringTerminStartDay(
+      event
+    );
+
+  if (!seriesStart) {
+    return false;
+  }
+
+  const seriesEnd =
+    getRecurringTerminEndDay(event);
+
+  let current =
+    startOfTerminDay(
+      rangeStart > seriesStart
+        ? rangeStart
+        : seriesStart
+    );
+
+  const endDay =
+    startOfTerminDay(rangeEnd);
+
+  while (current < endDay) {
+
+    if (
+      seriesEnd
+      && current > seriesEnd
+    ) {
+      break;
+    }
+
+    if (
+      isRecurringOccurrenceDay(
+        event,
+        current
+      )
+    ) {
+      return true;
+    }
+
+    current =
+      addTerminDays(current, 1);
+
+  }
+
+  return false;
+
+}
+
+function getNextRecurringOccurrenceDay(
+  event,
+  fromDate
+) {
+
+  const fromDay =
+    startOfTerminDay(
+      fromDate || new Date()
+    );
+
+  const seriesStart =
+    getRecurringTerminStartDay(
+      event
+    );
+
+  if (!seriesStart) {
+    return null;
+  }
+
+  const seriesEnd =
+    getRecurringTerminEndDay(event);
+
+  let current =
+    fromDay < seriesStart
+      ? seriesStart
+      : fromDay;
+
+  const scanLimit =
+    addTerminDays(fromDay, 370);
+
+  const stopDay =
+    seriesEnd
+    && seriesEnd < scanLimit
+      ? addTerminDays(seriesEnd, 1)
+      : scanLimit;
+
+  while (current < stopDay) {
+
+    if (
+      isRecurringOccurrenceDay(
+        event,
+        current
+      )
+    ) {
+      return current;
+    }
+
+    current =
+      addTerminDays(current, 1);
+
+  }
+
+  return null;
+
+}
+
+function terminListingOverlapsRange(
+  event,
+  rangeStart,
+  rangeEnd
+) {
+
+  if (isRecurringTermin(event)) {
+
+    return recurringTerminHasOccurrenceInRange(
+      event,
+      rangeStart,
+      rangeEnd
+    );
+
+  }
+
+  return singleTerminOverlapsRange(
+    event,
+    rangeStart,
+    rangeEnd
+  );
+
+}
+
 function getSingleTerminStartDay(event) {
 
   if (!event?.date) {
@@ -231,6 +470,17 @@ function formatTerminDateLabel(event) {
     return '';
   }
 
+  if (isRecurringTermin(event)) {
+
+    const weekday =
+      TERMIN_WEEKDAYS[
+        event.daysOfWeek?.[0]
+      ] || 'Termin';
+
+    return `Jeden ${weekday}`;
+
+  }
+
   const start =
     getSingleTerminStartDay(event);
 
@@ -250,6 +500,17 @@ function formatTerminDateLabel(event) {
 }
 
 function getTerminDisplayTime(event) {
+
+  if (isRecurringTermin(event)) {
+
+    if (event?.startTime) {
+      return String(event.startTime)
+        .slice(0, 5);
+    }
+
+    return '';
+
+  }
 
   const start =
     getSingleTerminStartDay(event);
@@ -299,12 +560,46 @@ function singleTerminOverlapsRange(
 
 function getTerminSortDate(event) {
 
-  return getSingleTerminStartDay(event)
-    || new Date(0);
+  if (isRecurringTermin(event)) {
+
+    const nextDay =
+      getNextRecurringOccurrenceDay(
+        event,
+        new Date()
+      );
+
+    if (nextDay) {
+      return nextDay;
+    }
+
+    const seriesStart =
+      getRecurringTerminStartDay(
+        event
+      );
+
+    if (seriesStart) {
+      return seriesStart;
+    }
+
+  }
+
+  return (
+    getSingleTerminStartDay(event)
+    || new Date(0)
+  );
 
 }
 
 function getTerminVisibilityEndDay(event) {
+
+  if (isRecurringTermin(event)) {
+
+    return (
+      getRecurringTerminEndDay(event)
+      || getRecurringTerminStartDay(event)
+    );
+
+  }
 
   return getSingleTerminEndDay(event);
 
@@ -316,6 +611,27 @@ function isTerminStillUpcoming(termin) {
     new Date();
 
   today.setHours(0, 0, 0, 0);
+
+  if (isRecurringTermin(termin)) {
+
+    const seriesEnd =
+      getRecurringTerminEndDay(
+        termin
+      );
+
+    if (
+      seriesEnd
+      && seriesEnd < today
+    ) {
+      return false;
+    }
+
+    return !!getNextRecurringOccurrenceDay(
+      termin,
+      today
+    );
+
+  }
 
   const endDay =
     getTerminVisibilityEndDay(termin);

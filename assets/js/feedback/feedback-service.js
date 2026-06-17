@@ -583,10 +583,21 @@ async function fetchMemberEventParticipationMap(
       return;
     }
 
-    map.set(
-      String(module.entity_id),
-      answer
-    );
+    const entityKey =
+      String(module.entity_id);
+
+    const existing =
+      map.get(entityKey);
+
+    if (
+      !existing
+      || answer === yesAnswer
+    ) {
+      map.set(
+        entityKey,
+        answer
+      );
+    }
 
   });
 

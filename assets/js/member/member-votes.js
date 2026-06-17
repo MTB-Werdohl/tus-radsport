@@ -128,6 +128,12 @@ async function fetchMemberVotesGrouped(
     );
 
   const termine = [];
+  const seenEntityIds =
+    new Set();
+
+  const yesAnswer =
+    window.siteConfig.feedback
+      .answers.yes;
 
   (answers || []).forEach((answerRow) => {
 
@@ -163,6 +169,61 @@ async function fetchMemberVotesGrouped(
     ) {
       return;
     }
+
+    const entityKey =
+      String(entity.id || entity.slug);
+
+    const answerCode =
+      String(answerRow.answer || '')
+        .trim();
+
+    if (seenEntityIds.has(entityKey)) {
+
+      const existingIndex =
+        termine.findIndex((item) => {
+
+          const itemKey =
+            String(
+              item.entity.id
+              || item.entity.slug
+            );
+
+          return itemKey === entityKey;
+
+        });
+
+      if (existingIndex >= 0) {
+
+        const existingAnswer =
+          String(
+            termine[existingIndex]
+              .answerRow
+              .answer
+            || ''
+          ).trim();
+
+        if (
+          answerCode === yesAnswer
+          && existingAnswer
+            !== yesAnswer
+        ) {
+
+          termine[existingIndex] =
+            buildMemberVoteItem(
+              answerRow,
+              module,
+              entity
+            );
+
+        }
+
+      }
+
+      return;
+
+    }
+
+    seenEntityIds.add(entityKey);
 
     termine.push(
       buildMemberVoteItem(

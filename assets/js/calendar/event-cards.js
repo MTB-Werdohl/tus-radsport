@@ -6,12 +6,14 @@ function buildTerminCardsForRange(
 
   const cards = [];
 
-  filterTermineForPublicListing(
-    data
+  dedupeTermineRows(
+    filterTermineForPublicListing(
+      data
+    )
   ).forEach(item => {
 
     if (
-      singleTerminOverlapsRange(
+      terminListingOverlapsRange(
         item,
         start,
         end
@@ -34,6 +36,36 @@ function buildTerminCardsForRange(
   });
 
   return cards;
+
+}
+
+function dedupeTermineRows(
+  termine
+) {
+
+  const seen =
+    new Map();
+
+  (termine || []).forEach((item) => {
+
+    const key =
+      item?.id != null
+        ? `id:${item.id}`
+        : item?.slug
+          ? `slug:${item.slug}`
+          : '';
+
+    if (!key) {
+      return;
+    }
+
+    if (!seen.has(key)) {
+      seen.set(key, item);
+    }
+
+  });
+
+  return [...seen.values()];
 
 }
 
@@ -399,9 +431,16 @@ function buildCalendarCardClassName(
 ) {
 
   let className =
-    contentVisibilityCardClass(
+    'calendar-card';
+
+  if (
+    normalizeContentVisibility(
       event.sichtbarkeit
-    );
+    ) === CONTENT_VISIBILITY.draft
+  ) {
+    className +=
+      ' calendar-card--draft';
+  }
 
   const yesAnswer =
     window.siteConfig.feedback
@@ -906,11 +945,13 @@ function getAllUpcomingTerminCards(
 ) {
 
   return filterUpcomingTerminCards(
-    filterTermineForPublicListing(
-      [...data].sort(
-        (left, right) =>
-          getTerminSortDate(left)
-          - getTerminSortDate(right)
+    dedupeTermineRows(
+      filterTermineForPublicListing(
+        [...data].sort(
+          (left, right) =>
+            getTerminSortDate(left)
+            - getTerminSortDate(right)
+        )
       )
     )
   );
