@@ -137,7 +137,9 @@
 
   border-radius: 14px;
 
-  padding: 12px 14px;
+  padding: 0;
+
+  overflow: hidden;
 
   box-shadow:
 
@@ -205,23 +207,21 @@
 
 }
 
+.calendar-card__layout {
+
   display: flex;
 
-  align-items: flex-start;
-
-  gap: 12px;
+  flex-direction: column;
 
 }
 
 .calendar-card__media {
 
-  flex: 0 0 88px;
+  width: 100%;
 
-  width: 88px;
+  height: 168px;
 
-  height: 88px;
-
-  border-radius: 10px;
+  flex: 0 0 auto;
 
   overflow: hidden;
 
@@ -250,6 +250,8 @@
 
 .calendar-card__image--placeholder {
 
+  height: 100%;
+
   background:
 
     linear-gradient(
@@ -266,9 +268,11 @@
 
   min-width: 0;
 
+  padding: 12px 14px 14px;
+
 }
 
-.calendar-card__layout {
+.calendar-card__meta {
 
   display: flex;
 
@@ -349,9 +353,9 @@
 
   gap: 8px;
 
-  margin-top: 10px;
+  margin: 0;
 
-  padding-top: 10px;
+  padding: 0 14px 12px;
 
   border-top: 1px solid
 
@@ -407,27 +411,11 @@
 
 }
 
-@media (max-width: 480px) {
-
-  .calendar-card__layout {
-
-    gap: 10px;
-
-  }
+@media (min-width: 640px) {
 
   .calendar-card__media {
 
-    flex-basis: 72px;
-
-    width: 72px;
-
-    height: 72px;
-
-  }
-
-  .calendar-card h3 {
-
-    font-size: 0.95rem;
+    height: 192px;
 
   }
 
