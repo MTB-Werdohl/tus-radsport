@@ -329,12 +329,18 @@ function resolveMemberProfileActiveTab(
   activeTab
 ) {
 
+  if (
+    activeTab === 'abstimmungen'
+    || activeTab === 'teilnahmen'
+  ) {
+    return 'profil';
+  }
+
   const allowed =
     new Set([
       'profil',
       'verwaltung',
-      'email',
-      'abstimmungen'
+      'email'
     ]);
 
   if (
@@ -357,10 +363,6 @@ function renderMemberProfileTabsNav(
     {
       id: 'profil',
       label: 'Profil'
-    },
-    {
-      id: 'abstimmungen',
-      label: 'Teilnahmen'
     }
   ];
 
@@ -369,12 +371,12 @@ function renderMemberProfileTabsNav(
     && isVorstand(member)
   ) {
 
-    tabs.splice(1, 0, {
+    tabs.push({
       id: 'verwaltung',
       label: 'Verwaltung'
     });
 
-    tabs.splice(2, 0, {
+    tabs.push({
       id: 'email',
       label: 'E-Mail'
     });
@@ -413,24 +415,6 @@ function renderMemberProfileTabsNav(
   ${buttons}
 
 </nav>
-  `;
-
-}
-
-function renderMemberVotesPanelShell() {
-
-  return `
-<section class="member-profile-section-block">
-
-  <div
-    id="member-votes-list"
-    class="member-votes-list">
-
-    <p>Wird geladen …</p>
-
-  </div>
-
-</section>
   `;
 
 }
@@ -719,18 +703,6 @@ ${
 `
     : ''
 }
-
-<div
-  id="member-profile-tab-abstimmungen"
-  class="member-profile-tab-panel"
-  role="tabpanel"
-  aria-labelledby="member-profile-tab-btn-abstimmungen"
-  data-profile-panel="abstimmungen"
-  ${activeTab !== 'abstimmungen' ? 'hidden' : ''}>
-
-  ${renderMemberVotesPanelShell()}
-
-</div>
 
   `;
 

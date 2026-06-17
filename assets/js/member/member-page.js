@@ -226,69 +226,6 @@ function setupConsentInfoDialogs() {
 }
 
 let profileActiveTab = 'profil';
-let memberVotesLoaded = false;
-
-async function loadMemberVotesIfNeeded(
-  force = false
-) {
-
-  const container =
-    document.getElementById(
-      'member-votes-list'
-    );
-
-  if (!container) {
-    return;
-  }
-
-  if (
-    memberVotesLoaded
-    && !force
-  ) {
-    return;
-  }
-
-  const member =
-    getCurrentMember();
-
-  if (!member?.id) {
-    return;
-  }
-
-  container.innerHTML = `
-<p>Teilnahmen werden geladen …</p>
-  `;
-
-  try {
-
-    const grouped =
-      await fetchMemberVotesGrouped(
-        member.id
-      );
-
-    memberVotesLoaded = true;
-
-    renderMemberVotesList(
-      container,
-      grouped
-    );
-
-  } catch (error) {
-
-    console.error(error);
-
-    container.innerHTML = `
-<p class="member-strava-hint member-strava-hint--error">
-  ${escapeMemberHtml(
-    error?.message
-    || 'Teilnahmen konnten nicht geladen werden.'
-  )}
-</p>
-    `;
-
-  }
-
-}
 
 function switchMemberProfileTab(
   tabId
@@ -324,10 +261,6 @@ function switchMemberProfileTab(
 
     });
 
-  if (tabId === 'abstimmungen') {
-    void loadMemberVotesIfNeeded();
-  }
-
   if (tabId === 'verwaltung') {
 
     if (
@@ -362,8 +295,6 @@ async function refreshMemberProfileView(
     return;
   }
 
-  memberVotesLoaded = false;
-
   profileActiveTab =
     resolveMemberProfileActiveTab(
       profileActiveTab
@@ -384,10 +315,6 @@ async function refreshMemberProfileView(
     typeof isClubMember === 'function'
     && isClubMember(member)
   ) {
-
-    if (profileActiveTab === 'abstimmungen') {
-      void loadMemberVotesIfNeeded(true);
-    }
 
     if (
       profileActiveTab === 'verwaltung'
@@ -743,6 +670,19 @@ async function loadMemberProfilePage() {
         ).get('tab');
 
       if (
+        urlTab === 'abstimmungen'
+        || urlTab === 'teilnahmen'
+      ) {
+
+        window.location.replace(
+          '/kalender/'
+        );
+
+        return;
+
+      }
+
+      if (
         urlTab === 'termin'
         || urlTab === 'content'
       ) {
@@ -812,10 +752,6 @@ async function loadMemberProfilePage() {
       typeof isClubMember === 'function'
       && isClubMember(member)
     ) {
-
-      if (profileActiveTab === 'abstimmungen') {
-        void loadMemberVotesIfNeeded(true);
-      }
 
       if (
         profileActiveTab === 'verwaltung'

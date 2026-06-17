@@ -218,6 +218,26 @@ function findAdjacentMonthStartWithUpcomingTermine(
 }
 
 let calendarAutoAdvanceDepth = 0;
+let terminCardsRenderGeneration = 0;
+
+function beginTerminCardsRender() {
+
+  terminCardsRenderGeneration += 1;
+
+  return terminCardsRenderGeneration;
+
+}
+
+function isCurrentTerminCardsRender(
+  generation
+) {
+
+  return (
+    generation
+    === terminCardsRenderGeneration
+  );
+
+}
 
 function renderEmptyTerminCards(
   wrapper
@@ -927,6 +947,9 @@ async function loadAllUpcomingTerminCards(
   options = {}
 ) {
 
+  const renderGeneration =
+    beginTerminCardsRender();
+
   const wrapperId =
     options.wrapperId
     || 'event-cards';
@@ -957,7 +980,13 @@ async function loadAllUpcomingTerminCards(
 
   }
 
-  wrapper.innerHTML = '';
+  if (
+    !isCurrentTerminCardsRender(
+      renderGeneration
+    )
+  ) {
+    return;
+  }
 
   const visibleCards =
     getAllUpcomingTerminCards(data);
@@ -978,6 +1007,16 @@ async function loadAllUpcomingTerminCards(
     ?? await resolveCalendarParticipationMap(
       viewer
     );
+
+  if (
+    !isCurrentTerminCardsRender(
+      renderGeneration
+    )
+  ) {
+    return;
+  }
+
+  wrapper.replaceChildren();
 
   const vorstandActions =
     options.vorstandActions === true
@@ -1039,6 +1078,9 @@ async function loadCards(
   options = {}
 ) {
 
+  const renderGeneration =
+    beginTerminCardsRender();
+
   const wrapperId =
     options.wrapperId
     || 'event-cards';
@@ -1069,7 +1111,13 @@ async function loadCards(
 
   }
 
-  wrapper.innerHTML = '';
+  if (
+    !isCurrentTerminCardsRender(
+      renderGeneration
+    )
+  ) {
+    return;
+  }
 
   const visibleCards =
     getUpcomingTerminCardsForRange(
@@ -1139,6 +1187,16 @@ async function loadCards(
       viewer
     );
 
+  if (
+    !isCurrentTerminCardsRender(
+      renderGeneration
+    )
+  ) {
+    return;
+  }
+
+  wrapper.replaceChildren();
+
   const renderOptions = {
     participationMap,
     vorstandActions:
@@ -1159,7 +1217,7 @@ async function loadCards(
 
   }
 
-  toRender.forEach((event) => {
+  dedupeTermineRows(toRender).forEach((event) => {
 
     renderTerminCard(
       wrapper,

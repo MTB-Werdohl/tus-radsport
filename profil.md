@@ -4,8 +4,6 @@ title: Mein Profil
 permalink: /profil/
 hide_title: true
 member_profile: true
-load_calendar_css: true
-load_events_css: true
 load_feedback_css: true
 load_member_content_edit_css: true
 ---
@@ -22,12 +20,9 @@ load_member_content_edit_css: true
 
 {% if page.member_profile %}
 <script src="/assets/js/core/dates.js"></script>
-<script src="/assets/js/core/termin-dates.js"></script>
-<script src="/assets/js/calendar/card-dates.js"></script>
 <script src="/assets/js/core/visibility.js"></script>
 <script src="/assets/js/feedback/feedback-types.js"></script>
 <script src="/assets/js/feedback/feedback-service.js"></script>
-<script src="/assets/js/member/member-votes.js"></script>
 <script src="/assets/js/core/content-creator.js"></script>
 <script src="/admin/js/admin-utils.js?v={{ site.admin_js_version }}"></script>
 <script src="/admin/js/feedback-results.js?v={{ site.admin_js_version }}"></script>

@@ -966,15 +966,6 @@ async function saveMemberTerminEdit(
 
   }
 
-  if (
-    typeof loadMemberVotesIfNeeded
-      === 'function'
-  ) {
-
-    void loadMemberVotesIfNeeded(true);
-
-  }
-
   if (finishMemberTerminEditorSave()) {
     return;
   }
