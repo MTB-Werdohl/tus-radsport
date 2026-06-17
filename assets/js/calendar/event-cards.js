@@ -263,9 +263,234 @@ function canShowKalenderNewTerminButton(
 ) {
 
   return (
-    typeof isClubMember === 'function'
-    && isClubMember(viewer)
+    typeof canShowEventVorstandTools
+      === 'function'
+    && canShowEventVorstandTools(viewer)
   );
+
+}
+
+const CALENDAR_CARD_DEFAULT_IMAGE_PATH =
+  'shared/images/1781467844219-gruppentour_1.webp';
+
+function escapeTerminCardHtml(
+  value
+) {
+
+  if (
+    value === null
+    || value === undefined
+  ) {
+    return '';
+  }
+
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
+}
+
+function formatTerminCardExcerpt(
+  content,
+  maxLength = 140
+) {
+
+  if (!content) {
+    return '';
+  }
+
+  const text =
+    String(content)
+      .replace(
+        /!\[[^\]]*\]\([^)]*\)/g,
+        ''
+      )
+      .replace(
+        /\[([^\]]+)\]\([^)]*\)/g,
+        '$1'
+      )
+      .replace(
+        /[#*`>_~[\]()]/g,
+        ''
+      )
+      .replace(
+        /\s+/g,
+        ' '
+      )
+      .trim();
+
+  if (!text) {
+    return '';
+  }
+
+  if (text.length <= maxLength) {
+    return text;
+  }
+
+  return `${text.slice(
+    0,
+    maxLength - 1
+  ).trim()}…`;
+
+}
+
+function resolveTerminCardImageUrl(
+  event
+) {
+
+  if (
+    typeof resolveTerminImage
+      === 'function'
+  ) {
+
+    const imageUrl =
+      resolveTerminImage(event);
+
+    if (imageUrl) {
+      return imageUrl;
+    }
+
+  }
+
+  if (
+    typeof resolveMediaPublicUrl
+      === 'function'
+  ) {
+
+    return (
+      resolveMediaPublicUrl(
+        CALENDAR_CARD_DEFAULT_IMAGE_PATH
+      )
+      || ''
+    );
+
+  }
+
+  return '';
+
+}
+
+function resolveCalendarCardParticipation(
+  event,
+  participationMap
+) {
+
+  if (
+    !participationMap
+    || !event?.id
+  ) {
+    return null;
+  }
+
+  return (
+    participationMap.get(
+      String(event.id)
+    )
+    || null
+  );
+
+}
+
+function buildCalendarCardClassName(
+  event,
+  participationAnswer
+) {
+
+  let className =
+    contentVisibilityCardClass(
+      event.sichtbarkeit
+    );
+
+  const yesAnswer =
+    window.siteConfig.feedback
+      .answers.yes;
+
+  const maybeAnswer =
+    window.siteConfig.feedback
+      .answers.maybe;
+
+  if (
+    participationAnswer === yesAnswer
+  ) {
+    className +=
+      ' calendar-card--participation-yes';
+  } else if (
+    participationAnswer === maybeAnswer
+  ) {
+    className +=
+      ' calendar-card--participation-maybe';
+  }
+
+  return className;
+
+}
+
+function buildCalendarCardParticipationBadge(
+  participationAnswer
+) {
+
+  const yesAnswer =
+    window.siteConfig.feedback
+      .answers.yes;
+
+  const maybeAnswer =
+    window.siteConfig.feedback
+      .answers.maybe;
+
+  if (
+    participationAnswer === yesAnswer
+  ) {
+    return `
+<span class="calendar-card__participation calendar-card__participation--yes">
+  Zusage
+</span>
+    `.trim();
+  }
+
+  if (
+    participationAnswer === maybeAnswer
+  ) {
+    return `
+<span class="calendar-card__participation calendar-card__participation--maybe">
+  Interesse
+</span>
+    `.trim();
+  }
+
+  return '';
+
+}
+
+async function resolveCalendarParticipationMap(
+  viewer
+) {
+
+  if (
+    !viewer?.id
+    || typeof isClubMember
+      !== 'function'
+    || !isClubMember(viewer)
+    || typeof fetchMemberEventParticipationMap
+      !== 'function'
+  ) {
+    return new Map();
+  }
+
+  try {
+
+    return await fetchMemberEventParticipationMap(
+      viewer.id
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    return new Map();
+
+  }
 
 }
 
@@ -532,13 +757,49 @@ function renderTerminCard(
   const card =
     document.createElement('article');
 
-  card.className =
-    contentVisibilityCardClass(
-      event.sichtbarkeit
+  const participationAnswer =
+    resolveCalendarCardParticipation(
+      event,
+      options.participationMap
     );
 
-  const category =
-    getTerminCategory(event.category);
+  card.className =
+    buildCalendarCardClassName(
+      event,
+      participationAnswer
+    );
+
+  const imageUrl =
+    resolveTerminCardImageUrl(event);
+
+  const title =
+    escapeTerminCardHtml(
+      event.title || 'Ohne Titel'
+    );
+
+  const whenLine =
+    escapeTerminCardHtml(
+      formatCardDate(event)
+    );
+
+  const locationLine =
+    event.location
+      ? escapeTerminCardHtml(
+        event.location
+      )
+      : '';
+
+  const excerpt =
+    escapeTerminCardHtml(
+      formatTerminCardExcerpt(
+        event.content
+      )
+    );
+
+  const participationBadge =
+    buildCalendarCardParticipationBadge(
+      participationAnswer
+    );
 
   const vorstandActions =
     options.vorstandActions
@@ -549,43 +810,84 @@ function renderTerminCard(
       )
       : '';
 
+  const metaHtml =
+    [
+      whenLine
+        ? `
+<span class="calendar-card__when">
+  🗓️ ${whenLine}
+</span>
+        `.trim()
+        : '',
+      locationLine
+        ? `
+<span class="calendar-card__where">
+  📍 ${locationLine}
+</span>
+        `.trim()
+        : ''
+    ]
+      .filter(Boolean)
+      .join('');
+
+  const imageHtml =
+    imageUrl
+      ? `
+<img
+  src="${escapeTerminCardHtml(imageUrl)}"
+  alt=""
+  loading="lazy"
+  class="calendar-card__image">
+      `.trim()
+      : `
+<div
+  class="calendar-card__image calendar-card__image--placeholder"
+  aria-hidden="true"></div>
+      `.trim();
+
   card.innerHTML = `
 
 <a
   href="${getEventUrl(event.slug)}"
   class="calendar-card__link">
 
-<div>
+<div class="calendar-card__layout">
 
-<h3>
+  <div class="calendar-card__media">
+    ${imageHtml}
+  </div>
 
-${contentVisibilityIcon(
-  event.sichtbarkeit
-)}
+  <div class="calendar-card__body">
 
-${category.icon}
+    <h3>
+      ${contentVisibilityIcon(
+        event.sichtbarkeit
+      )}
+      ${title}
+      ${participationBadge}
+    </h3>
 
-${event.title}
+    ${
+      metaHtml
+        ? `
+<div class="calendar-card__meta">
+  ${metaHtml}
+</div>
+        `.trim()
+        : ''
+    }
 
-</h3>
-
-<p>
-
-🗓️
-
-${formatCardDate(event)}
-
-${
-  event.location
-    ? ` · 📍 ${event.location}`
-    : ''
-}${
-  event.creator_label
-    ? ` · 👤 ${escapeContentCreatorHtml(event.creator_label)}`
-    : ''
-}
-
+    ${
+      excerpt
+        ? `
+<p class="calendar-card__excerpt">
+  ${excerpt}
 </p>
+        `.trim()
+        : ''
+    }
+
+  </div>
 
 </div>
 
@@ -665,6 +967,12 @@ async function loadAllUpcomingTerminCards(
       ? resolveContentListingViewer()
       : null;
 
+  const participationMap =
+    options.participationMap
+    ?? await resolveCalendarParticipationMap(
+      viewer
+    );
+
   const vorstandActions =
     options.vorstandActions === true
     || (
@@ -695,7 +1003,8 @@ async function loadAllUpcomingTerminCards(
 
   const renderOptions = {
     vorstandActions,
-    showNewTerminButton
+    showNewTerminButton,
+    participationMap
   };
 
   renderTerminListWithDividers(
@@ -809,6 +1118,33 @@ async function loadCards(
 
   calendarAutoAdvanceDepth = 0;
 
+  const viewer =
+    options.viewer
+    ?? (
+      typeof resolveContentListingViewer
+        === 'function'
+        ? resolveContentListingViewer()
+        : null
+    );
+
+  const participationMap =
+    options.participationMap
+    ?? await resolveCalendarParticipationMap(
+      viewer
+    );
+
+  const renderOptions = {
+    participationMap,
+    vorstandActions:
+      options.vorstandActions === true
+      || (
+        options.vorstandActions !== false
+        && typeof canShowEventVorstandTools
+          === 'function'
+        && canShowEventVorstandTools(viewer)
+      )
+  };
+
   if (!toRender.length) {
 
     renderEmptyTerminCards(wrapper);
@@ -821,7 +1157,8 @@ async function loadCards(
 
     renderTerminCard(
       wrapper,
-      event
+      event,
+      renderOptions
     );
 
   });

@@ -531,6 +531,69 @@ async function fetchMemberFeedbackAnswers(
 
 }
 
+async function fetchMemberEventParticipationMap(
+  memberId
+) {
+
+  const map =
+    new Map();
+
+  if (!memberId) {
+    return map;
+  }
+
+  const answers =
+    await fetchMemberFeedbackAnswers(
+      memberId
+    );
+
+  const entityType =
+    window.siteConfig.feedback
+      .entityTypes.event;
+
+  const yesAnswer =
+    window.siteConfig.feedback
+      .answers.yes;
+
+  const maybeAnswer =
+    window.siteConfig.feedback
+      .answers.maybe;
+
+  (answers || []).forEach((row) => {
+
+    const module =
+      row.feedback_modules;
+
+    if (
+      !module
+      || module.entity_type
+        !== entityType
+    ) {
+      return;
+    }
+
+    const answer =
+      String(row.answer || '')
+        .trim();
+
+    if (
+      answer !== yesAnswer
+      && answer !== maybeAnswer
+    ) {
+      return;
+    }
+
+    map.set(
+      String(module.entity_id),
+      answer
+    );
+
+  });
+
+  return map;
+
+}
+
 async function fetchFeedbackEntityRecordsForModules(
   modules
 ) {
