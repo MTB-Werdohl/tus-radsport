@@ -12,6 +12,44 @@ const MEMBER_VERWALTUNG_PROTOCOLS_CONFIG = {
   newProtocolId: 'member-verwaltung-new-protocol'
 };
 
+const MEMBER_VERWALTUNG_EXPANDERS = [
+  {
+    id: 'saison',
+    title: 'Saisonmodus',
+    renderBody: renderMemberSiteContentAdminShell,
+    onOpen: async (panel) => {
+
+      if (
+        panel.dataset.inited !== 'true'
+        && typeof initSiteContentAdminPage
+          === 'function'
+      ) {
+
+        await initSiteContentAdminPage();
+
+        panel.dataset.inited = 'true';
+
+      }
+
+    }
+  },
+  {
+    id: 'mitglieder',
+    title: 'Mitglieder',
+    renderBody: renderMemberVerwaltungMembersShell
+  },
+  {
+    id: 'protokolle',
+    title: 'Protokolle, Beschlüsse, Informationen',
+    renderBody: renderMemberVerwaltungProtocolsShell
+  },
+  {
+    id: 'vorstandssitzung',
+    title: 'Vorstandssitzung',
+    renderBody: renderMemberVerwaltungMeetingShell
+  }
+];
+
 function renderMemberSiteContentAdminShell() {
 
   return `
@@ -67,183 +105,199 @@ function renderMemberSiteContentAdminShell() {
 
 }
 
-function renderMemberVerwaltungPanelShell() {
+function renderMemberVerwaltungMembersShell() {
 
   return `
-<section class="member-profile-section-block member-verwaltung-section">
+<div class="member-verwaltung-toolbar">
 
-  <div class="member-verwaltung-section-head">
+  <input
+    id="member-verwaltung-members-search"
+    type="search"
+    placeholder="Vorname, Nachname oder beides …">
 
-    <h2>Saisonmodus</h2>
+  <button
+    id="member-verwaltung-export-members-pdf"
+    class="member-verwaltung-secondary-btn"
+    type="button">
 
-    <button
-      type="button"
-      id="member-verwaltung-hinweise-toggle"
-      class="member-verwaltung-link-btn"
-      aria-expanded="false"
-      aria-controls="member-verwaltung-hinweise-panel">
+    Liste als PDF
 
-      Saisonmodus bearbeiten
+  </button>
 
-    </button>
+  <button
+    id="member-verwaltung-new-member"
+    class="member-verwaltung-primary-btn"
+    type="button">
 
-  </div>
+    Neues Mitglied
+
+  </button>
+
+</div>
+
+<div
+  id="member-verwaltung-members"
+  class="member-verwaltung-list"></div>
+  `.trim();
+
+}
+
+function renderMemberVerwaltungProtocolsShell() {
+
+  return `
+<div class="member-verwaltung-toolbar">
+
+  <input
+    id="member-verwaltung-protocols-search"
+    type="search"
+    placeholder="Protokolle suchen …">
+
+  <button
+    id="member-verwaltung-new-protocol"
+    class="member-verwaltung-primary-btn"
+    type="button">
+
+    Neues Protokoll
+
+  </button>
+
+</div>
+
+<div
+  id="member-verwaltung-protocols"
+  class="member-verwaltung-list"></div>
+
+<div
+  id="member-verwaltung-protocols-pagination"
+  class="member-verwaltung-pagination"></div>
+  `.trim();
+
+}
+
+function renderMemberVerwaltungMeetingShell() {
+
+  return `
+<a
+  href="https://meet.jit.si/radsportvorstandmtbwerdohl"
+  class="member-verwaltung-meeting-link"
+  target="_blank"
+  rel="noopener noreferrer">
+
+  Videokonferenz per Jitsi öffnen
+
+</a>
+  `.trim();
+
+}
+
+function renderMemberVerwaltungExpanderSection(
+  config
+) {
+
+  const bodyHtml =
+    typeof config.renderBody === 'function'
+      ? config.renderBody()
+      : '';
+
+  return `
+<section
+  class="member-profile-section-block member-verwaltung-section member-verwaltung-expander"
+  data-verwaltung-expander="${config.id}">
+
+  <button
+    type="button"
+    class="member-verwaltung-expander-toggle"
+    id="member-verwaltung-expander-toggle-${config.id}"
+    aria-expanded="false"
+    aria-controls="member-verwaltung-expander-panel-${config.id}">
+
+    <span class="member-verwaltung-expander-title">
+      ${config.title}
+    </span>
+
+    <span
+      class="member-verwaltung-expander-icon"
+      aria-hidden="true">
+
+      ▸
+
+    </span>
+
+  </button>
 
   <div
-    id="member-verwaltung-hinweise-panel"
-    class="member-verwaltung-hinweise-panel"
+    id="member-verwaltung-expander-panel-${config.id}"
+    class="member-verwaltung-expander-panel"
     hidden>
 
-    ${renderMemberSiteContentAdminShell()}
+    ${bodyHtml}
 
   </div>
-
-</section>
-
-<section class="member-profile-section-block member-verwaltung-section">
-
-  <h2>Mitglieder</h2>
-
-  <div class="member-verwaltung-toolbar">
-
-    <input
-      id="member-verwaltung-members-search"
-      type="search"
-      placeholder="Vorname, Nachname oder beides …">
-
-    <button
-      id="member-verwaltung-export-members-pdf"
-      class="member-verwaltung-secondary-btn"
-      type="button">
-
-      Liste als PDF
-
-    </button>
-
-    <button
-      id="member-verwaltung-new-member"
-      class="member-verwaltung-primary-btn"
-      type="button">
-
-      Neues Mitglied
-
-    </button>
-
-  </div>
-
-  <div
-    id="member-verwaltung-members"
-    class="member-verwaltung-list"></div>
-
-</section>
-
-<section class="member-profile-section-block member-verwaltung-section">
-
-  <h2>Protokolle, Beschlüsse, Informationen</h2>
-
-  <div class="member-verwaltung-toolbar">
-
-    <input
-      id="member-verwaltung-protocols-search"
-      type="search"
-      placeholder="Protokolle suchen …">
-
-    <button
-      id="member-verwaltung-new-protocol"
-      class="member-verwaltung-primary-btn"
-      type="button">
-
-      Neues Protokoll
-
-    </button>
-
-  </div>
-
-  <div
-    id="member-verwaltung-protocols"
-    class="member-verwaltung-list"></div>
-
-  <div
-    id="member-verwaltung-protocols-pagination"
-    class="member-verwaltung-pagination"></div>
-
-</section>
-
-<section class="member-profile-section-block member-verwaltung-section">
-
-  <h2>Vorstandssitzung</h2>
-
-  <a
-    href="https://meet.jit.si/radsportvorstandmtbwerdohl"
-    class="member-verwaltung-meeting-link"
-    target="_blank"
-    rel="noopener noreferrer">
-
-    Videokonferenz per Jitsi öffnen
-
-  </a>
 
 </section>
   `.trim();
 
 }
 
-function bindMemberVerwaltungHinweiseToggle() {
+function renderMemberVerwaltungPanelShell() {
 
-  const toggle =
-    document.getElementById(
-      'member-verwaltung-hinweise-toggle'
-    );
+  return MEMBER_VERWALTUNG_EXPANDERS
+    .map(renderMemberVerwaltungExpanderSection)
+    .join('\n\n');
 
-  const panel =
-    document.getElementById(
-      'member-verwaltung-hinweise-panel'
-    );
+}
 
-  if (
-    !toggle
-    || !panel
-    || toggle.dataset.bound === 'true'
-  ) {
-    return;
-  }
+function bindMemberVerwaltungExpanders() {
 
-  toggle.dataset.bound = 'true';
+  MEMBER_VERWALTUNG_EXPANDERS.forEach((config) => {
 
-  toggle.addEventListener(
-    'click',
-    async () => {
-
-      const opening =
-        panel.hidden;
-
-      panel.hidden = !opening;
-
-      toggle.setAttribute(
-        'aria-expanded',
-        opening ? 'true' : 'false'
+    const toggle =
+      document.getElementById(
+        `member-verwaltung-expander-toggle-${config.id}`
       );
 
-      toggle.textContent =
-        opening
-          ? 'Schließen'
-          : 'Saisonmodus bearbeiten';
+    const panel =
+      document.getElementById(
+        `member-verwaltung-expander-panel-${config.id}`
+      );
 
-      if (
-        opening
-        && panel.dataset.inited !== 'true'
-        && typeof initSiteContentAdminPage
-          === 'function'
-      ) {
+    if (
+      !toggle
+      || !panel
+      || toggle.dataset.bound === 'true'
+    ) {
+      return;
+    }
 
-        await initSiteContentAdminPage();
+    toggle.dataset.bound = 'true';
 
-        panel.dataset.inited = 'true';
+    toggle.addEventListener(
+      'click',
+      async () => {
+
+        const opening =
+          panel.hidden;
+
+        panel.hidden = !opening;
+
+        toggle.setAttribute(
+          'aria-expanded',
+          opening ? 'true' : 'false'
+        );
+
+        if (
+          opening
+          && typeof config.onOpen === 'function'
+        ) {
+
+          await config.onOpen(panel);
+
+        }
 
       }
+    );
 
-    }
-  );
+  });
 
 }
 
@@ -260,7 +314,7 @@ async function initMemberVerwaltungTab() {
 
   if (panel.dataset.verwaltungBound !== 'true') {
 
-    bindMemberVerwaltungHinweiseToggle();
+    bindMemberVerwaltungExpanders();
 
     if (
       typeof setMembersListConfig

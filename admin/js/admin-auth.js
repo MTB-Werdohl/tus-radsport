@@ -31,8 +31,19 @@ function startAdminAuthSync() {
   if (
     adminAuthSyncStarted
     || !window.supabaseClient
-    || !window.location.pathname.startsWith('/admin')
   ) {
+    return;
+  }
+
+  const path =
+    window.location.pathname;
+
+  const usesAdminShell =
+    path.startsWith('/admin')
+    || path.startsWith('/mitglied-bearbeiten')
+    || path.startsWith('/protokoll');
+
+  if (!usesAdminShell) {
     return;
   }
 

@@ -162,7 +162,7 @@ function handleAdminLoginIntent() {
 
     const returnUrl =
       sessionStorage.getItem('adminReturnUrl')
-      || '/admin/';
+      || '/profil/?tab=verwaltung';
 
     sessionStorage.removeItem('adminReturnUrl');
 

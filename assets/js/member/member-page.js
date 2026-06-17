@@ -85,7 +85,11 @@ function showLoginCallbackNotice(member) {
 
   const adminLink =
     nextUrl
-    && nextUrl.startsWith('/admin')
+    && (
+      nextUrl.startsWith('/admin')
+      || nextUrl.startsWith('/mitglied-bearbeiten')
+      || nextUrl.startsWith('/protokoll')
+    )
     && typeof isVorstand === 'function'
     && isVorstand(member)
       ? `
@@ -94,7 +98,7 @@ function showLoginCallbackNotice(member) {
             href="${nextUrl}"
             class="member-login-callback-admin">
 
-            Zum Admin-Bereich
+            Zur Verwaltung
 
           </a>
         </p>
@@ -105,10 +109,10 @@ function showLoginCallbackNotice(member) {
           ? `
             <p>
               <a
-                href="/admin/"
+                href="/profil/?tab=verwaltung"
                 class="member-login-callback-admin">
 
-                Zum Admin-Bereich
+                Zur Verwaltung
 
               </a>
             </p>

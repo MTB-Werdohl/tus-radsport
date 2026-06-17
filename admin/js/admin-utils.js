@@ -33,7 +33,7 @@ function initAdminUnsavedGuard(options = {}) {
   root
     .querySelectorAll(
       options.linkSelector
-      || 'a.back-button, a[href^="/admin/"]'
+      || 'a.back-button'
     )
     .forEach((link) => {
 

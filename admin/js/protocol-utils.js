@@ -882,16 +882,16 @@ async function deleteProtocolStoragePath(
 
 function getProtocolViewUrl(id) {
 
-  return `/admin/protokoll.html?id=${encodeURIComponent(String(id))}`;
+  return `/protokoll/?id=${encodeURIComponent(String(id))}`;
 
 }
 
 function getProtocolEditUrl(id) {
 
   if (!id) {
-    return '/admin/protokoll_edit.html';
+    return '/protokoll-bearbeiten/';
   }
 
-  return `/admin/protokoll_edit.html?id=${encodeURIComponent(String(id))}`;
+  return `/protokoll-bearbeiten/?id=${encodeURIComponent(String(id))}`;
 
 }

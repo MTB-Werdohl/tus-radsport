@@ -451,7 +451,7 @@ function newMember() {
   );
 
   window.location.href =
-    '/admin/mitglieder_edit.html';
+    '/mitglied-bearbeiten/';
 
 }
 
@@ -463,7 +463,7 @@ function openMember(id) {
   );
 
   window.location.href =
-    '/admin/mitglieder_edit.html?id='
+    '/mitglied-bearbeiten/?id='
     + encodeURIComponent(String(id));
 
 }

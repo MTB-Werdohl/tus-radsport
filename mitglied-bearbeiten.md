@@ -1,0 +1,227 @@
+---
+layout: default
+title: Mitglied bearbeiten
+permalink: /mitglied-bearbeiten/
+hide_title: true
+load_member_content_edit_css: true
+member_verwaltung_page: true
+---
+
+<section class="member-verwaltung-page">
+
+  <div id="admin">
+
+    <div class="page-header">
+
+      <div>
+
+        <h1 id="form-title">
+          Neues Mitglied
+        </h1>
+
+        <p>
+          Mitgliedsdaten pflegen
+        </p>
+
+      </div>
+
+      <a href="/profil/?tab=verwaltung"
+         class="back-button">
+
+        ← Mitglieder
+
+      </a>
+
+    </div>
+
+    <p
+      id="member-edit-loading"
+      class="member-edit-loading hidden">
+
+      Mitgliedsdaten werden geladen …
+
+    </p>
+
+    <p
+      id="member-edit-status"
+      class="member-edit-status hidden"
+      role="status">
+
+    </p>
+
+    <div
+      id="member-edit-form"
+      class="member-admin-form">
+
+      <div class="row">
+
+        <label>
+          Vorname
+          <input id="vorname" type="text" autocomplete="given-name">
+        </label>
+
+        <label>
+          Nachname
+          <input id="nachname" type="text" autocomplete="family-name">
+        </label>
+
+      </div>
+
+      <div class="row">
+
+        <label>
+          Mitgliedsnummer
+          <input id="mitgliedsnummer" type="text">
+        </label>
+
+        <label>
+          Abteilung
+          <input id="abteilung" type="text">
+        </label>
+
+      </div>
+
+      <label>
+        E-Mail
+        <input id="email" type="email" autocomplete="email">
+      </label>
+
+      <p class="member-admin-hint" id="member-email-hint">
+        Beim Bearbeiten ist die E-Mail gesperrt — sie ist an den Magic-Link-Login
+        gebunden. Änderungen nur über Vorstand/Supabase (Mitgliedsdaten und Auth
+        gemeinsam). Beim Anlegen neuer Mitglieder die E-Mail hier setzen.
+      </p>
+
+      <div class="row">
+
+        <label>
+          Straße
+          <input id="strasse" type="text" autocomplete="street-address">
+        </label>
+
+        <label>
+          Hausnummer
+          <input id="hausnummer" type="text">
+        </label>
+
+      </div>
+
+      <div class="row">
+
+        <label>
+          PLZ
+          <input id="plz" type="text" autocomplete="postal-code">
+        </label>
+
+        <label>
+          Wohnort
+          <input id="wohnort" type="text" autocomplete="address-level2">
+        </label>
+
+      </div>
+
+      <div class="row">
+
+        <label>
+          Geburtsdatum
+          <input id="geburtsdatum" type="date">
+        </label>
+
+        <label>
+          Telefon
+          <input id="telefonnummer" type="tel" autocomplete="tel">
+        </label>
+
+      </div>
+
+      <label>
+        Rolle
+        <select id="rolle">
+          <option value="Mitglied">Mitglied</option>
+          <option value="Vorstand">Vorstand</option>
+          <option value="public">Extern (public)</option>
+        </select>
+      </label>
+
+      <div
+        id="consent-info"
+        class="member-consent-readonly hidden">
+
+        <h2>
+          Einwilligungen
+        </h2>
+
+        <div class="member-consent-admin-row">
+
+          <div class="member-consent-admin-copy">
+
+            <p id="consent-kontakt"></p>
+
+          </div>
+
+          <button
+            id="revoke-consent-kontakt"
+            type="button"
+            class="secondary-button member-consent-revoke-btn hidden">
+
+            Widerruf
+
+          </button>
+
+        </div>
+
+        <div class="member-consent-admin-row">
+
+          <div class="member-consent-admin-copy">
+
+            <p id="consent-bilder"></p>
+
+          </div>
+
+          <button
+            id="revoke-consent-bilder"
+            type="button"
+            class="secondary-button member-consent-revoke-btn hidden">
+
+            Widerruf
+
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="member-admin-actions">
+
+        <button
+          id="export-member-pdf"
+          class="secondary-button hidden"
+          type="button">
+
+          📄 PDF-Auszug
+
+        </button>
+
+        <button id="save-member" type="button">
+          Speichern
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+{% if page.member_verwaltung_page %}
+<script src="/admin/js/admin-utils.js?v={{ site.admin_js_version }}"></script>
+<script src="/admin/js/admin-auth.js?v={{ site.admin_js_version }}"></script>
+<script src="/admin/js/auth-guard.js?v={{ site.admin_js_version }}"></script>
+<script src="/admin/js/member-pdf.js?v={{ site.admin_js_version }}"></script>
+<script src="/assets/js/member/member-account.js"></script>
+<script src="/admin/js/members-edit.js?v={{ site.admin_js_version }}"></script>
+<script>
+requireAdminSession(initMemberEdit);
+</script>
+{% endif %}
