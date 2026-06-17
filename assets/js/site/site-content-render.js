@@ -72,18 +72,12 @@ function applySaisonMode(
     saisonBannerTarget.hidden = true;
   }
 
+  renderSaisonOverlay(null);
+
   if (
     !saison
-    || !isSiteContentScheduleActive({
-      active: true,
-      starts_at: saison.starts_at,
-      ends_at: saison.ends_at
-    })
+    || saison.enabled !== true
   ) {
-    return;
-  }
-
-  if (saison.mode !== 'pause') {
     return;
   }
 
@@ -92,23 +86,119 @@ function applySaisonMode(
   );
 
   if (
-    !saison.message
-    || !saisonBannerTarget
+    saison.banner_text
+    && saisonBannerTarget
   ) {
-    return;
-  }
 
-  saisonBannerTarget.hidden = false;
+    saisonBannerTarget.hidden = false;
 
-  saisonBannerTarget.innerHTML = `
+    saisonBannerTarget.innerHTML = `
 <div
   class="site-saison-banner"
   role="status">
 
-  ${escapeSiteContentHtml(saison.message)}
+  ${escapeSiteContentHtml(saison.banner_text)}
 
 </div>
+    `.trim();
+
+  }
+
+  renderSaisonOverlay(saison);
+
+}
+
+function renderSaisonOverlay(
+  saison
+) {
+
+  const existing =
+    document.getElementById(
+      'site-content-overlay'
+    );
+
+  if (existing) {
+    existing.remove();
+  }
+
+  if (
+    !saison
+    || saison.enabled !== true
+    || !saison.overlay_text
+  ) {
+    return;
+  }
+
+  const overlay = {
+    active: true,
+    title: '',
+    text: saison.overlay_text,
+    dismissible: true,
+    updated_at: saison.updated_at || null
+  };
+
+  if (isSiteOverlayDismissed(overlay)) {
+    return;
+  }
+
+  const dialog =
+    document.createElement('dialog');
+
+  dialog.id = 'site-content-overlay';
+  dialog.className =
+    'site-content-overlay';
+
+  dialog.innerHTML = `
+<form method="dialog" class="site-content-overlay__form">
+
+  <div class="site-content-overlay__inner">
+
+    <p class="site-content-overlay__text">
+      ${escapeSiteContentHtml(overlay.text)}
+    </p>
+
+    <button
+      type="submit"
+      class="site-content-overlay__close">
+
+      Schließen
+
+    </button>
+
+  </div>
+
+</form>
   `.trim();
+
+  document.body.appendChild(dialog);
+
+  dialog
+    .querySelector('form')
+    ?.addEventListener(
+      'submit',
+      (event) => {
+
+        event.preventDefault();
+
+        markSiteOverlayDismissed(overlay);
+
+        dialog.close();
+        dialog.remove();
+
+        window.dispatchEvent(
+          new CustomEvent(
+            'site-overlay-dismissed'
+          )
+        );
+
+      }
+    );
+
+  if (
+    typeof dialog.showModal === 'function'
+  ) {
+    dialog.showModal();
+  }
 
 }
 
@@ -275,20 +365,8 @@ async function initPublicSiteContent() {
     const content =
       await fetchPublicSiteContent();
 
-    renderGlobalSiteBanner(
-      content.banner
-    );
-
     applySaisonMode(
       content.saison
-    );
-
-    renderLandingHints(
-      content.landingHints
-    );
-
-    renderSiteOverlay(
-      content.overlay
     );
 
   } catch (error) {

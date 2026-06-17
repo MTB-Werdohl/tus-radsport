@@ -297,13 +297,33 @@ async function loadSaisonForm() {
   const saison =
     await getSaisonModeState();
 
+  const enabledInput =
+    document.getElementById('site-saison-enabled');
+
+  if (enabledInput) {
+
+    enabledInput.checked =
+      saison?.enabled === true;
+
+    document
+      .getElementById('site-saison-banner-text')
+      .value = saison?.banner_text || '';
+
+    document
+      .getElementById('site-saison-overlay-text')
+      .value = saison?.overlay_text || '';
+
+    return;
+
+  }
+
   document
     .getElementById('site-saison-mode')
-    .value = saison?.mode || 'active';
+    .value = saison?.enabled ? 'pause' : 'active';
 
   document
     .getElementById('site-saison-message')
-    .value = saison?.message || '';
+    .value = saison?.banner_text || '';
 
   document
     .getElementById('site-saison-starts')
@@ -450,35 +470,69 @@ function bindSaisonForm() {
           'Speichern …'
         );
 
+        const enabledInput =
+          document.getElementById(
+            'site-saison-enabled'
+          );
+
         const ok =
-          await saveSaisonModeState({
+          enabledInput
+            ? await saveSaisonModeState({
 
-            mode:
-              document
-                .getElementById('site-saison-mode')
-                .value,
+              enabled:
+                enabledInput.checked,
 
-            message:
-              document
-                .getElementById('site-saison-message')
-                .value
-                .trim(),
-
-            starts_at:
-              fromDatetimeLocalValue(
+              banner_text:
                 document
-                  .getElementById('site-saison-starts')
+                  .getElementById(
+                    'site-saison-banner-text'
+                  )
                   .value
-              ),
+                  .trim(),
 
-            ends_at:
-              fromDatetimeLocalValue(
+              overlay_text:
                 document
-                  .getElementById('site-saison-ends')
+                  .getElementById(
+                    'site-saison-overlay-text'
+                  )
                   .value
-              )
+                  .trim()
 
-          });
+            })
+            : await saveSaisonModeState({
+
+              enabled:
+                document
+                  .getElementById('site-saison-mode')
+                  .value === 'pause',
+
+              banner_text:
+                document
+                  .getElementById('site-saison-message')
+                  .value
+                  .trim(),
+
+              overlay_text:
+                document
+                  .getElementById('site-saison-message')
+                  .value
+                  .trim(),
+
+              starts_at:
+                fromDatetimeLocalValue(
+                  document
+                    .getElementById('site-saison-starts')
+                    .value
+                ),
+
+              ends_at:
+                fromDatetimeLocalValue(
+                  document
+                    .getElementById('site-saison-ends')
+                    .value
+                )
+
+            });
 
         setSiteContentStatus(
           'site-saison-status',
@@ -671,19 +725,66 @@ async function initSiteContentAdminPage() {
     initAdminUnsavedGuard();
   }
 
-  bindSiteContentTabs();
-  bindSiteBannerForm();
-  bindSaisonForm();
-  bindLandingForm();
-  bindOverlayForm();
+  if (
+    document.querySelector('[data-site-content-tab]')
+  ) {
+    bindSiteContentTabs();
+  }
 
-  await Promise.all([
-    loadSiteBannerForm(),
-    loadSaisonForm(),
-    loadOverlayForm(),
-    getLandingHintsState().then(
-      populateLandingHints
-    )
-  ]);
+  if (
+    document.getElementById('site-banner-form')
+  ) {
+    bindSiteBannerForm();
+  }
+
+  if (
+    document.getElementById('site-saison-form')
+  ) {
+    bindSaisonForm();
+  }
+
+  if (
+    document.getElementById('site-landing-form')
+  ) {
+    bindLandingForm();
+  }
+
+  if (
+    document.getElementById('site-overlay-form')
+  ) {
+    bindOverlayForm();
+  }
+
+  const loads = [];
+
+  if (
+    document.getElementById('site-banner-form')
+  ) {
+    loads.push(loadSiteBannerForm());
+  }
+
+  if (
+    document.getElementById('site-saison-form')
+  ) {
+    loads.push(loadSaisonForm());
+  }
+
+  if (
+    document.getElementById('site-overlay-form')
+  ) {
+    loads.push(loadOverlayForm());
+  }
+
+  if (
+    document.getElementById('site-landing-items')
+  ) {
+    loads.push(
+      getLandingHintsState().then(
+        populateLandingHints
+      )
+    );
+  }
+
+  await Promise.all(loads);
 
 }

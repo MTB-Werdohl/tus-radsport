@@ -103,15 +103,30 @@ function normalizeSaisonMode(value) {
     return null;
   }
 
+  if (
+    value.enabled !== undefined
+    || value.banner_text !== undefined
+    || value.overlay_text !== undefined
+  ) {
+
+    return {
+      enabled: value.enabled === true,
+      banner_text:
+        String(value.banner_text || '').trim(),
+      overlay_text:
+        String(value.overlay_text || '').trim(),
+      updated_at: value.updated_at || null
+    };
+
+  }
+
+  const legacyMessage =
+    String(value.message || '').trim();
+
   return {
-    mode:
-      value.mode === 'pause'
-        ? 'pause'
-        : 'active',
-    message:
-      String(value.message || '').trim(),
-    starts_at: value.starts_at || null,
-    ends_at: value.ends_at || null,
+    enabled: value.mode === 'pause',
+    banner_text: legacyMessage,
+    overlay_text: legacyMessage,
     updated_at: value.updated_at || null
   };
 
@@ -314,7 +329,11 @@ async function saveSaisonModeState(
   return saveSiteStateValue(
     siteStateKey('saisonMode'),
     normalizeSaisonMode(payload)
-      || { mode: 'active', message: '' }
+      || {
+        enabled: false,
+        banner_text: '',
+        overlay_text: ''
+      }
   );
 
 }
