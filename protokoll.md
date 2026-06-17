@@ -36,7 +36,7 @@ member_verwaltung_page: true
         </a>
 
         <a
-          href="/profil/?tab=verwaltung"
+          href="/profil/?tab=verwaltung&section=protokolle"
           class="back-button"
         >
           ← Protokolle

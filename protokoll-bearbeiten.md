@@ -25,7 +25,7 @@ member_verwaltung_page: true
 
       </div>
 
-      <a href="/profil/?tab=verwaltung"
+      <a href="/profil/?tab=verwaltung&section=protokolle"
          class="back-button">
 
         ← Protokolle

@@ -231,11 +231,134 @@ function setupConsentInfoDialogs() {
 
 let profileActiveTab = 'profil';
 
+const MEMBER_PROFILE_TAB_STORAGE_KEY =
+  'memberProfileActiveTab';
+
+function getStoredMemberProfileTab() {
+
+  try {
+
+    return sessionStorage.getItem(
+      MEMBER_PROFILE_TAB_STORAGE_KEY
+    );
+
+  } catch (error) {
+
+    return null;
+
+  }
+
+}
+
+function storeMemberProfileTab(
+  tabId
+) {
+
+  try {
+
+    sessionStorage.setItem(
+      MEMBER_PROFILE_TAB_STORAGE_KEY,
+      tabId
+    );
+
+  } catch (error) {
+    /* ignore */
+  }
+
+}
+
+function syncMemberProfileTabUrl(
+  tabId
+) {
+
+  if (
+    !window.history
+    || typeof window.history.replaceState
+      !== 'function'
+  ) {
+    return;
+  }
+
+  const url =
+    new URL(window.location.href);
+
+  if (
+    tabId === 'profil'
+  ) {
+
+    url.searchParams.delete('tab');
+    url.searchParams.delete('section');
+
+  } else {
+
+    url.searchParams.set(
+      'tab',
+      tabId
+    );
+
+  }
+
+  const next =
+    `${url.pathname}${url.search}${url.hash}`;
+
+  const current =
+    `${window.location.pathname}${window.location.search}${window.location.hash}`;
+
+  if (current !== next) {
+
+    window.history.replaceState(
+      null,
+      '',
+      next
+    );
+
+  }
+
+}
+
+function resolveInitialMemberProfileTab(
+  urlTab
+) {
+
+  if (urlTab) {
+
+    return resolveMemberProfileActiveTab(
+      urlTab
+    );
+
+  }
+
+  const stored =
+    getStoredMemberProfileTab();
+
+  if (stored) {
+
+    return resolveMemberProfileActiveTab(
+      stored
+    );
+
+  }
+
+  return 'profil';
+
+}
+
 function switchMemberProfileTab(
   tabId
 ) {
 
-  profileActiveTab = tabId;
+  profileActiveTab =
+    resolveMemberProfileActiveTab(
+      tabId
+    );
+
+  storeMemberProfileTab(
+    profileActiveTab
+  );
+
+  syncMemberProfileTabUrl(
+    profileActiveTab
+  );
 
   document
     .querySelectorAll('[data-profile-tab]')
@@ -725,13 +848,25 @@ async function loadMemberProfilePage() {
       }
 
       if (urlTab) {
-        profileActiveTab = urlTab;
-      }
-
-      profileActiveTab =
-        resolveMemberProfileActiveTab(
+        profileActiveTab =
+          resolveMemberProfileActiveTab(
+            urlTab
+          );
+        storeMemberProfileTab(
           profileActiveTab
         );
+      } else {
+
+        profileActiveTab =
+          resolveInitialMemberProfileTab(
+            null
+          );
+
+      }
+
+      syncMemberProfileTabUrl(
+        profileActiveTab
+      );
 
       renderMemberProfile(
         member,

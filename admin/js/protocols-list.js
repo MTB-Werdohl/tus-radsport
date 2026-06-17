@@ -218,6 +218,30 @@ async function loadProtocols(
 
   bindProtocolListActions(container);
 
+  container
+    .querySelectorAll('.admin-protocol-card-link')
+    .forEach((link) => {
+
+      link.addEventListener(
+        'click',
+        () => {
+
+          if (
+            typeof rememberMemberVerwaltungContext
+              === 'function'
+          ) {
+
+            rememberMemberVerwaltungContext(
+              'protokolle'
+            );
+
+          }
+
+        }
+      );
+
+    });
+
   renderAdminPagination({
     containerId:
       protocolsListConfig.paginationId,
@@ -295,6 +319,17 @@ async function deleteProtocol(id) {
 }
 
 function newProtocol() {
+
+  if (
+    typeof rememberMemberVerwaltungContext
+      === 'function'
+  ) {
+
+    rememberMemberVerwaltungContext(
+      'protokolle'
+    );
+
+  }
 
   window.location.href =
     getProtocolEditUrl();

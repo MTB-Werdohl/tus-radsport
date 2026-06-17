@@ -450,6 +450,17 @@ function newMember() {
     'adminMemberEditId'
   );
 
+  if (
+    typeof rememberMemberVerwaltungContext
+      === 'function'
+  ) {
+
+    rememberMemberVerwaltungContext(
+      'mitglieder'
+    );
+
+  }
+
   window.location.href =
     '/mitglied-bearbeiten/';
 
@@ -461,6 +472,17 @@ function openMember(id) {
     'adminMemberEditId',
     String(id)
   );
+
+  if (
+    typeof rememberMemberVerwaltungContext
+      === 'function'
+  ) {
+
+    rememberMemberVerwaltungContext(
+      'mitglieder'
+    );
+
+  }
 
   window.location.href =
     '/mitglied-bearbeiten/?id='

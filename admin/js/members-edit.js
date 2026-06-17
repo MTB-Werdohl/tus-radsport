@@ -867,8 +867,18 @@ async function saveMember() {
     'adminMemberEditId'
   );
 
+  sessionStorage.setItem(
+    'memberProfileActiveTab',
+    'verwaltung'
+  );
+
+  sessionStorage.setItem(
+    'memberVerwaltungOpenExpander',
+    'mitglieder'
+  );
+
   window.location.href =
-    '/profil/?tab=verwaltung';
+    '/profil/?tab=verwaltung&section=mitglieder';
 
 }
 

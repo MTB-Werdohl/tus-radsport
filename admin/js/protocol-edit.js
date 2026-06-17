@@ -665,6 +665,16 @@ async function saveProtocolEdit() {
     window.adminUnsavedGuard.markClean();
   }
 
+  sessionStorage.setItem(
+    'memberProfileActiveTab',
+    'verwaltung'
+  );
+
+  sessionStorage.setItem(
+    'memberVerwaltungOpenExpander',
+    'protokolle'
+  );
+
   window.location.href =
     getProtocolViewUrl(savedId);
 

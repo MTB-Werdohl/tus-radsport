@@ -913,6 +913,7 @@ body.member-feedback-modal-open {
 }
 
 .member-verwaltung-expander-toggle[aria-expanded="true"] {
+  background: rgba(46, 139, 87, 0.22);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -933,6 +934,69 @@ body.member-feedback-modal-open {
 
 .member-verwaltung-expander-panel[hidden] {
   display: none;
+}
+
+.member-verwaltung-saison-form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.member-verwaltung-saison-fields {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.member-verwaltung-field {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  color: #fff;
+  font-weight: 600;
+}
+
+.member-verwaltung-field-label {
+  font-size: 0.9375rem;
+}
+
+.member-verwaltung-expander-panel .member-verwaltung-field textarea,
+.member-verwaltung-expander-panel .member-verwaltung-field input[type="text"],
+.member-verwaltung-expander-panel .member-verwaltung-field input[type="email"] {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 400;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.member-verwaltung-expander-panel .member-verwaltung-field textarea::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.member-verwaltung-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.member-verwaltung-checkbox-row input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+  flex: 0 0 auto;
+  accent-color: #2e8b57;
+}
+
+.member-verwaltung-saison-fields .member-verwaltung-primary-btn {
+  margin-top: 0.25rem;
 }
 
 .member-verwaltung-section-head {

@@ -350,7 +350,7 @@ function resolveMemberProfileActiveTab(
     return activeTab;
   }
 
-  return activeTab || 'profil';
+  return 'profil';
 
 }
 

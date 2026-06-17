@@ -1,3 +1,6 @@
+const MEMBER_VERWALTUNG_EXPANDER_STORAGE_KEY =
+  'memberVerwaltungOpenExpander';
+
 const MEMBER_VERWALTUNG_MEMBERS_CONFIG = {
   searchId: 'member-verwaltung-members-search',
   containerId: 'member-verwaltung-members',
@@ -50,10 +53,79 @@ const MEMBER_VERWALTUNG_EXPANDERS = [
   }
 ];
 
+function getStoredMemberVerwaltungExpander() {
+
+  try {
+
+    return sessionStorage.getItem(
+      MEMBER_VERWALTUNG_EXPANDER_STORAGE_KEY
+    );
+
+  } catch (error) {
+
+    return null;
+
+  }
+
+}
+
+function storeMemberVerwaltungExpander(
+  expanderId
+) {
+
+  try {
+
+    if (expanderId) {
+
+      sessionStorage.setItem(
+        MEMBER_VERWALTUNG_EXPANDER_STORAGE_KEY,
+        expanderId
+      );
+
+      sessionStorage.setItem(
+        'memberProfileActiveTab',
+        'verwaltung'
+      );
+
+    } else {
+
+      sessionStorage.removeItem(
+        MEMBER_VERWALTUNG_EXPANDER_STORAGE_KEY
+      );
+
+    }
+
+  } catch (error) {
+    /* ignore */
+  }
+
+}
+
+function rememberMemberVerwaltungContext(
+  expanderId
+) {
+
+  storeMemberVerwaltungExpander(
+    expanderId
+  );
+
+}
+
+function getMemberVerwaltungExpanderConfig(
+  expanderId
+) {
+
+  return MEMBER_VERWALTUNG_EXPANDERS.find(
+    (config) =>
+      config.id === expanderId
+  );
+
+}
+
 function renderMemberSiteContentAdminShell() {
 
   return `
-<div class="site-content-admin member-verwaltung-hinweise-admin">
+<div class="member-verwaltung-saison-form">
 
   <p class="member-verwaltung-hint">
     Wenn der Saisonmodus aktiv ist, sehen alle Besucher
@@ -61,37 +133,55 @@ function renderMemberSiteContentAdminShell() {
     Hinweistexten.
   </p>
 
-  <form id="site-saison-form">
+  <form
+    id="site-saison-form"
+    class="member-verwaltung-saison-fields">
 
     <label class="member-verwaltung-checkbox-row">
       <input
         type="checkbox"
         id="site-saison-enabled">
-      Saisonmodus aktiv
+      <span>Saisonmodus aktiv</span>
     </label>
 
-    <label for="site-saison-banner-text">
-      Banner-Text
+    <label
+      class="member-verwaltung-field"
+      for="site-saison-banner-text">
+
+      <span class="member-verwaltung-field-label">
+        Banner-Text
+      </span>
+
+      <textarea
+        id="site-saison-banner-text"
+        rows="3"
+        maxlength="500"
+        placeholder="Kurzer Hinweis in der Leiste unter dem Header"></textarea>
+
     </label>
 
-    <textarea
-      id="site-saison-banner-text"
-      rows="3"
-      maxlength="500"
-      placeholder="Kurzer Hinweis in der Leiste unter dem Header"></textarea>
+    <label
+      class="member-verwaltung-field"
+      for="site-saison-overlay-text">
 
-    <label for="site-saison-overlay-text">
-      Overlay-Text
+      <span class="member-verwaltung-field-label">
+        Overlay-Text
+      </span>
+
+      <textarea
+        id="site-saison-overlay-text"
+        rows="5"
+        maxlength="800"
+        placeholder="Ausführlicher Hinweis im Overlay-Fenster"></textarea>
+
     </label>
 
-    <textarea
-      id="site-saison-overlay-text"
-      rows="5"
-      maxlength="800"
-      placeholder="Ausführlicher Hinweis im Overlay-Fenster"></textarea>
+    <button
+      type="submit"
+      class="member-verwaltung-primary-btn">
 
-    <button type="submit">
       Saisonmodus speichern
+
     </button>
 
   </form>
@@ -247,9 +337,15 @@ function renderMemberVerwaltungPanelShell() {
 
 }
 
-function bindMemberVerwaltungExpanders() {
+async function setMemberVerwaltungExpanderOpen(
+  expanderId,
+  options = {}
+) {
 
-  MEMBER_VERWALTUNG_EXPANDERS.forEach((config) => {
+  const save =
+    options.save !== false;
+
+  for (const config of MEMBER_VERWALTUNG_EXPANDERS) {
 
     const toggle =
       document.getElementById(
@@ -261,9 +357,129 @@ function bindMemberVerwaltungExpanders() {
         `member-verwaltung-expander-panel-${config.id}`
       );
 
+    if (!toggle || !panel) {
+      continue;
+    }
+
+    const shouldOpen =
+      expanderId === config.id;
+
+    if (shouldOpen) {
+
+      if (panel.hidden) {
+
+        panel.hidden = false;
+
+        toggle.setAttribute(
+          'aria-expanded',
+          'true'
+        );
+
+        if (
+          typeof config.onOpen === 'function'
+        ) {
+
+          await config.onOpen(panel);
+
+        }
+
+      }
+
+      continue;
+
+    }
+
+    if (!panel.hidden) {
+
+      panel.hidden = true;
+
+      toggle.setAttribute(
+        'aria-expanded',
+        'false'
+      );
+
+    }
+
+  }
+
+  if (save) {
+
+    storeMemberVerwaltungExpander(
+      expanderId || ''
+    );
+
+  }
+
+}
+
+async function toggleMemberVerwaltungExpander(
+  expanderId
+) {
+
+  const panel =
+    document.getElementById(
+      `member-verwaltung-expander-panel-${expanderId}`
+    );
+
+  if (!panel) {
+    return;
+  }
+
+  if (!panel.hidden) {
+
+    await setMemberVerwaltungExpanderOpen(null);
+
+    return;
+
+  }
+
+  await setMemberVerwaltungExpanderOpen(
+    expanderId
+  );
+
+}
+
+async function restoreMemberVerwaltungExpanders() {
+
+  const urlSection =
+    new URLSearchParams(
+      window.location.search
+    ).get('section');
+
+  const stored =
+    getStoredMemberVerwaltungExpander();
+
+  const expanderId =
+    urlSection
+    || stored;
+
+  if (
+    !expanderId
+    || !getMemberVerwaltungExpanderConfig(
+      expanderId
+    )
+  ) {
+    return;
+  }
+
+  await setMemberVerwaltungExpanderOpen(
+    expanderId,
+    { save: false }
+  );
+
+}
+
+function bindMemberVerwaltungExpanders() {
+
+  MEMBER_VERWALTUNG_EXPANDERS.forEach((config) => {
+
+    const toggle =
+      document.getElementById(
+        `member-verwaltung-expander-toggle-${config.id}`
+      );
+
     if (
       !toggle
-      || !panel
       || toggle.dataset.bound === 'true'
     ) {
       return;
@@ -273,26 +489,11 @@ function bindMemberVerwaltungExpanders() {
 
     toggle.addEventListener(
       'click',
-      async () => {
+      () => {
 
-        const opening =
-          panel.hidden;
-
-        panel.hidden = !opening;
-
-        toggle.setAttribute(
-          'aria-expanded',
-          opening ? 'true' : 'false'
+        void toggleMemberVerwaltungExpander(
+          config.id
         );
-
-        if (
-          opening
-          && typeof config.onOpen === 'function'
-        ) {
-
-          await config.onOpen(panel);
-
-        }
 
       }
     );
@@ -379,5 +580,7 @@ async function initMemberVerwaltungTab() {
   if (typeof loadProtocols === 'function') {
     await loadProtocols();
   }
+
+  await restoreMemberVerwaltungExpanders();
 
 }
