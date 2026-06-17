@@ -167,45 +167,43 @@
 
 }
 
-.calendar-card--participation-yes {
+.calendar-card__participation {
 
-  background:
+  display: inline-block;
 
-    rgba(34, 120, 72, 0.88) !important;
+  margin-left: 0.45rem;
 
-  border:
+  padding: 0.16rem 0.55rem;
 
-    1px solid
+  border-radius: 999px;
 
-    rgba(
-      120,
-      220,
-      160,
-      .28
-    ) !important;
+  font-size: 0.72rem;
 
-}
+  font-weight: 700;
 
-.calendar-card--participation-maybe {
+  letter-spacing: 0.02em;
 
-  background:
+  vertical-align: middle;
 
-    rgba(160, 120, 24, 0.90) !important;
-
-  border:
-
-    1px solid
-
-    rgba(
-      255,
-      220,
-      100,
-      .28
-    ) !important;
+  color: #fff;
 
 }
 
-.calendar-card__layout {
+.calendar-card__participation--yes {
+
+  background:
+
+    rgba(34, 120, 72, 0.96);
+
+}
+
+.calendar-card__participation--maybe {
+
+  background:
+
+    rgba(176, 132, 18, 0.96);
+
+}
 
   display: flex;
 
@@ -270,53 +268,7 @@
 
 }
 
-.calendar-card__participation {
-
-  display: inline-block;
-
-  margin-left: 0.45rem;
-
-  padding: 0.12rem 0.45rem;
-
-  border-radius: 999px;
-
-  font-size: 0.72rem;
-
-  font-weight: 700;
-
-  letter-spacing: 0.02em;
-
-  vertical-align: middle;
-
-}
-
-.calendar-card__participation--yes {
-
-  background:
-
-    rgba(
-      255,
-      255,
-      255,
-      .18
-    );
-
-}
-
-.calendar-card__participation--maybe {
-
-  background:
-
-    rgba(
-      0,
-      0,
-      0,
-      .18
-    );
-
-}
-
-.calendar-card__meta {
+.calendar-card__layout {
 
   display: flex;
 

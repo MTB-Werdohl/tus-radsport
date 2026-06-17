@@ -662,3 +662,172 @@ function formatAdminTerminMeta(event) {
   return `📅 ${formatTerminSchedule(event)}`;
 
 }
+
+function getTerminListingKey(
+  item
+) {
+
+  const slug =
+    String(item?.slug || '')
+      .trim()
+      .toLowerCase();
+
+  if (slug) {
+    return `slug:${slug}`;
+  }
+
+  if (item?.id != null) {
+    return `id:${item.id}`;
+  }
+
+  return '';
+
+}
+
+function normalizeTerminTitleKey(
+  item
+) {
+
+  return String(item?.title || '')
+    .trim()
+    .toLowerCase();
+
+}
+
+function normalizeTerminLocationKey(
+  item
+) {
+
+  return String(item?.location || '')
+    .trim()
+    .toLowerCase();
+
+}
+
+function getRecurringSeriesIdentity(
+  item
+) {
+
+  if (!isRecurringTermin(item)) {
+    return '';
+  }
+
+  const daysOfWeek =
+    [...(item?.daysOfWeek || [])]
+      .sort((left, right) => left - right)
+      .join(',');
+
+  return [
+    normalizeTerminTitleKey(item),
+    daysOfWeek,
+    String(item?.startTime || '')
+      .trim(),
+    normalizeTerminLocationKey(item)
+  ].join('|');
+
+}
+
+function shouldSkipSingleTerminForRecurringSeries(
+  item,
+  recurringIdentities
+) {
+
+  if (isRecurringTermin(item)) {
+    return false;
+  }
+
+  const titleKey =
+    normalizeTerminTitleKey(item);
+
+  if (!titleKey) {
+    return false;
+  }
+
+  const locationKey =
+    normalizeTerminLocationKey(item);
+
+  return recurringIdentities.some(
+    (identity) => {
+
+      const parts =
+        identity.split('|');
+
+      if (parts[0] !== titleKey) {
+        return false;
+      }
+
+      const seriesLocation =
+        parts[3] || '';
+
+      if (
+        !seriesLocation
+        || !locationKey
+      ) {
+        return true;
+      }
+
+      return (
+        seriesLocation
+        === locationKey
+      );
+
+    }
+  );
+
+}
+
+function dedupeTermineRows(
+  termine
+) {
+
+  const items =
+    [...(termine || [])];
+
+  const recurringIdentities =
+    items
+      .map(getRecurringSeriesIdentity)
+      .filter(Boolean);
+
+  const seenKeys =
+    new Set();
+
+  const result = [];
+
+  const tryAdd =
+    (item) => {
+
+      const listingKey =
+        getTerminListingKey(item);
+
+      if (
+        !listingKey
+        || seenKeys.has(listingKey)
+      ) {
+        return;
+      }
+
+      if (
+        shouldSkipSingleTerminForRecurringSeries(
+          item,
+          recurringIdentities
+        )
+      ) {
+        return;
+      }
+
+      seenKeys.add(listingKey);
+      result.push(item);
+
+    };
+
+  items
+    .filter(isRecurringTermin)
+    .forEach(tryAdd);
+
+  items
+    .filter((item) => !isRecurringTermin(item))
+    .forEach(tryAdd);
+
+  return result;
+
+}

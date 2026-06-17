@@ -30,8 +30,10 @@ async function fetchTermine() {
     }
 
     termineCache =
-      await enrichContentRowsWithCreators(
-        data || []
+      dedupeTermineRows(
+        await enrichContentRowsWithCreators(
+          data || []
+        )
       );
 
     return termineCache;

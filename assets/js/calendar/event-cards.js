@@ -39,36 +39,6 @@ function buildTerminCardsForRange(
 
 }
 
-function dedupeTermineRows(
-  termine
-) {
-
-  const seen =
-    new Map();
-
-  (termine || []).forEach((item) => {
-
-    const key =
-      item?.id != null
-        ? `id:${item.id}`
-        : item?.slug
-          ? `slug:${item.slug}`
-          : '';
-
-    if (!key) {
-      return;
-    }
-
-    if (!seen.has(key)) {
-      seen.set(key, item);
-    }
-
-  });
-
-  return [...seen.values()];
-
-}
-
 function filterUpcomingTerminCards(cards) {
 
   const now = new Date();
@@ -426,8 +396,7 @@ function resolveCalendarCardParticipation(
 }
 
 function buildCalendarCardClassName(
-  event,
-  participationAnswer
+  event
 ) {
 
   let className =
@@ -440,26 +409,6 @@ function buildCalendarCardClassName(
   ) {
     className +=
       ' calendar-card--draft';
-  }
-
-  const yesAnswer =
-    window.siteConfig.feedback
-      .answers.yes;
-
-  const maybeAnswer =
-    window.siteConfig.feedback
-      .answers.maybe;
-
-  if (
-    participationAnswer === yesAnswer
-  ) {
-    className +=
-      ' calendar-card--participation-yes';
-  } else if (
-    participationAnswer === maybeAnswer
-  ) {
-    className +=
-      ' calendar-card--participation-maybe';
   }
 
   return className;
@@ -732,7 +681,24 @@ function renderTerminListWithDividers(
   let lastYear = null;
   let lastMonthKey = null;
 
-  events.forEach((event) => {
+  const renderedKeys =
+    new Set();
+
+  dedupeTermineRows(events).forEach((event) => {
+
+    const listingKey =
+      getTerminListingKey(event);
+
+    if (
+      listingKey
+      && renderedKeys.has(listingKey)
+    ) {
+      return;
+    }
+
+    if (listingKey) {
+      renderedKeys.add(listingKey);
+    }
 
     const sortDate =
       getTerminSortDate(event);
@@ -804,8 +770,7 @@ function renderTerminCard(
 
   card.className =
     buildCalendarCardClassName(
-      event,
-      participationAnswer
+      event
     );
 
   const imageUrl =
