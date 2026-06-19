@@ -80,7 +80,7 @@ Optionale Frontmatter-Flags:
 | `member-auth.js` | Session, Magic Link, Logout, Validierung; Rückkehr-URL (`memberReturnUrl`, `?next=`) nach Login |
 | `member-change-summary.js` | Popup „Seit deinem letzten Besuch“ (nur Mitglied/Vorstand) |
 | `member-account.js` | Account-Löschung (Anonymisierung) via Edge Function |
-| `member-nav.js` | Header-UI (Login / Profil / Verwaltung-Link) |
+| `member-nav.js` | Header-UI (Login / Profil) |
 | `member-render.js` | Profilseite rendern (Mitglied + public), Avatar-Block |
 | `member-page.js` | Profilseite initialisieren (Tabs Strava, Abstimmungen, Aktivitäten) |
 | `preview-role.js` | Rollen-Vorschau für Vorstand (`getViewerMember`, `isRealVorstand`) |
@@ -97,7 +97,7 @@ Ablauf extern (`public`): Registrierung im Feedback-Pop-up → Magic Link → DB
 | `Vorstand` | ja | ja | ja |
 | `public` | ja (eingeschränkt) | nein | nein — nur öffentliche Abstimmungen |
 
-Ausführliche Einrichtung: [`docs/supabase-members-setup.md`](supabase-members-setup.md) · SQL: [`docs/supabase-members-auth.sql`](supabase-members-auth.sql) · Rollen/RLS: [`docs/supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql) · Public/Anonymisierung: [`docs/supabase/RUNBOOK.md`](supabase/RUNBOOK.md)
+Ausführliche Einrichtung: [`docs/supabase-members-setup.md`](supabase-members-setup.md) · SQL: [`docs/supabase/RUNBOOK.md`](supabase/RUNBOOK.md)
 
 ---
 
@@ -118,7 +118,7 @@ Auth: Magic Link in der Navigation. Geschützte Seiten: `requireVorstandSession(
 
 Hilfsfunktionen: `escapeAdminHtml()` in `assets/js/admin/admin-utils.js` · Styles: `assets/css/vorstand.css` (Formulare, Protokoll-Ordner)
 
-SQL für Rollen und RLS: [`docs/supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql)
+SQL für Rollen und RLS: [`docs/supabase/RUNBOOK.md`](supabase/RUNBOOK.md)
 
 **Sichtbarkeit** (`sichtbarkeit` auf `News` und `Termine`):
 
@@ -128,7 +128,7 @@ SQL für Rollen und RLS: [`docs/supabase-vorstand-roles.sql`](supabase-vorstand-
 | `members` | Eingeloggte Mitglieder + Vorstand |
 | `draft` | Nur Vorstand |
 
-SQL: [`docs/supabase-content-visibility.sql`](supabase-content-visibility.sql) · Hilfsfunktionen: `assets/js/core/visibility.js`
+SQL: [`docs/supabase/RUNBOOK.md`](supabase/RUNBOOK.md) · Hilfsfunktionen: `assets/js/core/visibility.js`
 
 ## Supabase — logische Tabellen
 

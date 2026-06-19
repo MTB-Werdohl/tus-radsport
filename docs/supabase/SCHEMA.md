@@ -96,7 +96,7 @@ Strava-Activity-Streams (Phase B.2), 1:1 zu `activities.id`.
 
 **Sichtbarkeit:** Nur über `get_public_activity_streams(uuid)` — gleiche Filter wie Detail-RPC. Soft-Delete auf `activities` versteckt Streams; Zeile bleibt in DB.
 
-SQL: [`supabase-aktivitaeten-streams-phase-b2.sql`](../supabase-aktivitaeten-streams-phase-b2.sql)
+SQL: [`supabase-aktivitaeten-streams-phase-b2.sql`](supabase-aktivitaeten-streams-phase-b2.sql)
 
 ## `member_stats_month` / `member_stats_year` / `club_stats_month` / `club_stats_year`
 
@@ -112,7 +112,7 @@ Voraggregierte Werte nach `sport_category` (PK enthält Kategorie). Öffentliche
 | `get_public_member_rankings(year, month?)` | anon, authenticated | `publish_rankings`, Stats `sport_category=rad`; `avatar_url` wenn gesetzt |
 | `get_public_club_stats(year, month?)` | anon, authenticated | Vereinsziele nur Rad (`sport_category=rad`) |
 
-SQL: [`supabase-strava-public.sql`](../supabase-strava-public.sql)
+SQL: [`supabase-strava-public.sql`](supabase-strava-public.sql)
 
 ### Profil-RPCs (Mitglied)
 
@@ -126,7 +126,7 @@ SQL: [`supabase-strava-public.sql`](../supabase-strava-public.sql)
 | `touch_member_change_summary_seen()` | authenticated (Mitglied/Vorstand) | Popup/Erstbesuch: Zeitstempel setzen |
 | `get_member_profile_avatar()` | authenticated | Eigenes Profilbild-Metadaten (URL, Initialen) |
 
-SQL Profil-Aktivitäten: [`supabase-strava-member-activities.sql`](../supabase-strava-member-activities.sql)
+SQL Profil-Aktivitäten: [`supabase-strava-member-activities.sql`](supabase-strava-member-activities.sql)
 
 SQL Profilbilder: [`supabase/supabase-member-avatars.sql`](supabase/supabase-member-avatars.sql)
 
@@ -270,11 +270,11 @@ Historie von Statusänderungen bei **Einzeltermin**-Zusagen (`Termine.recurring 
 | `comment` | text NULL | optional Freitext bei `sonstiges` |
 | `created_at` | timestamptz | |
 
-RPCs: `set_event_feedback_answer`, `list_feedback_participation_changes` (Vorstand). Siehe [`supabase-phase4a-feedback-events.sql`](../supabase-phase4a-feedback-events.sql).
+RPCs: `set_event_feedback_answer`, `list_feedback_participation_changes` (Vorstand). Siehe [`supabase-phase4a-feedback-events.sql`](supabase-phase4a-feedback-events.sql).
 
 ## Storage `media`
 
-Pfade z. B. `shared/images/…`, `shared/routes/…`, `galleries/{jahr}/{slug}/…`, Legacy-Root-Uploads. Details: [`supabase-media-storage-paths.sql`](../supabase-media-storage-paths.sql), [`supabase-media-move.sql`](../supabase-media-move.sql).
+Pfade z. B. `shared/images/…`, `shared/routes/…`, `galleries/{jahr}/{slug}/…`, Legacy-Root-Uploads. Details: [`supabase-media-storage-paths.sql`](supabase-media-storage-paths.sql), [`supabase-media-move.sql`](supabase-media-move.sql).
 
 | RPC | Rolle | Zweck |
 |-----|-------|--------|
@@ -282,7 +282,7 @@ Pfade z. B. `shared/images/…`, `shared/routes/…`, `galleries/{jahr}/{slug}
 | `move_media_object(p_old_path, p_new_path)` | Vorstand | Storage verschieben + DB-Referenzen aktualisieren |
 | `delete_media_object(p_path, p_force)` | Vorstand | Löschen; mit Referenzen nur bei `p_force=true` |
 
-SQL: [`supabase-media-move.sql`](../supabase-media-move.sql)
+SQL: [`supabase-media-move.sql`](supabase-media-move.sql)
 
 ## Storage `avatars`
 

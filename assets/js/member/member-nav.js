@@ -15,11 +15,6 @@ function updateMemberNav(member) {
       'member-greeting'
     );
 
-  const adminLinkEl =
-    document.getElementById(
-      'member-admin-link'
-    );
-
   if (!guestEl || !memberEl) {
     return;
   }
@@ -47,18 +42,7 @@ function updateMemberNav(member) {
       greetingEl.textContent = '';
     }
 
-    if (adminLinkEl) {
-      adminLinkEl.hidden = true;
-    }
-
     return;
-
-  }
-
-  if (adminLinkEl) {
-
-    adminLinkEl.hidden =
-      !isVorstand(member);
 
   }
 
@@ -182,7 +166,7 @@ function handleAdminLoginIntent() {
   ) {
 
     showMemberToast(
-      'Bitte anmelden, um den Admin-Bereich zu öffnen.',
+      'Bitte anmelden, um die Verwaltung zu öffnen.',
       'success',
       5000
     );

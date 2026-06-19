@@ -2,7 +2,7 @@
 -- Voraussetzung: supabase-feedback.sql, supabase-feedback-public-voting.sql (public_voting)
 -- Siehe docs/supabase/RUNBOOK.md
 --
--- Constraint-Fix für feedback_answers: docs/supabase-feedback-answers-unique-fix.sql
+-- UNIQUE (module_id, member_id) ist in supabase-feedback.sql definiert.
 -- (separat ausführen, falls Abstimmung/Upsert fehlschlägt)
 
 -- Nur Vereinsmitglieder (nicht „public“) für interne Inhalte

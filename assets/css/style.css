@@ -2506,11 +2506,7 @@ max-width:none;
   background: rgba(255, 255, 255, 0.12);
 }
 
-body.admin-preview-active .member-admin-link {
-  display: none !important;
-}
-
-/* Phase 5 — Website-Hinweise */
+/* Website-Hinweise (Saisonmodus) */
 
 .site-global-banner {
   padding: 0.65rem 1rem;

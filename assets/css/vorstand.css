@@ -1,15 +1,8 @@
-body {
-  font-family: sans-serif;
-  background: #111;
-  color: white;
-  padding: 20px;
-  max-width: 900px;
-  margin: auto;
-}
+/* Vorstand-Bearbeitungsseiten (/mitglied-bearbeiten/, /protokoll-bearbeiten/, …) */
 
-select,
-textarea,
-button {
+.member-verwaltung-page select,
+.member-verwaltung-page textarea,
+.member-verwaltung-page button {
   width: 100%;
   margin-bottom: 15px;
   padding: 12px;
@@ -19,23 +12,23 @@ button {
   box-sizing: border-box;
 }
 
-textarea {
+.member-verwaltung-page textarea {
   min-height: 180px;
 }
 
-button {
+.member-verwaltung-page button {
   background: #2e8b57;
   color: white;
   cursor: pointer;
 }
 
-h1,
-h2,
-h3 {
+.member-verwaltung-page h1,
+.member-verwaltung-page h2,
+.member-verwaltung-page h3 {
   color: white;
 }
 
-.hidden {
+.member-verwaltung-page .hidden {
   display: none;
 }
 

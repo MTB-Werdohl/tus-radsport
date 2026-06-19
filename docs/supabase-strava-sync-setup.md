@@ -2,9 +2,9 @@
 
 Voraussetzungen:
 
-- [`supabase-strava.sql`](supabase-strava.sql) ausgeführt
-- [`supabase-strava-sync-status.sql`](supabase-strava-sync-status.sql) ausgeführt *(Sync-Status-Spalten)*
-- [`supabase-aktivitaeten-detail-phase-a1.sql`](supabase-aktivitaeten-detail-phase-a1.sql) ausgeführt *(Phase A.1 — Detail-Spalten + Detail-RPC)*
+- [`supabase/supabase-strava.sql`](supabase/supabase-strava.sql) ausgeführt
+- [`supabase/supabase-strava-sync-status.sql`](supabase/supabase-strava-sync-status.sql) ausgeführt
+- [`supabase/supabase-aktivitaeten-detail-phase-a1.sql`](supabase/supabase-aktivitaeten-detail-phase-a1.sql) ausgeführt
 - OAuth deployt ([`supabase-strava-setup.md`](supabase-strava-setup.md))
 
 ## Betriebsmodell (wartungsfrei)
@@ -29,9 +29,8 @@ OAuth-Callback (Initial-Trigger): [`supabase-edge-strava-oauth-callback.ts`](sup
 
 Im **SQL Editor** ausführen:
 
-1. [`supabase-strava.sql`](supabase-strava.sql) *(falls noch nicht)*
-2. [`supabase-strava-sync-status.sql`](supabase-strava-sync-status.sql) *(Sync-Status-Spalten)*
-3. Bei Fehler **„DELETE requires a WHERE clause“**: [`supabase-strava-safe-delete-fix.sql`](supabase-strava-safe-delete-fix.sql)
+1. [`supabase/supabase-strava.sql`](supabase/supabase-strava.sql)
+2. [`supabase/supabase-strava-sync-status.sql`](supabase/supabase-strava-sync-status.sql)
 
 ---
 

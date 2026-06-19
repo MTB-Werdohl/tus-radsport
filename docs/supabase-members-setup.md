@@ -80,7 +80,7 @@ select public.check_member_email('deine-echte@email.de');
 | | `https://www.mtb-werdohl.de/**` |
 | | `http://localhost:4000/profil/` *(lokal)* |
 
-Vorstand öffnet nach Magic Link die **Verwaltung** über `/profil/?tab=verwaltung` (Navbar-Link „Verwaltung“). Kein separater Admin-Bereich.
+Vorstand öffnet nach Magic Link die **Verwaltung** über `/profil/?tab=verwaltung` (Tab im Profil, nur Rolle Vorstand).
 
 Vollständige SQL-Reihenfolge: [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md)
 
@@ -168,7 +168,7 @@ Beide nutzen **denselben Magic-Link-Login** (Supabase Auth + Tabelle `members`).
 
 1. In `members`: Spalte `rolle` auf `Vorstand` setzen (exakt so, Groß/Kleinschreibung egal in der DB-Prüfung)
 2. SQL-Skripte gemäß [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md) ausführen (Schritte 2–4)
-3. `/profil/?tab=verwaltung` über Navbar-Link „Verwaltung“ öffnen — ohne Vorstand-Rolle kein Tab sichtbar
+3. `/profil/?tab=verwaltung` öffnen — ohne Vorstand-Rolle kein Tab sichtbar
 
 Mitglieder ohne Vorstand-Rolle sehen den Tab **Verwaltung** nicht.
 
@@ -215,7 +215,7 @@ Datenschutz: [`../datenschutz.md`](../datenschutz.md) §12.5 / §12.6
 - [ ] [`supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql) ausgeführt (Vorstand-RLS)
 - [ ] Mindestens ein Test-Vorstand mit `rolle = 'Vorstand'`
 - [ ] Magic Link kommt an und `/profil/` funktioniert
-- [ ] Vorstand: `/profil/?tab=verwaltung` über Navbar nach Magic Link erreichbar
+- [ ] Vorstand: `/profil/?tab=verwaltung` nach Magic Link erreichbar
 - [ ] Mitglied ohne Vorstand-Rolle: kein Admin-Zugang
 - [ ] *(optional Feedback public)* RUNBOOK-Feedback-Skripte + `anonymize-member-account` deployt, Test Registrierung → Abstimmung → Account löschen
 

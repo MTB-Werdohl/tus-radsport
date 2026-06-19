@@ -16,9 +16,9 @@ Im Admin erscheint eine **Warnung**, wenn `public_voting` und `sichtbarkeit` nic
 Siehe [`RUNBOOK.md`](RUNBOOK.md). Mindestens:
 
 1. `supabase-feedback-public-registration.sql`
-2. `supabase-feedback-public-email-verify.sql` → RPCs `can_register_public_participant`, `complete_public_participant_registration`
+2. `supabase-feedback-public-email-verify.sql`
 3. `supabase-public-participant-consents.sql`
-4. Bei Upsert-Fehlern: `supabase-feedback-answers-unique-fix.sql`
+4. `supabase-members-public-role.sql`
 
 ## Ablauf (Website)
 
@@ -42,7 +42,7 @@ Gast auf Event-Seite
 | „serverseitig noch nicht eingerichtet“ | RPC fehlt | SQL ausführen (s. oben) |
 | Gate fehlt | `public_voting=false` oder Termin nicht public | Admin prüfen |
 | Nach E-Mail-Klick keine Abstimmung | RPC schlägt fehl / Session abgemeldet | Browser-Konsole + Supabase Logs; SQL deployt? |
-| Upsert-Fehler beim Abstimmen | UNIQUE `(module_id, member_id)` fehlt | `supabase-feedback-answers-unique-fix.sql` |
+| Upsert-Fehler beim Abstimmen | UNIQUE fehlt | `supabase-feedback.sql` erneut ausführen (Constraint `feedback_answers_module_member_unique`) |
 | Registrierung in anderem Browser | Pending-Daten fehlen | Gleichen Browser nutzen; Metadaten aus Auth als Fallback |
 
 ## Phase-0-Code-Fixes (Frontend)

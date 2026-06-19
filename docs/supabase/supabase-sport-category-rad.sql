@@ -1,5 +1,5 @@
 -- Phase 2: Radfokus — sport_category auf activities + Stats/RPCs
--- Nach docs/supabase-strava.sql und docs/supabase-strava-public.sql ausführen
+-- Nach supabase-strava.sql und supabase-strava-public.sql ausführen
 -- Siehe docs/supabase/RUNBOOK.md
 
 -- ---------------------------------------------------------------------------

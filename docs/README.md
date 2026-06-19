@@ -1,6 +1,6 @@
 # Dokumentation — MTB Werdohl
 
-Überblick über die **aktuelle** Codebasis. Historische Phase-/Konzept-Dokumente wurden entfernt.
+Überblick über die **aktuelle** Codebasis.
 
 ## Einstieg
 
@@ -14,13 +14,15 @@
 
 | Dokument | Inhalt |
 |----------|--------|
-| [supabase/RUNBOOK.md](supabase/RUNBOOK.md) | **SQL-Reihenfolge**, RLS-Matrix, Edge Functions |
+| [supabase/RUNBOOK.md](supabase/RUNBOOK.md) | **SQL-Reihenfolge** — alle Skripte in `supabase/` |
 | [supabase/SCHEMA.md](supabase/SCHEMA.md) | Tabellen & Spalten |
 | [supabase-members-setup.md](supabase-members-setup.md) | Magic Link, Mitglieder, Vorstand |
 | [supabase-admin-email-setup.md](supabase-admin-email-setup.md) | E-Mail-Versand (Profil → E-Mail) |
 | [supabase/PUBLIC-REGISTRATION.md](supabase/PUBLIC-REGISTRATION.md) | Externe Abstimmung (Gäste) |
 
-SQL-Skripte liegen in `docs/` und `docs/supabase/` — Reihenfolge immer über den **RUNBOOK**.
+**SQL-Skripte:** ausschließlich unter [`supabase/`](supabase/) — keine verstreuten Legacy-Dateien.
+
+Edge-Function-Quellcode: `docs/supabase-edge-*.ts`
 
 ## Mitglieder
 

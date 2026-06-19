@@ -1,84 +1,56 @@
-# Go-live-Checkliste — MTB Werdohl (Gesamt)
+# Go-live-Checkliste — MTB Werdohl
 
-**Stand:** Mai 2026  
-**Zweck:** Einmalige Übersicht für Neuinstallation, Upgrade oder Abschluss-Prüfung nach den Phasen 0–5.
+**Zweck:** Abschluss-Prüfung vor Livegang oder nach Neuinstallation.
 
-Detaillierte SQL-Reihenfolge: [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md)
-
----
-
-## 1. Supabase SQL (Basis)
-
-| # | Datei | Erledigt |
-|---|--------|----------|
-| 0 | [`supabase-public-read.sql`](../supabase-public-read.sql) | [ ] |
-| 1 | [`supabase-members-auth.sql`](../supabase-members-auth.sql) | [ ] |
-| 2 | [`supabase-vorstand-roles.sql`](../supabase-vorstand-roles.sql) | [ ] |
-| 3 | [`supabase-content-visibility.sql`](../supabase-content-visibility.sql) | [ ] |
-| 3b | [`supabase-content-slug-resolve.sql`](../supabase-content-slug-resolve.sql) | [ ] |
-| 4 | [`supabase-members-admin.sql`](../supabase-members-admin.sql) | [ ] |
-
-**Optional / nach Bedarf:** Mehrtages-Termine, Tröte-Cleanup (`supabase-drop-web-push.sql`), Feedback-Skripte (siehe RUNBOOK), Protokolle, Public-Registrierung.
+SQL-Reihenfolge: [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md) (alle Skripte in `docs/supabase/`).
 
 ---
 
-## 2. Supabase SQL (Feature-Phasen)
+## 1. Supabase SQL
 
-| Phase | Datei | Erledigt |
-|-------|--------|----------|
-| Strava Basis | [`supabase-strava.sql`](../supabase-strava.sql) | [ ] |
-| Strava Public | [`supabase-strava-public.sql`](../supabase-strava-public.sql) | [ ] |
-| Strava Profil-Aktivitäten | [`supabase-strava-member-activities.sql`](../supabase-strava-member-activities.sql) | [ ] |
-| **Phase 2** Radfokus | [`supabase/supabase-sport-category-rad.sql`](supabase/supabase-sport-category-rad.sql) | [ ] |
-| **Phase 3** Profilbilder | [`supabase/supabase-member-avatars.sql`](supabase/supabase-member-avatars.sql) | [ ] |
-| **Phase 5** Website-Hinweise | [`supabase/supabase-site-content.sql`](supabase/supabase-site-content.sql) | [ ] |
+- [ ] RUNBOOK Kern (#0–12) ausgeführt
+- [ ] RUNBOOK Feedback (#20–32) ausgeführt
+- [ ] RUNBOOK Medien & Protokolle (#40–45) ausgeführt
+- [ ] RUNBOOK E-Mail (#50) ausgeführt
+- [ ] RUNBOOK Strava (#60–68) ausgeführt *(falls Aktivitätenportal genutzt)*
 
 ---
 
-## 3. Edge Functions (deployen)
+## 2. Edge Functions
 
-| Funktion | Wann nötig | Erledigt |
-|----------|------------|----------|
-| `anonymize-member-account` | Account-Löschung | [ ] JWT Verify **OFF** |
-| `send-admin-email` | Vorstand-E-Mails | [ ] |
-| `strava-oauth-start` | Strava-Anbindung | [ ] |
-| `strava-oauth-callback` | Strava-Anbindung | [ ] |
-| `strava-sync` | Import + Webhooks | [ ] **nach Phase 2 neu deployen** |
-
-Referenz: [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md) · Setup: [`supabase-strava-setup.md`](supabase-strava-setup.md)
+| Funktion | Erledigt |
+|----------|----------|
+| `anonymize-member-account` | [ ] JWT Verify **OFF** |
+| `send-admin-email` | [ ] |
+| `strava-oauth-start` / `strava-oauth-callback` / `strava-sync` | [ ] *(optional)* |
 
 ---
 
-## 4. Supabase Dashboard (manuell)
+## 3. Supabase Auth
 
-| Punkt | Erledigt |
-|-------|----------|
-| Redirect URLs: `/profil/`, `/**`, ggf. `/event.html`, `/news-detail.html` | [ ] |
-| Storage Bucket `media` — öffentlich lesbar | [ ] |
-| Storage Bucket `avatars` — öffentlich lesbar (Phase 3) | [ ] |
-| SMTP / Magic Link (Mitglieder-Login) | [ ] |
+- [ ] Site URL gesetzt
+- [ ] Redirect URLs: `/profil/`, `/**`
+- [ ] Magic Link getestet
 
----
-
-## 5. Frontend-Deploy
-
-| Punkt | Erledigt |
-|-------|----------|
-| `main` → GitHub Actions → GitHub Pages | [ ] |
-| Secrets `SUPABASE_URL`, `SUPABASE_KEY` gesetzt | [ ] |
-| `_config.yml` → `vorstand_js_version` bei Admin-JS-Änderungen erhöht | [ ] |
-
-**Hinweis:** Vorstand-JS Cache-Busting über `_config.yml` → `vorstand_js_version`.
+Details: [`supabase-members-setup.md`](supabase-members-setup.md)
 
 ---
 
-## 6. Manuelle Tests
+## 4. Website / GitHub
+
+- [ ] `assets/js/core/site-config.js` — URL, Anon-Key
+- [ ] GitHub Secrets `SUPABASE_URL`, `SUPABASE_KEY`
+- [ ] `_config.yml` → `vorstand_js_version` bei JS-Änderungen erhöhen
+
+---
+
+## 5. Manuelle Tests
 
 | Checkliste | Inhalt |
 |------------|--------|
 | [`supabase/SMOKE-TEST-PUBLIC-REGISTRATION.md`](supabase/SMOKE-TEST-PUBLIC-REGISTRATION.md) | Externe Abstimmung |
 
-**Kurz-Regression (immer):**
+**Kurz-Regression:**
 
 - [ ] Mitglieder-Login Magic Link
 - [ ] Vorstand → `/profil/?tab=verwaltung` (Mitglieder, Protokolle, Saisonmodus)
@@ -89,13 +61,13 @@ Referenz: [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md) · Setup: [`supabase-stra
 
 ---
 
-## 7. Rechtliches & Doku
+## 6. Rechtliches & Doku
 
 | Punkt | Erledigt |
 |-------|----------|
-| [`datenschutz.md`](../datenschutz.md) — Strava, Profilbilder, Website-Hinweise | [ ] |
+| [`datenschutz.md`](../datenschutz.md) | [ ] |
 | [`mitglieder-hilfe.md`](../mitglieder-hilfe.md) stimmt mit UI überein | [ ] |
-| DPA Supabase (Dashboard → Legal Documents) | [ ] |
+| DPA Supabase | [ ] |
 
 ---
 
@@ -103,4 +75,3 @@ Referenz: [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md) · Setup: [`supabase-stra
 
 - Architektur: [`ARCHITECTURE.md`](ARCHITECTURE.md)
 - Schema: [`supabase/SCHEMA.md`](supabase/SCHEMA.md)
-- SQL-Reihenfolge: [`supabase/RUNBOOK.md`](supabase/RUNBOOK.md)
