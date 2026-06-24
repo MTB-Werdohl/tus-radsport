@@ -189,14 +189,6 @@ async function resolveMemberEmailEditable(
 
 }
 
-  if (!value) {
-    return '';
-  }
-
-  return String(value).slice(0, 10);
-
-}
-
 function setMemberEditStatus(message, isError) {
 
   const el =
