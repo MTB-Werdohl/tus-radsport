@@ -2,7 +2,7 @@
 layout: default
 title: "Login & Teilnahme"
 permalink: /mitglieder-hilfe/
-description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, Zusagen, Profil, Strava optional."
+description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, Kalender, Zusagen, Internes und Profil."
 ---
 
 <div class="about-page member-help-page">
@@ -19,15 +19,16 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
 <section class="about-section">
   <h2>Für Vereinsmitglieder: Warum anmelden?</h2>
   <p>
-    Viel ist öffentlich sichtbar. Manche Termine und News sind nur für
-    <strong>eingeloggte Vereinsmitglieder</strong> — interne Infos, die nicht
+    Viel ist öffentlich sichtbar. Manche Termine und Inhalte unter
+    <a href="{{ '/intern/' | relative_url }}">Internes</a> sind nur für
+    <strong>eingeloggte Vereinsmitglieder</strong> — Informationen, die nicht
     für alle gedacht sind.
   </p>
   <p>Mit Login kannst du:</p>
   <ul>
-    <li>bei Terminen und News <strong>mitmachen</strong> (Zusage, Infos, Umfrage)</li>
+    <li>bei Terminen <strong>zusagen oder abstimmen</strong></li>
+    <li><strong>Internes</strong> lesen — News und Infos nur für Mitglieder</li>
     <li>dein <strong>Profil</strong> sehen und Kontaktdaten pflegen</li>
-    <li>optional <strong>Strava</strong> verbinden und Sichtbarkeit steuern</li>
   </ul>
   <p>
     Ohne Anmeldung fehlen diese Funktionen — du kannst weder zustimmen noch
@@ -56,6 +57,20 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
   <p>
     Es gibt <strong>kein Passwort</strong>. Nach dem Ausloggen oder in einem
     neuen Browser schickst du dir einfach erneut einen Link.
+  </p>
+</section>
+
+<section class="about-section">
+  <h2>Internes</h2>
+  <p>
+    Unter <a href="{{ '/intern/' | relative_url }}">Internes</a> findest du
+    Beiträge und Informationen nur für Vereinsmitglieder — z.&nbsp;B. Rückblicke,
+    Hinweise aus dem Vorstand oder Vereinsnews, die nicht öffentlich sind.
+  </p>
+  <p>
+    Ohne Login siehst du die Übersicht nicht bzw. nur den Hinweis, dass der
+    Bereich nur für Mitglieder zugänglich ist. Nach dem Anmelden kannst du
+    Beiträge öffnen und lesen.
   </p>
 </section>
 
@@ -98,10 +113,11 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
     für einen konkreten Tag.
   </p>
 
-  <h3>Abstimmung bei News</h3>
+  <h3>Umfragen</h3>
   <p>
-    Bei News kann eine <strong>Umfrage</strong> hängen — Antworten nur
-    eingeloggt, je nach Einstellung des Vorstands.
+    Manche Termine haben statt Ja/Vielleicht eine <strong>Umfrage</strong> —
+    z.&nbsp;B. mit vorgegebenen Antwortoptionen. Abstimmen kannst du nur
+    eingeloggt; ob Ergebnisse für alle sichtbar sind, legt der Vorstand fest.
   </p>
 
   <h3>Wann ist Schluss?</h3>
@@ -114,70 +130,46 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
 
   <h3>Deine Übersicht</h3>
   <p>
-    Unter <a href="{{ '/profil/' | relative_url }}">Profil</a> → Tab
-    <strong>Teilnahmen</strong> siehst du deine aktuellen Zusagen und
-    Abstimmungen.
+    Offene Zusagen erkennst du im
+    <a href="{{ '/kalender/' | relative_url }}">Kalender</a> an den Karten
+    (<strong>Zusage</strong> oder <strong>Interesse</strong>). Details und
+    Änderungen machst du direkt auf der jeweiligen Terminseite.
   </p>
 </section>
 
 <section class="about-section">
-  <h2>Strava &amp; Aktivitäten (optional)</h2>
+  <h2>Tröte — was ist neu?</h2>
   <p>
-    Unter <a href="{{ '/aktivitaeten/' | relative_url }}">Aktivitäten</a> können
-    Mitglieder freiwillig Ausfahrtsdaten teilen. <strong>Ohne Strava-Verbindung
-    erscheinst du dort nicht.</strong> Normal anmelden reicht für Termine und
-    Profil — Strava ist extra.
-  </p>
-  <ol class="help-steps">
-    <li>
-      <a href="{{ '/profil/' | relative_url }}">Profil</a> → Tab
-      <strong>Strava</strong> → optional „Mit Strava verbinden“.
-    </li>
-    <li>
-      Sichtbarkeit (Feed, Rankings, Vereinsziele) steuerst du mit den
-      Checkboxen — jede Änderung wird <strong>sofort gespeichert</strong>.
-    </li>
-    <li>
-      Importierte Touren siehst du im Tab <strong>Meine Aktivitäten</strong>
-      — der Tab erscheint erst, wenn Strava verbunden ist.
-    </li>
-  </ol>
-  <p>
-    Alle Häkchen bei Sichtbarkeit entfernen = nichts öffentlich, obwohl Strava
-    verbunden ist. <strong>Verbindung trennen</strong> entfernt importierte
-    Daten aus dem Vereinsportal (in Strava selbst ändert sich nichts).
+    Eingeloggte Mitglieder sehen unten rechts die <strong>Tröte</strong> — ein
+    kleines Widget mit einer kurzen Zusammenfassung, was sich seit deinem letzten
+    Besuch geändert hat: neue Termine und offene Abstimmungen, bei denen du noch
+    nicht abgestimmt hast.
   </p>
   <p>
-    Mehr zum Datenschutz:
-    <a href="{{ '/datenschutz/' | relative_url }}#strava-aktivitaeten">
-      Datenschutzerklärung, Abschnitt 12.7
-    </a>
+    Klappst du die Tröte zu, gilt die Zusammenfassung als gelesen. Gibt es
+    nichts Neues, bleibt sie eingeklappt.
   </p>
 </section>
 
 <section class="about-section">
   <h2>Profil pflegen</h2>
   <p>
-    Unter <a href="{{ '/profil/' | relative_url }}">Mein Profil</a>:
+    Unter <a href="{{ '/profil/' | relative_url }}">Mein Profil</a> findest du
+    deine Stammdaten, kannst <strong>Kontaktdaten bearbeiten</strong> (Adresse,
+    Telefon) und <strong>Datenschutz-Einwilligungen</strong> erteilen (Kontakt,
+    Bilder).
   </p>
-  <ul>
-    <li>
-      Tab <strong>Profil</strong> — Stammdaten, Kontakt bearbeiten, optional
-      Profilbild, Einwilligungen (Kontakt, Bilder)
-    </li>
-    <li>
-      Tab <strong>Teilnahmen</strong> — deine Zusagen und Abstimmungen
-    </li>
-    <li>
-      Tab <strong>Strava</strong> — nur wenn du es nutzen willst
-    </li>
-  </ul>
   <p>
     Telefon und Adresse bitte aktuell halten. Name und Mitgliedsnummer ändert
     bei Bedarf der Vorstand. Einwilligungen kannst du auf der Profilseite
     <strong>erteilen</strong>; Widerruf in Textform (z.&nbsp;B. per E-Mail an
     den Verein) — siehe
     <a href="{{ '/datenschutz/' | relative_url }}">Datenschutzerklärung</a>.
+  </p>
+  <p>
+    <strong>Vorstände</strong> haben zusätzlich die Tabs
+    <strong>Verwaltung</strong> (Mitglieder, Termine, Inhalte) und
+    <strong>E-Mail</strong> (Versand an Mitglieder).
   </p>
 </section>
 
@@ -202,8 +194,8 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
   </p>
   <ol class="help-steps">
     <li>
-      Am Termin oder der News auf die <strong>Teilnahme</strong> klicken und
-      das Formular ausfüllen (Name, E-Mail, Einwilligung Kontakt).
+      Am Termin auf die <strong>Teilnahme</strong> klicken und das Formular
+      ausfüllen (Name, E-Mail, Einwilligung Kontakt).
     </li>
     <li>
       <strong>Bestätigungs-Link</strong> in der E-Mail öffnen — erst danach
@@ -225,10 +217,11 @@ description: "Anleitung für Vereinsmitglieder und Gäste — Magic-Link-Login, 
   <h2>Kurz zusammengefasst</h2>
   <ul>
     <li><strong>Login:</strong> Mitglieder → E-Mail → Link in der Mail</li>
+    <li><strong>Internes:</strong> nur eingeloggt unter Internes</li>
     <li><strong>Einzeltermin:</strong> Ja (verbindlich) / Vielleicht — Absage über „Absagen“</li>
     <li><strong>Serie:</strong> Infos bestellt ja/nein — kein verbindliches Ja pro Tag</li>
     <li><strong>Termin vorbei:</strong> Abstimmung beendet</li>
-    <li><strong>Strava:</strong> optional — ohne Verbindung nicht im Aktivitätsportal</li>
+    <li><strong>Tröte:</strong> neue Termine und offene Abstimmungen seit letztem Besuch</li>
     <li><strong>Abmelden:</strong> nur auf der Profilseite</li>
     <li><strong>Problem:</strong> falsche E-Mail → Vorstand kontaktieren</li>
   </ul>
