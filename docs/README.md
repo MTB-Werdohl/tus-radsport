@@ -19,6 +19,8 @@
 | [supabase-members-setup.md](supabase-members-setup.md) | Magic Link, Mitglieder, Vorstand |
 | [supabase-admin-email-setup.md](supabase-admin-email-setup.md) | E-Mail-Versand (Profil → E-Mail) |
 | [supabase/PUBLIC-REGISTRATION.md](supabase/PUBLIC-REGISTRATION.md) | Externe Abstimmung (Gäste) |
+| [KONZEPT-ROLLE-ADMIN.md](KONZEPT-ROLLE-ADMIN.md) | **Geplant:** einmalige Admin-Rolle (noch nicht umgesetzt) |
+| [KONZEPT-INTERNES-SCHWARZES-BRETT.md](KONZEPT-INTERNES-SCHWARZES-BRETT.md) | Mitglieder-News `/intern/` (umgesetzt) |
 
 **SQL-Skripte:** ausschließlich unter [`supabase/`](supabase/) — keine verstreuten Legacy-Dateien.
 

@@ -173,15 +173,73 @@ function filterTermineForPublicListing(
 
 }
 
-function canAccessNewsSection() {
+function isInternNewsVisibility(
+  value
+) {
 
-  return false;
+  const normalized =
+    normalizeContentVisibility(value);
+
+  return (
+    normalized === CONTENT_VISIBILITY.members
+    || normalized === CONTENT_VISIBILITY.draft
+  );
 
 }
 
-function newsRowVisibleToViewer() {
+function filterInternNewsForListing(
+  rows,
+  member
+) {
 
-  return false;
+  const internOnly =
+    (rows || []).filter((row) => (
+      isInternNewsVisibility(
+        row.sichtbarkeit
+      )
+    ));
+
+  if (viewerIncludesDrafts(member)) {
+    return internOnly;
+  }
+
+  return internOnly.filter((row) => (
+    normalizeContentVisibility(
+      row.sichtbarkeit
+    ) !== CONTENT_VISIBILITY.draft
+    && row.published !== false
+  ));
+
+}
+
+function canAccessNewsSection(
+  member
+) {
+
+  return (
+    typeof isClubMember === 'function'
+    && isClubMember(member)
+  );
+
+}
+
+function newsRowVisibleToViewer(
+  row,
+  member
+) {
+
+  if (
+    !isInternNewsVisibility(
+      row?.sichtbarkeit
+    )
+  ) {
+    return false;
+  }
+
+  return filterInternNewsForListing(
+    [row],
+    member
+  ).length > 0;
 
 }
 

@@ -110,7 +110,15 @@ function getContentAccessTexts(
       visibility
     );
 
-  const kindLabel = 'Termin';
+  const kindLabels = {
+    event: 'Termin',
+    news: 'Beitrag',
+    intern: 'Beitrag'
+  };
+
+  const kindLabel =
+    kindLabels[kind]
+    || 'Inhalt';
 
   const clubMember =
     typeof isClubMember === 'function'

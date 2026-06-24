@@ -9,6 +9,7 @@ function isVorstandProtectedPath(
     path.startsWith('/mitglied-bearbeiten')
     || path.startsWith('/protokoll')
     || path.startsWith('/termin-bearbeiten')
+    || path.startsWith('/intern-bearbeiten')
   );
 
 }

@@ -829,6 +829,7 @@ function resolveMemberMagicLinkRedirectTo() {
       vorstandReturn.startsWith('/mitglied-bearbeiten')
       || vorstandReturn.startsWith('/protokoll')
       || vorstandReturn.startsWith('/termin-bearbeiten')
+      || vorstandReturn.startsWith('/intern-bearbeiten')
       || vorstandReturn.startsWith('/profil')
     )
   ) {
@@ -904,6 +905,7 @@ function handleMemberReturnRedirect(member) {
     nextUrl.startsWith('/mitglied-bearbeiten')
     || nextUrl.startsWith('/protokoll')
     || nextUrl.startsWith('/termin-bearbeiten')
+    || nextUrl.startsWith('/intern-bearbeiten')
     || nextUrl.includes('tab=verwaltung')
   ) {
 

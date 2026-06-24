@@ -14,6 +14,7 @@ window.siteConfig = {
 
   tables: {
     termine: 'Termine',
+    news: 'News',
     siteState: 'site_state',
     members: 'members',
     boardDocuments: 'board_documents',
@@ -78,5 +79,21 @@ window.getEventUrl = function (slug) {
   }
 
   return `/kalender/${encodeURIComponent(slug)}/`;
+
+};
+
+window.getInternUrl = function () {
+
+  return '/intern/';
+
+};
+
+window.getInternNewsUrl = function (slug) {
+
+  if (!slug) {
+    return '/intern/';
+  }
+
+  return `/intern-detail.html?slug=${encodeURIComponent(slug)}`;
 
 };

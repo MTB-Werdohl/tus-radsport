@@ -97,6 +97,8 @@ Ablauf extern (`public`): Registrierung im Feedback-Pop-up → Magic Link → DB
 | `Vorstand` | ja | ja | ja |
 | `public` | ja (eingeschränkt) | nein | nein — nur öffentliche Abstimmungen |
 
+**Geplant (nicht umgesetzt):** einmalige Rolle `Admin` — Konzept [`KONZEPT-ROLLE-ADMIN.md`](KONZEPT-ROLLE-ADMIN.md). Vorstand würde Rollenvergabe verlieren; Admin wäre an einen festen Account gebunden.
+
 Ausführliche Einrichtung: [`docs/supabase-members-setup.md`](supabase-members-setup.md) · SQL: [`docs/supabase/RUNBOOK.md`](supabase/RUNBOOK.md)
 
 ---

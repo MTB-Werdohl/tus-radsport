@@ -4,5 +4,7 @@
     url: "/netzwerk"
   - title: "Termine"
     url: "/kalender"
+  - title: "Internes"
+    url: "/intern"
 
 

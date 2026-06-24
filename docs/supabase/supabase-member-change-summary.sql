@@ -121,7 +121,6 @@ declare
   v_own integer := 0;
   v_feed integer := 0;
   v_termine integer := 0;
-  v_news integer := 0;
   v_abstimmungen integer := 0;
 begin
 
@@ -135,7 +134,6 @@ begin
       'activities_own', 0,
       'activities_feed', 0,
       'termine', 0,
-      'news', 0,
       'abstimmungen', 0,
       'since', null
     );
@@ -155,7 +153,6 @@ begin
       'activities_own', 0,
       'activities_feed', 0,
       'termine', 0,
-      'news', 0,
       'abstimmungen', 0,
       'since', null
     );
@@ -173,7 +170,6 @@ begin
       'activities_own', 0,
       'activities_feed', 0,
       'termine', 0,
-      'news', 0,
       'abstimmungen', 0,
       'since', null
     );
@@ -213,20 +209,6 @@ begin
     and public.member_can_view_sichtbarkeit(t.sichtbarkeit);
 
   select count(*)::integer
-  into v_news
-  from public."News" n
-  where n.created_at > v_since
-    and (
-      public.is_vorstand()
-      or coalesce(n.sichtbarkeit, 'draft') <> 'draft'
-    )
-    and (
-      public.is_vorstand()
-      or coalesce(n.published, true) = true
-    )
-    and public.member_can_view_sichtbarkeit(n.sichtbarkeit);
-
-  select count(*)::integer
   into v_abstimmungen
   from public.feedback_modules fm
   where fm.enabled = true
@@ -262,7 +244,6 @@ begin
     'activities_own', v_own,
     'activities_feed', v_feed,
     'termine', v_termine,
-    'news', v_news,
     'abstimmungen', v_abstimmungen,
     'since', v_since
   );
