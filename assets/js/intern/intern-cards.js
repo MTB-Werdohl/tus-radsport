@@ -14,6 +14,27 @@ function escapeInternCardHtml(
 
 }
 
+let internCardsRenderGeneration = 0;
+
+function beginInternCardsRender() {
+
+  internCardsRenderGeneration += 1;
+
+  return internCardsRenderGeneration;
+
+}
+
+function isCurrentInternCardsRender(
+  generation
+) {
+
+  return (
+    generation
+    === internCardsRenderGeneration
+  );
+
+}
+
 function getInternNewsSortDate(
   item
 ) {
@@ -509,6 +530,9 @@ async function loadInternNewsCards(
   options = {}
 ) {
 
+  const renderGeneration =
+    beginInternCardsRender();
+
   const wrapper =
     document.getElementById('intern-cards');
 
@@ -531,13 +555,19 @@ async function loadInternNewsCards(
     || !canAccessNewsSection(member)
   ) {
 
+    if (
+      !isCurrentInternCardsRender(
+        renderGeneration
+      )
+    ) {
+      return;
+    }
+
     renderInternGuestWall(member);
 
     return;
 
   }
-
-  wrapper.replaceChildren();
 
   let rows;
 
@@ -548,16 +578,49 @@ async function loadInternNewsCards(
 
   } catch (error) {
 
-    console.error(error);
+    if (
+      !isCurrentInternCardsRender(
+        renderGeneration
+      )
+    ) {
+      return;
+    }
+
+    console.error(
+      'Intern-News laden fehlgeschlagen:',
+      error
+    );
+
+    const hint =
+      error?.message
+      || error?.code
+      || '';
 
     wrapper.innerHTML = `
 <p class="kalender-empty-hint">
   Beiträge konnten nicht geladen werden.
 </p>
+${
+  hint
+    ? `
+<p class="kalender-empty-hint kalender-empty-hint--detail">
+  ${escapeInternCardHtml(hint)}
+</p>
+    `.trim()
+    : ''
+}
     `.trim();
 
     return;
 
+  }
+
+  if (
+    !isCurrentInternCardsRender(
+      renderGeneration
+    )
+  ) {
+    return;
   }
 
   const visible =
@@ -583,6 +646,8 @@ async function loadInternNewsCards(
 
   const showNewNewsButton =
     vorstandActions;
+
+  wrapper.replaceChildren();
 
   if (!sorted.length) {
 

@@ -2,7 +2,7 @@
 
 Alle SQL-Skripte liegen in **`docs/supabase/`** und werden **manuell** im Supabase SQL Editor ausgeführt.
 
-**Voraussetzung:** Supabase-Projekt mit Basis-Tabellen (`members`, `News`, `Termine`, Storage-Bucket `media`, …). Die Website erwartet die Konfiguration in `assets/js/core/site-config.js`.
+**Voraussetzung:** Supabase-Projekt mit Basis-Tabellen (`members`, `Termine`, Storage-Bucket `media`, …). Tabelle **`News`** fehlt in manchen Installationen — dann zuerst [`supabase-news-table.sql`](supabase-news-table.sql) ausführen. Die Website erwartet die Konfiguration in `assets/js/core/site-config.js`.
 
 ---
 
@@ -14,6 +14,7 @@ Skripte der Reihe nach ausführen. Jedes Skript ist idempotent (`drop … if exi
 
 | # | Datei | Inhalt |
 |---|--------|--------|
+| 0a | [`supabase-news-table.sql`](supabase-news-table.sql) | **Basis-Tabelle `News`** (falls noch nicht vorhanden) — vor Schritt 3 |
 | 0 | [`supabase-public-read.sql`](supabase-public-read.sql) | Öffentliches SELECT: `galleries`, `gallery_images`, `site_state` (`last_push`), Storage `media` |
 | 1 | [`supabase-members-auth.sql`](supabase-members-auth.sql) | RLS Basis, `check_member_email()` |
 | 2 | [`supabase-vorstand-roles.sql`](supabase-vorstand-roles.sql) | `is_vorstand()`, Vorstand-Schreibrechte |
