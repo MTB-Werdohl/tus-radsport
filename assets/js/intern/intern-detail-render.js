@@ -1,6 +1,5 @@
 function renderInternNewsDetail(
-  item,
-  options = {}
+  item
 ) {
 
   const backUrl =
@@ -103,12 +102,6 @@ ${renderContentCreatorMeta(
 
 </div>
 
-<div
-  id="intern-vorstand-actions"
-  class="event-header__feedback">
-
-</div>
-
 </div>
 
 </header>
@@ -164,18 +157,6 @@ item.content || ''
 
   wrapper.dataset.newsTitle =
     item.title || '';
-
-  if (
-    options.isVorstand
-    && typeof renderInternDetailVorstandToolbar
-      === 'function'
-  ) {
-
-    renderInternDetailVorstandToolbar(
-      item
-    );
-
-  }
 
   if (
     typeof buildShareButton === 'function'

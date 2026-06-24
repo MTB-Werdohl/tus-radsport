@@ -64,41 +64,32 @@ function renderMemberInternEditPanelShell() {
                 placeholder="Markdown …"></textarea>
     </label>
 
-    <div class="member-edit-media-block">
-
-      <label class="member-edit-field">
-        Bild (optional)
-      </label>
-
+    <label class="member-edit-field">
+      Bild (optional)
       <input
         type="hidden"
         id="intern-image-path-pick">
+      <div class="member-edit-media-actions">
+        <button
+          type="button"
+          id="intern-pick-image"
+          class="member-edit-btn member-edit-btn--secondary">
 
-      <button
-        type="button"
-        id="intern-pick-image"
-        class="member-edit-media-btn">
+          Aus Mediathek
 
-        Bild aus Mediathek
-
-      </button>
-
+        </button>
+      </div>
       <div id="intern-current-image"></div>
+    </label>
 
-    </div>
+    <button
+      type="button"
+      id="intern-save"
+      class="member-edit-save">
 
-    <div class="member-content-edit-actions">
+      Speichern
 
-      <button
-        type="button"
-        id="intern-save"
-        class="member-content-save-btn">
-
-        Speichern
-
-      </button>
-
-    </div>
+    </button>
 
   </div>
 

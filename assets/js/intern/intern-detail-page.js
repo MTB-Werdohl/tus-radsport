@@ -25,7 +25,7 @@ async function loadInternNewsDetail() {
   if (!item) {
 
     await handleContentUnavailable({
-      kind: 'news',
+      kind: 'intern',
       slug,
       member,
       containerId: 'intern-detail',
@@ -64,16 +64,7 @@ async function loadInternNewsDetail() {
 
   }
 
-  const isVorstandUser =
-    typeof isVorstand === 'function'
-    && isVorstand(member);
-
-  renderInternNewsDetail(
-    item,
-    {
-      isVorstand: isVorstandUser
-    }
-  );
+  renderInternNewsDetail(item);
 
   const detailUrl =
     typeof getInternNewsUrl === 'function'

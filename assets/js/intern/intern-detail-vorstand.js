@@ -214,25 +214,3 @@ function bindInternVorstandActions(
   );
 
 }
-
-function renderInternDetailVorstandToolbar(
-  item
-) {
-
-  const host =
-    document.getElementById(
-      'intern-vorstand-actions'
-    );
-
-  if (!host || !item?.id) {
-    return;
-  }
-
-  host.innerHTML =
-    renderInternVorstandActionsHtml(
-      item
-    );
-
-  bindInternVorstandActions(host);
-
-}

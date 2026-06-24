@@ -23,18 +23,34 @@ begin
 
   if p_kind = 'event' then
 
-    select sichtbarkeit
+    select t.sichtbarkeit
     into v_visibility
-    from public."Termine"
-    where slug = p_slug
+    from public."Termine" t
+    where t.slug = p_slug
+    order by
+      case coalesce(t.sichtbarkeit, 'public')
+        when 'public' then 0
+        when 'members' then 1
+        when 'draft' then 2
+        else 3
+      end,
+      t.id desc
     limit 1;
 
-  elsif p_kind = 'news' then
+  elsif p_kind in ('news', 'intern') then
 
-    select sichtbarkeit
+    select n.sichtbarkeit
     into v_visibility
-    from public."News"
-    where slug = p_slug
+    from public."News" n
+    where n.slug = p_slug
+    order by
+      case coalesce(n.sichtbarkeit, 'draft')
+        when 'members' then 0
+        when 'public' then 1
+        when 'draft' then 2
+        else 3
+      end,
+      n.id desc
     limit 1;
 
   else

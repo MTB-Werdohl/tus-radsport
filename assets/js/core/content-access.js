@@ -258,8 +258,18 @@ function renderContentNotFound(
     return;
   }
 
+  const kindLabels = {
+    event: 'Termin',
+    news: 'Beitrag',
+    intern: 'Beitrag'
+  };
+
+  const kindLabel =
+    kindLabels[kind]
+    || 'Inhalt';
+
   const message =
-    'Dieser Termin wurde nicht gefunden.';
+    `Dieser ${kindLabel} wurde nicht gefunden.`;
 
   document.title =
     `Nicht gefunden · MTB Werdohl`;
@@ -340,6 +350,26 @@ async function handleContentUnavailable(
     meta
     && !meta.found
   ) {
+
+    if (
+      kind === 'news'
+      || kind === 'intern'
+    ) {
+
+      renderContentAccessDenied({
+        containerId,
+        kind,
+        visibility:
+          CONTENT_VISIBILITY.members,
+        member,
+        backUrl,
+        backLabel,
+        fallback: true
+      });
+
+      return;
+
+    }
 
     renderContentNotFound({
       containerId,
