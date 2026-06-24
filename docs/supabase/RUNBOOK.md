@@ -26,7 +26,8 @@ Skripte der Reihe nach ausführen. Jedes Skript ist idempotent (`drop … if exi
 | 7 | [`supabase-member-change-summary.sql`](supabase-member-change-summary.sql) | Tröte: `get_member_change_summary()`, `is_club_member()` |
 | 8 | [`supabase-member-content.sql`](supabase-member-content.sql) | `created_by`, Entwürfe für Termine |
 | 8b | [`supabase-member-news-vorstand-only.sql`](supabase-member-news-vorstand-only.sql) | News-Entwürfe nur Vorstand |
-| 8c | [`supabase-member-termin-feedback.sql`](supabase-member-termin-feedback.sql) | Feedback-Modul automatisch für Termine |
+| 8c | [`supabase-member-email-edit.sql`](supabase-member-email-edit.sql) | E-Mail nachtragen ohne Auth (`member_has_auth_account`) |
+| 8d | [`supabase-member-termin-feedback.sql`](supabase-member-termin-feedback.sql) | Feedback-Modul automatisch für Termine |
 | 9 | [`supabase-content-creator-display.sql`](supabase-content-creator-display.sql) | `get_content_creator_labels()` |
 | 10 | [`supabase-member-consent-revoke.sql`](supabase-member-consent-revoke.sql) | Widerruf Einwilligungen |
 | 11 | [`supabase-members-anonymize.sql`](supabase-members-anonymize.sql) | `anonymize_member()` |

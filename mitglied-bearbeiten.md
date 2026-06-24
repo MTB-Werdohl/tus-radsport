@@ -88,9 +88,9 @@ member_verwaltung_page: true
       </label>
 
       <p class="member-admin-hint" id="member-email-hint">
-        Beim Bearbeiten ist die E-Mail gesperrt — sie ist an den Magic-Link-Login
-        gebunden. Änderungen nur über Vorstand/Supabase (Mitgliedsdaten und Auth
-        gemeinsam). Beim Anlegen neuer Mitglieder die E-Mail hier setzen.
+        Beim Anlegen die E-Mail hier setzen. Beim Bearbeiten kann die E-Mail
+        nachtragen oder geändert werden, solange noch kein Magic-Link-Login
+        existiert — danach nur noch über Supabase.
       </p>
 
       <div class="row">

@@ -5,6 +5,7 @@ const params =
 
 let originalEmail = '';
 let editingMember = null;
+let memberEmailEditable = true;
 
 function getEditMemberId() {
 
@@ -22,6 +23,171 @@ function getEditMemberId() {
 }
 
 function formatDateInputValue(value) {
+
+  if (!value) {
+    return '';
+  }
+
+  return String(value).slice(0, 10);
+
+}
+
+function updateMemberEmailHint(
+  editable,
+  hasAuth
+) {
+
+  const hint =
+    document.getElementById(
+      'member-email-hint'
+    );
+
+  if (!hint) {
+    return;
+  }
+
+  if (!getEditMemberId()) {
+
+    hint.textContent =
+      'Beim Anlegen die E-Mail hier setzen — danach Magic-Link-Login möglich.';
+
+    return;
+
+  }
+
+  if (editable) {
+
+    hint.textContent =
+      'E-Mail kann noch geändert werden, solange kein Login-Konto '
+      + '(Magic Link) existiert. Nach dem ersten Login nur noch über Supabase.';
+
+    return;
+
+  }
+
+  if (hasAuth) {
+
+    hint.textContent =
+      'E-Mail ist gesperrt — Login-Konto existiert bereits. '
+      + 'Änderungen nur über Supabase (Mitgliedsdaten und Auth gemeinsam).';
+
+    return;
+
+  }
+
+  hint.textContent =
+    'E-Mail ist gesperrt.';
+
+}
+
+function applyMemberEmailFieldState(
+  editable
+) {
+
+  const emailInput =
+    document.getElementById('email');
+
+  if (!emailInput) {
+    return;
+  }
+
+  emailInput.readOnly = !editable;
+
+}
+
+async function memberHasAuthAccount(
+  memberId
+) {
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'member_has_auth_account',
+      {
+        p_member_id: memberId
+      }
+    );
+
+  if (error) {
+
+    console.error(error);
+
+    return true;
+
+  }
+
+  return data === true;
+
+}
+
+async function authUserExistsForEmail(
+  email
+) {
+
+  const { data, error } =
+    await window.supabaseClient.rpc(
+      'auth_user_exists_for_email',
+      {
+        p_email: email
+      }
+    );
+
+  if (error) {
+
+    console.error(error);
+
+    return false;
+
+  }
+
+  return data === true;
+
+}
+
+async function isMemberEmailUsedByOther(
+  email,
+  excludeMemberId
+) {
+
+  if (!email) {
+    return false;
+  }
+
+  const { data, error } =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.members)
+      .select('id')
+      .ilike('email', email)
+      .neq('id', excludeMemberId)
+      .limit(1);
+
+  if (error) {
+
+    console.error(error);
+
+    return true;
+
+  }
+
+  return (data || []).length > 0;
+
+}
+
+async function resolveMemberEmailEditable(
+  member
+) {
+
+  if (!member?.id) {
+    return true;
+  }
+
+  const hasAuth =
+    await memberHasAuthAccount(
+      member.id
+    );
+
+  return !hasAuth;
+
+}
 
   if (!value) {
     return '';
@@ -451,8 +617,17 @@ async function initMemberEdit() {
     getEditMemberId();
 
   if (!editId) {
+
+    memberEmailEditable = true;
+
+    applyMemberEmailFieldState(true);
+
+    updateMemberEmailHint(true, false);
+
     showMemberEditForm();
+
     return;
+
   }
 
   document
@@ -543,15 +718,22 @@ async function initMemberEdit() {
 
     editingMember = data;
 
+    memberEmailEditable =
+      await resolveMemberEmailEditable(
+        data
+      );
+
     fillMemberForm(data);
     showConsentInfo(data);
 
-    const emailInput =
-      document.getElementById('email');
+    applyMemberEmailFieldState(
+      memberEmailEditable
+    );
 
-    if (emailInput) {
-      emailInput.readOnly = true;
-    }
+    updateMemberEmailHint(
+      memberEmailEditable,
+      !memberEmailEditable
+    );
 
     document
       .getElementById('export-member-pdf')
@@ -807,6 +989,7 @@ async function saveMember() {
     && originalEmail
     && normalizedEmail
       !== originalEmail.trim().toLowerCase()
+    && !memberEmailEditable
   ) {
 
     alert(
@@ -819,10 +1002,60 @@ async function saveMember() {
 
   }
 
+  if (
+    editId
+    && memberEmailEditable
+    && normalizedEmail
+  ) {
+
+    const memberId =
+      editingMember?.id
+      ?? normalizeMemberId(editId);
+
+    if (
+      await isMemberEmailUsedByOther(
+        normalizedEmail,
+        memberId
+      )
+    ) {
+
+      alert(
+        'Diese E-Mail ist bereits einem anderen Mitglied zugeordnet.'
+      );
+
+      return;
+
+    }
+
+    const originalNormalized =
+      originalEmail.trim().toLowerCase();
+
+    if (
+      normalizedEmail
+        !== originalNormalized
+      && await authUserExistsForEmail(
+        normalizedEmail
+      )
+    ) {
+
+      alert(
+        'Für diese E-Mail existiert bereits ein Login-Konto. '
+        + 'Bitte eine andere Adresse wählen oder Supabase prüfen.'
+      );
+
+      return;
+
+    }
+
+  }
+
   const payload =
     buildMemberPayload(fields);
 
-  if (editId) {
+  if (
+    editId
+    && !memberEmailEditable
+  ) {
     delete payload.email;
   }
 
