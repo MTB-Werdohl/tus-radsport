@@ -378,7 +378,10 @@ async function memberTerminAssertEditable(
 
   }
 
-  if (data.created_by !== member.id) {
+  if (
+    !memberTerminIsVorstandUser(member)
+    && data.created_by !== member.id
+  ) {
 
     alert(
       'Dieser Termin kann nicht bearbeitet werden.'
@@ -456,10 +459,16 @@ async function loadMemberTerminEdit(
 
   }
 
-  document
-    .getElementById('form-title')
-    .innerText =
+  const formTitle =
+    document.getElementById('form-title');
+
+  if (formTitle) {
+    formTitle.innerText =
       'Termin bearbeiten';
+  } else {
+    document.title =
+      'Termin bearbeiten';
+  }
 
   document.getElementById('title').value =
     data.title || '';
