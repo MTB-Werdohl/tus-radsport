@@ -44,7 +44,9 @@ function isMemberTerminPopupWindow() {
 
 }
 
-function finishMemberTerminEditorSave() {
+function finishMemberTerminEditorSave(
+  savedMeta = {}
+) {
 
   if (isMemberTerminPopupWindow()) {
 
@@ -58,7 +60,9 @@ function finishMemberTerminEditorSave() {
       ) {
 
         void window.opener
-          .reloadAfterVorstandContentSave();
+          .reloadAfterVorstandContentSave(
+            savedMeta
+          );
 
       }
 
@@ -944,7 +948,10 @@ async function saveMemberTerminEdit(
 
   }
 
-  if (finishMemberTerminEditorSave()) {
+  if (finishMemberTerminEditorSave({
+    id: savedId,
+    slug
+  })) {
     return;
   }
 

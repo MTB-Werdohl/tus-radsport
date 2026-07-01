@@ -82,6 +82,33 @@ function renderMemberInternEditPanelShell() {
       <div id="intern-current-image"></div>
     </label>
 
+    <div class="member-edit-poll-config member-intern-poll-config">
+
+      <h3 class="member-edit-poll-config__title">
+        Umfrage (optional)
+      </h3>
+
+      <label
+        class="member-verwaltung-checkbox-row"
+        id="news-vorstand-poll-enabled-wrap">
+
+        <input
+          type="checkbox"
+          id="news-vorstand-poll-enabled">
+
+        <span>Umfrage aktiv</span>
+
+      </label>
+
+      <p class="admin-hint">
+        Frage, Antworten und optional Freitext.
+        Ausgeschaltet bleibt die Auswertung erhalten.
+      </p>
+
+      <div id="feedback-admin-form-wrap"></div>
+
+    </div>
+
     <button
       type="button"
       id="intern-save"
@@ -189,7 +216,9 @@ function clearMemberInternEditUrlId() {
 
 }
 
-function finishMemberInternEditorSave() {
+function finishMemberInternEditorSave(
+  savedMeta = {}
+) {
 
   if (isMemberInternPopupWindow()) {
 
@@ -203,7 +232,9 @@ function finishMemberInternEditorSave() {
       ) {
 
         void window.opener
-          .reloadAfterInternNewsSave();
+          .reloadAfterInternNewsSave(
+            savedMeta
+          );
 
       }
 
@@ -238,6 +269,96 @@ function finishMemberInternEditorSave() {
 
 }
 
+async function initMemberInternFeedbackForm(
+  newsId
+) {
+
+  if (
+    typeof initFeedbackModuleForm
+      !== 'function'
+  ) {
+    return;
+  }
+
+  const entityId =
+    newsId
+      ? parseInt(newsId, 10)
+      : null;
+
+  await initFeedbackModuleForm({
+    entityType:
+      window.siteConfig.feedback.entityTypes.news,
+    entityId,
+    mountId:
+      'feedback-admin-form-wrap',
+    memberMode: true
+  });
+
+  const pollWrap =
+    document.getElementById(
+      'news-vorstand-poll-enabled-wrap'
+    );
+
+  const pollEnabled =
+    document.getElementById(
+      'news-vorstand-poll-enabled'
+    );
+
+  if (
+    pollEnabled
+    && pollWrap
+    && pollWrap.dataset.bound
+      !== 'true'
+  ) {
+
+    pollWrap.dataset.bound =
+      'true';
+
+    pollEnabled.addEventListener(
+      'change',
+      () => {
+
+        syncPollEnabledControlsFromParent();
+
+        toggleFeedbackAdminPollFields();
+
+        updateMemberNewsPollEnabledVisibility(
+          feedbackAdminState.module
+        );
+
+      }
+    );
+
+  }
+
+  if (
+    typeof syncPollEnabledControlsFromParent
+      === 'function'
+  ) {
+    syncPollEnabledControlsFromParent();
+  }
+
+  if (
+    typeof toggleFeedbackAdminPollFields
+      === 'function'
+  ) {
+    toggleFeedbackAdminPollFields();
+  }
+
+  if (
+    typeof syncMemberNewsPollEnabledControls
+      === 'function'
+  ) {
+
+    syncMemberNewsPollEnabledControls(
+      feedbackAdminState.module,
+      { applyFromModule: true }
+    );
+
+  }
+
+}
+
 async function loadMemberInternEdit() {
 
   const editId =
@@ -245,6 +366,7 @@ async function loadMemberInternEdit() {
 
   if (!editId) {
     memberInternResetForm();
+    await initMemberInternFeedbackForm(null);
     return;
   }
 
@@ -320,6 +442,10 @@ async function loadMemberInternEdit() {
     );
 
   }
+
+  await initMemberInternFeedbackForm(
+    editId
+  );
 
 }
 
@@ -464,6 +590,31 @@ async function saveMemberInternEdit(
   }
 
   if (
+    typeof saveFeedbackAdminForEntity
+      === 'function'
+  ) {
+
+    const feedbackResult =
+      await saveFeedbackAdminForEntity(
+        window.siteConfig.feedback.entityTypes.news,
+        savedId,
+        { silent: false }
+      );
+
+    if (feedbackResult?.error) {
+
+      alert(
+        feedbackResult.error.message
+        || 'Umfrage konnte nicht gespeichert werden.'
+      );
+
+      return;
+
+    }
+
+  }
+
+  if (
     typeof invalidateInternNewsCache
       === 'function'
   ) {
@@ -489,7 +640,10 @@ async function saveMemberInternEdit(
 
   }
 
-  finishMemberInternEditorSave();
+  finishMemberInternEditorSave({
+    id: savedId,
+    slug
+  });
 
 }
 

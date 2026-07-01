@@ -1,4 +1,19 @@
-async function reloadKalenderAfterVorstandChange() {
+async function reloadKalenderAfterVorstandChange(
+  savedMeta
+) {
+
+  if (
+    savedMeta?.slug
+    && typeof getEventUrl === 'function'
+    && document.getElementById('event')
+  ) {
+
+    window.location.href =
+      getEventUrl(savedMeta.slug);
+
+    return;
+
+  }
 
   if (
     typeof invalidateTermineCache

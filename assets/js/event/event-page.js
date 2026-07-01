@@ -112,8 +112,22 @@ async function loadEvent() {
   );
 
   window.reloadAfterVorstandContentSave =
-    () => {
+    (savedMeta) => {
+
+      if (
+        savedMeta?.slug
+        && typeof getEventUrl === 'function'
+      ) {
+
+        window.location.href =
+          getEventUrl(savedMeta.slug);
+
+        return;
+
+      }
+
       void loadEvent();
+
     };
 
 }

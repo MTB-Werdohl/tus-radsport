@@ -374,6 +374,13 @@ function getFeedbackEntityFeedbackType(
   entityType
 ) {
 
+  if (
+    entityType
+    === window.siteConfig.feedback.entityTypes.news
+  ) {
+    return window.siteConfig.feedback.types.poll;
+  }
+
   return window.siteConfig.feedback.types.yesMaybe;
 
 }

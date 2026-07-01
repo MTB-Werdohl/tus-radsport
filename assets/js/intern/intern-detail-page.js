@@ -83,9 +83,38 @@ async function loadInternNewsDetail() {
 
   }
 
+  if (
+    typeof initFeedbackModule === 'function'
+  ) {
+
+    await initFeedbackModule({
+      entityType:
+        window.siteConfig.feedback.entityTypes.news,
+      entityId: item.id,
+      entityVisibility:
+        item.sichtbarkeit,
+      container: 'intern-feedback'
+    });
+
+  }
+
   window.reloadAfterInternNewsSave =
-    () => {
+    (savedMeta) => {
+
+      if (
+        savedMeta?.slug
+        && typeof getInternNewsUrl === 'function'
+      ) {
+
+        window.location.href =
+          getInternNewsUrl(savedMeta.slug);
+
+        return;
+
+      }
+
       void loadInternNewsDetail();
+
     };
 
   const detailUrl =

@@ -25,7 +25,8 @@ window.siteConfig = {
 
   feedback: {
     entityTypes: {
-      event: 'event'
+      event: 'event',
+      news: 'news'
     },
     types: {
       yesMaybe: 'yes_maybe',

@@ -468,6 +468,20 @@ body:has(.member-content-edit-section) {
 
 /* Umfrage-Konfiguration (Link + Popup) */
 
+.member-intern-poll-config {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.member-intern-poll-config .admin-feedback-config {
+  margin-top: 0.75rem;
+}
+
+.member-intern-poll-config .admin-hint {
+  margin: 0.5rem 0 0;
+}
+
 .member-edit-poll-config {
   margin: 4px 0 16px;
 }

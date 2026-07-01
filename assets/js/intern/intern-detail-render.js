@@ -108,6 +108,12 @@ ${renderContentCreatorMeta(
 
 </div>
 
+<div
+  id="intern-feedback"
+  class="event-header__feedback">
+
+</div>
+
 </div>
 
 </header>

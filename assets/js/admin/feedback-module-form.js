@@ -9,7 +9,10 @@ let feedbackAdminState = {
 
 function isFeedbackAdminNewsEntity() {
 
-  return false;
+  return (
+    feedbackAdminState.entityType
+    === window.siteConfig.feedback.entityTypes.news
+  );
 
 }
 

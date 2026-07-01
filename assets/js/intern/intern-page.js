@@ -1,4 +1,19 @@
-async function reloadInternAfterVorstandChange() {
+async function reloadInternAfterVorstandChange(
+  savedMeta
+) {
+
+  if (
+    savedMeta?.slug
+    && typeof getInternNewsUrl === 'function'
+    && document.getElementById('intern-detail')
+  ) {
+
+    window.location.href =
+      getInternNewsUrl(savedMeta.slug);
+
+    return;
+
+  }
 
   if (
     typeof invalidateInternNewsCache
