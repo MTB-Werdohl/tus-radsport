@@ -84,10 +84,6 @@ function renderMemberInternEditPanelShell() {
 
     <div class="member-edit-poll-config member-intern-poll-config">
 
-      <h3 class="member-edit-poll-config__title">
-        Umfrage (optional)
-      </h3>
-
       <label
         class="member-verwaltung-checkbox-row"
         id="news-vorstand-poll-enabled-wrap">
@@ -96,14 +92,9 @@ function renderMemberInternEditPanelShell() {
           type="checkbox"
           id="news-vorstand-poll-enabled">
 
-        <span>Umfrage aktiv</span>
+        <span>Poll aktiv</span>
 
       </label>
-
-      <p class="admin-hint">
-        Frage, Antworten und optional Freitext.
-        Ausgeschaltet bleibt die Auswertung erhalten.
-      </p>
 
       <div id="feedback-admin-form-wrap"></div>
 

@@ -314,10 +314,6 @@ function renderFeedbackAdminPollOptions(options) {
 
     });
 
-    list.appendChild(
-      createFeedbackAdminOptionRow()
-    );
-
     syncMemberPollOptionRows();
 
     return;
@@ -354,55 +350,17 @@ function syncMemberPollOptionRows() {
 
   rows.forEach((row, index) => {
 
-    const isLast =
-      index === rows.length - 1;
-
-    const freetextWrap =
+    const title =
       row.querySelector(
-        '.feedback-option-freetext-wrap'
+        '.member-intern-poll-option__title'
       );
 
-    freetextWrap?.classList.toggle(
-      'hidden',
-      !isLast
-    );
-
-    if (!isLast) {
-
-      const freetextCheckbox =
-        row.querySelector(
-          '.feedback-option-freetext'
-        );
-
-      if (freetextCheckbox) {
-        freetextCheckbox.checked = false;
-      }
-
-      applyMemberPollOptionFreetextState(
-        row,
-        false
-      );
-
+    if (title) {
+      title.textContent =
+        `Antwort ${index + 1}`;
     }
 
   });
-
-  const lastRow =
-    rows[rows.length - 1];
-
-  if (lastRow) {
-
-    const freetextCheckbox =
-      lastRow.querySelector(
-        '.feedback-option-freetext'
-      );
-
-    applyMemberPollOptionFreetextState(
-      lastRow,
-      freetextCheckbox?.checked === true
-    );
-
-  }
 
 }
 
@@ -584,43 +542,33 @@ function createFeedbackAdminOptionRow(option = {}) {
 
   if (isMemberNews) {
 
+    if (option.id) {
+      row.dataset.idLocked = 'true';
+    }
+
     row.innerHTML = `
 
-<div class="admin-feedback-option-main">
+<label class="member-edit-field member-intern-poll-option__field">
 
-  <label>
+  <span class="member-intern-poll-option__title">
     Antwort
-    <input
-      type="text"
-      class="feedback-option-label"
-      value="${escapeAdminHtml(option.label || '')}"
-      placeholder="z. B. Waldtour, gemütlich">
-  </label>
+  </span>
 
-  <div class="admin-feedback-option-actions">
+  <input
+    type="text"
+    class="feedback-option-label"
+    value="${escapeAdminHtml(option.label || '')}">
 
-    <label
-      class="admin-field admin-field--inline feedback-option-freetext-wrap hidden">
+</label>
 
-      <input
-        type="checkbox"
-        class="feedback-option-freetext">
+<button
+  type="button"
+  class="member-intern-poll-option__remove"
+  aria-label="Antwort entfernen">
 
-      Als Freitext-Option
+  Entfernen
 
-    </label>
-
-    <button
-      type="button"
-      class="feedback-option-remove secondary-button">
-
-      Entfernen
-
-    </button>
-
-  </div>
-
-</div>
+</button>
 
 <input
   type="hidden"
@@ -634,14 +582,21 @@ function createFeedbackAdminOptionRow(option = {}) {
 
     labelInput?.addEventListener('blur', () => {
 
-      syncFeedbackOptionIdFromLabel(row);
+      const idInput =
+        row.querySelector(
+          '.feedback-option-id'
+        );
+
+      if (
+        !idInput?.value.trim()
+      ) {
+        syncFeedbackOptionIdFromLabel(row);
+      }
 
     });
 
-    bindMemberPollOptionFreetextToggle(row);
-
     row
-      .querySelector('.feedback-option-remove')
+      .querySelector('.member-intern-poll-option__remove')
       ?.addEventListener('click', () => {
 
         row.remove();
@@ -655,6 +610,9 @@ function createFeedbackAdminOptionRow(option = {}) {
           list
           && !list.children.length
         ) {
+          list.appendChild(
+            createFeedbackAdminOptionRow()
+          );
           list.appendChild(
             createFeedbackAdminOptionRow()
           );
@@ -926,26 +884,8 @@ function readFeedbackAdminPollConfig() {
       );
 
   const options = [];
-  let allowFreeText = false;
 
-  rows.forEach((row, index) => {
-
-    const isLast =
-      index === rows.length - 1;
-
-    const freetextCheckbox =
-      row.querySelector(
-        '.feedback-option-freetext'
-      );
-
-    if (
-      isFeedbackAdminMemberNewsMode()
-      && isLast
-      && freetextCheckbox?.checked === true
-    ) {
-      allowFreeText = true;
-      return;
-    }
+  rows.forEach((row) => {
 
     syncFeedbackOptionIdFromLabel(row);
 
@@ -988,9 +928,12 @@ function readFeedbackAdminPollConfig() {
 
     if (isFeedbackAdminMemberNewsMode()) {
 
-      config.allowFreeText = allowFreeText;
+      config.allowFreeText =
+        document.getElementById(
+          'feedback-admin-poll-freetext'
+        )?.checked === true;
 
-      if (allowFreeText) {
+      if (config.allowFreeText) {
         config.freeTextLabel = 'Freitext';
       }
 
@@ -1080,32 +1023,17 @@ function fillFeedbackAdminPollSettings(config) {
 
   if (isFeedbackAdminMemberNewsMode()) {
 
+    const freeTextEl =
+      document.getElementById(
+        'feedback-admin-poll-freetext'
+      );
+
+    if (freeTextEl) {
+      freeTextEl.checked =
+        normalized.allowFreeText === true;
+    }
+
     syncMemberPollOptionRows();
-
-    if (!normalized.allowFreeText) {
-      return;
-    }
-
-    const rows =
-      document.querySelectorAll(
-        '#feedback-admin-options .admin-feedback-option-row'
-      );
-
-    const lastRow =
-      rows[rows.length - 1];
-
-    const freetextCheckbox =
-      lastRow?.querySelector(
-        '.feedback-option-freetext'
-      );
-
-    if (freetextCheckbox) {
-      freetextCheckbox.checked = true;
-      applyMemberPollOptionFreetextState(
-        lastRow,
-        true
-      );
-    }
 
     return;
 
@@ -1644,26 +1572,18 @@ function mountFeedbackAdminForm(mountId) {
     type="checkbox"
     class="checkbox hidden"
     hidden>
-
-  <p class="admin-hint">
-    ${typeHint}. „Umfrage aktiv“ stellst du im Bearbeiten-Dialog ein. Ausgeschaltet bleibt die Auswertung erhalten.
-  </p>
 `
           : `
-  <label class="admin-field admin-field--inline">
+  <label class="member-verwaltung-checkbox-row">
 
     <input
       id="feedback-admin-enabled"
       type="checkbox"
       class="checkbox">
 
-    Umfrage aktiv
+    <span>Poll aktiv</span>
 
   </label>
-
-  <p class="admin-hint">
-    ${typeHint}. Ausgeschaltet: keine Abstimmung mehr, bestehende Auswertung bleibt erhalten.
-  </p>
 `
       )
       : `
@@ -1742,35 +1662,42 @@ function mountFeedbackAdminForm(mountId) {
       ? `
   <div
     id="feedback-admin-poll-wrap"
-    class="${isNews ? '' : 'hidden'}">
+    class="${isNews ? '' : 'hidden'} member-intern-poll-wrap">
 
-    <p class="admin-hint">
-      Antwortoptionen für die Umfrage.
-    </p>
-
-    <div
-      id="feedback-admin-options"
-      class="admin-feedback-options">
-
-    </div>
-
-    <button
-      id="feedback-admin-add-option"
-      type="button"
-      class="secondary-button">
-
-      Option hinzufügen
-
-    </button>
-
-    <label class="admin-field admin-field--inline admin-feedback-poll-multiple">
+    <label class="member-verwaltung-checkbox-row">
 
       <input
         id="feedback-admin-poll-multiple"
         type="checkbox"
         class="checkbox">
 
-      Mehrfachauswahl erlauben
+      <span>Mehrfachauswahl erlauben</span>
+
+    </label>
+
+    <div
+      id="feedback-admin-options"
+      class="member-intern-poll-options admin-feedback-options">
+
+    </div>
+
+    <button
+      id="feedback-admin-add-option"
+      type="button"
+      class="member-edit-btn member-edit-btn--secondary member-intern-poll-add">
+
+      Weitere Option hinzufügen
+
+    </button>
+
+    <label class="member-verwaltung-checkbox-row">
+
+      <input
+        id="feedback-admin-poll-freetext"
+        type="checkbox"
+        class="checkbox">
+
+      <span>Freitext antwort</span>
 
     </label>
 
@@ -1876,7 +1803,60 @@ function mountFeedbackAdminForm(mountId) {
 </p>
 `;
 
-  mount.innerHTML = `
+  const questionFieldHtml =
+    isFeedbackAdminMemberNewsMode()
+      ? `
+  <label class="member-edit-field">
+    Frage
+    <input
+      id="feedback-admin-question"
+      type="text"
+      value="${escapeAdminHtml('')}"
+      placeholder="">
+  </label>
+`
+      : `
+  <label class="admin-field">
+    Frage
+    <input
+      id="feedback-admin-question"
+      type="text"
+      value="${escapeAdminHtml(
+        feedbackAdminState.memberMode
+          ? ''
+          : getDefaultFeedbackQuestion(
+            feedbackAdminState.entityType
+          )
+      )}"
+      placeholder="${questionPlaceholder}">
+  </label>
+`;
+
+  const memberMountHtml =
+    isFeedbackAdminMemberNewsMode()
+      ? `
+${newsIntroHtml}
+
+<div
+  id="feedback-admin-config"
+  class="admin-feedback-config member-intern-poll-form">
+
+  <input
+    id="feedback-admin-type"
+    type="hidden"
+    value="${forcedType}">
+
+  ${questionFieldHtml}
+
+  ${pollWrapHtml}
+
+</div>
+`
+      : '';
+
+  mount.innerHTML =
+    memberMountHtml
+    || `
 
 <div class="admin-feedback-checkboxes">
 
@@ -1893,20 +1873,7 @@ ${eventIntroHtml}
     type="hidden"
     value="${forcedType}">
 
-  <label class="admin-field">
-    Frage
-    <input
-      id="feedback-admin-question"
-      type="text"
-      value="${escapeAdminHtml(
-        feedbackAdminState.memberMode
-          ? ''
-          : getDefaultFeedbackQuestion(
-            feedbackAdminState.entityType
-          )
-      )}"
-      placeholder="${questionPlaceholder}">
-  </label>
+  ${questionFieldHtml}
 
   ${pollWrapHtml}
 

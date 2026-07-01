@@ -469,17 +469,78 @@ body:has(.member-content-edit-section) {
 /* Umfrage-Konfiguration (Link + Popup) */
 
 .member-intern-poll-config {
-  margin-top: 1.25rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
 }
 
-.member-intern-poll-config .admin-feedback-config {
-  margin-top: 0.75rem;
+.member-intern-poll-config .admin-feedback-config,
+.member-intern-poll-form {
+  margin-top: 0;
 }
 
-.member-intern-poll-config .admin-hint {
-  margin: 0.5rem 0 0;
+.member-intern-poll-config .member-edit-field {
+  margin-bottom: 15px;
+}
+
+.member-intern-poll-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.member-intern-poll-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+.member-intern-poll-config .admin-feedback-option-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 10px 12px;
+  margin-bottom: 15px;
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+.member-intern-poll-option__field {
+  margin-bottom: 0;
+}
+
+.member-intern-poll-option__title {
+  display: block;
+}
+
+.member-intern-poll-option__remove {
+  margin: 0 0 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.member-intern-poll-option__remove:hover {
+  color: #fff;
+}
+
+.member-intern-poll-add {
+  align-self: flex-start;
+  margin-bottom: 15px;
+}
+
+.member-intern-poll-config .member-verwaltung-checkbox-row {
+  margin-bottom: 15px;
 }
 
 .member-edit-poll-config {
