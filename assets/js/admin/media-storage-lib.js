@@ -554,9 +554,26 @@ async function loadMediaStorageReferenceIndex(
     throw termineResult.error;
   }
 
+  const stagesResult =
+    await window.supabaseClient
+      .from(
+        window.siteConfig.tables
+          .terminRouteStages
+        || 'termin_route_stages'
+      )
+      .select(
+        'id,termin_id,sort_order,gpx,gpx_storage_path'
+      );
+
+  if (stagesResult.error) {
+    throw stagesResult.error;
+  }
+
   mediaStorageReferenceIndex = {
     termine:
-      termineResult.data || []
+      termineResult.data || [],
+    terminRouteStages:
+      stagesResult.data || []
   };
 
   mediaStorageReferencePromise = null;
@@ -638,6 +655,34 @@ function findMediaStorageReferences(
       });
 
     }
+
+  });
+
+  (index.terminRouteStages || []).forEach((stage) => {
+
+    if (
+      !mediaPathMatchesReference(
+        storagePath,
+        stage.gpx_storage_path,
+        stage.gpx
+      )
+    ) {
+      return;
+    }
+
+    const termin =
+      index.termine.find(
+        (row) => row.id === stage.termin_id
+      );
+
+    references.termine.push({
+      id: stage.termin_id,
+      title:
+        termin?.title
+        || `Termin #${stage.termin_id}`,
+      kind:
+        `GPX Tag ${stage.sort_order}`
+    });
 
   });
 
@@ -773,6 +818,37 @@ function buildRecentlyUsedMediaPaths(
           map,
           extractMediaStoragePath(
             termin.gpx
+          ),
+          { kindFilter, score }
+        );
+
+      }
+
+    });
+
+  (mediaStorageReferenceIndex
+    .terminRouteStages || [])
+    .forEach((stage) => {
+
+      const score =
+        (Number(stage.termin_id) || 0)
+        + (Number(stage.sort_order) || 0)
+          / 100;
+
+      if (stage.gpx_storage_path) {
+
+        registerRecentlyUsedMediaPath(
+          map,
+          stage.gpx_storage_path,
+          { kindFilter, score }
+        );
+
+      } else if (stage.gpx) {
+
+        registerRecentlyUsedMediaPath(
+          map,
+          extractMediaStoragePath(
+            stage.gpx
           ),
           { kindFilter, score }
         );

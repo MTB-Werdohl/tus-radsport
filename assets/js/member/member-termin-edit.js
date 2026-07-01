@@ -318,8 +318,18 @@ function memberTerminResetForm() {
   document.getElementById('endDate').value = '';
   document.getElementById('startTime').value = '';
   document.getElementById('location').value = '';
-  document.getElementById('komoot').value = '';
   document.getElementById('content').value = '';
+
+  if (
+    typeof resetTerminRouteStagesEditor
+      === 'function'
+  ) {
+
+    resetTerminRouteStagesEditor({
+      pickerMode: 'member'
+    });
+
+  }
 
   const imagePick =
     document.getElementById(
@@ -330,27 +340,11 @@ function memberTerminResetForm() {
     imagePick.value = '';
   }
 
-  const gpxPick =
-    document.getElementById(
-      'gpxStoragePathPick'
-    );
-
-  if (gpxPick) {
-    gpxPick.value = '';
-  }
-
   const currentImage =
     document.getElementById('currentImage');
 
   if (currentImage) {
     currentImage.innerHTML = '';
-  }
-
-  const currentGpx =
-    document.getElementById('currentGpx');
-
-  if (currentGpx) {
-    currentGpx.innerHTML = '';
   }
 
   const sichtbarkeitSelect =
@@ -458,6 +452,10 @@ async function loadMemberTerminEdit(
 
     memberTerminResetForm();
 
+    initTerminRouteStagesEditor({
+      pickerMode: 'member'
+    });
+
     return;
 
   }
@@ -506,11 +504,24 @@ async function loadMemberTerminEdit(
       data.date
     );
 
-  document.getElementById('komoot').value =
-    data.komoot || '';
-
   document.getElementById('content').value =
     data.content || '';
+
+  const routeStages =
+    await loadTerminRouteStages(
+      data.id
+    );
+
+  populateTerminRouteStagesEditor(
+    routeStages.length
+      ? routeStages
+      : buildTerminRouteStagesFromLegacy(
+        data
+      ),
+    {
+      pickerMode: 'member'
+    }
+  );
 
   if (
     memberTerminIsVorstandUser(member)
@@ -544,23 +555,6 @@ async function loadMemberTerminEdit(
 
     document
       .getElementById('currentImage')
-      .innerHTML = '';
-
-  }
-
-  if (data.gpx_storage_path) {
-
-    applyMemberEditMediaSelection(
-      'currentGpx',
-      'gpx',
-      data.gpx_storage_path,
-      'gpxStoragePathPick'
-    );
-
-  } else {
-
-    document
-      .getElementById('currentGpx')
       .innerHTML = '';
 
   }
@@ -770,12 +764,6 @@ async function saveMemberTerminEdit(
       .value
       .trim();
 
-  const komoot =
-    document
-      .getElementById('komoot')
-      .value
-      .trim();
-
   const content =
     document
       .getElementById('content')
@@ -809,11 +797,6 @@ async function saveMemberTerminEdit(
       'imageStoragePathPick'
     );
 
-  let gpxStoragePath =
-    readMediaPickerHiddenPath(
-      'gpxStoragePathPick'
-    );
-
   const pickedImage =
     resolveMediaPickerSelectionForSave(
       'imageStoragePathPick',
@@ -824,15 +807,8 @@ async function saveMemberTerminEdit(
   imageStoragePath =
     pickedImage.storagePath;
 
-  const pickedGpx =
-    resolveMediaPickerSelectionForSave(
-      'gpxStoragePathPick',
-      gpxStoragePath,
-      null
-    );
-
-  gpxStoragePath =
-    pickedGpx.storagePath;
+  const routeStages =
+    collectTerminRouteStagesFromEditor();
 
   if (!imageStoragePath) {
     imageStoragePath =
@@ -859,7 +835,7 @@ async function saveMemberTerminEdit(
 
     location,
 
-    komoot,
+    komoot: null,
 
     content,
 
@@ -872,18 +848,17 @@ async function saveMemberTerminEdit(
 
     sichtbarkeit,
 
-    created_by: member.id
+    created_by: member.id,
+
+    gpx: null,
+
+    gpx_storage_path: null
 
   };
 
   if (imageStoragePath) {
     payload.image_storage_path =
       imageStoragePath;
-  }
-
-  if (gpxStoragePath) {
-    payload.gpx_storage_path =
-      gpxStoragePath;
   }
 
   let error;
@@ -919,6 +894,23 @@ async function saveMemberTerminEdit(
     console.error(error);
 
     alert(error.message);
+
+    return;
+
+  }
+
+  const stagesResult =
+    await saveTerminRouteStages(
+      savedId,
+      routeStages
+    );
+
+  if (!stagesResult.ok) {
+
+    alert(
+      stagesResult.error?.message
+      || 'Routen konnten nicht gespeichert werden.'
+    );
 
     return;
 
@@ -992,13 +984,19 @@ function bindMemberTerminEditControls(
     pickerMode: 'member'
   });
 
-  bindMediaPickerButton('pick-gpx-btn', {
-    kind: 'gpx',
-    hiddenInputId: 'gpxStoragePathPick',
-    previewContainerId: 'currentGpx',
-    title: 'GPX aus Mediathek',
-    pickerMode: 'member'
-  });
+  if (
+    document.getElementById(
+      'route-stages-editor'
+    )
+    && typeof initTerminRouteStagesEditor
+      === 'function'
+  ) {
+
+    initTerminRouteStagesEditor({
+      pickerMode: 'member'
+    });
+
+  }
 
   window.memberEditUnsavedGuard =
     initMemberEditUnsavedGuard();

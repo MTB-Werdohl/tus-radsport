@@ -118,26 +118,7 @@ function renderMemberTerminEditPanelShell(
       <div id="currentImage"></div>
     </label>
 
-    <label class="member-edit-field">
-      GPX
-      <input id="gpxStoragePathPick"
-             type="hidden">
-      <div class="member-edit-media-actions">
-        <button id="pick-gpx-btn"
-                type="button"
-                class="member-edit-btn member-edit-btn--secondary">
-          Aus Mediathek
-        </button>
-      </div>
-      <div id="currentGpx"></div>
-    </label>
-
-    <label class="member-edit-field">
-      Komoot Link
-      <input id="komoot"
-             type="text"
-             placeholder="Komoot Link">
-    </label>
+    ${renderTerminRouteStagesEditorShell()}
 
     <label class="member-edit-field">
       Inhalt

@@ -154,6 +154,19 @@ SQL Profilbilder: [`supabase/supabase-member-avatars.sql`](supabase/supabase-mem
 | `image`, `gpx` | Legacy: volle Public-URL |
 | `image_storage_path`, `gpx_storage_path` | Relativer Pfad im Bucket `media` (Phase 0 Medien-Storage) |
 
+## `termin_route_stages`
+
+Routen-Etappen pro Termin (Tag 1, Tag 2, …).
+
+| Spalte | Hinweis |
+|--------|---------|
+| `termin_id` | FK → `Termine.id` (CASCADE) |
+| `sort_order` | 1-basierter Tag-Index |
+| `komoot` | Optionaler Komoot-Link |
+| `gpx_storage_path`, `gpx` | GPX in Mediathek bzw. Legacy-URL |
+
+SQL: [`supabase-termin-route-stages.sql`](supabase-termin-route-stages.sql)
+
 ## `galleries` / `gallery_images`
 
 Metadaten + `image_path` (öffentliche Storage-URL).

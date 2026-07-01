@@ -110,8 +110,33 @@ async function getEvent(
     return null;
   }
 
-  return enrichContentRowWithCreator(
-    picked
-  );
+  const enriched =
+    await enrichContentRowWithCreator(
+      picked
+    );
+
+  if (
+    !enriched
+    || typeof loadTerminRouteStages
+      !== 'function'
+  ) {
+    return enriched;
+  }
+
+  enriched.route_stages =
+    await loadTerminRouteStages(
+      enriched.id
+    );
+
+  if (!enriched.route_stages.length) {
+
+    enriched.route_stages =
+      buildTerminRouteStagesFromLegacy(
+        enriched
+      );
+
+  }
+
+  return enriched;
 
 }

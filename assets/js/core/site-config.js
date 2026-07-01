@@ -14,6 +14,7 @@ window.siteConfig = {
 
   tables: {
     termine: 'Termine',
+    terminRouteStages: 'termin_route_stages',
     news: 'News',
     siteState: 'site_state',
     members: 'members',

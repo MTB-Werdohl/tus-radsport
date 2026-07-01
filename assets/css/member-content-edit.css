@@ -1544,6 +1544,94 @@ body.member-termin-editor-page
   margin-top: 0;
 }
 
+.termin-route-stages-field {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 1rem 1rem 1.1rem;
+}
+
+.termin-route-stages-field legend {
+  font-weight: 600;
+  padding: 0 0.35rem;
+}
+
+.termin-route-stages-hint {
+  margin: 0 0 0.85rem;
+  font-size: 0.92rem;
+  color: #666;
+}
+
+.termin-route-stages-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.termin-route-stage-row {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr) minmax(0, 1.1fr) auto;
+  gap: 0.65rem;
+  align-items: start;
+  padding: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.termin-route-stage-row__label {
+  font-weight: 600;
+  padding-top: 0.55rem;
+}
+
+.termin-route-stage-komoot-field input {
+  width: 100%;
+}
+
+.termin-route-stage-gpx-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.termin-route-stage-remove {
+  align-self: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  color: #444;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.termin-route-stage-remove:hover {
+  background: rgba(237, 28, 36, 0.12);
+  color: #b51218;
+}
+
+.termin-route-stages-add {
+  margin-top: 0.15rem;
+}
+
+@media (max-width: 720px) {
+
+  .termin-route-stage-row {
+    grid-template-columns: 1fr;
+  }
+
+  .termin-route-stage-row__label {
+    padding-top: 0;
+  }
+
+  .termin-route-stage-remove {
+    justify-self: end;
+  }
+
+}
+
 .site-main--focus .page-content-column {
   max-width: 720px;
 }

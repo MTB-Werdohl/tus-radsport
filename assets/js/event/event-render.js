@@ -198,81 +198,34 @@ function renderLinks(
  event
 ) {
 
- const eventGpx =
-   typeof resolveTerminGpx === 'function'
-     ? resolveTerminGpx(event)
-     : event.gpx;
+ const stages =
+   event?.route_stages?.length
+     ? event.route_stages
+     : (
+       typeof buildTerminRouteStagesFromLegacy
+         === 'function'
+         ? buildTerminRouteStagesFromLegacy(
+           event
+         )
+         : []
+     );
 
  if (
+   typeof renderTerminRouteStagesTable
+     === 'function'
+ ) {
 
-  !event.komoot &&
+   const tableHtml =
+     renderTerminRouteStagesTable(
+       stages
+     );
 
-  !eventGpx
+   if (tableHtml) {
+     return tableHtml;
+   }
 
- ) return '';
+ }
 
- return `
-
-<div class="event-links">
-
-${
-
-event.komoot
-
-?
-
-`
-
-<a
-
-href="${event.komoot}"
-
-target="_blank"
-
-class="event-button"
-
->
-
-🚵 Komoot
-
-</a>
-
-`
-
-:''
-
-}
-
-${
-
-eventGpx
-
-?
-
-`
-
-<a
-
-href="${eventGpx}"
-
-target="_blank"
-
-class="event-button"
-
->
-
-⬇ GPX
-
-</a>
-
-`
-
-:''
-
-}
-
-</div>
-
-`;
+ return '';
 
 }

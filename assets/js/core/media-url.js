@@ -264,6 +264,22 @@ function resolveTerminGpx(
     return null;
   }
 
+  const stages =
+    typeof buildTerminRouteStagesFromLegacy
+      === 'function'
+      ? buildTerminRouteStagesFromLegacy(
+        event
+      )
+      : [];
+
+  if (stages.length === 1) {
+
+    return resolveTerminRouteStageGpx(
+      stages[0]
+    );
+
+  }
+
   if (event.gpx_storage_path) {
 
     return (

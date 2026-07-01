@@ -63,6 +63,7 @@ Details externe Abstimmung: [`PUBLIC-REGISTRATION.md`](PUBLIC-REGISTRATION.md)
 | 43 | [`supabase-board-documents.sql`](supabase-board-documents.sql) | Protokolle (`board_documents`) |
 | 44 | [`supabase-board-documents-subject.sql`](supabase-board-documents-subject.sql) | Spalte `subject` |
 | 45 | [`supabase-board-documents-storage-update.sql`](supabase-board-documents-storage-update.sql) | Storage UPDATE für Verschieben |
+| 46 | [`supabase-termin-route-stages.sql`](supabase-termin-route-stages.sql) | Mehrtages-Routen: `termin_route_stages` (Komoot/GPX pro Tag) |
 
 ### E-Mail (Vorstand)
 

@@ -513,13 +513,7 @@ function ensureEventEditModal() {
     placeholder="Ort">
 </label>
 
-<label class="admin-field">
-  Komoot
-  <input
-    id="event-vorstand-komoot"
-    type="url"
-    placeholder="https://…">
-</label>
+${renderTerminRouteStagesEditorShell()}
 
 <label class="admin-field">
   Beschreibung
@@ -545,24 +539,6 @@ function ensureEventEditModal() {
     </button>
   </div>
   <div id="event-vorstand-current-image"></div>
-</label>
-
-<label class="admin-field">
-  GPX
-  <input
-    id="event-vorstand-gpx-path"
-    type="hidden">
-  <div class="admin-media-field-actions">
-    <button
-      id="event-vorstand-pick-gpx"
-      type="button"
-      class="secondary-button">
-
-      GPX aus Mediathek
-
-    </button>
-  </div>
-  <div id="event-vorstand-current-gpx"></div>
 </label>
 
 <label class="admin-field">
@@ -625,17 +601,16 @@ function ensureEventEditModal() {
       }
     );
 
-    bindMediaPickerButton(
-      'event-vorstand-pick-gpx',
-      {
-        kind: 'gpx',
-        hiddenInputId:
-          'event-vorstand-gpx-path',
-        previewContainerId:
-          'event-vorstand-current-gpx',
-        title: 'GPX aus Mediathek'
-      }
-    );
+    if (
+      typeof initTerminRouteStagesEditor
+        === 'function'
+    ) {
+
+      initTerminRouteStagesEditor({
+        pickerMode: 'vorstand'
+      });
+
+    }
 
   }
 
@@ -701,14 +676,25 @@ async function loadEventIntoVorstandModal(
       data.location || '';
 
   document
-    .getElementById('event-vorstand-komoot')
-    .value =
-      data.komoot || '';
-
-  document
     .getElementById('event-vorstand-content')
     .value =
       data.content || '';
+
+  const routeStages =
+    await loadTerminRouteStages(
+      eventId
+    );
+
+  populateTerminRouteStagesEditor(
+    routeStages.length
+      ? routeStages
+      : buildTerminRouteStagesFromLegacy(
+        data
+      ),
+    {
+      pickerMode: 'vorstand'
+    }
+  );
 
   document
     .getElementById('event-vorstand-sichtbarkeit')
@@ -721,25 +707,12 @@ async function loadEventIntoVorstandModal(
       'event-vorstand-current-image'
     );
 
-  const gpxPreview =
-    document.getElementById(
-      'event-vorstand-current-gpx'
-    );
-
   if (imagePreview) {
     imagePreview.innerHTML = '';
   }
 
-  if (gpxPreview) {
-    gpxPreview.innerHTML = '';
-  }
-
   document
     .getElementById('event-vorstand-image-path')
-    .value = '';
-
-  document
-    .getElementById('event-vorstand-gpx-path')
     .value = '';
 
   if (
@@ -753,21 +726,6 @@ async function loadEventIntoVorstandModal(
       'image',
       data.image_storage_path,
       'event-vorstand-image-path'
-    );
-
-  }
-
-  if (
-    data.gpx_storage_path
-    && typeof applyMemberEditMediaSelection
-      === 'function'
-  ) {
-
-    applyMemberEditMediaSelection(
-      'event-vorstand-current-gpx',
-      'gpx',
-      data.gpx_storage_path,
-      'event-vorstand-gpx-path'
     );
 
   }
@@ -865,12 +823,8 @@ async function saveEventFromVorstandModal() {
 
   }
 
-  const komoot =
-    document
-      .getElementById('event-vorstand-komoot')
-      ?.value
-      ?.trim()
-    || '';
+  const routeStages =
+    collectTerminRouteStagesFromEditor();
 
   const content =
     document
@@ -905,9 +859,6 @@ async function saveEventFromVorstandModal() {
   let imageStoragePath =
     existing?.image_storage_path || null;
 
-  let gpxStoragePath =
-    existing?.gpx_storage_path || null;
-
   if (
     typeof resolveMediaPickerSelectionForSave
       === 'function'
@@ -923,16 +874,6 @@ async function saveEventFromVorstandModal() {
     imageStoragePath =
       pickedImage.storagePath;
 
-    const pickedGpx =
-      resolveMediaPickerSelectionForSave(
-        'event-vorstand-gpx-path',
-        gpxStoragePath,
-        null
-      );
-
-    gpxStoragePath =
-      pickedGpx.storagePath;
-
   }
 
   const payload = {
@@ -947,23 +888,20 @@ async function saveEventFromVorstandModal() {
       endDate || null,
     startTime,
     location,
-    komoot,
+    komoot: null,
     content,
     sichtbarkeit,
     category:
       existing?.category || 'vereinsleben',
     updated_at:
-      new Date().toISOString()
+      new Date().toISOString(),
+    gpx: null,
+    gpx_storage_path: null
   };
 
   if (imageStoragePath) {
     payload.image_storage_path =
       imageStoragePath;
-  }
-
-  if (gpxStoragePath) {
-    payload.gpx_storage_path =
-      gpxStoragePath;
   }
 
   const { error } =
@@ -976,6 +914,23 @@ async function saveEventFromVorstandModal() {
 
     console.error(error);
     alert(error.message);
+    return;
+
+  }
+
+  const stagesResult =
+    await saveTerminRouteStages(
+      editId,
+      routeStages
+    );
+
+  if (!stagesResult.ok) {
+
+    alert(
+      stagesResult.error?.message
+      || 'Routen konnten nicht gespeichert werden.'
+    );
+
     return;
 
   }

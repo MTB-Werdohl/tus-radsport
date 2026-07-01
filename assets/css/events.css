@@ -376,6 +376,52 @@
   background: #25D366;
 }
 
+.event-route-stages {
+  margin-bottom: 2rem;
+}
+
+.event-route-stages-table {
+  width: 100%;
+  max-width: 36rem;
+  border-collapse: collapse;
+}
+
+.event-route-stages-table th,
+.event-route-stages-table td {
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.event-route-stages-table thead th {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #666;
+}
+
+.event-route-stages-table tbody th {
+  width: 5.5rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.event-route-stages-table td {
+  width: 7rem;
+}
+
+.event-route-stage-button {
+  display: inline-block;
+  min-width: 5.5rem;
+  padding: 0.55rem 0.85rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.event-route-stage-empty {
+  color: #999;
+}
+
 .event-header__when h1,
 .event-header__title h1,
 .event-meta h1 {
