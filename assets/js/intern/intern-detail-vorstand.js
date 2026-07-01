@@ -3,7 +3,7 @@ function renderInternVorstandActionsHtml(
 ) {
 
   return `
-<div class="calendar-card__vorstand-actions">
+<div class="news-vorstand-actions__inner">
 
 <button
   type="button"
@@ -27,6 +27,75 @@ function renderInternVorstandActionsHtml(
 
 </div>
   `.trim();
+
+}
+
+function canShowInternDetailVorstandTools(
+  member
+) {
+
+  return (
+    typeof isVorstand === 'function'
+    && isVorstand(member)
+  );
+
+}
+
+function renderInternDetailVorstandToolbar(
+  item
+) {
+
+  const actions =
+    document.getElementById(
+      'intern-vorstand-actions'
+    );
+
+  if (!actions) {
+    return;
+  }
+
+  if (!item?.id) {
+
+    actions.innerHTML = '';
+
+    return;
+
+  }
+
+  actions.innerHTML =
+    renderInternVorstandActionsHtml(
+      item
+    );
+
+  const detailRoot =
+    document.getElementById(
+      'intern-detail'
+    );
+
+  if (detailRoot) {
+    bindInternVorstandActions(
+      detailRoot
+    );
+  }
+
+}
+
+function initInternDetailVorstand(
+  item,
+  member
+) {
+
+  if (
+    !canShowInternDetailVorstandTools(
+      member
+    )
+  ) {
+    return;
+  }
+
+  renderInternDetailVorstandToolbar(
+    item
+  );
 
 }
 
@@ -190,3 +259,49 @@ function bindInternVorstandActions(
   );
 
 }
+
+window.addEventListener(
+  'member-session-ready',
+  () => {
+
+    const detailRoot =
+      document.getElementById(
+        'intern-detail'
+      );
+
+    if (
+      !detailRoot
+      || !detailRoot.dataset.newsId
+    ) {
+      return;
+    }
+
+    const member =
+      typeof getCurrentMember === 'function'
+        ? getCurrentMember()
+        : null;
+
+    if (
+      !canShowInternDetailVorstandTools(
+        member
+      )
+    ) {
+      return;
+    }
+
+    initInternDetailVorstand(
+      {
+        id:
+          parseInt(
+            detailRoot.dataset.newsId,
+            10
+          ),
+        title:
+          detailRoot.dataset.newsTitle
+          || ''
+      },
+      member
+    );
+
+  }
+);

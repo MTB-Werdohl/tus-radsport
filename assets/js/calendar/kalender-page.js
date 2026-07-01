@@ -21,12 +21,7 @@ async function reloadKalenderAfterVorstandChange() {
       ? resolveContentListingViewer()
       : null;
 
-  await loadAllUpcomingTerminCards({
-    vorstandActions:
-      typeof canShowEventVorstandTools
-        === 'function'
-      && canShowEventVorstandTools(member)
-  });
+  await loadAllUpcomingTerminCards();
 
 }
 
@@ -50,12 +45,7 @@ document.addEventListener(
     const member =
       window.contentViewerMember;
 
-    await loadAllUpcomingTerminCards({
-      vorstandActions:
-        typeof canShowEventVorstandTools
-          === 'function'
-        && canShowEventVorstandTools(member)
-    });
+    await loadAllUpcomingTerminCards();
 
   }
 );

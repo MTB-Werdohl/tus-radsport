@@ -292,15 +292,6 @@ function renderInternNewsCard(
       ? getInternNewsUrl(item.slug)
       : `/intern-detail.html?slug=${encodeURIComponent(item.slug || '')}`;
 
-  const vorstandActions =
-    options.vorstandActions
-    && typeof renderInternVorstandActionsHtml
-      === 'function'
-      ? renderInternVorstandActionsHtml(
-        item
-      )
-      : '';
-
   const imageHtml =
     imageUrl
       ? `
@@ -371,8 +362,6 @@ function renderInternNewsCard(
 </div>
 
 </a>
-
-${vorstandActions}
 
 `;
 
@@ -637,15 +626,12 @@ ${
       ? sortInternNewsRows(visible)
       : visible;
 
-  const vorstandActions =
-    options.vorstandActions === true
+  const showNewNewsButton =
+    options.showNewNewsButton === true
     || (
-      options.vorstandActions !== false
+      options.showNewNewsButton !== false
       && canShowInternVorstandTools(member)
     );
-
-  const showNewNewsButton =
-    vorstandActions;
 
   wrapper.replaceChildren();
 
@@ -664,21 +650,8 @@ ${
     wrapper,
     sorted,
     {
-      vorstandActions,
       showNewNewsButton
     }
   );
-
-  if (
-    vorstandActions
-    && typeof bindInternVorstandActions
-      === 'function'
-  ) {
-
-    bindInternVorstandActions(
-      wrapper
-    );
-
-  }
 
 }

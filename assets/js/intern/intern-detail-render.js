@@ -74,6 +74,12 @@ ${formatContentCardTitle(
 
 <div id="share"></div>
 
+<div
+  id="intern-vorstand-actions"
+  class="news-vorstand-actions">
+
+</div>
+
 </div>
 
 </div>

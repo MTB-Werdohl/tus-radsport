@@ -66,6 +66,28 @@ async function loadInternNewsDetail() {
 
   renderInternNewsDetail(item);
 
+  const isVorstandUser =
+    typeof isVorstand === 'function'
+    && isVorstand(member);
+
+  if (
+    isVorstandUser
+    && typeof initInternDetailVorstand
+      === 'function'
+  ) {
+
+    initInternDetailVorstand(
+      item,
+      member
+    );
+
+  }
+
+  window.reloadAfterInternNewsSave =
+    () => {
+      void loadInternNewsDetail();
+    };
+
   const detailUrl =
     typeof getInternNewsUrl === 'function'
       ? getInternNewsUrl(item.slug)

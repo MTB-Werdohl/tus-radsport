@@ -764,15 +764,6 @@ function renderTerminCard(
       participationAnswer
     );
 
-  const vorstandActions =
-    options.vorstandActions
-    && typeof renderKalenderTerminVorstandActionsHtml
-      === 'function'
-      ? renderKalenderTerminVorstandActionsHtml(
-        event
-      )
-      : '';
-
   const metaHtml =
     [
       whenLine
@@ -855,8 +846,6 @@ function renderTerminCard(
 </div>
 
 </a>
-
-${vorstandActions}
 
 `;
 
@@ -957,15 +946,6 @@ async function loadAllUpcomingTerminCards(
 
   wrapper.replaceChildren();
 
-  const vorstandActions =
-    options.vorstandActions === true
-    || (
-      options.vorstandActions !== false
-      && typeof canShowEventVorstandTools
-        === 'function'
-      && canShowEventVorstandTools(viewer)
-    );
-
   const showNewTerminButton =
     canShowKalenderNewTerminButton(viewer);
 
@@ -986,7 +966,6 @@ async function loadAllUpcomingTerminCards(
   }
 
   const renderOptions = {
-    vorstandActions,
     showNewTerminButton,
     participationMap
   };
@@ -996,18 +975,6 @@ async function loadAllUpcomingTerminCards(
     toRender,
     renderOptions
   );
-
-  if (
-    vorstandActions
-    && typeof bindKalenderVorstandActions
-      === 'function'
-  ) {
-
-    bindKalenderVorstandActions(
-      wrapper
-    );
-
-  }
 
 }
 
@@ -1137,15 +1104,7 @@ async function loadCards(
   wrapper.replaceChildren();
 
   const renderOptions = {
-    participationMap,
-    vorstandActions:
-      options.vorstandActions === true
-      || (
-        options.vorstandActions !== false
-        && typeof canShowEventVorstandTools
-          === 'function'
-        && canShowEventVorstandTools(viewer)
-      )
+    participationMap
   };
 
   if (!toRender.length) {

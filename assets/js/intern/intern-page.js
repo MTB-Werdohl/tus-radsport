@@ -21,12 +21,7 @@ async function reloadInternAfterVorstandChange() {
       ? resolveContentListingViewer()
       : null;
 
-  await loadInternNewsCards({
-    vorstandActions:
-      typeof canShowInternVorstandTools
-        === 'function'
-      && canShowInternVorstandTools(member)
-  });
+  await loadInternNewsCards();
 
 }
 
@@ -50,12 +45,7 @@ document.addEventListener(
     const member =
       window.contentViewerMember;
 
-    await loadInternNewsCards({
-      vorstandActions:
-        typeof canShowInternVorstandTools
-          === 'function'
-        && canShowInternVorstandTools(member)
-    });
+    await loadInternNewsCards();
 
   }
 );

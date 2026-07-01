@@ -153,7 +153,7 @@ function renderKalenderTerminVorstandActionsHtml(
 ) {
 
   return `
-<div class="calendar-card__vorstand-actions">
+<div class="news-vorstand-actions__inner">
 
 <button
   type="button"
@@ -245,6 +245,24 @@ async function deleteEventFromVorstand(
     alert(
       'Termin konnte nicht gelöscht werden.'
     );
+
+    return;
+
+  }
+
+  const onDetail =
+    document.getElementById('event')
+      ?.dataset?.eventId;
+
+  if (
+    onDetail
+    && String(eventId) === String(onDetail)
+  ) {
+
+    window.location.href =
+      typeof getCalendarUrl === 'function'
+        ? getCalendarUrl()
+        : '/kalender/';
 
     return;
 
@@ -397,8 +415,30 @@ function renderEventVorstandToolbar(
       'event-vorstand-actions'
     );
 
-  if (actions) {
+  if (!actions) {
+    return;
+  }
+
+  if (!eventData?.id) {
+
     actions.innerHTML = '';
+
+    return;
+
+  }
+
+  actions.innerHTML =
+    renderKalenderTerminVorstandActionsHtml(
+      eventData
+    );
+
+  const eventRoot =
+    document.getElementById('event');
+
+  if (eventRoot) {
+    bindKalenderVorstandActions(
+      eventRoot
+    );
   }
 
 }
@@ -508,45 +548,6 @@ window.addEventListener(
   'member-session-ready',
   () => {
 
-    const list =
-      document.getElementById(
-        'event-cards'
-      );
-
-    const member =
-      typeof getCurrentMember === 'function'
-        ? getCurrentMember()
-        : null;
-
-    if (
-      list
-      && canShowEventVorstandTools(member)
-    ) {
-
-      bindKalenderVorstandActions(list);
-
-      if (
-        typeof invalidateTermineCache
-          === 'function'
-      ) {
-        invalidateTermineCache();
-      }
-
-      if (
-        typeof loadAllUpcomingTerminCards
-          === 'function'
-      ) {
-
-        void loadAllUpcomingTerminCards({
-          vorstandActions: true
-        });
-
-      }
-
-      return;
-
-    }
-
     const eventRoot =
       document.getElementById('event');
 
@@ -557,11 +558,16 @@ window.addEventListener(
       return;
     }
 
+    const member =
+      typeof getCurrentMember === 'function'
+        ? getCurrentMember()
+        : null;
+
     if (!canShowEventVorstandTools(member)) {
       return;
     }
 
-    void initEventDetailVorstandAsync(
+    initEventDetailVorstand(
       {
         id:
           parseInt(
