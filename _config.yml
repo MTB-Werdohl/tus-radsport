@@ -14,10 +14,11 @@ seo:
 
 future: true
 
-# CI erzeugt kalender/{slug}/ via generate-pages.js.
+# CI erzeugt kalender/{slug}/ und intern/{slug}/ via generate-pages.js.
 # Ordner stehen in .gitignore (lokal), müssen im Build trotzdem in _site:
 include:
   - kalender
+  - intern
 
 vorstand_js_version: "20260601"
 

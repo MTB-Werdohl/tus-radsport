@@ -112,7 +112,7 @@ function getMemberNewsPollEnabledFromDom() {
     return enabledEl.checked === true;
   }
 
-  return isMemberFeedbackPollConfigured();
+  return false;
 
 }
 
@@ -1438,7 +1438,7 @@ async function saveFeedbackAdminForEntity(
     question,
     config,
     public_voting: publicVoting,
-    enabled: true
+    enabled
   };
 
   const result =

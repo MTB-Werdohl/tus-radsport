@@ -3,7 +3,8 @@ const path = require("path");
 
 // Tabellennamen — synchron halten mit assets/js/core/site-config.js
 const TABLES = {
-  termine: "Termine"
+  termine: "Termine",
+  news: "News"
 };
 
 const SUPABASE_URL =
@@ -19,6 +20,16 @@ const SITE_URL =
 function isPublicVisibility(value) {
 
   return value === 'public' || !value;
+
+}
+
+function isInternNewsOgVisibility(value) {
+
+  return (
+    value === 'members'
+    || value === 'public'
+    || !value
+  );
 
 }
 
@@ -305,6 +316,42 @@ resolveEntityImageUrl(termin),
 
 console.log(
 `Termine: ${termine.length}`
+);
+
+const news =
+await fetchTable(
+TABLES.news
+);
+
+for(
+const item
+of news.filter(row =>
+  isInternNewsOgVisibility(row.sichtbarkeit)
+  && row.slug
+  && row.title
+)
+){
+
+createPage(
+
+"intern",
+
+item.slug,
+
+item.title,
+
+item.content,
+
+resolveEntityImageUrl(item),
+
+`/intern-detail.html?slug=${item.slug}`
+
+);
+
+}
+
+console.log(
+`Internes: ${news.length}`
 );
 
 }

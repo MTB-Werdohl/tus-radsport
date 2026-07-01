@@ -86,7 +86,8 @@ async function loadEvent() {
       event.sichtbarkeit,
     entityRecurring: false,
     entityTermin: event,
-    container: 'event-feedback'
+    container: 'event-feedback',
+    member
   });
 
   if (

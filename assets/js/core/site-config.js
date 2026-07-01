@@ -96,6 +96,6 @@ window.getInternNewsUrl = function (slug) {
     return '/intern/';
   }
 
-  return `/intern-detail.html?slug=${encodeURIComponent(slug)}`;
+  return `/intern/${encodeURIComponent(slug)}/`;
 
 };

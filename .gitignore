@@ -28,4 +28,5 @@ desktop.ini
 
 # Lokal oder in CI erzeugte OG-Redirect-Ordner (generate-pages.js)
 /kalender/
+/intern/
 /news/

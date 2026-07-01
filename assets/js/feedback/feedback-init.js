@@ -7,7 +7,9 @@ async function initFeedbackModule(options) {
     options?.entityType;
 
   const entityId =
-    options?.entityId;
+    normalizeFeedbackEntityId(
+      options?.entityId
+    );
 
   const container =
     typeof options?.container === 'string'
@@ -28,13 +30,15 @@ async function initFeedbackModule(options) {
       entityId,
       entityVisibility:
         options?.entityVisibility ?? null,
+      member:
+        options?.member ?? null,
       container:
         typeof options?.container === 'string'
           ? options.container
           : container.id
     };
 
-  const module =
+  let module =
     await fetchFeedbackModule(
       entityType,
       entityId
@@ -64,9 +68,14 @@ async function initFeedbackModule(options) {
   }
 
   let member =
-    typeof getCurrentMember === 'function'
-      ? getCurrentMember()
-      : null;
+    options?.member ?? null;
+
+  if (
+    !member
+    && typeof getCurrentMember === 'function'
+  ) {
+    member = getCurrentMember();
+  }
 
   if (
     !member
@@ -160,13 +169,36 @@ async function initFeedbackModule(options) {
   }
 
   if (
-    !shouldShowFeedbackToViewer(
+    entityType
+    !== window.siteConfig.feedback.entityTypes.news
+    && !shouldShowFeedbackToViewer(
       module,
       viewerMember
     )
   ) {
     container.innerHTML = '';
     return;
+  }
+
+  const moduleType =
+    typeof resolveFeedbackModuleType === 'function'
+      ? resolveFeedbackModuleType(module)
+      : module.type;
+
+  if (
+    entityType
+    === window.siteConfig.feedback.entityTypes.news
+    && moduleType
+    !== window.siteConfig.feedback.types.poll
+    && pollActive
+  ) {
+
+    module = {
+      ...module,
+      type:
+        window.siteConfig.feedback.types.poll
+    };
+
   }
 
   let ownAnswer = null;

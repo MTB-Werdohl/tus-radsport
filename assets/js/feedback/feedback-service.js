@@ -1,7 +1,33 @@
+function normalizeFeedbackEntityId(
+  entityId
+) {
+
+  if (
+    entityId === null
+    || entityId === undefined
+    || entityId === ''
+  ) {
+    return entityId;
+  }
+
+  const parsed =
+    Number(entityId);
+
+  if (Number.isFinite(parsed)) {
+    return parsed;
+  }
+
+  return entityId;
+
+}
+
 async function fetchFeedbackModule(
   entityType,
   entityId
 ) {
+
+  const normalizedEntityId =
+    normalizeFeedbackEntityId(entityId);
 
   const { data, error } =
     await window.supabaseClient
@@ -10,7 +36,7 @@ async function fetchFeedbackModule(
       )
       .select('*')
       .eq('entity_type', entityType)
-      .eq('entity_id', entityId)
+      .eq('entity_id', normalizedEntityId)
       .maybeSingle();
 
   if (error) {

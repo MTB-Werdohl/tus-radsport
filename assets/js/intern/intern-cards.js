@@ -290,7 +290,7 @@ function renderInternNewsCard(
   const detailUrl =
     typeof getInternNewsUrl === 'function'
       ? getInternNewsUrl(item.slug)
-      : `/intern-detail.html?slug=${encodeURIComponent(item.slug || '')}`;
+      : `/intern/${encodeURIComponent(item.slug || '')}/`;
 
   const imageHtml =
     imageUrl
