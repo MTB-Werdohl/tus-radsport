@@ -103,30 +103,74 @@ function normalizeSaisonMode(value) {
     return null;
   }
 
-  if (
-    value.enabled !== undefined
+  const banner_text =
+    String(
+      value.banner_text
+      || value.message
+      || ''
+    ).trim();
+
+  const overlay_text =
+    String(
+      value.overlay_text
+      || value.message
+      || ''
+    ).trim();
+
+  const hasShape =
+    value.banner_active !== undefined
+    || value.overlay_active !== undefined
+    || value.enabled !== undefined
     || value.banner_text !== undefined
     || value.overlay_text !== undefined
+    || value.mode !== undefined
+    || value.message !== undefined;
+
+  if (!hasShape) {
+    return null;
+  }
+
+  let banner_active = false;
+  let overlay_active = false;
+
+  if (
+    value.banner_active !== undefined
+    || value.overlay_active !== undefined
   ) {
 
-    return {
-      enabled: value.enabled === true,
-      banner_text:
-        String(value.banner_text || '').trim(),
-      overlay_text:
-        String(value.overlay_text || '').trim(),
-      updated_at: value.updated_at || null
-    };
+    banner_active =
+      value.banner_active === true;
+
+    overlay_active =
+      value.overlay_active === true;
+
+  } else if (
+    value.enabled !== undefined
+  ) {
+
+    const active =
+      value.enabled === true;
+
+    banner_active = active;
+    overlay_active = active;
+
+  } else if (
+    value.mode !== undefined
+  ) {
+
+    const active =
+      value.mode === 'pause';
+
+    banner_active = active;
+    overlay_active = active;
 
   }
 
-  const legacyMessage =
-    String(value.message || '').trim();
-
   return {
-    enabled: value.mode === 'pause',
-    banner_text: legacyMessage,
-    overlay_text: legacyMessage,
+    banner_active,
+    overlay_active,
+    banner_text,
+    overlay_text,
     updated_at: value.updated_at || null
   };
 
@@ -330,7 +374,8 @@ async function saveSaisonModeState(
     siteStateKey('saisonMode'),
     normalizeSaisonMode(payload)
       || {
-        enabled: false,
+        banner_active: false,
+        overlay_active: false,
         banner_text: '',
         overlay_text: ''
       }

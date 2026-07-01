@@ -27,6 +27,7 @@ member_termin_editor: true
 <script src="/assets/js/feedback/feedback-service.js"></script>
 <script src="/assets/js/core/content-creator.js"></script>
 <script src="/assets/js/core/media-url.js"></script>
+<script src="/assets/js/member/member-termin-editor-nav.js"></script>
 <script src="/assets/js/event/termin-route-stages.js"></script>
 <script src="/assets/js/core/image-compress.js"></script>
 <script src="/assets/js/admin/media-storage-lib.js"></script>

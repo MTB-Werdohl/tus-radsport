@@ -128,9 +128,10 @@ function renderMemberSiteContentAdminShell() {
 <div class="member-verwaltung-saison-form">
 
   <p class="member-verwaltung-hint">
-    Wenn der Saisonmodus aktiv ist, sehen alle Besucher
-    einen Banner und ein schließbares Overlay mit deinen
-    Hinweistexten.
+    Banner und Overlay lassen sich getrennt aktivieren —
+    z.&nbsp;B. zuerst nur den Banner zur Ankündigung,
+    während der Pause zusätzlich das Overlay.
+    Die Texte bleiben gespeichert, auch wenn beides aus ist.
   </p>
 
   <form
@@ -140,8 +141,8 @@ function renderMemberSiteContentAdminShell() {
     <label class="member-verwaltung-checkbox-row">
       <input
         type="checkbox"
-        id="site-saison-enabled">
-      <span>Saisonmodus aktiv</span>
+        id="site-saison-banner-active">
+      <span>Banner aktiv</span>
     </label>
 
     <label
@@ -158,6 +159,13 @@ function renderMemberSiteContentAdminShell() {
         maxlength="500"
         placeholder="Kurzer Hinweis in der Leiste unter dem Header"></textarea>
 
+    </label>
+
+    <label class="member-verwaltung-checkbox-row">
+      <input
+        type="checkbox"
+        id="site-saison-overlay-active">
+      <span>Overlay aktiv</span>
     </label>
 
     <label

@@ -179,7 +179,7 @@ Key-Value (JSONB). Vorstand schreibt per Client (RLS).
 |-----|--------|
 | `last_push` | Tröte — `{ title, body, url, sent_at }` |
 | `site_banner` | Globale Hinweisleiste — `{ active, text, url?, style, starts_at?, ends_at?, updated_at }` |
-| `saison_mode` | Saison aktiv / pause — `{ mode, message, starts_at?, ends_at?, updated_at }` |
+| `saison_mode` | Saison-Hinweise — `{ banner_active, overlay_active, banner_text, overlay_text, updated_at }` (Legacy: `enabled`, `mode`, `message`) |
 | `landing_hints` | Startseiten-Hinweise — `{ items: [{ text, url?, active }], updated_at }` |
 | `site_overlay` | Modal für alle — `{ active, title, text, dismissible, starts_at?, ends_at?, updated_at }` |
 

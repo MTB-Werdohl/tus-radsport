@@ -30,29 +30,6 @@ function setMemberTerminEditId(
 
 }
 
-function getMemberTerminEditorUrl(
-  options = {}
-) {
-
-  const params =
-    new URLSearchParams();
-
-  if (options.id) {
-    params.set(
-      'id',
-      String(options.id)
-    );
-  }
-
-  const query =
-    params.toString();
-
-  return query
-    ? `/termin-bearbeiten/?${query}`
-    : '/termin-bearbeiten/';
-
-}
-
 function isMemberTerminEditorPage() {
 
   return document.body

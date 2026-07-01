@@ -22,6 +22,7 @@ member_intern_editor: true
 <script src="/assets/js/core/visibility.js"></script>
 <script src="/assets/js/core/content-creator.js"></script>
 <script src="/assets/js/core/media-url.js"></script>
+<script src="/assets/js/intern/member-intern-editor-nav.js"></script>
 <script src="/assets/js/admin/media-storage-lib.js"></script>
 <script src="/assets/js/admin/media-picker.js"></script>
 <script src="/assets/js/member/member-edit-utils.js"></script>

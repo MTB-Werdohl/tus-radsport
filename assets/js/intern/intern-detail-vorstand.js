@@ -30,35 +30,11 @@ function renderInternVorstandActionsHtml(
 
 }
 
-function getMemberInternEditorUrl(
-  options = {}
-) {
-
-  const params =
-    new URLSearchParams();
-
-  if (options.id) {
-    params.set(
-      'id',
-      String(options.id)
-    );
-  }
-
-  const query =
-    params.toString();
-
-  return query
-    ? `/intern-bearbeiten/?${query}`
-    : '/intern-bearbeiten/';
-
-}
-
 function openMemberInternEditor(
   options = {}
 ) {
 
-  window.location.href =
-    getMemberInternEditorUrl(options);
+  openMemberInternEditorPopup(options);
 
 }
 

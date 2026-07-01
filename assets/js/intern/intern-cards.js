@@ -199,7 +199,7 @@ function renderInternNewNewsButton(
   button.addEventListener(
     'click',
     () => {
-      openMemberInternEditor();
+      openMemberInternEditorPopup();
     }
   );
 

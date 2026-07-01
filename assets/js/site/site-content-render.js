@@ -74,19 +74,27 @@ function applySaisonMode(
 
   renderSaisonOverlay(null);
 
-  if (
-    !saison
-    || saison.enabled !== true
-  ) {
+  if (!saison) {
     return;
   }
 
-  document.body.classList.add(
-    'site-saison-pause'
-  );
+  const bannerActive =
+    saison.banner_active === true;
+
+  const overlayActive =
+    saison.overlay_active === true;
+
+  if (overlayActive) {
+
+    document.body.classList.add(
+      'site-saison-pause'
+    );
+
+  }
 
   if (
-    saison.banner_text
+    bannerActive
+    && saison.banner_text
     && saisonBannerTarget
   ) {
 
@@ -104,7 +112,9 @@ function applySaisonMode(
 
   }
 
-  renderSaisonOverlay(saison);
+  if (overlayActive) {
+    renderSaisonOverlay(saison);
+  }
 
 }
 
@@ -123,7 +133,7 @@ function renderSaisonOverlay(
 
   if (
     !saison
-    || saison.enabled !== true
+    || saison.overlay_active !== true
     || !saison.overlay_text
   ) {
     return;

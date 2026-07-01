@@ -98,6 +98,11 @@ async function loadEvent() {
     eventUrl
   );
 
+  window.reloadAfterVorstandContentSave =
+    () => {
+      void loadEvent();
+    };
+
 }
 
 document.addEventListener(

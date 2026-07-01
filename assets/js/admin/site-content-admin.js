@@ -297,13 +297,47 @@ async function loadSaisonForm() {
   const saison =
     await getSaisonModeState();
 
-  const enabledInput =
+  const bannerActiveInput =
+    document.getElementById(
+      'site-saison-banner-active'
+    );
+
+  const overlayActiveInput =
+    document.getElementById(
+      'site-saison-overlay-active'
+    );
+
+  if (
+    bannerActiveInput
+    && overlayActiveInput
+  ) {
+
+    bannerActiveInput.checked =
+      saison?.banner_active === true;
+
+    overlayActiveInput.checked =
+      saison?.overlay_active === true;
+
+    document
+      .getElementById('site-saison-banner-text')
+      .value = saison?.banner_text || '';
+
+    document
+      .getElementById('site-saison-overlay-text')
+      .value = saison?.overlay_text || '';
+
+    return;
+
+  }
+
+  const legacyEnabledInput =
     document.getElementById('site-saison-enabled');
 
-  if (enabledInput) {
+  if (legacyEnabledInput) {
 
-    enabledInput.checked =
-      saison?.enabled === true;
+    legacyEnabledInput.checked =
+      saison?.banner_active === true
+      && saison?.overlay_active === true;
 
     document
       .getElementById('site-saison-banner-text')
@@ -319,7 +353,11 @@ async function loadSaisonForm() {
 
   document
     .getElementById('site-saison-mode')
-    .value = saison?.enabled ? 'pause' : 'active';
+    .value =
+      saison?.banner_active
+      || saison?.overlay_active
+        ? 'pause'
+        : 'active';
 
   document
     .getElementById('site-saison-message')
@@ -470,17 +508,31 @@ function bindSaisonForm() {
           'Speichern …'
         );
 
-        const enabledInput =
+        const bannerActiveInput =
+          document.getElementById(
+            'site-saison-banner-active'
+          );
+
+        const overlayActiveInput =
+          document.getElementById(
+            'site-saison-overlay-active'
+          );
+
+        const legacyEnabledInput =
           document.getElementById(
             'site-saison-enabled'
           );
 
         const ok =
-          enabledInput
+          bannerActiveInput
+          && overlayActiveInput
             ? await saveSaisonModeState({
 
-              enabled:
-                enabledInput.checked,
+              banner_active:
+                bannerActiveInput.checked,
+
+              overlay_active:
+                overlayActiveInput.checked,
 
               banner_text:
                 document
@@ -499,9 +551,40 @@ function bindSaisonForm() {
                   .trim()
 
             })
+            : legacyEnabledInput
+              ? await saveSaisonModeState({
+
+                banner_active:
+                  legacyEnabledInput.checked,
+
+                overlay_active:
+                  legacyEnabledInput.checked,
+
+                banner_text:
+                  document
+                    .getElementById(
+                      'site-saison-banner-text'
+                    )
+                    .value
+                    .trim(),
+
+                overlay_text:
+                  document
+                    .getElementById(
+                      'site-saison-overlay-text'
+                    )
+                    .value
+                    .trim()
+
+              })
             : await saveSaisonModeState({
 
-              enabled:
+              banner_active:
+                document
+                  .getElementById('site-saison-mode')
+                  .value === 'pause',
+
+              overlay_active:
                 document
                   .getElementById('site-saison-mode')
                   .value === 'pause',

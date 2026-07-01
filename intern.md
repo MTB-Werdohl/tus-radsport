@@ -22,6 +22,7 @@ description: "Interne News und Informationen für Vereinsmitglieder der Radsport
 <script src="/assets/js/core/content-creator.js"></script>
 <script src="/assets/js/core/media-url.js"></script>
 <script src="/assets/js/member/member-edit-utils.js"></script>
+<script src="/assets/js/intern/member-intern-editor-nav.js?v={{ site.vorstand_js_version }}"></script>
 <script src="/assets/js/intern/intern-detail-vorstand.js"></script>
 <script src="/assets/js/intern/news-loader.js"></script>
 <script src="/assets/js/intern/intern-cards.js"></script>
