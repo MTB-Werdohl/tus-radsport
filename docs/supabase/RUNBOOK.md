@@ -38,6 +38,7 @@ Skripte der Reihe nach ausführen. Jedes Skript ist idempotent (`drop … if exi
 | # | Datei | Inhalt |
 |---|--------|--------|
 | 20 | [`supabase-feedback.sql`](supabase-feedback.sql) | `feedback_modules`, `feedback_answers` |
+| 20a | [`supabase-feedback-entity-news.sql`](supabase-feedback-entity-news.sql) | `entity_type 'news'` für Internes-Polls (Constraint-Patch) |
 | 21 | [`supabase-feedback-answers-delete-own.sql`](supabase-feedback-answers-delete-own.sql) | Eigene Antwort löschen |
 | 22 | [`supabase-feedback-public-voting.sql`](supabase-feedback-public-voting.sql) | Spalte `public_voting` |
 | 23 | [`supabase-feedback-cascade-delete.sql`](supabase-feedback-cascade-delete.sql) | Trigger: Modul mit Termin/News löschen |

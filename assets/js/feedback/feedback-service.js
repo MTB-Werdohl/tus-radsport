@@ -315,6 +315,35 @@ async function fetchPublicFeedbackAnswerByEmail(
 
 async function saveFeedbackModule(payload) {
 
+  const allowedEntityTypes =
+    [
+      window.siteConfig.feedback.entityTypes.event,
+      window.siteConfig.feedback.entityTypes.news
+    ].filter(Boolean);
+
+  if (
+    !payload?.entity_type
+    || !allowedEntityTypes.includes(
+      payload.entity_type
+    )
+  ) {
+
+    const message =
+      'Ungültiger Feedback-Typ. Bitte Seite neu laden. '
+      + 'Bei Internes-Polls ggf. '
+      + 'supabase-feedback-entity-news.sql in Supabase ausführen.';
+
+    console.error(
+      'saveFeedbackModule: ungültiger entity_type',
+      payload?.entity_type
+    );
+
+    return {
+      error: { message }
+    };
+
+  }
+
   const { data, error } =
     await window.supabaseClient
       .from(
@@ -330,6 +359,25 @@ async function saveFeedbackModule(payload) {
   if (error) {
 
     console.error(error);
+
+    if (
+      String(error.message || '')
+        .includes(
+          'feedback_modules_entity_type_check'
+        )
+    ) {
+
+      return {
+        error: {
+          message:
+            'Datenbank-Migration fehlt: Bitte '
+            + 'docs/supabase/supabase-feedback-entity-news.sql '
+            + 'im Supabase SQL Editor ausführen '
+            + '(entity_type „news“ für Internes-Polls).'
+        }
+      };
+
+    }
 
     return { error };
 

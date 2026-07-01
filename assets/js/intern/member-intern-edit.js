@@ -4,6 +4,7 @@ const memberInternEditParams =
   );
 
 let memberInternEditIdOverride = null;
+let memberInternSaveInProgress = false;
 
 function getMemberInternEditId() {
 
@@ -173,6 +174,41 @@ function memberInternResetForm() {
     );
 
   }
+
+}
+
+function syncMemberInternEditUrlId(
+  id
+) {
+
+  if (!id) {
+    return;
+  }
+
+  setMemberInternEditId(id);
+
+  if (
+    !isMemberInternEditorPage()
+    || isMemberInternPopupWindow()
+  ) {
+    return;
+  }
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  params.set(
+    'id',
+    String(id)
+  );
+
+  window.history.replaceState(
+    null,
+    '',
+    `/intern-bearbeiten/?${params.toString()}`
+  );
 
 }
 
@@ -478,9 +514,24 @@ async function saveMemberInternEdit(
   member
 ) {
 
+  if (memberInternSaveInProgress) {
+    return;
+  }
+
   if (!validateMemberInternRequiredFields()) {
     return;
   }
+
+  const saveButton =
+    document.getElementById('intern-save');
+
+  memberInternSaveInProgress = true;
+
+  if (saveButton) {
+    saveButton.disabled = true;
+  }
+
+  try {
 
   const editId =
     getMemberInternEditId();
@@ -580,6 +631,8 @@ async function saveMemberInternEdit(
 
   }
 
+  syncMemberInternEditUrlId(savedId);
+
   if (
     typeof saveFeedbackAdminForEntity
       === 'function'
@@ -595,8 +648,13 @@ async function saveMemberInternEdit(
     if (feedbackResult?.error) {
 
       alert(
-        feedbackResult.error.message
-        || 'Umfrage konnte nicht gespeichert werden.'
+        'Beitrag wurde gespeichert, aber die Umfrage '
+        + 'konnte nicht gespeichert werden:\n\n'
+        + (
+          feedbackResult.error.message
+          || 'Unbekannter Fehler'
+        )
+        + '\n\nBitte Poll-Einstellungen prüfen und erneut speichern.'
       );
 
       return;
@@ -635,6 +693,16 @@ async function saveMemberInternEdit(
     id: savedId,
     slug
   });
+
+  } finally {
+
+    memberInternSaveInProgress = false;
+
+    if (saveButton) {
+      saveButton.disabled = false;
+    }
+
+  }
 
 }
 
