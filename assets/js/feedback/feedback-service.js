@@ -51,6 +51,74 @@ async function fetchFeedbackModule(
 
 }
 
+async function fetchFeedbackModuleForNews(
+  newsItem
+) {
+
+  const entityType =
+    window.siteConfig.feedback.entityTypes.news;
+
+  if (!newsItem?.id) {
+    return null;
+  }
+
+  let module =
+    await fetchFeedbackModule(
+      entityType,
+      newsItem.id
+    );
+
+  if (module || !newsItem.slug) {
+    return module;
+  }
+
+  const { data, error } =
+    await window.supabaseClient
+      .from(window.siteConfig.tables.news)
+      .select('id')
+      .eq('slug', newsItem.slug);
+
+  if (error) {
+
+    console.error(error);
+
+    return null;
+
+  }
+
+  for (const row of (data || [])) {
+
+    const rowId =
+      normalizeFeedbackEntityId(
+        row.id
+      );
+
+    if (
+      rowId == null
+      || rowId
+      === normalizeFeedbackEntityId(
+        newsItem.id
+      )
+    ) {
+      continue;
+    }
+
+    module =
+      await fetchFeedbackModule(
+        entityType,
+        rowId
+      );
+
+    if (module) {
+      return module;
+    }
+
+  }
+
+  return null;
+
+}
+
 async function fetchOwnFeedbackAnswer(
   moduleId,
   memberId

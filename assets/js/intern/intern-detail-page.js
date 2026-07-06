@@ -119,6 +119,7 @@ async function loadInternNewsDetail() {
         entityType:
           window.siteConfig.feedback.entityTypes.news,
         entityId: item.id,
+        entityNewsItem: item,
         entityVisibility:
           item.sichtbarkeit,
         container: 'intern-feedback',

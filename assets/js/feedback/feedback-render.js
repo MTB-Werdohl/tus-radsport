@@ -740,6 +740,8 @@ function shouldShowFeedbackPollResults(
   if (
     resolveFeedbackModuleType(module)
     !== window.siteConfig.feedback.types.poll
+    && module?.entity_type
+      !== window.siteConfig.feedback.entityTypes.news
   ) {
     return false;
   }
@@ -1308,6 +1310,19 @@ ${escapeFeedbackHtml(module.question)}
 
 }
 
+function renderNewsPollInactiveHint() {
+
+  return `
+<p class="feedback-hint">
+  Die Umfrage ist deaktiviert.
+  Zum Aktivieren im Editor
+  <strong>„Poll aktiv“</strong>
+  ankreuzen und speichern.
+</p>
+`;
+
+}
+
 function renderFeedbackModule(
   container,
   module,
@@ -1321,13 +1336,35 @@ function renderFeedbackModule(
     return;
   }
 
+  const isNewsFeedback =
+    module?.entity_type
+    === window.siteConfig.feedback.entityTypes.news;
+
+  let activeModule =
+    module;
+
   if (
-    !shouldShowFeedbackToViewer(
-      module,
+    isNewsFeedback
+    && resolveFeedbackModuleType(module)
+    !== window.siteConfig.feedback.types.poll
+  ) {
+
+    activeModule = {
+      ...module,
+      type:
+        window.siteConfig.feedback.types.poll
+    };
+
+  }
+
+  if (
+    !isNewsFeedback
+    && !shouldShowFeedbackToViewer(
+      activeModule,
       member
     )
     && !shouldShowFeedbackPollResults(
-      module,
+      activeModule,
       member,
       entityVisibility,
       { allowDisabled: true }
@@ -1340,21 +1377,21 @@ function renderFeedbackModule(
   ensurePublicFeedbackModal();
 
   const canVote =
-    shouldShowFeedbackPollVoting(module)
+    shouldShowFeedbackPollVoting(activeModule)
     && canVoteOnFeedbackModule(
-      module,
+      activeModule,
       member
     );
 
   const showPublicGate =
     shouldShowPublicGate(
-      module,
+      activeModule,
       member,
       entityVisibility
     );
 
   const type =
-    resolveFeedbackModuleType(module);
+    resolveFeedbackModuleType(activeModule);
 
   const commitmentEnabled =
     isFeedbackEventCommitmentEnabled(
@@ -1372,7 +1409,7 @@ function renderFeedbackModule(
     type
     === window.siteConfig.feedback.types.poll
       ? normalizeFeedbackPollConfig(
-        module.config
+        activeModule.config
       )
       : null;
 
@@ -1413,7 +1450,7 @@ function renderFeedbackModule(
 
       body =
         renderFeedbackPoll(
-          module,
+          activeModule,
           ownAnswer
         );
 
@@ -1427,7 +1464,7 @@ function renderFeedbackModule(
 
 <h2 class="feedback-question">
 
-${escapeFeedbackHtml(module.question)}
+${escapeFeedbackHtml(activeModule.question)}
 
 </h2>
 
@@ -1439,7 +1476,12 @@ ${
     : (
       showPublicGate
         ? renderFeedbackPublicGate()
-        : renderFeedbackMembersOnlyHint()
+        : (
+          isNewsFeedback
+          && activeModule.enabled === false
+            ? renderNewsPollInactiveHint()
+            : renderFeedbackMembersOnlyHint()
+        )
     )
 }
 
@@ -1452,7 +1494,7 @@ ${
   if (canVote) {
     bindFeedbackModuleEvents(
       container,
-      module,
+      activeModule,
       member,
       entityVisibility,
       entityRecurring,
@@ -1464,7 +1506,7 @@ ${
 
   void refreshFeedbackPollResults(
     container,
-    module,
+    activeModule,
     member,
     entityVisibility
   );

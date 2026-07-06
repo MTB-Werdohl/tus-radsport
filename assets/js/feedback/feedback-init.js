@@ -18,7 +18,7 @@ async function initFeedbackModule(options) {
 
   if (
     !entityType
-    || !entityId
+    || entityId == null
     || !container
   ) {
     return;
@@ -28,6 +28,8 @@ async function initFeedbackModule(options) {
     {
       entityType,
       entityId,
+      entityNewsItem:
+        options?.entityNewsItem ?? null,
       entityVisibility:
         options?.entityVisibility ?? null,
       member:
@@ -38,15 +40,104 @@ async function initFeedbackModule(options) {
           : container.id
     };
 
+  const isNewsEntity =
+    entityType
+    === window.siteConfig.feedback.entityTypes.news;
+
   let module =
-    await fetchFeedbackModule(
-      entityType,
-      entityId
-    );
+    isNewsEntity
+    && options?.entityNewsItem
+    && typeof fetchFeedbackModuleForNews
+      === 'function'
+      ? await fetchFeedbackModuleForNews(
+        options.entityNewsItem
+      )
+      : await fetchFeedbackModule(
+        entityType,
+        entityId
+      );
 
   if (!module) {
     container.innerHTML = '';
     return;
+  }
+
+  if (isNewsEntity) {
+
+    let member =
+      options?.member ?? null;
+
+    if (
+      !member
+      && typeof getCurrentMember === 'function'
+    ) {
+      member = getCurrentMember();
+    }
+
+    if (
+      !member
+      && typeof waitForAuthSession === 'function'
+    ) {
+
+      const session =
+        await waitForAuthSession();
+
+      if (
+        session
+        && typeof validateMemberSession === 'function'
+      ) {
+
+        member =
+          await validateMemberSession(
+            session,
+            { strict: false }
+          );
+
+      }
+
+    }
+
+    const viewerMember =
+      typeof getViewerMember === 'function'
+        ? getViewerMember(member)
+        : member;
+
+    if (
+      resolveFeedbackModuleType(module)
+      !== window.siteConfig.feedback.types.poll
+    ) {
+
+      module = {
+        ...module,
+        type:
+          window.siteConfig.feedback.types.poll
+      };
+
+    }
+
+    let ownAnswer = null;
+
+    if (viewerMember?.id) {
+
+      ownAnswer =
+        await fetchOwnFeedbackAnswer(
+          module.id,
+          viewerMember.id
+        );
+
+    }
+
+    renderFeedbackModule(
+      container,
+      module,
+      ownAnswer,
+      viewerMember,
+      options?.entityVisibility ?? null,
+      false
+    );
+
+    return;
+
   }
 
   const answerCount =
@@ -59,14 +150,9 @@ async function initFeedbackModule(options) {
   const pollActive =
     module.enabled !== false;
 
-  const isNewsPoll =
-    entityType
-    === window.siteConfig.feedback.entityTypes.news;
-
   if (
     !pollActive
     && answerCount === 0
-    && !isNewsPoll
   ) {
     container.innerHTML = '';
     return;
@@ -113,7 +199,6 @@ async function initFeedbackModule(options) {
   if (
     !pollActive
     && answerCount > 0
-    && !isNewsPoll
   ) {
 
     await renderFeedbackPollResultsOnly(
@@ -175,53 +260,13 @@ async function initFeedbackModule(options) {
   }
 
   if (
-    isNewsPoll
-    && !pollActive
-    && answerCount === 0
-  ) {
-
-    await renderFeedbackPollResultsOnly(
-      container,
-      module,
-      viewerMember,
-      options?.entityVisibility ?? null
-    );
-
-    return;
-
-  }
-
-  if (
-    entityType
-    !== window.siteConfig.feedback.entityTypes.news
-    && !shouldShowFeedbackToViewer(
+    !shouldShowFeedbackToViewer(
       module,
       viewerMember
     )
   ) {
     container.innerHTML = '';
     return;
-  }
-
-  const moduleType =
-    typeof resolveFeedbackModuleType === 'function'
-      ? resolveFeedbackModuleType(module)
-      : module.type;
-
-  if (
-    entityType
-    === window.siteConfig.feedback.entityTypes.news
-    && moduleType
-    !== window.siteConfig.feedback.types.poll
-    && pollActive
-  ) {
-
-    module = {
-      ...module,
-      type:
-        window.siteConfig.feedback.types.poll
-    };
-
   }
 
   let ownAnswer = null;
