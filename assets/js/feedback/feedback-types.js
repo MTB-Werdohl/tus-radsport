@@ -98,13 +98,6 @@ function normalizeFeedbackPollConfig(config) {
       .trim()
     || 'Freitext';
 
-  const defaultNewsFreeTextLabel =
-    normalizedConfig.freeTextLabel
-    && normalizedConfig.freeTextLabel
-      !== 'Freitext'
-      ? normalizedConfig.freeTextLabel
-      : 'Sonstiges / Anderes';
-
   return {
     options,
     multiple: source?.multiple === true,
@@ -446,6 +439,13 @@ function prepareNewsFeedbackModule(
     normalizeFeedbackPollConfig(
       module.config
     );
+
+  const defaultNewsFreeTextLabel =
+    normalizedConfig.freeTextLabel
+    && normalizedConfig.freeTextLabel
+      !== 'Freitext'
+      ? normalizedConfig.freeTextLabel
+      : 'Sonstiges / Anderes';
 
   return {
     ...module,
