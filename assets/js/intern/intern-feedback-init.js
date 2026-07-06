@@ -151,9 +151,9 @@ function renderInternNewsFeedbackModule(
 
   container.innerHTML = `
 
-<section class="feedback-module feedback-module--intern-news">
-
 ${creatorMeta}
+
+<section class="feedback-module feedback-module--intern-news">
 
 <h2 class="feedback-question">
 

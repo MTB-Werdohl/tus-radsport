@@ -278,11 +278,22 @@ function renderFeedbackPoll(
 `
             : '';
 
+        const labelText =
+          String(option.label || '')
+            .trim();
+
+        const isLongLabel =
+          labelText.length > 15;
+
         return `
 <div
   class="feedback-poll-option-row${
     isFreeText
       ? ' feedback-poll-option-row--freetext'
+      : ''
+  }${
+    isLongLabel
+      ? ' feedback-poll-option-row--long-label'
       : ''
   }"
   data-feedback-option-id="${escapeFeedbackHtml(option.id)}">
@@ -298,7 +309,7 @@ function renderFeedbackPoll(
   ${isFreeText ? 'data-feedback-freetext-option' : ''}
 >
 
-<span>${escapeFeedbackHtml(option.label)}</span>
+<span>${escapeFeedbackHtml(labelText)}</span>
 
 </label>
 
