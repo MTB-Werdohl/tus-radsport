@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
 
@@ -31,6 +31,11 @@ jobs:
           ruby-version: '3.1'
           bundler-cache: true
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
       - name: Install Gems
         run: bundle install
 
@@ -39,6 +44,10 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SITE_URL: https://www.mtb-werdohl.de
+
+      - name: Ensure static url folders exist
+        run: mkdir -p kalender intern
 
       - name: Build Jekyll
         run: bundle exec jekyll build
