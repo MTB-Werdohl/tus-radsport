@@ -59,9 +59,14 @@ async function initFeedbackModule(options) {
   const pollActive =
     module.enabled !== false;
 
+  const isNewsPoll =
+    entityType
+    === window.siteConfig.feedback.entityTypes.news;
+
   if (
     !pollActive
     && answerCount === 0
+    && !isNewsPoll
   ) {
     container.innerHTML = '';
     return;
@@ -108,6 +113,7 @@ async function initFeedbackModule(options) {
   if (
     !pollActive
     && answerCount > 0
+    && !isNewsPoll
   ) {
 
     await renderFeedbackPollResultsOnly(
@@ -163,6 +169,23 @@ async function initFeedbackModule(options) {
   ${message}
 </p>
     `.trim();
+
+    return;
+
+  }
+
+  if (
+    isNewsPoll
+    && !pollActive
+    && answerCount === 0
+  ) {
+
+    await renderFeedbackPollResultsOnly(
+      container,
+      module,
+      viewerMember,
+      options?.entityVisibility ?? null
+    );
 
     return;
 

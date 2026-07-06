@@ -113,15 +113,23 @@ async function loadInternNewsDetail() {
     typeof initFeedbackModule === 'function'
   ) {
 
-    await initFeedbackModule({
-      entityType:
-        window.siteConfig.feedback.entityTypes.news,
-      entityId: item.id,
-      entityVisibility:
-        item.sichtbarkeit,
-      container: 'intern-feedback',
-      member
-    });
+    try {
+
+      await initFeedbackModule({
+        entityType:
+          window.siteConfig.feedback.entityTypes.news,
+        entityId: item.id,
+        entityVisibility:
+          item.sichtbarkeit,
+        container: 'intern-feedback',
+        member
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
 
   }
 
@@ -145,13 +153,9 @@ async function loadInternNewsDetail() {
     };
 
   const detailUrl =
-    typeof getInternNewsShareUrl === 'function'
-      ? getInternNewsShareUrl(item.slug)
-      : (
-        typeof getInternNewsUrl === 'function'
-          ? getInternNewsUrl(item.slug)
-          : `/intern-detail.html?slug=${encodeURIComponent(item.slug)}`
-      );
+    typeof getInternNewsUrl === 'function'
+      ? getInternNewsUrl(item.slug)
+      : `/intern/${encodeURIComponent(item.slug)}/`;
 
   window.history.replaceState(
     {},
