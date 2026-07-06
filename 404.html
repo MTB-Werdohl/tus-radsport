@@ -36,6 +36,26 @@ layout: null
 
       }
 
+      const internMatch =
+        path.match(
+          /^\/intern\/([^/]+)$/
+        );
+
+      if (internMatch) {
+
+        window.location.replace(
+          '/intern-detail.html?slug='
+          + encodeURIComponent(
+            decodeURIComponent(
+              internMatch[1]
+            )
+          )
+        );
+
+        return;
+
+      }
+
       window.location.replace('/');
 
     })();

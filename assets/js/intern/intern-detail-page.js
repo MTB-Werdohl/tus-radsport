@@ -145,9 +145,13 @@ async function loadInternNewsDetail() {
     };
 
   const detailUrl =
-    typeof getInternNewsUrl === 'function'
-      ? getInternNewsUrl(item.slug)
-      : `/intern/${encodeURIComponent(item.slug)}/`;
+    typeof getInternNewsShareUrl === 'function'
+      ? getInternNewsShareUrl(item.slug)
+      : (
+        typeof getInternNewsUrl === 'function'
+          ? getInternNewsUrl(item.slug)
+          : `/intern-detail.html?slug=${encodeURIComponent(item.slug)}`
+      );
 
   window.history.replaceState(
     {},

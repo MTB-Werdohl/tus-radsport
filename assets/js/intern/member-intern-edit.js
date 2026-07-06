@@ -281,10 +281,17 @@ function finishMemberInternEditorSave(
 
     window.setTimeout(() => {
 
-      window.location.href =
-        typeof getInternUrl === 'function'
-          ? getInternUrl()
-          : '/intern/';
+      const target =
+        savedMeta?.slug
+        && typeof getInternNewsUrl === 'function'
+          ? getInternNewsUrl(savedMeta.slug)
+          : (
+            typeof getInternUrl === 'function'
+              ? getInternUrl()
+              : '/intern/'
+          );
+
+      window.location.href = target;
 
     }, 700);
 
@@ -646,6 +653,13 @@ async function saveMemberInternEdit(
       );
 
     if (feedbackResult?.error) {
+
+      if (
+        typeof invalidateInternNewsCache
+          === 'function'
+      ) {
+        invalidateInternNewsCache();
+      }
 
       alert(
         'Beitrag wurde gespeichert, aber die Umfrage '

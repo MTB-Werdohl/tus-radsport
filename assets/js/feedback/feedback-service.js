@@ -7,7 +7,7 @@ function normalizeFeedbackEntityId(
     || entityId === undefined
     || entityId === ''
   ) {
-    return entityId;
+    return null;
   }
 
   const parsed =
@@ -17,7 +17,7 @@ function normalizeFeedbackEntityId(
     return parsed;
   }
 
-  return entityId;
+  return null;
 
 }
 
@@ -756,19 +756,6 @@ function getFeedbackEntityRecordFromMap(
   }
 
   return entityMap.get(key) || null;
-
-}
-
-function normalizeFeedbackEntityId(entityId) {
-
-  const value =
-    parseInt(entityId, 10);
-
-  if (!Number.isFinite(value)) {
-    return null;
-  }
-
-  return value;
 
 }
 
