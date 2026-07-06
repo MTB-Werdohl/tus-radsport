@@ -193,6 +193,8 @@ event.content || ''
   wrapper.dataset.eventTitle =
     event.title || '';
 
+  delete wrapper.dataset.kalenderVorstandBound;
+
   buildShareButton(
     'share',
     event.title

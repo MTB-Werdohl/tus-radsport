@@ -90,6 +90,16 @@ async function loadEvent() {
   );
 
   if (
+    typeof ensureEventDetailVorstandToolbar
+      === 'function'
+  ) {
+
+    ensureEventDetailVorstandToolbar(
+      event,
+      member
+    );
+
+  } else if (
     isVorstandUser
     && typeof initEventDetailVorstand
       === 'function'

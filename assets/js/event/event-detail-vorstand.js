@@ -436,10 +436,51 @@ function renderEventVorstandToolbar(
     document.getElementById('event');
 
   if (eventRoot) {
+
+    delete eventRoot.dataset.kalenderVorstandBound;
+
     bindKalenderVorstandActions(
       eventRoot
     );
+
   }
+
+}
+
+function ensureEventDetailVorstandToolbar(
+  eventData,
+  member
+) {
+
+  if (
+    !eventData?.id
+    || typeof initEventDetailVorstand
+      !== 'function'
+  ) {
+    return;
+  }
+
+  const resolvedMember =
+    member
+    ?? (
+      typeof getCurrentMember === 'function'
+        ? getCurrentMember()
+        : null
+    );
+
+  if (
+    typeof canShowEventVorstandTools === 'function'
+    && !canShowEventVorstandTools(
+      resolvedMember
+    )
+  ) {
+    return;
+  }
+
+  initEventDetailVorstand(
+    eventData,
+    resolvedMember
+  );
 
 }
 
@@ -558,16 +599,7 @@ window.addEventListener(
       return;
     }
 
-    const member =
-      typeof getCurrentMember === 'function'
-        ? getCurrentMember()
-        : null;
-
-    if (!canShowEventVorstandTools(member)) {
-      return;
-    }
-
-    initEventDetailVorstand(
+    ensureEventDetailVorstandToolbar(
       {
         id:
           parseInt(
@@ -578,7 +610,9 @@ window.addEventListener(
           eventRoot.dataset.eventTitle
           || ''
       },
-      member
+      typeof getCurrentMember === 'function'
+        ? getCurrentMember()
+        : null
     );
 
   }
