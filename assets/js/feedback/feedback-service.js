@@ -438,13 +438,18 @@ async function saveFeedbackModule(payload) {
 
   }
 
+  const upsertPayload =
+    { ...payload };
+
+  delete upsertPayload.id;
+
   const { data, error } =
     await window.supabaseClient
       .from(
         window.siteConfig.tables.feedbackModules
       )
       .upsert(
-        payload,
+        upsertPayload,
         { onConflict: 'entity_type,entity_id' }
       )
       .select('*')

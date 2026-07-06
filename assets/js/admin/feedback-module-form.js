@@ -1309,11 +1309,6 @@ async function saveFeedbackAdminForEntity(
       enabled: false
     };
 
-    if (feedbackAdminState.module?.id) {
-      payload.id =
-        feedbackAdminState.module.id;
-    }
-
     const result =
       await saveFeedbackModule(payload);
 
@@ -1445,11 +1440,6 @@ async function saveFeedbackAdminForEntity(
     public_voting: publicVoting,
     enabled
   };
-
-  if (feedbackAdminState.module?.id) {
-    payload.id =
-      feedbackAdminState.module.id;
-  }
 
   const result =
     await saveFeedbackModule(payload);

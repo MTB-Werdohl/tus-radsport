@@ -20,7 +20,7 @@ include:
   - kalender
   - intern
 
-vorstand_js_version: "20260706"
+vorstand_js_version: "20260706b"
 
 contact:
   name: "Tobias Withalm"
