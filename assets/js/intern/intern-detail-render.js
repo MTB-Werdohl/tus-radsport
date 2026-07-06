@@ -170,6 +170,9 @@ item.content || ''
   wrapper.dataset.newsTitle =
     item.title || '';
 
+  wrapper.dataset.newsSlug =
+    item.slug || '';
+
   if (
     typeof buildShareButton === 'function'
   ) {

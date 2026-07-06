@@ -208,8 +208,12 @@ ${
 
 function renderFeedbackPoll(
   module,
-  ownAnswer
+  ownAnswer,
+  options = {}
 ) {
+
+  const readOnly =
+    options.readOnly === true;
 
   const config =
     normalizeFeedbackPollConfig(
@@ -290,6 +294,7 @@ function renderFeedbackPoll(
   name="${inputName}"
   value="${escapeFeedbackHtml(option.id)}"
   ${isSelected ? 'checked' : ''}
+  ${readOnly ? 'disabled' : ''}
   ${isFreeText ? 'data-feedback-freetext-option' : ''}
 >
 
@@ -331,12 +336,18 @@ ${freeTextInput}
       .join('');
 
   return `
-<div class="feedback-poll">
+<div class="feedback-poll${
+  readOnly ? ' feedback-poll--readonly' : ''
+}">
 
 ${optionsHtml}
 
 </div>
 
+${
+  readOnly
+    ? ''
+    : `
 <button
   type="button"
   class="feedback-poll-save">
@@ -344,6 +355,8 @@ ${optionsHtml}
 Speichern
 
 </button>
+`
+}
 `;
 
 }
@@ -1413,6 +1426,14 @@ function renderFeedbackModule(
       )
       : null;
 
+  const showNewsPollPreview =
+    isNewsFeedback
+    && type
+      === window.siteConfig.feedback.types.poll
+    && activeModule.enabled === false
+    && typeof isClubMember === 'function'
+    && isClubMember(member);
+
   const multipleHint =
     canVote
     && pollConfig?.multiple
@@ -1479,7 +1500,18 @@ ${
         : (
           isNewsFeedback
           && activeModule.enabled === false
-            ? renderNewsPollInactiveHint()
+            ? (
+              renderNewsPollInactiveHint()
+              + (
+                showNewsPollPreview
+                  ? renderFeedbackPoll(
+                    activeModule,
+                    ownAnswer,
+                    { readOnly: true }
+                  )
+                  : ''
+              )
+            )
             : renderFeedbackMembersOnlyHint()
         )
     )

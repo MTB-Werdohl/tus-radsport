@@ -328,14 +328,22 @@ async function openInternFeedbackResultsModal(
 
 async function openInternFeedbackResultsForNews(
   newsId,
-  title
+  title,
+  newsSlug
 ) {
 
+  const newsItem = {
+    id: newsId,
+    slug: newsSlug || ''
+  };
+
   const feedbackModule =
-    await fetchFeedbackModule(
-      window.siteConfig.feedback.entityTypes.news,
-      newsId
-    );
+    typeof fetchFeedbackModuleForNews === 'function'
+      ? await fetchFeedbackModuleForNews(newsItem)
+      : await fetchFeedbackModule(
+        window.siteConfig.feedback.entityTypes.news,
+        newsId
+      );
 
   if (!feedbackModule?.id) {
 
@@ -496,9 +504,16 @@ function bindInternVorstandActions(
 
         if (newsId) {
 
+          const detailRoot =
+            document.getElementById(
+              'intern-detail'
+            );
+
           void openInternFeedbackResultsForNews(
             newsId,
             resultsButton.dataset.newsTitle
+              || '',
+            detailRoot?.dataset?.newsSlug
               || ''
           );
 

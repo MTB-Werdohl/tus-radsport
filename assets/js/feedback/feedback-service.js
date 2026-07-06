@@ -58,64 +58,98 @@ async function fetchFeedbackModuleForNews(
   const entityType =
     window.siteConfig.feedback.entityTypes.news;
 
-  if (!newsItem?.id) {
+  const tables =
+    window.siteConfig.tables;
+
+  if (
+    !newsItem?.id
+    && !newsItem?.slug
+  ) {
     return null;
   }
 
-  let module =
-    await fetchFeedbackModule(
-      entityType,
+  const entityIds =
+    new Set();
+
+  const primaryId =
+    normalizeFeedbackEntityId(
       newsItem.id
     );
 
-  if (module || !newsItem.slug) {
-    return module;
+  if (primaryId != null) {
+    entityIds.add(primaryId);
   }
 
-  const { data, error } =
+  if (newsItem.slug) {
+
+    const { data, error } =
+      await window.supabaseClient
+        .from(tables.news)
+        .select('id')
+        .eq('slug', newsItem.slug);
+
+    if (error) {
+
+      console.error(error);
+
+    } else {
+
+      for (const row of (data || [])) {
+
+        const rowId =
+          normalizeFeedbackEntityId(
+            row.id
+          );
+
+        if (rowId != null) {
+          entityIds.add(rowId);
+        }
+
+      }
+
+    }
+
+  }
+
+  if (!entityIds.size) {
+    return null;
+  }
+
+  const idList =
+    [...entityIds];
+
+  if (primaryId != null) {
+
+    const directModule =
+      await fetchFeedbackModule(
+        entityType,
+        primaryId
+      );
+
+    if (directModule) {
+      return directModule;
+    }
+
+  }
+
+  const { data: modules, error: moduleError } =
     await window.supabaseClient
-      .from(window.siteConfig.tables.news)
-      .select('id')
-      .eq('slug', newsItem.slug);
+      .from(tables.feedbackModules)
+      .select('*')
+      .eq('entity_type', entityType)
+      .in('entity_id', idList)
+      .order('id', { ascending: false })
+      .limit(1);
 
-  if (error) {
+  if (moduleError) {
 
-    console.error(error);
+    console.error(moduleError);
 
     return null;
 
   }
 
-  for (const row of (data || [])) {
-
-    const rowId =
-      normalizeFeedbackEntityId(
-        row.id
-      );
-
-    if (
-      rowId == null
-      || rowId
-      === normalizeFeedbackEntityId(
-        newsItem.id
-      )
-    ) {
-      continue;
-    }
-
-    module =
-      await fetchFeedbackModule(
-        entityType,
-        rowId
-      );
-
-    if (module) {
-      return module;
-    }
-
-  }
-
-  return null;
+  return modules?.[0] || null;
 
 }
 

@@ -64,6 +64,16 @@ async function initFeedbackModule(options) {
 
   if (isNewsEntity) {
 
+    module =
+      typeof prepareNewsFeedbackModule === 'function'
+        ? prepareNewsFeedbackModule(module)
+        : {
+          ...module,
+          entity_type: entityType,
+          type:
+            window.siteConfig.feedback.types.poll
+        };
+
     let member =
       options?.member ?? null;
 
@@ -102,19 +112,6 @@ async function initFeedbackModule(options) {
         ? getViewerMember(member)
         : member;
 
-    if (
-      resolveFeedbackModuleType(module)
-      !== window.siteConfig.feedback.types.poll
-    ) {
-
-      module = {
-        ...module,
-        type:
-          window.siteConfig.feedback.types.poll
-      };
-
-    }
-
     let ownAnswer = null;
 
     if (viewerMember?.id) {
@@ -151,7 +148,9 @@ async function initFeedbackModule(options) {
     module.enabled !== false;
 
   if (
-    !pollActive
+    entityType
+    !== window.siteConfig.feedback.entityTypes.news
+    && !pollActive
     && answerCount === 0
   ) {
     container.innerHTML = '';

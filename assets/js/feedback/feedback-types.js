@@ -32,8 +32,21 @@ function slugifyFeedbackOptionId(label) {
 
 function normalizeFeedbackPollConfig(config) {
 
+  let source =
+    config;
+
+  if (typeof source === 'string') {
+
+    try {
+      source = JSON.parse(source);
+    } catch (error) {
+      source = {};
+    }
+
+  }
+
   const rawOptions =
-    config?.options;
+    source?.options;
 
   let options = [];
 
@@ -53,13 +66,14 @@ function normalizeFeedbackPollConfig(config) {
 
           }
 
-          const id =
-            String(option?.id || '')
-              .trim();
-
           const label =
             String(option?.label || '')
               .trim();
+
+          const id =
+            String(option?.id || '')
+              .trim()
+            || slugifyFeedbackOptionId(label);
 
           if (!id || !label) {
             return null;
@@ -80,14 +94,14 @@ function normalizeFeedbackPollConfig(config) {
   }
 
   const freeTextLabel =
-    String(config?.freeTextLabel || '')
+    String(source?.freeTextLabel || '')
       .trim()
-      || 'Freitext';
+    || 'Freitext';
 
   return {
     options,
-    multiple: config?.multiple === true,
-    allowFreeText: config?.allowFreeText === true,
+    multiple: source?.multiple === true,
+    allowFreeText: source?.allowFreeText === true,
     freeTextLabel
   };
 
@@ -410,6 +424,24 @@ function resolveFeedbackModuleType(module) {
   }
 
   return module?.type;
+
+}
+
+function prepareNewsFeedbackModule(
+  module
+) {
+
+  if (!module) {
+    return null;
+  }
+
+  return {
+    ...module,
+    entity_type:
+      window.siteConfig.feedback.entityTypes.news,
+    type:
+      window.siteConfig.feedback.types.poll
+  };
 
 }
 
