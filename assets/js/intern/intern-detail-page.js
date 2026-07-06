@@ -110,16 +110,13 @@ async function loadInternNewsDetail() {
   }
 
   if (
-    typeof initFeedbackModule === 'function'
+    typeof initInternNewsFeedback === 'function'
   ) {
 
     try {
 
-      await initFeedbackModule({
-        entityType:
-          window.siteConfig.feedback.entityTypes.news,
-        entityId: item.id,
-        entityNewsItem: item,
+      await initInternNewsFeedback({
+        newsItem: item,
         entityVisibility:
           item.sichtbarkeit,
         container: 'intern-feedback',

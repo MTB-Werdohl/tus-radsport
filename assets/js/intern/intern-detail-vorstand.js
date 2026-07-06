@@ -337,13 +337,31 @@ async function openInternFeedbackResultsForNews(
     slug: newsSlug || ''
   };
 
-  const feedbackModule =
+  let feedbackModule = null;
+
+  if (
     typeof fetchFeedbackModuleForNews === 'function'
-      ? await fetchFeedbackModuleForNews(newsItem)
-      : await fetchFeedbackModule(
+  ) {
+
+    feedbackModule =
+      await fetchFeedbackModuleForNews(
+        newsItem
+      );
+
+  }
+
+  if (
+    !feedbackModule
+    && typeof fetchFeedbackModule === 'function'
+  ) {
+
+    feedbackModule =
+      await fetchFeedbackModule(
         window.siteConfig.feedback.entityTypes.news,
         newsId
       );
+
+  }
 
   if (!feedbackModule?.id) {
 

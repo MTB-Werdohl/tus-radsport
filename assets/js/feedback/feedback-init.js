@@ -28,10 +28,12 @@ async function initFeedbackModule(options) {
     {
       entityType,
       entityId,
-      entityNewsItem:
-        options?.entityNewsItem ?? null,
       entityVisibility:
         options?.entityVisibility ?? null,
+      entityTermin:
+        options?.entityTermin ?? null,
+      entityRecurring:
+        options?.entityRecurring === true,
       member:
         options?.member ?? null,
       container:
@@ -40,101 +42,15 @@ async function initFeedbackModule(options) {
           : container.id
     };
 
-  const isNewsEntity =
-    entityType
-    === window.siteConfig.feedback.entityTypes.news;
-
-  let module =
-    isNewsEntity
-    && options?.entityNewsItem
-    && typeof fetchFeedbackModuleForNews
-      === 'function'
-      ? await fetchFeedbackModuleForNews(
-        options.entityNewsItem
-      )
-      : await fetchFeedbackModule(
-        entityType,
-        entityId
-      );
+  const module =
+    await fetchFeedbackModule(
+      entityType,
+      entityId
+    );
 
   if (!module) {
     container.innerHTML = '';
     return;
-  }
-
-  if (isNewsEntity) {
-
-    module =
-      typeof prepareNewsFeedbackModule === 'function'
-        ? prepareNewsFeedbackModule(module)
-        : {
-          ...module,
-          entity_type: entityType,
-          type:
-            window.siteConfig.feedback.types.poll
-        };
-
-    let member =
-      options?.member ?? null;
-
-    if (
-      !member
-      && typeof getCurrentMember === 'function'
-    ) {
-      member = getCurrentMember();
-    }
-
-    if (
-      !member
-      && typeof waitForAuthSession === 'function'
-    ) {
-
-      const session =
-        await waitForAuthSession();
-
-      if (
-        session
-        && typeof validateMemberSession === 'function'
-      ) {
-
-        member =
-          await validateMemberSession(
-            session,
-            { strict: false }
-          );
-
-      }
-
-    }
-
-    const viewerMember =
-      typeof getViewerMember === 'function'
-        ? getViewerMember(member)
-        : member;
-
-    let ownAnswer = null;
-
-    if (viewerMember?.id) {
-
-      ownAnswer =
-        await fetchOwnFeedbackAnswer(
-          module.id,
-          viewerMember.id
-        );
-
-    }
-
-    renderFeedbackModule(
-      container,
-      module,
-      ownAnswer,
-      viewerMember,
-      options?.entityVisibility ?? null,
-      false
-    );
-
-    return;
-
   }
 
   const answerCount =
@@ -148,9 +64,7 @@ async function initFeedbackModule(options) {
     module.enabled !== false;
 
   if (
-    entityType
-    !== window.siteConfig.feedback.entityTypes.news
-    && !pollActive
+    !pollActive
     && answerCount === 0
   ) {
     container.innerHTML = '';
@@ -298,7 +212,7 @@ window.addEventListener(
     if (
       activeFeedbackModuleOptions
     ) {
-      initFeedbackModule(
+      void initFeedbackModule(
         activeFeedbackModuleOptions
       );
     }

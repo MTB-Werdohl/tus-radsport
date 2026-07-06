@@ -149,7 +149,32 @@ async function fetchFeedbackModuleForNews(
 
   }
 
-  return modules?.[0] || null;
+  if (modules?.[0]) {
+    return modules[0];
+  }
+
+  const { data: fallbackModules, error: fallbackError } =
+    await window.supabaseClient
+      .from(tables.feedbackModules)
+      .select('*')
+      .in('entity_id', idList)
+      .order('id', { ascending: false })
+      .limit(5);
+
+  if (fallbackError) {
+
+    console.error(fallbackError);
+
+    return null;
+
+  }
+
+  return (
+    (fallbackModules || []).find((row) => (
+      row?.entity_type === entityType
+    ))
+    || null
+  );
 
 }
 

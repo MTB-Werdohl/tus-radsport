@@ -1,4 +1,4 @@
-async function loadEvent() {
+function resolveEventDetailSlug() {
 
   let slug =
 
@@ -8,24 +8,35 @@ async function loadEvent() {
 
     .get('slug');
 
-  if (!slug) {
-
-    const parts =
-
-      window.location.pathname
-        .split('/')
-        .filter(Boolean);
-
-    slug =
-
-      parts[
-        parts.length - 1
-      ];
-
+  if (slug) {
+    return slug;
   }
 
-  if (!slug)
+  const parts =
+
+    window.location.pathname
+      .split('/')
+      .filter(Boolean);
+
+  if (
+    parts.length >= 2
+    && parts[0] === 'kalender'
+  ) {
+    return parts[parts.length - 1];
+  }
+
+  return null;
+
+}
+
+async function loadEvent() {
+
+  const slug =
+    resolveEventDetailSlug();
+
+  if (!slug) {
     return;
+  }
 
   const member =
     await ensureContentViewerMember();
@@ -78,18 +89,6 @@ async function loadEvent() {
     }
   );
 
-  await initFeedbackModule({
-    entityType:
-      window.siteConfig.feedback.entityTypes.event,
-    entityId: event.id,
-    entityVisibility:
-      event.sichtbarkeit,
-    entityRecurring: false,
-    entityTermin: event,
-    container: 'event-feedback',
-    member
-  });
-
   if (
     isVorstandUser
     && typeof initEventDetailVorstand
@@ -100,6 +99,32 @@ async function loadEvent() {
       event,
       member
     );
+
+  }
+
+  if (
+    typeof initFeedbackModule === 'function'
+  ) {
+
+    try {
+
+      await initFeedbackModule({
+        entityType:
+          window.siteConfig.feedback.entityTypes.event,
+        entityId: event.id,
+        entityVisibility:
+          event.sichtbarkeit,
+        entityRecurring: false,
+        entityTermin: event,
+        container: 'event-feedback',
+        member
+      });
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
 
   }
 

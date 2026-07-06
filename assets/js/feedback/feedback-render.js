@@ -240,13 +240,13 @@ function renderFeedbackPoll(
       ? 'feedback-poll-option'
       : 'feedback-poll';
 
-  const options =
+  const pollOptions =
     getFeedbackPollAllOptions(
       module.config
     );
 
   const optionsHtml =
-    options
+    pollOptions
       .map((option) => {
 
         const isFreeText =
@@ -1426,14 +1426,6 @@ function renderFeedbackModule(
       )
       : null;
 
-  const showNewsPollPreview =
-    isNewsFeedback
-    && type
-      === window.siteConfig.feedback.types.poll
-    && activeModule.enabled === false
-    && typeof isClubMember === 'function'
-    && isClubMember(member);
-
   const multipleHint =
     canVote
     && pollConfig?.multiple
@@ -1500,18 +1492,7 @@ ${
         : (
           isNewsFeedback
           && activeModule.enabled === false
-            ? (
-              renderNewsPollInactiveHint()
-              + (
-                showNewsPollPreview
-                  ? renderFeedbackPoll(
-                    activeModule,
-                    ownAnswer,
-                    { readOnly: true }
-                  )
-                  : ''
-              )
-            )
+            ? renderNewsPollInactiveHint()
             : renderFeedbackMembersOnlyHint()
         )
     )
