@@ -98,6 +98,13 @@ function normalizeFeedbackPollConfig(config) {
       .trim()
     || 'Freitext';
 
+  const defaultNewsFreeTextLabel =
+    normalizedConfig.freeTextLabel
+    && normalizedConfig.freeTextLabel
+      !== 'Freitext'
+      ? normalizedConfig.freeTextLabel
+      : 'Sonstiges / Anderes';
+
   return {
     options,
     multiple: source?.multiple === true,
@@ -435,12 +442,28 @@ function prepareNewsFeedbackModule(
     return null;
   }
 
+  const normalizedConfig =
+    normalizeFeedbackPollConfig(
+      module.config
+    );
+
   return {
     ...module,
     entity_type:
       window.siteConfig.feedback.entityTypes.news,
     type:
-      window.siteConfig.feedback.types.poll
+      window.siteConfig.feedback.types.poll,
+    config: {
+      ...module.config,
+      allowFreeText:
+        normalizedConfig.allowFreeText,
+      multiple:
+        normalizedConfig.multiple,
+      options:
+        normalizedConfig.options,
+      freeTextLabel:
+        defaultNewsFreeTextLabel
+    }
   };
 
 }

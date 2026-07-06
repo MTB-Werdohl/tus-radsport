@@ -5,12 +5,31 @@ function renderInternNewsPollInactiveHint() {
 
   return `
 <p class="feedback-hint">
-  Die Umfrage ist deaktiviert.
-  Zum Aktivieren im Editor
-  <strong>„Poll aktiv“</strong>
-  ankreuzen und speichern.
+  Die Umfrage ist beendet.
 </p>
 `;
+
+}
+
+function renderInternNewsFeedbackCreatorMeta(
+  creatorLabel
+) {
+
+  if (
+    !creatorLabel
+    || typeof renderContentCreatorMeta
+      !== 'function'
+  ) {
+    return '';
+  }
+
+  return renderContentCreatorMeta(
+    creatorLabel,
+    {
+      className:
+        'content-creator-meta content-creator-meta--intern-feedback'
+    }
+  );
 
 }
 
@@ -19,7 +38,8 @@ function renderInternNewsFeedbackModule(
   module,
   ownAnswer,
   member,
-  entityVisibility
+  entityVisibility,
+  creatorLabel
 ) {
 
   if (!container || !module) {
@@ -124,9 +144,16 @@ function renderInternNewsFeedbackModule(
     ensurePublicFeedbackModal();
   }
 
+  const creatorMeta =
+    renderInternNewsFeedbackCreatorMeta(
+      creatorLabel
+    );
+
   container.innerHTML = `
 
 <section class="feedback-module feedback-module--intern-news">
+
+${creatorMeta}
 
 <h2 class="feedback-question">
 
@@ -143,6 +170,15 @@ ${body}
 </section>
 
 `;
+
+  const freeTextWrap =
+    container.querySelector(
+      '[data-feedback-freetext-input]'
+    );
+
+  if (freeTextWrap) {
+    freeTextWrap.classList.remove('is-hidden');
+  }
 
   if (
     canVote
@@ -247,6 +283,8 @@ async function initInternNewsFeedback(
       newsItem,
       entityVisibility:
         options?.entityVisibility ?? null,
+      creatorLabel:
+        options?.creatorLabel ?? null,
       member:
         options?.member ?? null,
       container: containerId
@@ -317,7 +355,8 @@ async function initInternNewsFeedback(
     module,
     ownAnswer,
     viewerMember,
-    options?.entityVisibility ?? null
+    options?.entityVisibility ?? null,
+    options?.creatorLabel ?? null
   );
 
 }

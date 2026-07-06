@@ -47,7 +47,7 @@ function renderInternNewsDetail(
 
   wrapper.innerHTML = `
 
-<div class="event-page">
+<div class="event-page event-page--intern-detail">
 
 <header class="event-header">
 
@@ -101,10 +101,6 @@ ${dateLine}
 `
     : ''
 }
-
-${renderContentCreatorMeta(
-  item.creator_label
-)}
 
 </div>
 

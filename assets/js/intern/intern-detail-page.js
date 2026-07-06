@@ -119,6 +119,8 @@ async function loadInternNewsDetail() {
         newsItem: item,
         entityVisibility:
           item.sichtbarkeit,
+        creatorLabel:
+          item.creator_label,
         container: 'intern-feedback',
         member
       });

@@ -1985,6 +1985,31 @@ function bindFeedbackModuleEvents(
           )
         ].map((input) => input.value);
 
+      const freeTextRaw =
+        container
+          .querySelector('.feedback-freetext')
+          ?.value
+          ?.trim()
+        || '';
+
+      if (
+        config.allowFreeText
+        && freeTextRaw
+        && !selected.includes(
+          FEEDBACK_POLL_FREETEXT_OPTION_ID
+        )
+      ) {
+
+        if (config.multiple) {
+          selected.length = 0;
+        }
+
+        selected.push(
+          FEEDBACK_POLL_FREETEXT_OPTION_ID
+        );
+
+      }
+
       const freeTextSelected =
         selected.includes(
           FEEDBACK_POLL_FREETEXT_OPTION_ID
@@ -1992,11 +2017,7 @@ function bindFeedbackModuleEvents(
 
       const comment =
         freeTextSelected
-          ? container
-            .querySelector('.feedback-freetext')
-            ?.value
-            ?.trim()
-          || null
+          ? freeTextRaw || null
           : null;
 
       const answer =
