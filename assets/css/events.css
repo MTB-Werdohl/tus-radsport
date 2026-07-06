@@ -333,45 +333,47 @@
     opacity: 0.82;
   }
 
-  .event-page--intern-detail .event-header__feedback .feedback-poll-option-row--has-results {
-    grid-template-columns: minmax(0, 1fr) auto;
+  .event-page--intern-detail .event-header__feedback .feedback-poll--aligned-results .feedback-poll-option-row--has-results {
+    display: grid;
+    grid-template-columns:
+      var(--poll-label-col)
+      var(--poll-results-col);
     grid-template-rows: auto auto;
     column-gap: 8px;
     row-gap: 3px;
   }
 
-  .event-page--intern-detail .event-header__feedback .feedback-poll-option-row--has-results > .feedback-poll-option {
+  .event-page--intern-detail .event-header__feedback .feedback-poll--aligned-results .feedback-poll-option-row--has-results > .feedback-poll-option {
     grid-column: 1;
     grid-row: 1 / 3;
     align-self: center;
     min-width: 0;
   }
 
-  .event-page--intern-detail .event-header__feedback .feedback-poll-option-row--has-results:not(.feedback-poll-option-row--long-label) .feedback-poll-option span {
+  .event-page--intern-detail .event-header__feedback .feedback-poll--aligned-results .feedback-poll-option-row--has-results:not(.feedback-poll-option-row--long-label) .feedback-poll-option span {
     white-space: nowrap;
   }
 
-  .event-page--intern-detail .event-header__feedback .feedback-poll-option-row--has-results .feedback-poll-option-row__meta {
+  .event-page--intern-detail .event-header__feedback .feedback-poll--aligned-results .feedback-poll-option-row--has-results .feedback-poll-option-row__meta {
     grid-column: 2;
     grid-row: 1;
     justify-self: end;
     text-align: right;
-    width: auto;
-    max-width: none;
+    width: 100%;
     padding-left: 0;
     font-size: 0.75rem;
   }
 
-  .event-page--intern-detail .event-header__feedback .feedback-poll-option-row--has-results .feedback-poll-option-row__bar {
+  .event-page--intern-detail .event-header__feedback .feedback-poll--aligned-results .feedback-poll-option-row--has-results .feedback-poll-option-row__bar {
     grid-column: 2;
     grid-row: 2;
-    justify-self: end;
-    width: 3rem;
-    max-width: 3rem;
-    min-width: 3rem;
+    justify-self: stretch;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
   }
 
-  .event-page--intern-detail .event-header__feedback .feedback-poll-option-row--has-results .feedback-poll-option-row__extra {
+  .event-page--intern-detail .event-header__feedback .feedback-poll--aligned-results .feedback-poll-option-row--has-results .feedback-poll-option-row__extra {
     grid-column: 1 / -1;
     grid-row: auto;
   }

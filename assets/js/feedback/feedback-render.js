@@ -956,6 +956,158 @@ function applyFeedbackPollResultsInline(
 
     });
 
+  syncFeedbackPollAlignedColumns(
+    container
+  );
+
+}
+
+function syncFeedbackPollAlignedColumns(
+  container
+) {
+
+  if (!container) {
+    return;
+  }
+
+  const internRoot =
+    container.closest(
+      '.event-page--intern-detail'
+    );
+
+  if (!internRoot) {
+    return;
+  }
+
+  const poll =
+    container.querySelector(
+      '.feedback-poll'
+    );
+
+  if (!poll) {
+    return;
+  }
+
+  if (
+    !window.matchMedia(
+      '(max-width: 767px)'
+    ).matches
+  ) {
+
+    poll.classList.remove(
+      'feedback-poll--aligned-results'
+    );
+    poll.style.removeProperty(
+      '--poll-label-col'
+    );
+    poll.style.removeProperty(
+      '--poll-results-col'
+    );
+
+    return;
+
+  }
+
+  const resultRows =
+    poll.querySelectorAll(
+      '.feedback-poll-option-row--has-results'
+    );
+
+  if (!resultRows.length) {
+
+    poll.classList.remove(
+      'feedback-poll--aligned-results'
+    );
+    poll.style.removeProperty(
+      '--poll-label-col'
+    );
+    poll.style.removeProperty(
+      '--poll-results-col'
+    );
+
+    return;
+
+  }
+
+  const labels =
+    poll.querySelectorAll(
+      '.feedback-poll-option-row--has-results > .feedback-poll-option'
+    );
+
+  let maxLabel = 0;
+
+  labels.forEach((label) => {
+
+    const row =
+      label.closest(
+        '.feedback-poll-option-row'
+      );
+
+    const span =
+      label.querySelector('span');
+
+    const isLong =
+      row?.classList.contains(
+        'feedback-poll-option-row--long-label'
+      );
+
+    if (span && !isLong) {
+
+      const saved =
+        span.style.whiteSpace;
+
+      span.style.whiteSpace = 'nowrap';
+
+      maxLabel = Math.max(
+        maxLabel,
+        label.scrollWidth
+      );
+
+      span.style.whiteSpace = saved;
+
+    } else {
+
+      maxLabel = Math.max(
+        maxLabel,
+        label.scrollWidth
+      );
+
+    }
+
+  });
+
+  const gap = 8;
+  const minResults = 48;
+  const pollWidth =
+    poll.clientWidth;
+
+  const labelCol =
+    Math.min(
+      Math.ceil(maxLabel),
+      Math.max(
+        0,
+        pollWidth - gap - minResults
+      )
+    );
+
+  const resultsCol =
+    Math.max(
+      minResults,
+      pollWidth - labelCol - gap
+    );
+
+  poll.classList.add(
+    'feedback-poll--aligned-results'
+  );
+  poll.style.setProperty(
+    '--poll-label-col',
+    `${labelCol}px`
+  );
+  poll.style.setProperty(
+    '--poll-results-col',
+    `${resultsCol}px`
+  );
+
 }
 
 function renderFeedbackPollResultsSummary(
@@ -1398,7 +1550,11 @@ function renderFeedbackModule(
     return;
   }
 
-  ensurePublicFeedbackModal();
+  if (
+    typeof ensurePublicFeedbackModal === 'function'
+  ) {
+    ensurePublicFeedbackModal();
+  }
 
   const canVote =
     shouldShowFeedbackPollVoting(activeModule)
@@ -1619,14 +1775,39 @@ function bindFeedbackModuleEvents(
     isError
   ) {
 
-    renderFeedbackModule(
-      container,
-      module,
-      nextAnswer,
-      member,
-      entityVisibility,
-      entityRecurring
-    );
+    const isInternNewsPoll =
+      module?.entity_type
+      === window.siteConfig.feedback.entityTypes.news
+      && container.closest(
+        '.event-page--intern-detail'
+      )
+      && typeof renderInternNewsFeedbackModule
+        === 'function';
+
+    if (isInternNewsPoll) {
+
+      renderInternNewsFeedbackModule(
+        container,
+        module,
+        nextAnswer,
+        member,
+        entityVisibility,
+        container.dataset.creatorLabel
+          || null
+      );
+
+    } else {
+
+      renderFeedbackModule(
+        container,
+        module,
+        nextAnswer,
+        member,
+        entityVisibility,
+        entityRecurring
+      );
+
+    }
 
     if (message) {
       showFeedbackStatus(

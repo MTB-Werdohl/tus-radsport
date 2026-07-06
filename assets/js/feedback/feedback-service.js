@@ -330,7 +330,7 @@ async function saveFeedbackAnswer(
         { onConflict: 'module_id,member_id' }
       )
       .select('*')
-      .single();
+      .maybeSingle();
 
   if (error) {
 
@@ -340,7 +340,15 @@ async function saveFeedbackAnswer(
 
   }
 
-  return { data };
+  if (data) {
+    return { data };
+  }
+
+  return {
+    data: {
+      ...payload
+    }
+  };
 
 }
 

@@ -46,6 +46,11 @@ function renderInternNewsFeedbackModule(
     return;
   }
 
+  if (creatorLabel) {
+    container.dataset.creatorLabel =
+      creatorLabel;
+  }
+
   const activeModule =
     typeof prepareNewsFeedbackModule === 'function'
       ? prepareNewsFeedbackModule(module)
@@ -206,7 +211,20 @@ ${body}
       member,
       entityVisibility,
       { allowDisabled: true }
-    );
+    ).then(() => {
+
+      if (
+        typeof syncFeedbackPollAlignedColumns
+          === 'function'
+      ) {
+
+        syncFeedbackPollAlignedColumns(
+          container
+        );
+
+      }
+
+    });
 
   }
 
@@ -383,6 +401,46 @@ window.addEventListener(
         activeInternFeedbackOptions
       );
     }
+
+  }
+);
+
+let internPollLayoutResizeTimer =
+  null;
+
+window.addEventListener(
+  'resize',
+  () => {
+
+    if (!activeInternFeedbackOptions) {
+      return;
+    }
+
+    clearTimeout(
+      internPollLayoutResizeTimer
+    );
+
+    internPollLayoutResizeTimer =
+      setTimeout(() => {
+
+        const container =
+          document.getElementById(
+            'intern-feedback'
+          );
+
+        if (
+          container
+          && typeof syncFeedbackPollAlignedColumns
+            === 'function'
+        ) {
+
+          syncFeedbackPollAlignedColumns(
+            container
+          );
+
+        }
+
+      }, 120);
 
   }
 );
