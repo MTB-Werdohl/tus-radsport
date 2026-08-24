@@ -1736,25 +1736,63 @@ body.member-consent-modal-open {
   padding-left: 1.25rem;
 }
 
-.home-teaser-heading {
-  margin: 20px 0 12px;
-  font-size: 1rem;
-  font-weight: 600;
-  opacity: 0.9;
+.home-section-joinride {
   text-align: center;
 }
 
-.home-teaser-heading:first-of-type {
-  margin-top: 0;
+.home-joinride-lead {
+  margin: 0 auto 16px;
+  max-width: 36ch;
 }
 
-.home-teaser-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  max-width: min(100%, 440px);
-  margin-left: auto;
-  margin-right: auto;
+.home-joinride-more {
+  margin: 14px 0 0;
+  font-size: 0.95rem;
+}
+
+.home-joinride-more a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.joinride-embed {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 560px;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.joinride-embed iframe {
+  display: block;
+  width: 100%;
+  border: 0;
+  overflow: hidden;
+  vertical-align: top;
+}
+
+.joinride-embed--home iframe {
+  height: 460px;
+}
+
+.joinride-embed--page {
+  max-width: 640px;
+}
+
+.joinride-embed--page iframe {
+  height: 900px;
+  min-height: 70vh;
+}
+
+.joinride-page-lead {
+  text-align: center;
+  margin: 0 auto 20px;
+  max-width: 42ch;
+}
+
+.kalender-page--joinride {
+  margin: 1rem 0 2rem;
 }
 
 .home-discover h2 {
@@ -2026,8 +2064,8 @@ h2 { font-weight: 600; }
    ========================= */
 
 @media (min-width: 801px) {
-  .home-teaser-stack {
-    max-width: min(100%, 520px);
+  .joinride-embed--home {
+    max-width: 520px;
   }
 
   .home-discover-grid {

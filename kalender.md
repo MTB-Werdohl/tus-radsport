@@ -2,39 +2,24 @@
 layout: default
 title: Termine
 permalink: /kalender/
-load_calendar_css: true
-load_events_css: true
-load_feedback_css: true
-load_member_content_edit_css: true
-description: "Termine, Touren und Veranstaltungen der Radsportabteilung TuS Jahn Werdohl."
+description: "Touren und Ausfahrten der Radsportabteilung TuS Jahn Werdohl — Anmeldung über JoinRide."
 ---
 
-<div class="kalender-page">
+<div class="kalender-page kalender-page--joinride">
 
-  <div
-    id="event-cards"
-    class="kalender-list">
+  <p class="joinride-page-lead">
+    Alle öffentlichen Touren und Ausfahrten. Anmeldung und Details über JoinRide.
+  </p>
 
+  <div class="joinride-embed joinride-embed--page">
+    <iframe
+      src="https://joinride.cc/widget/club-rides?clubId=cmt79r8mc00e5r7kdws3uwdjb"
+      title="Alle Club-Touren auf JoinRide"
+      width="100%"
+      height="900"
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+    ></iframe>
   </div>
 
 </div>
-
-<script src="/assets/js/core/visibility.js"></script>
-<script src="/assets/js/core/termin-dates.js"></script>
-<script src="/assets/js/calendar/card-dates.js"></script>
-<script src="/assets/js/calendar/categories.js"></script>
-<script src="/assets/js/core/content-creator.js"></script>
-<script src="/assets/js/core/media-url.js"></script>
-<script src="/assets/js/member/member-termin-editor-nav.js?v={{ site.vorstand_js_version }}"></script>
-<script src="/assets/js/feedback/feedback-types.js"></script>
-<script src="/assets/js/feedback/feedback-service.js"></script>
-<script src="/assets/js/admin/admin-utils.js?v={{ site.vorstand_js_version }}"></script>
-<script src="/assets/js/admin/media-storage-lib.js"></script>
-<script src="/assets/js/admin/media-picker.js"></script>
-<script src="/assets/js/member/member-edit-utils.js"></script>
-<script src="/assets/js/admin/feedback-results.js?v={{ site.vorstand_js_version }}"></script>
-<script src="/assets/js/feedback/feedback-admin-participants.js?v={{ site.vorstand_js_version }}"></script>
-<script src="/assets/js/event/event-detail-vorstand.js?v={{ site.vorstand_js_version }}"></script>
-<script src="/assets/js/calendar/termine-loader.js"></script>
-<script src="/assets/js/calendar/event-cards.js"></script>
-<script src="/assets/js/calendar/kalender-page.js"></script>

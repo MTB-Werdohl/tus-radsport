@@ -2,7 +2,6 @@
 layout: default
 title: Fahr nicht allein. Fahr mit uns.
 hide_title: true
-load_calendar_css: true
 description: Radsportabteilung TuS Jahn Werdohl — gemeinsam MTB, Gravel & E-Bike fahren. Jeden Dienstag 18:00 After-Work Tour. Gäste willkommen!
 ---
 
@@ -57,11 +56,24 @@ description: Radsportabteilung TuS Jahn Werdohl — gemeinsam MTB, Gravel & E-Bi
   </p>
 </section>
 
-<section class="home-section">
-  <h2>Aktuell im Verein</h2>
-
-  <h3 class="home-teaser-heading">Termine</h3>
-  <div id="home-termine-teaser" class="home-teaser-stack"></div>
+<section class="home-section home-section-joinride">
+  <h2>Nächste Touren</h2>
+  <p class="home-joinride-lead">
+    Anmeldung und Details über JoinRide.
+  </p>
+  <div class="joinride-embed joinride-embed--home">
+    <iframe
+      src="https://joinride.cc/widget/club-rides?clubId=cmt79r8mc00e5r7kdws3uwdjb"
+      title="Nächste Club-Touren auf JoinRide"
+      width="100%"
+      height="460"
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+    ></iframe>
+  </div>
+  <p class="home-joinride-more">
+    <a href="{{ '/kalender/' | relative_url }}">Alle Touren ansehen</a>
+  </p>
 </section>
 
 <section class="home-discover">
@@ -83,13 +95,3 @@ description: Radsportabteilung TuS Jahn Werdohl — gemeinsam MTB, Gravel & E-Bi
 </section>
 
 </div>
-
-<script src="/assets/js/calendar/categories.js"></script>
-<script src="/assets/js/core/termin-dates.js"></script>
-<script src="/assets/js/calendar/card-dates.js"></script>
-<script src="/assets/js/core/content-creator.js"></script>
-<script src="/assets/js/core/media-url.js"></script>
-<script src="/assets/js/calendar/termine-loader.js"></script>
-<script src="/assets/js/calendar/event-cards.js"></script>
-<script src="/assets/js/core/visibility.js"></script>
-<script src="/assets/js/home/home-page.js"></script>
