@@ -497,26 +497,38 @@ Diese Website verwendet:
 
 - **keine** Analyse-Cookies
 - **keine** Marketing-Cookies
-- **keine** Trackingdienste
-- **keine** Analyseplattformen
-- **keine** Social-Media-Plugins mit automatischer Datenübermittlung
+- **keine** eigenen Trackingdienste oder Analyseplattformen
+- **keine** Social-Media-Plugins, die beim bloßen Seitenaufruf Daten übermitteln
 
-Zur technischen Funktion können Informationen **lokal im Browser** gespeichert werden (Local Storage), insbesondere:
+Zur technischen Funktion können Informationen **lokal im Browser** gespeichert werden (Local Storage / Session Storage), insbesondere:
 
 - **Supabase Auth-Session** — damit du eingeloggt bleibst (Magic Link)
 - **siteOverlayDismissedAt** — ob ein Website-Overlay bereits geschlossen wurde (Abschnitt 14)
 - **publicFeedbackReturnUrl** — Rückkehr-Adresse nach Magic Link bei externer Abstimmung (Session Storage, bis Tab geschlossen oder überschrieben)
 - **memberReturnUrl** — Rückkehr nach normalem Mitglieder-Login (z. B. `?next=` auf Termin/News), Session Storage
 - **publicRegistrationPending** — vorübergehend Name/Telefon bis E-Mail bestätigt ist (Session Storage, bis Registrierung abgeschlossen oder Account gelöscht)
+- **joinrideEmbedConsent** — merkt für die laufende Browser-Sitzung, dass du das JoinRide-Widget laden wolltest (Session Storage)
 
-Diese Speicherung dient ausschließlich der technischen Funktion der Website und des Mitgliederbereichs. Es werden **keine** Analyse-, Marketing- oder Tracking-Cookies gesetzt.
+Diese Speicherung dient der technischen Funktion der Website und des Mitgliederbereichs bzw. der von dir ausgelösten Einbindung von JoinRide. Es werden **keine** Analyse-, Marketing- oder Tracking-Cookies durch den Verein selbst gesetzt.
 
-Rechtsgrundlage:
+### 15.1 JoinRide-Widget (Touren / Termine)
+
+Auf der Startseite und unter **Termine** (`/kalender/`) können öffentliche Club-Touren über ein Widget von **JoinRide** ([joinride.cc](https://joinride.cc)) angezeigt werden.
+
+Das Widget wird **nicht automatisch** geladen. Es erscheint erst, wenn du den Button **„… von JoinRide laden?“** betätigst (Einwilligung / bewusste Aktion). Danach wird ein iframe von `joinride.cc` geladen.
+
+Beim Laden können insbesondere deine **IP-Adresse**, technische Browserinformationen und ggf. **Cookies oder vergleichbare Speicherungen** durch JoinRide verarbeitet werden. Umfang und Zweck dieser Verarbeitung bestimmt JoinRide als eigener Verantwortlicher bzw. Auftragsverarbeiter gemäß dessen Angaben. Bitte beachte auch die Datenschutzerklärung von JoinRide auf [joinride.cc](https://joinride.cc).
+
+Für die laufende Sitzung speichern wir lokal `joinrideEmbedConsent`, damit du den Button nicht auf jeder Unterseite erneut klicken musst. Beim Schließen des Tabs bzw. der Sitzung entfällt dieser Eintrag; ein erneutes Laden erfordert dann erneut deine Aktion.
+
+Rechtsgrundlage für die Einbindung nach deiner Aktion: Art. 6 Abs. 1 lit. a DSGVO (Einwilligung) sowie — soweit anwendbar — § 25 Abs. 1 TTDSG für nicht notwendige Speicherung/Zugriff auf Informationen in deinem Endgerät durch den Drittanbieter nach Einwilligung.
+
+Rechtsgrundlage für unsere rein technischen Speichernungen:
 
 - Art. 6 Abs. 1 lit. f DSGVO — technisch notwendige Funktion
 - Art. 6 Abs. 1 lit. b DSGVO — Session für den Mitgliederbereich
 
-Es werden keine Cookies zu Werbe- oder Analysezwecken gesetzt.
+Es werden keine Cookies zu Werbe- oder Analysezwecken durch den Verein gesetzt.
 
 ---
 
@@ -533,7 +545,7 @@ Es werden keine Cookies zu Werbe- oder Analysezwecken gesetzt.
 - **Auth-Session:** bis zum Logout, Ablauf der Session oder Ungültigkeit des Login-Links.
 - **Website-Hinweise** (`site_banner`, `saison_mode`, `site_overlay`, `landing_hints`): bis der Vorstand sie ändert, deaktiviert oder löscht; Anzeige kann zusätzlich durch eingestellte Zeiträume begrenzt sein.
 - **Profilbilder:** bis zur Entfernung im Profil, Account-Löschung oder auf Anfrage.
-- **Local Storage im Browser** (z. B. `siteOverlayDismissedAt`) und **Session Storage** (z. B. `publicFeedbackReturnUrl`, `memberReturnUrl`, `publicRegistrationPending`): bis du die Website-Daten im Browser löschst, der Tab geschlossen wird oder der Eintrag überschrieben wird.
+- **Local Storage im Browser** (z. B. `siteOverlayDismissedAt`) und **Session Storage** (z. B. `publicFeedbackReturnUrl`, `memberReturnUrl`, `publicRegistrationPending`, `joinrideEmbedConsent`): bis du die Website-Daten im Browser löschst, der Tab geschlossen wird oder der Eintrag überschrieben wird.
 - **Server- und Verbindungslogs der Hosting-/Backend-Anbieter:** gemäß deren Richtlinien; auf diese Logs hat der Verein in der Regel keinen direkten Zugriff.
 
 ---

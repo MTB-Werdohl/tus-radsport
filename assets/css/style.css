@@ -1772,17 +1772,44 @@ body.member-consent-modal-open {
   vertical-align: top;
 }
 
+.joinride-embed--home {
+  min-height: 220px;
+}
+
 .joinride-embed--home iframe {
   height: 460px;
 }
 
 .joinride-embed--page {
   max-width: 640px;
+  min-height: 240px;
 }
 
 .joinride-embed--page iframe {
   height: 900px;
   min-height: 70vh;
+}
+
+.joinride-consent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 28px 20px;
+  text-align: center;
+}
+
+.joinride-consent__text {
+  margin: 0;
+  max-width: 36ch;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  opacity: 0.92;
+}
+
+.joinride-consent__btn {
+  width: min(100%, 320px);
 }
 
 .joinride-page-lead {

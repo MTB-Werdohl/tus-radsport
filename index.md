@@ -61,20 +61,19 @@ description: Radsportabteilung TuS Jahn Werdohl — gemeinsam MTB, Gravel & E-Bi
   <p class="home-joinride-lead">
     Anmeldung und Details über JoinRide.
   </p>
-  <div class="joinride-embed joinride-embed--home">
-    <iframe
-      src="https://joinride.cc/widget/club-rides?clubId=cmt79r8mc00e5r7kdws3uwdjb"
-      title="Nächste Club-Touren auf JoinRide"
-      width="100%"
-      height="460"
-      loading="lazy"
-      referrerpolicy="no-referrer-when-downgrade"
-    ></iframe>
+  <div
+    class="joinride-embed joinride-embed--home"
+    data-joinride-src="https://joinride.cc/widget/club-rides?clubId=cmt79r8mc00e5r7kdws3uwdjb"
+    data-joinride-title="Nächste Club-Touren auf JoinRide"
+    data-joinride-height="460"
+    data-joinride-label="Nächste Termine von JoinRide laden?">
   </div>
   <p class="home-joinride-more">
     <a href="{{ '/kalender/' | relative_url }}">Alle Touren ansehen</a>
   </p>
 </section>
+
+<script src="/assets/js/site/joinride-embed.js"></script>
 
 <section class="home-discover">
   <h2>Mehr entdecken</h2>
