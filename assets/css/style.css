@@ -1745,23 +1745,12 @@ body.member-consent-modal-open {
   max-width: 36ch;
 }
 
-.home-joinride-more {
-  margin: 14px 0 0;
-  font-size: 0.95rem;
-}
-
-.home-joinride-more a {
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
 .joinride-embed {
   margin: 0 auto;
   width: 100%;
   max-width: 560px;
   overflow: hidden;
-  border-radius: var(--radius);
-  background: rgba(0, 0, 0, 0.12);
+  background: transparent;
 }
 
 .joinride-embed iframe {
@@ -1770,6 +1759,8 @@ body.member-consent-modal-open {
   border: 0;
   overflow: hidden;
   vertical-align: top;
+  background: transparent;
+  color-scheme: dark;
 }
 
 .joinride-embed--home {
@@ -1781,7 +1772,7 @@ body.member-consent-modal-open {
 }
 
 .joinride-embed--page {
-  max-width: 640px;
+  max-width: 720px;
   min-height: 240px;
 }
 
@@ -1798,6 +1789,7 @@ body.member-consent-modal-open {
   gap: 14px;
   padding: 28px 20px;
   text-align: center;
+  background: transparent;
 }
 
 .joinride-consent__text {
@@ -1812,14 +1804,8 @@ body.member-consent-modal-open {
   width: min(100%, 320px);
 }
 
-.joinride-page-lead {
-  text-align: center;
-  margin: 0 auto 20px;
-  max-width: 42ch;
-}
-
 .kalender-page--joinride {
-  margin: 1rem 0 2rem;
+  margin: 0.5rem 0 2rem;
 }
 
 .home-discover h2 {
