@@ -511,13 +511,9 @@ Diese Speicherung dient der technischen Funktion der Website und des Mitgliederb
 
 ### 15.1 JoinRide-Widget (Touren / Termine)
 
-Auf der Startseite und unter **Termine** (`/kalender/`) können öffentliche Club-Touren über ein Widget von **JoinRide** ([joinride.cc](https://joinride.cc)) angezeigt werden.
+Auf der Startseite und unter **Termine** (`/kalender/`) binden wir ein Widget von **JoinRide** ([joinride.cc](https://joinride.cc)) per iframe ein. Dort siehst du aktuelle Club-Touren; ein Klick auf einen Termin führt dich auf JoinRide (Anmeldung, Details, App).
 
-Auf der Startseite und unter **Termine** wird ein iframe von `joinride.cc` zur **Anzeige** der Touren eingebunden. Klicks in der Vorschau sind deaktiviert.
-
-**Anmeldung, Teilnahme und App** erfolgen über den Link **„Auf JoinRide öffnen“** auf unser Club-Profil bei JoinRide ([joinride.cc/pro/mtb-werdohl/activities](https://joinride.cc/pro/mtb-werdohl/activities)) in einem neuen Tab. Dort verarbeitet JoinRide Login (u. a. Auth0), Cookies und ggf. den Wechsel in die JoinRide-App.
-
-Beim Laden des Widgets können insbesondere deine **IP-Adresse** und technische Browserinformationen an JoinRide übermittelt werden. Umfang und Zweck bestimmt JoinRide; siehe auch deren Datenschutzerklärung auf [joinride.cc](https://joinride.cc).
+Beim Laden und bei der Nutzung des Widgets können insbesondere deine **IP-Adresse** und technische Browserinformationen an JoinRide übermittelt werden; JoinRide kann Cookies setzen. Umfang und Zweck bestimmt JoinRide; siehe auch deren Datenschutzerklärung auf [joinride.cc](https://joinride.cc).
 
 Rechtsgrundlage: Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Darstellung aktueller Club-Touren auf der Vereinswebsite).
 

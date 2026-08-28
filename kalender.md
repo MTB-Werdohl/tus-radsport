@@ -10,10 +10,8 @@ description: "Touren und Ausfahrten der Radsportabteilung TuS Jahn Werdohl — A
   <div
     class="joinride-embed joinride-embed--page"
     data-joinride-src="https://joinride.cc/widget/club-rides?clubId=cmt79r8mc00e5r7kdws3uwdjb"
-    data-joinride-open-url="https://joinride.cc/pro/mtb-werdohl/activities"
     data-joinride-title="Alle Club-Touren auf JoinRide"
-    data-joinride-height="900"
-    data-joinride-open-label="Auf JoinRide öffnen">
+    data-joinride-height="900">
   </div>
 
 </div>
