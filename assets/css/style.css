@@ -1753,7 +1753,14 @@ body.member-consent-modal-open {
   background: transparent;
 }
 
-.joinride-embed iframe {
+.joinride-embed__preview {
+  position: relative;
+  width: 100%;
+  pointer-events: none;
+  user-select: none;
+}
+
+.joinride-embed__frame {
   display: block;
   width: 100%;
   border: 0;
@@ -1767,7 +1774,7 @@ body.member-consent-modal-open {
   min-height: 220px;
 }
 
-.joinride-embed--home iframe {
+.joinride-embed--home .joinride-embed__frame {
   height: 460px;
 }
 
@@ -1776,32 +1783,30 @@ body.member-consent-modal-open {
   min-height: 240px;
 }
 
-.joinride-embed--page iframe {
+.joinride-embed--page .joinride-embed__frame {
   height: 900px;
   min-height: 70vh;
 }
 
-.joinride-consent {
+.joinride-actions {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 14px;
-  padding: 28px 20px;
+  gap: 10px;
+  margin-top: 16px;
   text-align: center;
-  background: transparent;
 }
 
-.joinride-consent__text {
-  margin: 0;
-  max-width: 36ch;
-  font-size: 0.92rem;
-  line-height: 1.45;
-  opacity: 0.92;
-}
-
-.joinride-consent__btn {
+.joinride-open-btn {
   width: min(100%, 320px);
+}
+
+.joinride-actions__note {
+  margin: 0;
+  max-width: 34ch;
+  font-size: 0.88rem;
+  line-height: 1.4;
+  opacity: 0.85;
 }
 
 .kalender-page--joinride {

@@ -1,36 +1,62 @@
 (function initJoinrideEmbeds() {
 
-  const JOINRIDE_CONSENT_KEY =
-    'joinrideEmbedConsent';
+  const DEFAULT_OPEN_URL =
+    'https://joinride.cc/pro/mtb-werdohl/activities';
 
-  function hasConsent() {
+  function getOpenUrl(root) {
 
-    try {
-
-      return sessionStorage.getItem(
-        JOINRIDE_CONSENT_KEY
-      ) === '1';
-
-    } catch (_error) {
-
-      return false;
-
-    }
+    return root.dataset.joinrideOpenUrl
+      || DEFAULT_OPEN_URL;
 
   }
 
-  function storeConsent() {
+  function buildOpenLink(root) {
 
-    try {
+    const openUrl =
+      getOpenUrl(root);
 
-      sessionStorage.setItem(
-        JOINRIDE_CONSENT_KEY,
-        '1'
-      );
+    const openLabel =
+      root.dataset.joinrideOpenLabel
+      || 'Auf JoinRide öffnen';
 
-    } catch (_error) {
-      /* ignore */
-    }
+    const link =
+      document.createElement('a');
+
+    link.className =
+      'cta-btn joinride-open-btn';
+    link.href = openUrl;
+    link.target = '_blank';
+    link.rel =
+      'noopener noreferrer';
+    link.textContent = openLabel;
+
+    return link;
+
+  }
+
+  function buildActions(root) {
+
+    const actions =
+      document.createElement('div');
+
+    actions.className =
+      'joinride-actions';
+
+    actions.appendChild(
+      buildOpenLink(root)
+    );
+
+    const note =
+      document.createElement('p');
+
+    note.className =
+      'joinride-actions__note';
+    note.textContent =
+      'Anmeldung und App laufen auf JoinRide — hier nur die Vorschau.';
+
+    actions.appendChild(note);
+
+    return actions;
 
   }
 
@@ -60,6 +86,12 @@
 
     root.innerHTML = '';
 
+    const frameWrap =
+      document.createElement('div');
+
+    frameWrap.className =
+      'joinride-embed__preview';
+
     const iframe =
       document.createElement('iframe');
 
@@ -70,59 +102,26 @@
     iframe.loading = 'lazy';
     iframe.referrerPolicy =
       'no-referrer-when-downgrade';
+    iframe.className =
+      'joinride-embed__frame';
     iframe.setAttribute(
-      'style',
-      'border:0;overflow:hidden;width:100%;'
+      'tabindex',
+      '-1'
+    );
+    iframe.setAttribute(
+      'aria-hidden',
+      'true'
     );
 
-    root.appendChild(iframe);
+    frameWrap.appendChild(iframe);
+    root.appendChild(frameWrap);
+    root.appendChild(
+      buildActions(root)
+    );
+
     root.dataset.joinrideLoaded = '1';
     root.classList.add(
       'joinride-embed--loaded'
-    );
-
-  }
-
-  function buildPlaceholder(root) {
-
-    const label =
-      root.dataset.joinrideLabel
-      || 'Nächste Termine von JoinRide laden?';
-
-    const hint =
-      root.dataset.joinrideHint
-      || 'Erst nach dem Klick wird Inhalt von joinride.cc geladen. Dabei können Daten (z.\u00a0B. IP-Adresse) an JoinRide übermittelt und Cookies gesetzt werden. Details in der Datenschutzerklärung.';
-
-    root.innerHTML = `
-<div class="joinride-consent">
-  <p class="joinride-consent__text">
-    ${hint}
-  </p>
-  <button
-    type="button"
-    class="cta-btn joinride-consent__btn">
-    ${label}
-  </button>
-</div>
-`;
-
-    const button =
-      root.querySelector(
-        '.joinride-consent__btn'
-      );
-
-    if (!button) {
-      return;
-    }
-
-    button.addEventListener(
-      'click',
-      () => {
-
-        storeConsent();
-        loadEmbed(root);
-
-      }
     );
 
   }
@@ -131,15 +130,6 @@
     .querySelectorAll(
       '[data-joinride-src]'
     )
-    .forEach((root) => {
-
-      if (hasConsent()) {
-        loadEmbed(root);
-        return;
-      }
-
-      buildPlaceholder(root);
-
-    });
+    .forEach(loadEmbed);
 
 })();
